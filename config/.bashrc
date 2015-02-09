@@ -1,7 +1,8 @@
 #!/bin/bash
-export PATH="$PATH:~/projects/resources/path/"
+export PATH="$PATH:/home/$USER/projects/resources/path/"
 
 export GIT_MERGE_AUTOEDIT=no
+export LESS="${LESS}R"
 
 function bash_prompt()
 {
