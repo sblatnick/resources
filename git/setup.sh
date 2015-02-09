@@ -26,6 +26,9 @@ git config --global user.email "<email>"
 #set pager, changing tab length:
 git config --global core.pager 'less -x2'
 
+#allow simple (instead of "matching") git push/pull without specifying a remote and branch:
+git config --global push.default simple
+
 #colorful output:
 git config --global -e
 #============== Begin =================
