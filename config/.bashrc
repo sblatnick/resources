@@ -1,6 +1,8 @@
 #!/bin/bash
 export PATH="$PATH:~/projects/resources/path/"
 
+export GIT_MERGE_AUTOEDIT=no
+
 function bash_prompt()
 {
 	branch=$(git status 2>/dev/null | grep "On branch " | sed 's/On branch//')
