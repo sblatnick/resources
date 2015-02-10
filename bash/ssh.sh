@@ -41,12 +41,12 @@ ssh <remoteUser>@<remoteMachine> -R <remote listening port>:<remote machine refe
 	#or, save yourself some typing and write the options to ~/.ssh/config
 
 #ssh port forwarding
-  #local forwarding - forward outward: in-port-localhost:host:out-port-internal
-  ssh user@jump.host -L 8080:internal.host:8080
-  #remote forwarding - forward inward: in-port-internal:host:out-port-jump
-  ssh user@jump.host -R 8080:internal.host:8080
-  #forward SOCKS proxy server:
-  ssh user@host -D 9999
+	#local forwarding - forward outward: in-port-localhost:host:out-port-internal
+	ssh user@jump.host -L 8080:internal.host:8080
+	#remote forwarding - forward inward: in-port-internal:host:out-port-jump
+	ssh user@jump.host -R 8080:internal.host:8080
+	#forward SOCKS proxy server:
+	ssh user@host -D 9999
 
 	#copy authorized key from jumphost to internal host:
 	ssh internal-host 'cat >> .ssh/authorized_keys' < ~/.ssh/authorized_keys
@@ -73,31 +73,31 @@ ssh <remoteUser>@<remoteMachine> -R <remote listening port>:<remote machine refe
 	#you can also delete id_rsa and id_rsa.pub to start over
 
 #add ssh key to ssh host:
-  #using default ssh key:
-  ssh-copy-id user@remotehost.com
-  #specify your public key:
-  ssh-copy-id -i .ssh/id_rsa.pub username:password@remotehost.com
+	#using default ssh key:
+	ssh-copy-id user@remotehost.com
+	#specify your public key:
+	ssh-copy-id -i .ssh/id_rsa.pub username:password@remotehost.com
 
 #::::::::::::::::::::SSH CONFIG::::::::::::::::::::
 #~/.ssh/config 
 
 #Comment out if slow for multiple connections:
 #ControlMaster auto
-#ControlPath   /home/steve/.ssh/tmp/%h_%p_%r
+#ControlPath /home/steve/.ssh/tmp/%h_%p_%r
 
 KeepAlive yes
 ServerAliveInterval 60
 ServerAliveCountMax 30
 
 Host alias
-  ProxyCommand ssh -q user@gateway-vm nc -w0 internal-ip 22
+	ProxyCommand ssh -q user@gateway-vm nc -w0 internal-ip 22
 
 #Examples:
 Host bastion
-  ProxyCommand ssh -q tc@100.64.0.128 nc -w0 intranet.domain.com 22
+	ProxyCommand ssh -q tc@100.64.0.128 nc -w0 intranet.domain.com 22
 
 Host jumphost
-  ProxyCommand ssh -q tc@tinycore nc -w0 internal 22
+	ProxyCommand ssh -q tc@tinycore nc -w0 internal 22
 
 #::::::::::::::::::::SSH CONNECTION::::::::::::::::::::
 
@@ -105,6 +105,6 @@ Host jumphost
 	gedit /etc/nsswitch.conf #(on the SERVER machine)
 
 	# Change this line
-	# hosts:          files mdns4_minimal [NOTFOUND=return] dns mdns4
+	# hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4
 	# To this (removed mdns4)
-	hosts:          files mdns4_minimal [NOTFOUND=return] dns
+	hosts: files mdns4_minimal [NOTFOUND=return] dns
