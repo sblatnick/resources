@@ -8,6 +8,10 @@ git clone git@github.com:geany/geany.git
 git remote add upstream git@github.com:geany/geany.git
 git remote add shanghai git@shanghai01:lcta.git
 
+#assign multiple remotes to a single alias (so you can push to more than one at once):
+git remote add all git@yorktown:bin.git
+git remote set-url --add all git@shanghai:bin.git
+
 #custom alias:
 git config --global alias.rev 'checkout --'
 #custom program:

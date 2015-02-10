@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#::::::::::::::::::::EXAMPLES::::::::::::::::::::
+#::::::::::::::::::::CONDITIONALS::::::::::::::::::::
 
 #IF/ELIF/ELSE:
 	string=0
@@ -23,10 +23,57 @@
 		"guten tag")
 				echo German
 			;;
+		this|that)
+				echo Rambling
 		*)
 				echo Unknown Language: $f
 			;;
 	esac
+
+# -eq = equal
+# -lt = less than
+# -gt = greater than
+
+#	operator	produces true if... 															number of operands
+#	-n				operand non zero length														1
+#	-z				operand has zero length														1
+#	-d				there exists a directory whose name is operand		1
+#	-f				there exists a file whose name is operand					1
+#	-eq				the operands are integers and they are equal			2
+#	-neq			the opposite of -eq																2
+#	=					the operands are equal (as strings)								2
+#	!=				opposite of = 																		2
+
+#INTEGERS ONLY:
+
+#	-lt				operand1 is strictly less than operand2						2
+#	-gt				operand1 is strictly greater than operand2				2
+#	-ge				operand1 is greater than or equal to operand2 		2
+#	-le				operand1 is less than or equal to operand2				2
+
+#	-L				simlink
+
+#bash specific:
+#	-nt				newer than (files)
+#	-ot				older than (files)
+#	-e				file exists
+#	-a				file exists
+#	-S				file is a socket
+#	-ef				paths refer to the same file
+#	-O				owned by my user
+
+#	-r				readable
+#	-w				writable
+#	-x				executable
+
+#	==				equal (strings)
+#	!=				not equal (strings)
+#	||				or
+#	&&				and
+
+#	-d				is a directory
+
+#::::::::::::::::::::LOOPS::::::::::::::::::::
 
 #WHILE
 	while read f
@@ -78,61 +125,38 @@
 		echo $X
 	done
 
-#FUNCTIONS
+#MAKE A BUNCH OF DIRECTORIES:
+	mkdir rc{0,1,2,3,4,5,6,S}.d
+
+#SEQUENCE of numbers that are padded:
+	for i in $(seq -f "%05g" 10 15)
+	do
+		echo $i
+	done
+
+#for loop with index and value (untested):
+	for i in "${!foo[@]}"; do 
+		printf "%s\t%s\n" "$i" "${foo[$i]}"
+	done
+
+	for i in "${!services[@]}"
+	do 
+		server="${services[$i]}"
+		echo -e "$server" > /tmp/left.csv.$pid
+		ssh $server -q "$param" >> /tmp/left.csv.$pid 2>&1
+	done
+
+#sort by descending order of unique count:
+	grep -P '^2014-10-22 10:00' ~/mail.log | grep 'bounce' | grep ' to=<[^>]*>' -o | sort | uniq -c | sort -nr
+
+#::::::::::::::::::::FUNCTIONS::::::::::::::::::::
+
 	do_stuff()
 	{
 		echo "this is a script function, $1"
 	{
 	
 	do_stuff ok
-
-#MAKE A BUNCH OF DIRECTORIES:
-	mkdir rc{0,1,2,3,4,5,6,S}.d
-
-#::::::::::::::::::::CONDITIONALS::::::::::::::::::::
-
-# -eq = equal
-# -lt = less than
-# -gt = greater than
-
-#	operator	produces true if... 															number of operands
-#	-n				operand non zero length														1
-#	-z				operand has zero length														1
-#	-d				there exists a directory whose name is operand		1
-#	-f				there exists a file whose name is operand					1
-#	-eq				the operands are integers and they are equal			2
-#	-neq			the opposite of -eq																2
-#	=					the operands are equal (as strings)								2
-#	!=				opposite of = 																		2
-
-#INTEGERS ONLY:
-
-#	-lt				operand1 is strictly less than operand2						2
-#	-gt				operand1 is strictly greater than operand2				2
-#	-ge				operand1 is greater than or equal to operand2 		2
-#	-le				operand1 is less than or equal to operand2				2
-
-#	-L				simlink
-
-#bash specific:
-#	-nt				newer than (files)
-#	-ot				older than (files)
-#	-e				file exists
-#	-a				file exists
-#	-S				file is a socket
-#	-ef				paths refer to the same file
-#	-O				owned by my user
-
-#	-r				readable
-#	-w				writable
-#	-x				executable
-
-#	==				equal (strings)
-#	!=				not equal (strings)
-#	||				or
-#	&&				and
-
-#	-d				is a directory
 
 #::::::::::::::::::::OPERATORS::::::::::::::::::::
 
