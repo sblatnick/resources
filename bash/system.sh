@@ -93,6 +93,9 @@ xwininfo -id <windowid> | grep "Map State" #detect visibility
 #look at traffic:
 	wireshark
 
+#look up my external IP:
+	curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//'
+
 #::::::::::::::::::::WIFI::::::::::::::::::::
 
 #activate:
