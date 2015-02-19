@@ -74,6 +74,19 @@ xwininfo -id <windowid> | grep "Map State" #detect visibility
 #find my local IP address:
 	ifconfig
 
+#all interfaces:
+	ifconfig -a
+#take an interface down:
+	ifdown eth0
+#start up an interface:
+	ifup eth0
+#see also udev for defining interfaces:
+/etc/udev/rules.d/60-net.rules
+
+#iptables firewall:
+service iptables stop
+chkconfig iptables off
+
 #see server IP address:
 	host google.com
 
