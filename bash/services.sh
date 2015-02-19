@@ -16,6 +16,8 @@ update-rc.d apache2 defaults
 	chkconfig --level 5 nfsserver off
 	#edit multiple runlevels at once:
 	chkconfig --level 35 nfsserver off
+	#edit general on/off:
+	chkconfig iptables on
 
 #Run levels:
 Run Level		Mode 															Action
