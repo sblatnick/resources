@@ -6,12 +6,11 @@ export LESS="${LESS}R"
 
 function bash_prompt()
 {
-	branch=$(git status 2>/dev/null | grep "On branch " | sed 's/On branch//')
-	if [[ -z "$branch" || $(git status 2>/dev/null | grep 'working directory clean' -c) -eq 1 ]];then
-		dirty=''
-	else
+	branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+	dirty=''
+	if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
 		dirty='*'
 	fi
-	PS1="\w\[\033[32m\]$branch\[\033[36m\]$dirty\[\033[0m\]\$ "
+	PS1="\w \[\033[32m\]$branch\[\033[36m\]$dirty\[\033[0m\]\$ "
 }
 PROMPT_COMMAND=bash_prompt

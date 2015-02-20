@@ -9,6 +9,7 @@
 #ssh file transfer:
 	scp localfile.cpp username@remote.host.com:/remote/folder
 	scp username@remote.host.com:/remote/file.txt /local/directory/
+	scp file1.txt file2.txt user@host:/folder/
 	scp -r #(use this -r tag to copy a folder and all of its contents)
 
 #::::::::::::::::::::SSH USAGE::::::::::::::::::::

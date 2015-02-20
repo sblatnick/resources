@@ -154,6 +154,9 @@ chkconfig iptables off
 #get linux kernel version:
 	uname -r
 
+#get linux version (redhat flavors):
+	cat /etc/redhat-release
+
 #default applications are set in:
 	/etc/gnome/defaults.list
 
