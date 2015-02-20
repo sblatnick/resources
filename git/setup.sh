@@ -23,6 +23,9 @@ git config --global --unset alias.modified
 git config --global alias.stash-unapply '!git stash show -p | git apply -R'
 git stash-unapply
 
+#other helpful aliases:
+git config --global alias.tut '!$EDITOR ~/projects/resources/git/usage.sh' #load usage guide in your editor
+
 #change your name/email:
 git config --global user.name "<first> <last>"
 git config --global user.email "<email>"

@@ -1,5 +1,11 @@
 #!/bin/bash
 
+#basic:
+	git diff #show local
+	git diff --cached #show staged changes
+	git show sha #show change with commit sha
+	git log #show git logs of commits
+
 #branching:
 
 	#create a new branch and switch to it:
@@ -100,6 +106,7 @@
 
 		#cherry pick select files (source: http://stackoverflow.com/questions/5717026/how-to-git-cherry-pick-only-changes-to-certain-files)
 		git cherry-pick -n <commit> #cherry pick without committing
+		git diff --cached #show staged changes
 		git reset HEAD #Unstage everything
 		git add <path> #Restage what you want
 		git checkout . #revert everything you haven't staged
