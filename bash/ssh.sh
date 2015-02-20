@@ -109,3 +109,14 @@ Host jumphost
 	# hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4
 	# To this (removed mdns4)
 	hosts: files mdns4_minimal [NOTFOUND=return] dns
+
+#::::::::::::::::::::SSH MOUNT::::::::::::::::::::
+
+sshfs -o cache=no,allow_other,uid=0,gid=0,follow_symlinks,nonempty steve@vmhost:/home/steve/work /root/work/
+#nonempty = ignore if the directory has contents on the local filesystem
+#follow_symlinks = follow symbolic links
+
+#unmount:
+fusermount -u /user_bak/
+#install (yum):
+yum install fuse-sshfs
