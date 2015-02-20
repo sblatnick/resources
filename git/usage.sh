@@ -3,7 +3,8 @@
 #basic:
 	git diff #show local
 	git diff --cached #show staged changes
-	git show sha #show change with commit sha
+	git show sha #show changes from the commit sha
+	git show #show last commit changes
 	git log #show git logs of commits
 
 #branching:
