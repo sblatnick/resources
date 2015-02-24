@@ -152,11 +152,17 @@ unset array[$element] #delete element in an array
 #EXAMPLE:
 IFS='
 '
-array=$(ls | grep .flv)
+array=($(ls | grep .flv))
 for video in ${array[@]}
 do
 	echo $video
 done
+
+#Don't forget the outter () when creating an array.
+#Otherwise it's just a single string.
+#The loop still works since it iterates over strings dilimited by whitespace
+#but the array length is off:
+length=${#array[@]}
 
 #Concatinate two arrays when delimeted by a newline:
 streams=`
@@ -176,16 +182,34 @@ done`
 "" #pre-render
 `` #pre-execute
 
-#::::::::::::::::::::MULTILINE COMMENT::::::::::::::::::::
+#::::::::::::::::::::MULTILINE STRING/COMMENT::::::::::::::::::::
 
-echo "Say Something"
+#Multi-line comment:
 <<COMMENT1
 	your comment 1
 	comment 2
 	blah
 COMMENT1
-echo "Do something else"
+#Multi-line variable:
+read -d '' variable <<- EOF
+  usage: up [--level <n>| -n <levels>][--help][--version]
 
+  Variable: $var
+EOF
+echo "$variable"
+
+#Echo all in one:
+cat <<- EOF
+  usage: up [--level <n>| -n <levels>][--help][--version]
+
+  Variable: $var
+EOF
+#File redirection:
+cat > output.txt <<- EOF
+  usage: up [--level <n>| -n <levels>][--help][--version]
+
+  Variable: $var
+EOF
 
 #::::::::::::::::::::PARAMETER CAPTURING::::::::::::::::::::
 

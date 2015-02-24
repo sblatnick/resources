@@ -146,6 +146,8 @@
 		ssh $server -q "$param" >> /tmp/left.csv.$pid 2>&1
 	done
 
+#Array length:
+	${#ArrayName[@]}
 #sort by descending order of unique count:
 	grep -P '^2014-10-22 10:00' ~/mail.log | grep 'bounce' | grep ' to=<[^>]*>' -o | sort | uniq -c | sort -nr
 
