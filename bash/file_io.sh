@@ -90,11 +90,45 @@ bash -x run 2>output.txt
 
 #(the 1 after the ; is for bold in: echo -e "\033[32;1mThis is green.\033[0m")
 
+#::::::::::::::::::::TERMINAL PROMPT::::::::::::::::::::
+
 #Escape coloring effecting the buffer when changing PS1:
 export PS1='\w\[\033[31m\]$\[\033[0m\] '
 #WRONG: export PS1='\w\033[31m$\033[0m '
 #Not escaping would cause seeminly strange buffer displacement where you are editing later on the line.
 #Wrap the coloring in \[ \] to prevent it from changing the perceived length of the output.
+
+#VARIABLES (source):
+#	\d   The date, in "Weekday Month Date" format (e.g., "Tue May 26"). 
+#	\h   The hostname, up to the first . (e.g. deckard) 
+# \H   The hostname. (e.g. deckard.SS64.com)
+# \j   The number of jobs currently managed by the shell. 
+# \l   The basename of the shell's terminal device name. 
+# \s   The name of the shell, the basename of $0 (the portion following the final slash). 
+# \t   The time, in 24-hour HH:MM:SS format. 
+# \T   The time, in 12-hour HH:MM:SS format. 
+# \@   The time, in 12-hour am/pm format. 
+# \u   The username of the current user. 
+# \v   The version of Bash (e.g., 2.00) 
+# \V   The release of Bash, version + patchlevel (e.g., 2.00.0) 
+# \w   The current working directory. 
+# \W   The basename of $PWD. 
+# \!   The history number of this command. 
+# \#   The command number of this command. 
+# \$   If you are not root, inserts a "$"; if you are root, you get a "#"  (root uid = 0) 
+# \nnn   The character whose ASCII code is the octal value nnn. 
+# \n   A newline. 
+# \r   A carriage return. 
+# \e   An escape character. 
+# \a   A bell character.
+# \\   A backslash. 
+
+# \[   Begin a sequence of non-printing characters. (like color escape sequences).
+	#This allows bash to calculate word wrapping correctly.
+# \]   End a sequence of non-printing characters.
+
+#Change the terminal title (or tab title) using this syntax:
+echo -en "\033]0;$*title\a"
 
 #::::::::::::::::::::COPYING::::::::::::::::::::
 
