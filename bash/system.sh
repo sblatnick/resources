@@ -100,6 +100,26 @@ chkconfig iptables off
   dig +trace domain.com
   host -t mx domain.com nameserver-local.com
 
+#RBL (Real-time-blacklist DNS) lookup:
+	#reverse the IP digits:
+		107.181.132.237 => 237.132.181.107
+	#append the rbl server and check:
+		nslookup 237.132.181.107.rblservice
+
+	#NOT in list:
+	#  ~ $ nslookup 237.132.181.107.rbl0101
+	#  Server:		192.168.1.219
+	#  Address:	192.168.1.219#53
+	#
+	#  ** server can't find 237.132.181.107.rbl0101: NXDOMAIN
+
+	#IN list (and therefor blocked):
+	#  Server:		192.168.1.219
+	#  Address:	192.168.1.219#53
+	#
+	#  Name:	rbl0105.sj2.proofpoint.com
+	#  Address: 192.168.0.251
+
 #scan for other computers (port sniff), their OSs and IP addresses:
 	sudo nmap -O -sS 192.168.0.1-255
 

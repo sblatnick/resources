@@ -37,6 +37,15 @@
 			echo $i
 		done
 
+#::::::::::::::::::::ARITHMETIC::::::::::::::::::::
+
+echo $((125924 + 31097))
+echo $(($variable + 125924))
+echo $((125924 + variable))
+
+(( n += 1 )) #increment
+#WRONG: (( $n += 1 ))
+
 #::::::::::::::::::::PRAMETER VARIABLES::::::::::::::::::::
 
 $0	# basename of program, but use `basename $0` to get just the program
@@ -191,7 +200,7 @@ done`
 	blah
 COMMENT1
 #Multi-line variable:
-read -d '' variable <<- EOF
+read -d '' variable << EOF
   usage: up [--level <n>| -n <levels>][--help][--version]
 
   Variable: $var
@@ -199,17 +208,26 @@ EOF
 echo "$variable"
 
 #Echo all in one:
-cat <<- EOF
+cat << EOF
   usage: up [--level <n>| -n <levels>][--help][--version]
 
   Variable: $var
 EOF
 #File redirection:
-cat > output.txt <<- EOF
+cat > output.txt << EOF
   usage: up [--level <n>| -n <levels>][--help][--version]
 
   Variable: $var
 EOF
+#Note: <<- means remove indentation (preceding whitespace from each line):
+cat <<- EOF
+  usage: up [--level <n>| -n <levels>][--help][--version]
+
+  Variable: $var
+EOF
+
+#Change indentation width in printed output:
+tabs 4
 
 #::::::::::::::::::::PARAMETER CAPTURING::::::::::::::::::::
 
