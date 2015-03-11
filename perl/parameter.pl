@@ -52,3 +52,10 @@ if($fetch == -1 && $execute == -1) {
 if(defined $logger) {
   open(STDOUT, ">$logger");
 }
+
+
+#function/sub parameter:
+sub subName
+{
+  my $parameter = shift;
+}
