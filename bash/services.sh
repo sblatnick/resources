@@ -132,3 +132,7 @@ Run Level		Mode 															Action
 
 #restart networking service:
 	sudo /etc/init.d/networking restart
+
+#wireshark setup for non-root users:
+	sudo dpkg-reconfigure wireshark-common
+	sudo usermod -a -G wireshark steve

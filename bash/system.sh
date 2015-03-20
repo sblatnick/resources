@@ -129,6 +129,16 @@ chkconfig iptables off
 #look up my external IP:
 	curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//'
 
+#telnet:
+	#IMAP:
+	telnet imap.email.com 143
+	x login user@email.com Password
+	x LIST "" "*"
+	#HTTP:
+	telnet hostname.com 80
+	GET / HTTP/1.1
+	Host: hostname.com
+
 #::::::::::::::::::::WIFI::::::::::::::::::::
 
 #activate:
