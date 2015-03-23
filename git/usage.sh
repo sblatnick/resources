@@ -2,7 +2,7 @@
 
 #basic:
 	git diff #show local
-	git diff --cached #show staged changes
+	git diff --cached #show staged changes (also works: git status -v)
 	git show sha #show changes from the commit sha
 	git show #show last commit changes
 	git log #show git logs of commits
@@ -160,3 +160,9 @@
 
 	#search history contents:
 	git rev-list --all | xargs git grep expression
+
+#revision references:
+
+	git show sha
+	git show sha^
+	git log --reverse --ancestry-path sha^..master
