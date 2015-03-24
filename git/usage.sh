@@ -161,6 +161,15 @@
 	#search history contents:
 	git rev-list --all | xargs git grep expression
 
+	#view logs on deleted file:
+	git log --all -- path/to/file
+	
+	#restore the deleted file:
+	git checkout sha^ -- <file_path>
+
+	#find and restore deleted:
+	git checkout $(git rev-list -n 1 HEAD -- "$file")^ -- "$file"
+
 #revision references:
 
 	git show sha
