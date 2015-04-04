@@ -90,6 +90,17 @@ bash -x run 2>output.txt
 
 #(the 1 after the ; is for bold in: echo -e "\033[32;1mThis is green.\033[0m")
 
+#::::::::::::::::::::DETECT PROMPT::::::::::::::::::::
+
+#if running interactively:
+if tty -s <&1; then
+	colorize=' --color=always'
+else #running for file output or consumption, non-interactively:
+	colorize=''
+fi
+#Only run when interactive (example when setting terminal title):
+tty -s <&1 && echo -en "\033]0;$*TITLE\a"
+
 #::::::::::::::::::::TERMINAL PROMPT::::::::::::::::::::
 
 #Escape coloring effecting the buffer when changing PS1:

@@ -12,5 +12,11 @@ function bash_prompt()
 		dirty='*'
 	fi
 	PS1="\w \[\033[32m\]$branch\[\033[36m\]$dirty\[\033[0m\]\$ "
+	#repo=$(basename $(git rev-parse --show-toplevel 2>/dev/null) 2>/dev/null)
+	#if [ -n "$repo" ]; then
+	#	echo -en "\033]0;$*${repo}\a"
+	#else
+	#	echo -en "\033]0;$*$(pwd)\a"
+	#fi
 }
 PROMPT_COMMAND=bash_prompt
