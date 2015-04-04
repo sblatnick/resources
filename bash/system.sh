@@ -123,8 +123,16 @@ chkconfig iptables off
 #scan for other computers (port sniff), their OSs and IP addresses:
 	sudo nmap -O -sS 192.168.0.1-255
 
+#list computers in your local network:
+	sudo arp-scan --interface=eth0 --localnet
+
 #look at traffic:
 	wireshark
+#set wireshark to allow non-root users:
+	sudo apt-get install wireshark
+	sudo dpkg-reconfigure wireshark-common #sometimes included in installation
+	sudo usermod -a -G wireshark $USER
+	#restart your login session
 
 #look up my external IP:
 	curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//'
