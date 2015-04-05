@@ -11,13 +11,13 @@
 
 	#We can use these expressions:
 
-	path = ${foo%/*}
+	path=${foo%/*}
 		#To get: /tmp/my.dir (like dirname)
-	file = ${foo##*/}
+	file=${foo##*/}
 		#To get: filename.tar.gz (like basename)
-	base = ${file%%.*}
+	base=${file%%.*}
 		#To get: filename
-	ext = ${file#*.}
+	ext=${file#*.}
 		#To get: tar.gz
 
   #Replace substrings:
