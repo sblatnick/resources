@@ -139,6 +139,9 @@ chkconfig iptables off
 	GET / HTTP/1.1
 	Host: hostname.com
 
+#look at open ports and the programs using them:
+	sudo netstat -ltnp
+
 #::::::::::::::::::::WIFI::::::::::::::::::::
 
 #activate:

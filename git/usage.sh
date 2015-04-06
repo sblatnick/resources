@@ -129,6 +129,14 @@
 	#commit all changes to the local repo:
 	git commit -a -m "<message>"
 
+#squashing multiple commits into one:
+
+	git checkout foo #check out the dev branch
+	git rebase -i master #make sure it's derivative of the main branch
+	git checkout master #check out the main branch
+	git merge --squash foo #create a merge that consists of all changes in the dev branch
+	git commit -m 'Squashed commit.' #commit the changes
+
 #other
 
 	#ignore local changes:
