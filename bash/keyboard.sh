@@ -19,6 +19,14 @@ xkb_keymap {
 };
 ' | xkbcomp - -i 11 $DISPLAY
 
+#set power key to act as an END key (ASUS laptop):
+#(You may also want to set in dconf-editor org.mate.power-manager.power-button = nothing)
+sudo apt-get install acpi-fakekey
+grep KEY_END /usr/share/acpi-support/key-constants
+  KEY_END=107
+sudo nano /etc/acpi/powerbtn-acpi-support.sh
+  acpi_fakekey 107
+  exit 0
 
 
 
