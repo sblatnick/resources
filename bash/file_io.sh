@@ -99,7 +99,7 @@ else #running for file output or consumption, non-interactively:
 	colorize=''
 fi
 #Only run when interactive (example when setting terminal title):
-tty -s <&1 && echo -en "\033]0;$*TITLE\a"
+tty -s <&1 && echo -en "\033]0;TITLE\a"
 
 #::::::::::::::::::::TERMINAL PROMPT::::::::::::::::::::
 
@@ -139,7 +139,7 @@ export PS1='\w\[\033[31m\]$\[\033[0m\] '
 # \]   End a sequence of non-printing characters.
 
 #Change the terminal title (or tab title) using this syntax:
-echo -en "\033]0;$*title\a"
+echo -en "\033]0;title\a"
 
 #::::::::::::::::::::COPYING::::::::::::::::::::
 
