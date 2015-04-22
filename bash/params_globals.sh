@@ -167,6 +167,9 @@ do
 	echo $video
 done
 
+#You can set the delimiter just to create an array and have it revert back in one line:
+IFS=',' read -ra VARIABLE <<< "$IN"
+
 #Don't forget the outter () when creating an array.
 #Otherwise it's just a single string.
 #The loop still works since it iterates over strings dilimited by whitespace

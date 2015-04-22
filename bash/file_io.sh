@@ -161,6 +161,34 @@ echo -en "\033]0;title\a"
 #copy a file:
 	cp src dest
 	cp -R src dest
+	#cp recursively, force (no prompt), update (files missed before only), verbose (prints files as copying them)
+
+	#for many small files:
+		#start with cp (speed) = can leave partial files if interrupted
+		#switch to rsync (accuracy) = performance hit for checking files
+
+	#cp (fast)
+	cp -Rfuv src dest
+		#	-u, --update
+		#	-v, --verbose, shows files being copied:
+			‘source/being/copied.txt’ -> ‘desitnation/copied/to.txt’
+		#	-R, -r, --recursive
+		#	-f, --force
+	#rsync (accurate)
+	rsync -vrpt --append
+		#	-v, --verbose           increase verbosity, shows files being copied:
+			source/being/copied.txt
+		#	-r, --recursive         recurse into directories
+		#	-u, --update            skip files that are newer on the receiver
+		#	-p, --perms             preserve permissions
+		#	-t, --times             preserve times
+		#	--progress              show progress during transfer
+		#	--bwlimit=KBPS          limit I/O bandwidth; KBytes per second
+		#	-f, --filter=RULE
+		#	--inplace               don't move handle last, meaning interruptions can leave partial files
+		# --append                continue where left off, assuming no changes to the src
+	tar
+		cd /source/path/ && tar cf - * | (cd /destination/path/ ; tar xf - )
 
 #rename in bulk:
 	rename 's/kimiKiss([^P])/kimiKissPureRouge\1/' *.flv
@@ -173,6 +201,12 @@ echo -en "\033]0;title\a"
 	cd ~/.local/share/
 	chmod -R 700 Trash/
 	#(then use the GUI)
+
+#Transfer files over network (untested):
+	#sender (run receiver first):
+	tar cf - * | netcat otherhost 7000
+	#receiver:
+	netcat -l -p 7000 | tar x
 
 #::::::::::::::::::::IMAGES::::::::::::::::::::
 

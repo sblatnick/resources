@@ -125,6 +125,9 @@
 		echo $X
 	done
 
+	#You can also set the delimiter just to create an array and have it revert back in one line:
+	IFS=';' read -ra VARIABLE <<< "$IN"
+
 #MAKE A BUNCH OF DIRECTORIES:
 	mkdir rc{0,1,2,3,4,5,6,S}.d
 
