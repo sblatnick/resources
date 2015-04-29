@@ -226,9 +226,10 @@ echo -en "\033]0;title\a"
 		#	-f, --filter=RULE
 		#	--inplace               don't move handle last, meaning interruptions can leave partial files
 		# --append                continue where left off, assuming no changes to the src
-	tar
+	#tar (very fast)
 		cd /source/path/ && tar cf - * | (cd /destination/path/ ; tar xf - )
-
+		#order matters with -C (so you can include the path in the process, but not in the archive:
+		tar cf - -C /source/path/ . | (cd /destination/path/ ; tar xf - )
 #rename in bulk:
 	rename 's/kimiKiss([^P])/kimiKissPureRouge\1/' *.flv
 
