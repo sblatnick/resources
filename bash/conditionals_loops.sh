@@ -105,6 +105,13 @@
 	done
 
 #FOR LOOP:
+	#using a sub-shell, so variables can be read after the loop:
+	for video in $(ls | grep .flv)
+	do
+		echo $video
+	done
+	echo "last: $video"
+
 	IFS='
 '
 	array=$(ls | grep .flv)

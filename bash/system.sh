@@ -194,6 +194,11 @@ chkconfig iptables off
 	ps -elf | grep "process"
 	top
 	htop
+	jobs -p #get the pids of all thread started from within this shell/script
+	pgrep
+	pkill
+	kill -9 $pid #aggresively kill a stubborn process
+	killall
 
 #cpu speeds:
 	cat /proc/cpuinfo

@@ -129,6 +129,15 @@ echo -n "text" #skips newline at end
 
 	#see also: http://wiki.bash-hackers.org/commands/builtin/printf
 
+#::::::::::::::::::::WHITESPACE::::::::::::::::::::
+
+#trim down the leftmost tab-space to 2 spaces in your usage documentation:
+	echo "Usage: ${PROG} [--parameter arg]
+	Parameters:
+		--option [value]                           Specify value
+		--help|-h                                  Print this help information
+	" | expand -i -t 2
+
 #::::::::::::::::::::DETECT PROMPT::::::::::::::::::::
 
 #if running interactively:

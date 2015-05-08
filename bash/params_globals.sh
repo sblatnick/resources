@@ -43,8 +43,13 @@ echo $((125924 + 31097))
 echo $(($variable + 125924))
 echo $((125924 + variable))
 
-(( n += 1 )) #increment
+#increment:
+	(( n += 1 ))
+	((n++))
 #WRONG: (( $n += 1 ))
+
+#division with formatting:
+progress=$(echo "${DONE}" "${TOTAL}" | awk '{printf "%.1f", $1/$2 * 100}' 2>/dev/null)
 
 #::::::::::::::::::::PRAMETER VARIABLES::::::::::::::::::::
 
@@ -167,14 +172,15 @@ do
 	echo $video
 done
 
-#You can set the delimiter just to create an array and have it revert back in one line:
-IFS=',' read -ra VARIABLE <<< "$IN"
-
 #Don't forget the outter () when creating an array.
 #Otherwise it's just a single string.
 #The loop still works since it iterates over strings dilimited by whitespace
 #but the array length is off:
 length=${#array[@]}
+
+#You can set the delimiter just to create an array and have it revert back in one line:
+IFS=',' read -ra VARIABLE <<< "$IN" #make sure $IN is wrapped in double quotes, or the array length is off
+IFS=$'\n' read -rd '' -a VARIABLE <<< "$(pgrep -f "--test $VAR")" #or "$(commands)" with no escaping necessary
 
 #Concatinate two arrays when delimeted by a newline:
 streams=`
