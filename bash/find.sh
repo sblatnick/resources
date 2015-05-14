@@ -1,10 +1,11 @@
 #!/bin/bash
 
-#Delete all empty folders:
-find . -type d -empty
 #Find all empty folders:
+find . -type d -empty
+#Delete all empty folders:
 find . -type d -empty -delete
-
+#Find newest modified files:
+find ./ -type f -exec stat --format '%Y :%y %n' "{}" \; | sort -nr | cut -d: -f2- | head
 
 find $1 \( -name "*$2" -o -name ".*$2" \) -print |
 while read f; do
