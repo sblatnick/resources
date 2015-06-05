@@ -81,6 +81,61 @@ $!	#PID of last running background process
 	echo `basename $0` #name of the program
 	echo `dirname $0` #directory of the program
 
+#::::::::::::::::::::MULTITHREADED VARIABLES::::::::::::::::::::
+
+#source: http://stackoverflow.com/questions/13207292/bash-background-process-modify-global-variable
+
+#Store variables in shared memory to reduce file IO in /dev/shm
+pid=$$
+rm /dev/shm/total.$pid /dev/shm/files.$pid 2>/dev/null
+
+thread() {
+	number=10
+	file="filename.txt"
+	echo $file >> /dev/shm/files.$pid #keep a list of files
+	echo $number >>/dev/shm/total.$pid #increment by $number, append to prevent race conditions
+}
+
+threads=4
+thread &
+thread &
+thread &
+thread &
+
+old=0
+while [ $(wc -l /dev/shm/total.$pid | cut -f1 -d' ') -lt "$threads" ]
+do
+	current=$(wc -l /dev/shm/total.$pid | cut -f1 -d' ')
+	if [ $old -ne $current ];then
+		old=$current
+		printf "  (%4s/%4s) %s\n" "$old" "$threads" "$(date)"
+	fi
+	sleep 1
+done
+printf "  (%4s/%4s) DONE %s\n" "$old" "$threads" "$(date)"
+
+echo "RESULTS:"
+current=$(wc -l /dev/shm/total.$pid | cut -f1 -d' ')
+echo "  count: $current"
+total=$(awk '{sum+=$1} END {print sum}' /dev/shm/total.$pid)
+echo "  no change: $total"
+echo "  files:"
+cat /dev/shm/files.$pid | sed 's/^/    /'
+rm /dev/shm/total.$pid /dev/shm/files.$pid 2>/dev/null
+
+#don't use this in multiple threads, or there could be a race condition between
+#read and write:
+echo $(($(</dev/shm/foo)+1)) >/dev/shm/foo;
+#instead, use a lock file:
+#source: http://stackoverflow.com/questions/169964/how-to-prevent-a-script-from-running-simultaneously
+(
+  # Wait for lock on /var/lock/.myscript.exclusivelock (fd 200) for 10 seconds
+  flock -x -w 10 200 || exit 1
+
+  # Do stuff
+
+) 200>/var/lock/.myscript.exclusivelock
+
 #::::::::::::::::::::EXCEPTION HANDLING::::::::::::::::::::
 #EXCEPTION HANDLING using $?:
 	/usr/local/bin/my-command
