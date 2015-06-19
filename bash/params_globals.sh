@@ -218,6 +218,9 @@ echo $(($(</dev/shm/foo)+1)) >/dev/shm/foo;
 ${#ArrayName[@]} #array length
 unset array[$element] #delete element in an array
 
+ARRAY=() #initialize
+ARRAY+=('element') #add element
+
 #EXAMPLE:
 IFS='
 '
