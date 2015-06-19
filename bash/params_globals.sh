@@ -220,6 +220,8 @@ unset array[$element] #delete element in an array
 
 ARRAY=() #initialize
 ARRAY+=('element') #add element
+echo ${ARRAY[@]: -5:3} #5th-to-last element and the next 2, or start:count
+echo ${ARRAY[@]: 0:3} #first 3 elements
 
 #EXAMPLE:
 IFS='
