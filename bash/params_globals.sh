@@ -223,6 +223,18 @@ ARRAY+=('element') #add element
 echo ${ARRAY[@]: -5:3} #5th-to-last element and the next 2, or start:count
 echo ${ARRAY[@]: 0:3} #first 3 elements
 
+ARRAY=(a b c d e f g h)
+echo ${#ARRAY[@]} #8
+echo ${!ARRAY[@]} #indicies: 0 1 2 3 4 5 6 7
+indicies=(${!ARRAY[@]}) #store the indicies to an array
+echo "${indicies[@]}" #prints: 0 1 2 3 4 5 6 7
+
+#Note: Arrays can have specified indicies (int), but not keys (string)
+#specify other indicies for a sparse array (notice numerical reordering)
+declare -a ARRAY='([5]="my" [10]="very" [14]="energetic" [25]="mother" [26]="just" [74]="bought" [47]="me" [56]="nine pizzas")'
+echo ${ARRAY[@]} #my very energetic mother just me nine pizzas bought
+echo ${!ARRAY[@]} #5 10 14 25 26 47 56 74
+
 #EXAMPLE:
 IFS='
 '
