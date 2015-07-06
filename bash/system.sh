@@ -83,9 +83,22 @@ xwininfo -id <windowid> | grep "Map State" #detect visibility
 #see also udev for defining interfaces:
 /etc/udev/rules.d/60-net.rules
 
-#iptables firewall:
+#iptables firewall/rules:
 service iptables stop
 chkconfig iptables off
+
+	#flush away the 'nat' rules
+		iptables -t nat -F
+	#set some rules:
+		iptables -t nat -A PREROUTING -p tcp -d 172.16.142.130 --dport 8443 -j DNAT --to 172.16.142.131:443
+		iptables -t nat -A OUTPUT -p tcp -d 172.16.142.130 --dport 8443 -j DNAT --to 172.16.142.131:443
+		#so anyone connecting to 172.16.142.130:8443 is forwarded to 172.16.142.131:443
+		#note: using -d 127.0.0.1 doesn't seem to work right for these rules
+	#list the 'nat' rules:
+		iptables -t nat -L 
+	#save rules for next boot:
+		/etc/init.d/iptables save #save the current rules
+		#which is like doing iptables-save > /etc/sysconfig/iptables
 
 #see server IP address:
 	host google.com
@@ -147,6 +160,9 @@ chkconfig iptables off
 	GET / HTTP/1.1
 	Host: hostname.com
 
+#look at open ports and the programs using them:
+	sudo netstat -ltnp
+
 #::::::::::::::::::::WIFI::::::::::::::::::::
 
 #activate:
@@ -178,6 +194,11 @@ chkconfig iptables off
 	ps -elf | grep "process"
 	top
 	htop
+	jobs -p #get the pids of all thread started from within this shell/script
+	pgrep
+	pkill
+	kill -9 $pid #aggresively kill a stubborn process
+	killall
 
 #cpu speeds:
 	cat /proc/cpuinfo

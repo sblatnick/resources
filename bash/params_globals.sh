@@ -43,8 +43,13 @@ echo $((125924 + 31097))
 echo $(($variable + 125924))
 echo $((125924 + variable))
 
-(( n += 1 )) #increment
+#increment:
+	(( n += 1 ))
+	((n++))
 #WRONG: (( $n += 1 ))
+
+#division with formatting:
+progress=$(echo "${DONE}" "${TOTAL}" | awk '{printf "%.1f", $1/$2 * 100}' 2>/dev/null)
 
 #::::::::::::::::::::PRAMETER VARIABLES::::::::::::::::::::
 
@@ -75,6 +80,61 @@ $!	#PID of last running background process
 	echo `pwd` #current script directory
 	echo `basename $0` #name of the program
 	echo `dirname $0` #directory of the program
+
+#::::::::::::::::::::MULTITHREADED VARIABLES::::::::::::::::::::
+
+#source: http://stackoverflow.com/questions/13207292/bash-background-process-modify-global-variable
+
+#Store variables in shared memory to reduce file IO in /dev/shm
+pid=$$
+rm /dev/shm/total.$pid /dev/shm/files.$pid 2>/dev/null
+
+thread() {
+	number=10
+	file="filename.txt"
+	echo $file >> /dev/shm/files.$pid #keep a list of files
+	echo $number >>/dev/shm/total.$pid #increment by $number, append to prevent race conditions
+}
+
+threads=4
+thread &
+thread &
+thread &
+thread &
+
+old=0
+while [ $(wc -l /dev/shm/total.$pid | cut -f1 -d' ') -lt "$threads" ]
+do
+	current=$(wc -l /dev/shm/total.$pid | cut -f1 -d' ')
+	if [ $old -ne $current ];then
+		old=$current
+		printf "  (%4s/%4s) %s\n" "$old" "$threads" "$(date)"
+	fi
+	sleep 1
+done
+printf "  (%4s/%4s) DONE %s\n" "$old" "$threads" "$(date)"
+
+echo "RESULTS:"
+current=$(wc -l /dev/shm/total.$pid | cut -f1 -d' ')
+echo "  count: $current"
+total=$(awk '{sum+=$1} END {print sum}' /dev/shm/total.$pid)
+echo "  no change: $total"
+echo "  files:"
+cat /dev/shm/files.$pid | sed 's/^/    /'
+rm /dev/shm/total.$pid /dev/shm/files.$pid 2>/dev/null
+
+#don't use this in multiple threads, or there could be a race condition between
+#read and write:
+echo $(($(</dev/shm/foo)+1)) >/dev/shm/foo;
+#instead, use a lock file:
+#source: http://stackoverflow.com/questions/169964/how-to-prevent-a-script-from-running-simultaneously
+(
+  # Wait for lock on /var/lock/.myscript.exclusivelock (fd 200) for 10 seconds
+  flock -x -w 10 200 || exit 1
+
+  # Do stuff
+
+) 200>/var/lock/.myscript.exclusivelock
 
 #::::::::::::::::::::EXCEPTION HANDLING::::::::::::::::::::
 #EXCEPTION HANDLING using $?:
@@ -158,6 +218,23 @@ $!	#PID of last running background process
 ${#ArrayName[@]} #array length
 unset array[$element] #delete element in an array
 
+ARRAY=() #initialize
+ARRAY+=('element') #add element
+echo ${ARRAY[@]: -5:3} #5th-to-last element and the next 2, or start:count
+echo ${ARRAY[@]: 0:3} #first 3 elements
+
+ARRAY=(a b c d e f g h)
+echo ${#ARRAY[@]} #8
+echo ${!ARRAY[@]} #indicies: 0 1 2 3 4 5 6 7
+indicies=(${!ARRAY[@]}) #store the indicies to an array
+echo "${indicies[@]}" #prints: 0 1 2 3 4 5 6 7
+
+#Note: Arrays can have specified indicies (int), but not keys (string)
+#specify other indicies for a sparse array (notice numerical reordering)
+declare -a ARRAY='([5]="my" [10]="very" [14]="energetic" [25]="mother" [26]="just" [74]="bought" [47]="me" [56]="nine pizzas")'
+echo ${ARRAY[@]} #my very energetic mother just me nine pizzas bought
+echo ${!ARRAY[@]} #5 10 14 25 26 47 56 74
+
 #EXAMPLE:
 IFS='
 '
@@ -172,6 +249,10 @@ done
 #The loop still works since it iterates over strings dilimited by whitespace
 #but the array length is off:
 length=${#array[@]}
+
+#You can set the delimiter just to create an array and have it revert back in one line:
+IFS=',' read -ra VARIABLE <<< "$IN" #make sure $IN is wrapped in double quotes, or the array length is off
+IFS=$'\n' read -rd '' -a VARIABLE <<< "$(pgrep -f "--test $VAR")" #or "$(commands)" with no escaping necessary
 
 #Concatinate two arrays when delimeted by a newline:
 streams=`

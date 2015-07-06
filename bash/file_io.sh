@@ -90,6 +90,54 @@ bash -x run 2>output.txt
 
 #(the 1 after the ; is for bold in: echo -e "\033[32;1mThis is green.\033[0m")
 
+#::::::::::::::::::::FORMATTING::::::::::::::::::::
+
+echo -e "text" #allows escape sequences like colors (see COLORED OUTPUT)
+echo -n "text" #skips newline at end
+
+#printf:
+	printf $FORMAT parameters
+	#types:
+	# %s    string
+	# %d    digit, same as %i
+	# %f    float
+	# %b    string containing escape sequences
+	# %q    shell quoted
+
+	#padding (works for %s and %f):
+	# %-4s  left aligned, reserving 4 spaces for a column
+	# %4s   right aligned, reserving 4 spaces for a column
+	# %.3s  %s: truncated to 3 characters/digits
+	#       %f: precision after decimal
+
+	#* means take the argument before as the length:
+	printf "%*s\n" 10 "10 width"
+
+	#0 first means pad with 0s (doesn't work with - for left alignment):
+	printf "%06.2f\n" 56.1
+		056.10
+		#meaning:
+			#6 chars counting decimial
+			#padded with 0s to the left
+			#accuracy of 2 decimal points
+
+	#coloring (see COLORED OUTPUT):
+		#be sure to separate color tags from strings if you don't want
+		#the escape sequences to effect the string length for creating columns:
+		FORMAT="%b%-4.4s%b\n"
+		printf "$FORMAT" "\033[31m" "in red left aligned reserving a minimum of 4 chars, truncated to 4 chars" "\033[0m"
+
+	#see also: http://wiki.bash-hackers.org/commands/builtin/printf
+
+#::::::::::::::::::::WHITESPACE::::::::::::::::::::
+
+#trim down the leftmost tab-space to 2 spaces in your usage documentation:
+	echo "Usage: ${PROG} [--parameter arg]
+	Parameters:
+		--option [value]                           Specify value
+		--help|-h                                  Print this help information
+	" | expand -i -t 2
+
 #::::::::::::::::::::DETECT PROMPT::::::::::::::::::::
 
 #if running interactively:
@@ -99,7 +147,7 @@ else #running for file output or consumption, non-interactively:
 	colorize=''
 fi
 #Only run when interactive (example when setting terminal title):
-tty -s <&1 && echo -en "\033]0;$*TITLE\a"
+tty -s <&1 && echo -en "\033]0;TITLE\a"
 
 #::::::::::::::::::::TERMINAL PROMPT::::::::::::::::::::
 
@@ -139,7 +187,7 @@ export PS1='\w\[\033[31m\]$\[\033[0m\] '
 # \]   End a sequence of non-printing characters.
 
 #Change the terminal title (or tab title) using this syntax:
-echo -en "\033]0;$*title\a"
+echo -en "\033]0;title\a"
 
 #::::::::::::::::::::COPYING::::::::::::::::::::
 
@@ -161,7 +209,36 @@ echo -en "\033]0;$*title\a"
 #copy a file:
 	cp src dest
 	cp -R src dest
+	#cp recursively, force (no prompt), update (files missed before only), verbose (prints files as copying them)
 
+	#for many small files:
+		#start with cp (speed) = can leave partial files if interrupted
+		#switch to rsync (accuracy) = performance hit for checking files
+
+	#cp (fast)
+	cp -Rfuv src dest
+		#	-u, --update
+		#	-v, --verbose, shows files being copied:
+			‘source/being/copied.txt’ -> ‘desitnation/copied/to.txt’
+		#	-R, -r, --recursive
+		#	-f, --force
+	#rsync (accurate)
+	rsync -vrpt --append
+		#	-v, --verbose           increase verbosity, shows files being copied:
+			source/being/copied.txt
+		#	-r, --recursive         recurse into directories
+		#	-u, --update            skip files that are newer on the receiver
+		#	-p, --perms             preserve permissions
+		#	-t, --times             preserve times
+		#	--progress              show progress during transfer
+		#	--bwlimit=KBPS          limit I/O bandwidth; KBytes per second
+		#	-f, --filter=RULE
+		#	--inplace               don't move handle last, meaning interruptions can leave partial files
+		# --append                continue where left off, assuming no changes to the src
+	#tar (very fast)
+		cd /source/path/ && tar cf - * | (cd /destination/path/ ; tar xf - )
+		#order matters with -C (so you can include the path in the process, but not in the archive:
+		tar cf - -C /source/path/ . | (cd /destination/path/ ; tar xf - )
 #rename in bulk:
 	rename 's/kimiKiss([^P])/kimiKissPureRouge\1/' *.flv
 
@@ -173,6 +250,12 @@ echo -en "\033]0;$*title\a"
 	cd ~/.local/share/
 	chmod -R 700 Trash/
 	#(then use the GUI)
+
+#Transfer files over network (untested):
+	#sender (run receiver first):
+	tar cf - * | netcat otherhost 7000
+	#receiver:
+	netcat -l -p 7000 | tar x
 
 #::::::::::::::::::::IMAGES::::::::::::::::::::
 

@@ -40,3 +40,6 @@
 #Sets permissions for all future files in a directory:
 setfacl -d -m u::rwx folder
 
+#User defaults set by umask in /etc/profile or .bashrc:
+umask 022
+#source: http://www.cyberciti.biz/tips/understanding-linux-unix-umask-value-usage.html
