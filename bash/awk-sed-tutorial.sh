@@ -20,6 +20,11 @@
 
     awk '{sum+=$1} END {print sum}' coins.txt
 
+    #like tail -n +1, printing the whole file with everything except the first line:
+    awk 'NR > 1' file #print is implied, or: awk 'NR > 2 { print }' file
+    #pipe works too:
+    echo -e "$results" | awk 'NR > 1'
+
     #padding:
     echo 1 | awk '{ printf("%02d\n", $1) }'
     #works with strings too:
