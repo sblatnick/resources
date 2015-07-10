@@ -1,12 +1,17 @@
 #!/bin/bash
-sleep 1
-state=$(xset -q | grep 'LED mask:')
-#mask values:
-#	cap:    00000001 (first bit)
-#	num:		 00000002 (second bit)
-#	scroll: 00000004 (third bit)
-state=${state##*LED mask: }
-if ((($state&4)==4));then
+
+#~ #using scroll lock:
+#~ sleep 1
+#~ state=$(xset -q | grep 'LED mask:')
+#~ #mask values:
+#~ #	cap:    00000001 (first bit)
+#~ #	num:		 00000002 (second bit)
+#~ #	scroll: 00000004 (third bit)
+#~ state=${state##*LED mask: }
+#~ if ((($state&4)==4));then
+
+state=$(xmodmap -pke | grep 'keycode  38 = Left' -c)
+if [ 0 -eq $state ];then
 	notify-send "Gaming Keyboard"
 	xmodmap -e "keycode 38 = Left"
 	xmodmap -e "keycode 39 = Down"
