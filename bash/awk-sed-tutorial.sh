@@ -185,3 +185,29 @@
 
     #Print from line 45 to line 50:
     sed -n '45,50 p' file.sql
+
+    echo "first1
+second1
+third1
+fourth1
+fifth1
+sixth1
+seventh1
+repeat
+first2
+second2
+third2
+fourth2
+fifth2
+sixth2
+seventh2" > test.txt
+    #find matches from one pattern to another and print ('addr1,addr2 command'):
+    sed -n '/second/,/fifth/ p' test.txt
+        second1
+        third1
+        fourth1
+        fifth1
+        second2
+        third2
+        fourth2
+        fifth2

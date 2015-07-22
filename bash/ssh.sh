@@ -19,6 +19,9 @@
 #remotely access GUI software over ssh:
 	ssh -X user@domain.com
 
+#execute a local script on a remote host:
+	ssh -q machine 'bash -s' < stats.sh
+
 #::::::::::::::::::::SSH TUNNEL::::::::::::::::::::
 
 #Connect from vm to qa and tell
