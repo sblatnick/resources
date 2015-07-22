@@ -40,6 +40,10 @@
   #source: http://www.vectorsite.net/tsawk.html
   #source: http://www.vectorsite.net/tsawk_1.html#m1
 
+  #print range of file from nth match to match, include the line just before too
+  #in other words: print the line just before the "$index"-th match of pattern "patt" to the first match of "complete" after that.
+  awk -v n=$index -v patt="subject: $subject" -v complete='pipeline complete' '$0 ~ patt {++count} count >= n && $0 ~ complete {print;exit} count == n {print last;} count > n {print} {last=$0}' < logfile.log
+
 #SED:
 
   #MY SUMMARY:
@@ -165,3 +169,19 @@
     sed '2s/$/ok/' file.txt
     #Append $append on line $i:
     sed "${i}s/$/${append}/" file.txt
+
+    #replace all octal with numeric values:
+    cp $1 $2
+    for i in $(seq 200 377)
+    do
+        LC_ALL="POSIX" sed -i "s/\(\o${i}\)/$i/gi" $2
+    done
+    #or with just dashes:
+    LC_ALL="POSIX" sed 's/\([\o200-\o377]\)/-/gi' unicode.txt
+    tr '\200-\377' '-' < unicode.txt > output.txt
+
+    #Use + and other extended perl-like regular expressions:
+    sed -r "s/\s+/ /gi" $2
+
+    #Print from line 45 to line 50:
+    sed -n '45,50 p' file.sql
