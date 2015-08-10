@@ -27,7 +27,7 @@
 #Connect from vm to qa and tell
 #qa to have a localhost server listening on port 6803 and forwarding to
 #the VM on port 6802:
-ssh gitsync@qa -R 6803:localhost:6802
+ssh user@qa -R 6803:localhost:6802
 #-R means remote connection
 #-L means local connection
 ssh <remoteUser>@<remoteMachine> -R <remote listening port>:<remote machine referred to as localhost>:<local port to forward to>
