@@ -46,7 +46,7 @@ ssh <remoteUser>@<remoteMachine> -R <remote listening port>:<remote machine refe
 
 #ssh port forwarding
 	#local forwarding - forward outward: in-port-localhost:host:out-port-internal
-	ssh user@jump.host -L 8080:internal.host:8080
+	ssh user@jump.host -L 8080:internal.host:8080 -nNfT
 	#remote forwarding - forward inward: in-port-internal:host:out-port-jump
 	ssh user@jump.host -R 8080:internal.host:8080
 	#forward SOCKS proxy server:

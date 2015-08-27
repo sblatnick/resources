@@ -15,6 +15,9 @@ xfce4-terminal \
 		-H -T "Apache Log" -e "ssh $user@$vm \"tail -f /var/log/error_log\"" \
 		--tab -H -T "Tomcat Log" -e "ssh $user@$vm \"tail -f /var/log/tomcat\""
 
+#multiple fields:
+zenity --forms --title "Title" --add-password="PIN" --add-password="Password"
+
 #::::::::::::::::::::YAD::::::::::::::::::::
 
 #like zenity, but more powerful
