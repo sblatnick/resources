@@ -121,6 +121,10 @@ echo -n "text" #skips newline at end
 			#padded with 0s to the left
 			#accuracy of 2 decimal points
 
+	#add commas to numbers:
+	printf "%'d\n" "1000000000"
+		1,000,000,000
+
 	#coloring (see COLORED OUTPUT):
 		#be sure to separate color tags from strings if you don't want
 		#the escape sequences to effect the string length for creating columns:
