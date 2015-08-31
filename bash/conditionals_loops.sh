@@ -83,6 +83,15 @@
 		break
 	done < myfile
 
+	#prevent sub-shell issues in totals:
+	total=0
+	while read var
+	do
+		echo "variable: $var"
+		((total+=var))
+	done < <(echo 45) #output from a command, script, or function
+	echo "total: $total"
+
 	ls | while read file
 	do
 		echo $file
