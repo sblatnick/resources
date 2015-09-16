@@ -149,6 +149,15 @@ echo $(($(</dev/shm/foo)+1)) >/dev/shm/foo;
 	trap 'kill $(jobs -p)' SIGINT
 	trap "kill -- -$$" SIGINT
 
+	function cleanup
+	{
+		echo "cleanup"
+		rm report.csv
+		kill -- -$$
+		exit
+	}
+	trap cleanup SIGHUP SIGINT SIGTERM
+
 #::::::::::::::::::::CHANNEL REDIRECTION::::::::::::::::::::
 	#Piping errors shorthand:
 		|&
