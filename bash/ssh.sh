@@ -21,6 +21,11 @@
 
 #execute a local script on a remote host:
 	ssh -q machine 'bash -s' < stats.sh
+#execute local script with arguments:
+	ssh -q machine 'cat | bash /dev/stdin arg1' < ./script.sh
+	ssh -q machine 'cat | /usr/bin/perl /dev/stdin arg1' < ./script.pl
+#you can direct STDOUT and it will print STDERR still:
+	ssh -q machine 'cat | /usr/bin/perl /dev/stdin arg1' < ./script.pl > outfile.txt
 
 #::::::::::::::::::::SSH TUNNEL::::::::::::::::::::
 
