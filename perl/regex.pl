@@ -15,3 +15,9 @@ if ($match =~ /under/)
 $contentString =~ /(?=.*filename=".{8}\.zip";)(?=.*size=12561)/s;
 #In Java, flags are set before (http://kodejava.org/how-do-i-write-embedded-flag-expression/):
 # (?s)(?=.*filename=".{8}\.zip";)(?=.*size=12561)
+
+#qr are passable, pre-compiled regular expressions
+#reset $1 with each or by using "(?|" (perl >5.10.0)
+qr/(?|from=<([^>]+)>,src=|^\s+Sender:(.*?)$)/
+#get next match group? (I'm not sure):
+$+

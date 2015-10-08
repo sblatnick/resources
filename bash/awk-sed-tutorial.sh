@@ -55,6 +55,9 @@
     #'s///2g' meaning greedy from the 2nd on
     #'s///3' meaning only the 3rd instance
 
+    #sed inplace replacement:
+    sed 's/replace/regex/' -i file.txt
+
   #END SUMMARY
 
 
