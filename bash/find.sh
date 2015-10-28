@@ -31,3 +31,6 @@ find . -path ./.git -prune -or -print
 
 #locate file:
 	locate filename
+
+#pipe find to find with files with >=8 digits:
+	find -L /path/ -maxdepth 4 -iname folder -type d | xargs -0 -I{} find '{}' -regextype posix-extended -type f -regex '.*[^/]{8,}'

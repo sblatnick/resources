@@ -61,7 +61,7 @@
 	#single file
 		#revert a single file:
 		git show <commit> -- <path> | git apply -R
-		git show eff3f4865248bd29fdeb46b3ed3f7632ab3ad64e src/eon/infra/email/store/v3/BodyDAO.java | git apply -R
+		git show eff3f4865248bd29fdeb46b3ed3f7632ab3ad64e src/path/ObjectExample.java | git apply -R
 
 		#checkout a version of an individual file:
 		git checkout <sha> path/to/file
