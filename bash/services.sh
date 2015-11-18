@@ -43,8 +43,12 @@ Run Level		Mode 															Action
 	#restart mysql:
 		sudo /etc/init.d/mysql restart
 	#run mysql script (p = database/schema):
-		mysql -u root -p steve8track < sqlDEMO.sql
-
+		mysql -u$USER -p$PASSWORD < sqlDEMO.sql
+	#run mysql inline:
+		/usr/bin/mysql -h$SERVER -u$USER -p$PASSWORD -BNe "SELECT now()"
+		#B = batch results, using tab as column separator
+		#N = skip column names
+		#e = execute statements
 
 #::::::::::::::::::::APACHE::::::::::::::::::::
 

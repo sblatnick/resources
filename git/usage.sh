@@ -41,6 +41,27 @@
 	#older version of git to delete remote branch:
 	git push origin :branch
 
+	#tagging:
+		#list tags:
+		git tag
+		git tag -l "pattern*"
+		
+		#create tag:
+			#lightweight (unchangeable pointer to a specific commit)
+			git tag "tag name"
+			#annotated (includes history, who tagged, etc)
+			git tag -a "tag name" -m "message"
+
+		#add tag later at a commit:
+		git tag -a [tag] [sha]
+
+		#push tags:
+		git push origin --tags
+		git push origin [tagname]
+		
+		#checkout a new branch at a tagged point:
+		git checkout -b [branchname] [tagname]
+
 #merging:
 
 	#copy over the code from another branch:
@@ -146,7 +167,7 @@
 
 #compare branches:
 	git diff release2013_q4_01..release2013_q4_02 #two dots == diff between tips of branches (I used this one)
-	git diff release2013_q4_01...release2013_q4_02 #two dots == diff between common ancestors
+	git diff release2013_q4_01...release2013_q4_02 #three dots == diff between common ancestors
 	#source: http://stackoverflow.com/questions/9834689/compare-two-branches-in-git
 
 #logs
