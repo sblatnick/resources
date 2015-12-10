@@ -160,6 +160,37 @@ chkconfig iptables off
 	GET / HTTP/1.1
 	Host: hostname.com
 
+#expect:
+	#smtp:
+	expect << EOF
+set timeout 20
+spawn telnet hostname 8824
+expect "* ESMTP SERVER-BANNER"
+EOF
+
+	#imap:
+	expect << EOF
+set timeout 20
+spawn telnet $server $port
+expect "*Welcomes You"
+send "a1 LOGIN $user $password\r"
+expect -re "NO|OK"
+EOF
+
+	#pop:
+	expect << EOF
+set timeout 20
+spawn telnet $server $port
+expect "OK"
+send "user $user\r"
+expect -re "ERR|OK"
+send "pass $password\r"
+expect -re "ERR|OK"
+EOF
+
+#netcat to push a binary payload to a host on a port:
+	nc -vv host 8080 < exploit_payload.bin
+
 #look at open ports and the programs using them:
 	sudo netstat -ltnp
 

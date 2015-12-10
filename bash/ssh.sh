@@ -84,6 +84,8 @@ ssh <remoteUser>@<remoteMachine> -R <remote listening port>:<remote machine refe
 #add ssh key to ssh host:
 	#using default ssh key:
 	ssh-copy-id user@remotehost.com
+	#manualy copy if ssh-copy-id isn't present:
+	cat ~/.ssh/id_rsa.pub | ssh user@remotehost.com 'mkdir .ssh;cat >> .ssh/authorized_keys'
 	#specify your public key:
 	ssh-copy-id -i .ssh/id_rsa.pub username:password@remotehost.com
 
@@ -107,6 +109,10 @@ Host bastion
 
 Host jumphost
 	ProxyCommand ssh -q tc@tinycore nc -w0 internal 22
+
+#Allow more connections on the ssh server:
+#vi /etc/ssh/sshd_config
+MaxStartups 1000
 
 #::::::::::::::::::::SSH CONNECTION::::::::::::::::::::
 
