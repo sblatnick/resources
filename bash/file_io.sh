@@ -201,8 +201,11 @@ echo -en "\033]0;title\a"
 	dd if=/dev/random of=/dev/null bs=1K count=100
 #copy a whole disk drive
 	dd if=/dev/input of=/dev/output bs=32
+#write an image to a drive
+	dd bs=4M if=file.img of=/dev/sdb
 
 #Show dd progress:
+	pkill -USR1 -n -x dd
 	#find process id:
 	pgrep -l '^dd$'
 	#send signal to print:

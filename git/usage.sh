@@ -6,6 +6,8 @@
 	git show sha #show changes from the commit sha
 	git show #show last commit changes
 	git log #show git logs of commits
+	git --no-pager #don't use less
+	git --no-pager log --oneline --grep 'test' #search for the short sha with 'test' in the commit message
 
 #branching:
 

@@ -14,3 +14,7 @@ perldoc -l Encode::Guess
 sub subName
 {
     my $parameter = shift;
+
+#sub caller information:
+my ($package, $filename, $line) = caller;
+print STDERR "\033[33mfrom: $package -> $filename:$line\033[0m\n";

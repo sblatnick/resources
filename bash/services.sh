@@ -140,3 +140,41 @@ Run Level		Mode 															Action
 #wireshark setup for non-root users:
 	sudo dpkg-reconfigure wireshark-common
 	sudo usermod -a -G wireshark steve
+
+#check bluetooth service status:
+	systemctl status bluetooth.service
+#if bluetoothctl hangs, try disabling sixad (ps3 support):
+	sixad --stop
+#bluetoothctl is for bluez5 (commands mentioning bluez-simple-agent are for bluez4)
+	$ bluetoothctl 
+	[NEW] Controller 00:02:72:AF:C7:C2 retropie [default]
+	[bluetooth]# power on
+	Changing power on succeeded
+	[bluetooth]# devices
+	[bluetooth]# scan on
+	Discovery started
+	[CHG] Controller 00:02:72:AF:C7:C2 Discovering: yes
+	[NEW] Device 01:06:B2:96:61:07 01-06-B2-96-61-07
+	[bluetooth]# agent on
+	Agent registered
+	[CHG] Device 01:06:B2:96:61:07 LegacyPairing: no
+	[CHG] Device 01:06:B2:96:61:07 Name: 8Bitdo NES30 Pro
+	[CHG] Device 01:06:B2:96:61:07 Alias: 8Bitdo NES30 Pro
+	[CHG] Device 01:06:B2:96:61:07 LegacyPairing: yes
+	[bluetooth]# pair 01:06:B2:96:61:07
+	Attempting to pair with 01:06:B2:96:61:07
+	[CHG] Device 01:06:B2:96:61:07 Connected: yes
+	Request PIN code
+	[agent] Enter PIN code: 0000
+	[CHG] Device 01:06:B2:96:61:07 Modalias: usb:v3820p0009d0100
+	[CHG] Device 01:06:B2:96:61:07 UUIDs:
+		00001124-0000-1000-8000-00805f9b34fb
+		00001200-0000-1000-8000-00805f9b34fb
+	[CHG] Device 01:06:B2:96:61:07 Paired: yes
+	Pairing successful
+	[CHG] Device 01:06:B2:96:61:07 Connected: no
+	[bluetooth]# connect 01:06:B2:96:61:07
+	Attempting to connect to 01:06:B2:96:61:07
+	[CHG] Device 01:06:B2:96:61:07 Connected: yes
+	Connection successful
+	[bluetooth]#

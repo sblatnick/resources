@@ -20,6 +20,9 @@ done
 # prune is less intuitive because it disables printing by default:
 find . -path ./.git -prune -or -print
 
+#run command:
+	find ./ -type f -name "*.txt" -exec gedit "{}" \;
+
 #actions using xargs:
 	#move all found directories somewhere:
 	find . -print0 | xargs -0 -iSUB mv SUB /tmp/

@@ -29,6 +29,13 @@ Ctrl+r 	#search history, ESC to paste the currently found entry
 #::::::::::::::::::::WINDOW MANAGEMENT::::::::::::::::::::
 
 wmctrl
+wmctrl -l #list windows
+wmctrl -a Firefox #focus window with this string in the title, going to the desktop
+wmctrl -R Firefox #focus window with this string in the title, putting it on the current desktop
+xdotool windowminimize $(xdotool getactivewindow)
+xdotool windowminimize $(xdotool search FreeRDP)
+xdotool windowminimize --sync $(xdotool search FreeRDP) #wait until minimized to move on
+
 xwininfo -id <windowid> | grep "Map State" #detect visibility
 #example notify-send if geany is not on the screen:
 	width=1600
@@ -40,6 +47,19 @@ xwininfo -id <windowid> | grep "Map State" #detect visibility
 	if [ $xPos -gt 0 ] || [ $xPos -le -$width ]; then
 		notify-send "DEPLOYED $1"
 	fi
+
+#example toggle visibility of window (use shortcut to call this script):
+#!/bin/bash
+
+focused=$(xdotool getwindowfocus getwindowname)
+case $focused in
+  *FreeRDP*)
+      xdotool windowminimize --sync $(xdotool search FreeRDP)
+    ;;
+  *)
+      wmctrl -R 'FreeRDP'
+    ;;
+esac
 
 #::::::::::::::::::::OPEN TERMINALS::::::::::::::::::::
 
