@@ -89,6 +89,10 @@ ssh <remoteUser>@<remoteMachine> -R <remote listening port>:<remote machine refe
 	#specify your public key:
 	ssh-copy-id -i .ssh/id_rsa.pub username:password@remotehost.com
 
+#remove specific host from ~/.ssh/known_hosts:
+ssh-keygen -R hostname
+ssh-keygen -f "/home/user/.ssh/known_hosts" -R hostname
+
 #::::::::::::::::::::SSH CONFIG::::::::::::::::::::
 #~/.ssh/config 
 
@@ -134,3 +138,12 @@ sshfs -o cache=no,allow_other,uid=0,gid=0,follow_symlinks,nonempty steve@vmhost:
 fusermount -u /user_bak/
 #install (yum):
 yum install fuse-sshfs
+
+#::::::::::::::::::::OPENSSL::::::::::::::::::::
+
+#create cert request from ssh key:
+openssl req -new -key ~/.ssh/id_rsa -out id.csr
+#self-sign cert:
+openssl x509 -req -days 3650 -in id.csr -signkey ~/.ssh/id_rsa -out id.crt
+#convert pem to pkcs12:
+openssl pkcs12 -export -in id.crt -inkey id_rsa -out signature.p12 -name "Your Name"

@@ -194,7 +194,10 @@
 
 	#view logs on deleted file:
 	git log --all -- path/to/file
-	
+
+	#view logs with files modified:
+	git whatchanged
+
 	#restore the deleted file:
 	git checkout sha^ -- <file_path>
 
