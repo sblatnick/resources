@@ -6,7 +6,11 @@
 #rpm/fedora/yum based linux:
 	yum install fuse-sshfs
 	yum search package
-
+	yum list --showduplicates mariadb #show all versions
+	#install rpm:
+	rpm -ivh packagename.rpm
+	#upgrade rpm:
+	rpm -Uvh packagename.rpm
 #debian:
 	apt-get install package
 	apt-cache search package
