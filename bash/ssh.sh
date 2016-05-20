@@ -81,6 +81,10 @@ ssh <remoteUser>@<remoteMachine> -R <remote listening port>:<remote machine refe
 	#	changes the password
 	#you can also delete id_rsa and id_rsa.pub to start over
 
+#start agent and add keys:
+	eval `ssh-agent -s`
+	ssh-add
+
 #add ssh key to ssh host:
 	#using default ssh key:
 	ssh-copy-id user@remotehost.com
@@ -90,8 +94,8 @@ ssh <remoteUser>@<remoteMachine> -R <remote listening port>:<remote machine refe
 	ssh-copy-id -i .ssh/id_rsa.pub username:password@remotehost.com
 
 #remove specific host from ~/.ssh/known_hosts:
-ssh-keygen -R hostname
-ssh-keygen -f "/home/user/.ssh/known_hosts" -R hostname
+	ssh-keygen -R hostname
+	ssh-keygen -f "/home/user/.ssh/known_hosts" -R hostname
 
 #::::::::::::::::::::SSH CONFIG::::::::::::::::::::
 #~/.ssh/config 

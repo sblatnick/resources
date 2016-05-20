@@ -18,3 +18,9 @@ sub subName
 #sub caller information:
 my ($package, $filename, $line) = caller;
 print STDERR "\033[33mfrom: $package -> $filename:$line\033[0m\n";
+
+foreach $element (@array){
+  print "$element\n";
+}
+
+$str =~ s/was/replace/;

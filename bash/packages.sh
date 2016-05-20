@@ -6,7 +6,10 @@
 #rpm/fedora/yum based linux:
 	yum install fuse-sshfs
 	yum search package
-	yum list --showduplicates mariadb #show all versions
+	yum check-update #like apt-get update, updates the package definitions without installing anything
+	yum update #will actually update packages
+	yum list --showduplicates mariadb #show all versions and indicate the one installed (if any)
+	rpm -ql tomcat #show installed files
 	#install rpm:
 	rpm -ivh packagename.rpm
 	#upgrade rpm:

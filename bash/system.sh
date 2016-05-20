@@ -278,3 +278,16 @@ EOF
 	which command_name
 		which perl
 		/usr/bin/perl
+
+
+#::::::::::::::::::::INIT/SYSTEMD::::::::::::::::::::
+#old way is via init scripts:
+/etc/init.d/tomcat start
+#systemd is the new way:
+systemctl start tomcat
+#the script it runs is:
+/usr/lib/systemd/system/tomcat.service
+#logs are now stored via:
+journalctl -u tomcat
+#tail the log by the follow option:
+journalctl -fu tomcat

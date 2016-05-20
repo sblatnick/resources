@@ -37,3 +37,6 @@ find . -path ./.git -prune -or -print
 
 #pipe find to find with files with >=8 digits:
 	find -L /path/ -maxdepth 4 -iname folder -type d | xargs -0 -I{} find '{}' -regextype posix-extended -type f -regex '.*[^/]{8,}'
+
+#get largest directories (KB) in the current path:
+du -sx * 2>/dev/null | sort -r -n | head
