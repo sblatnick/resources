@@ -29,6 +29,9 @@
 
 #::::::::::::::::::::SSH TUNNEL::::::::::::::::::::
 
+#connect to service through a tunnel:
+ssh -L 9999:destination:8080 user@tunnel #connect to localhost:9999 to access destination:8080 through user@tunnel
+
 #Connect from vm to qa and tell
 #qa to have a localhost server listening on port 6803 and forwarding to
 #the VM on port 6802:

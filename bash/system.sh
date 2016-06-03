@@ -283,8 +283,15 @@ EOF
 #::::::::::::::::::::INIT/SYSTEMD::::::::::::::::::::
 #old way is via init scripts:
 /etc/init.d/tomcat start
+#list:
+chkconfig --list
+
 #systemd is the new way:
 systemctl start tomcat
+#list:
+systemctl #no arguments
+systemctl list-units
+
 #the script it runs is:
 /usr/lib/systemd/system/tomcat.service
 #logs are now stored via:

@@ -214,3 +214,21 @@ seventh2" > test.txt
         third2
         fourth2
         fifth2
+
+
+#grep:
+grep -r 'search' path/
+grep -C 15 'search' file.txt #context of 15 lines
+grep -B 5 'search' file.txt #only before context of 5 lines
+grep -A 5 'search' file.txt #only after context of 5 lines
+grep -c 'search' file.txt #print matches (per file with -r)
+grep -m 1 'search' file.txt #only get the first match per file
+
+#ack-grep/ack (faster than grep by skipping hidden and binary files):
+ack-grep "search"
+
+#ag silversearcher (fastest, rewritten in c):
+ag 'search'
+ag 'search' --pager 'less -S' #truncating long lines in less
+ag 'search' | cut -c1-120 #truncating long lines for consumption to 120 characters
+
