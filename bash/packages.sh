@@ -49,6 +49,7 @@
 #create an rpm installing binaries (minimalistic):
 sudo yum install rpmdevtools #needed?
 mkdir -p ~/.rpm/{RPMS,SRPMS,BUILD,SOURCES,SPECS,tmp}
+mkdir ~/.rpm/RPMS/{x86_64,noarch}
 cat << EOF > ~/.rpmmacros
 %_signature gpg
 %_gpg_name Name
