@@ -309,6 +309,14 @@ cat > output.txt << EOF
 
   Variable: $var
 EOF
+#redirection after EOF, var substitution and save to file:
+cat << EOF > package.spec
+Name: ${package}
+Version: ${version}
+Summary: ${summary}
+...
+EOF
+
 #Note: <<- means remove indentation (preceding whitespace from each line):
 cat <<- EOF
   usage: up [--level <n>| -n <levels>][--help][--version]

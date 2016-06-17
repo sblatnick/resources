@@ -45,3 +45,54 @@
 	#(keep running until all the dependencies are met)
 	make
 	sudo make install
+
+#create an rpm installing binaries (minimalistic):
+sudo yum install rpmdevtools #needed?
+mkdir -p ~/.rpm/{RPMS,SRPMS,BUILD,SOURCES,SPECS,tmp}
+cat << EOF > ~/.rpmmacros
+%_signature gpg
+%_gpg_name Name
+%debug_package %{nil}
+%_topdir   %(echo $HOME)/.rpm
+%_tmppath  %{_topdir}/tmp
+EOF
+
+##define variables, then generate the spec:
+cat << EOF > ~/.rpm/SPECS/${package}.spec
+Name: ${package}
+Version: ${version}
+Release: ${release}
+Summary: Example Package
+BuildArch: noarch
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
+AutoReqProv: no
+License: All rights reserved
+Group: System Environment/Daemons
+URL: http://w3schools.com
+
+%description
+${package} package.
+
+%prep
+#n/a
+
+%build
+#n/a
+
+%install
+mkdir -p %{buildroot}${base}
+cp -a * %{buildroot}${base}
+
+%clean
+if [ -n "%{buildroot}" ];then
+  rm -Rf %{buildroot}/*
+fi
+
+%files
+/*
+
+%changelog
+* Fri Jun 10 2016 Engineering
+- Initial build
+EOF
+rpmbuild -ba ~/.rpm/SPECS/${package}.spec

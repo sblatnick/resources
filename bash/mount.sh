@@ -25,3 +25,6 @@
 	tc qdisc change dev eth1 root netem delay 100ms 10ms 25%
 	#remove:
 	tc qdisc del dev eth1 root
+
+#debug connection:
+	strace ls /var/www/

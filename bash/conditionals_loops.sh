@@ -148,7 +148,7 @@
 	mkdir rc{0,1,2,3,4,5,6,S}.d
 
 #SEQUENCE of numbers that are padded:
-	for i in $(seq -f "%05g" 10 15)
+	for i in $(seq -f "%02g" 10 15)
 	do
 		echo $i
 	done
