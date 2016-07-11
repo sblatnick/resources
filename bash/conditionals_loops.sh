@@ -39,6 +39,7 @@
 #	-z				operand has zero length														1
 #	-d				there exists a directory whose name is operand		1
 #	-f				there exists a file whose name is operand					1
+# -s				there exists a file that with size greater than 0	1
 #	-eq				the operands are integers and they are equal			2
 #	-neq			the opposite of -eq																2
 #	=					the operands are equal (as strings)								2
@@ -52,6 +53,8 @@
 #	-le				operand1 is less than or equal to operand2				2
 
 #	-L				simlink
+
+#see: http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_07_01.html
 
 #bash specific:
 #	-nt				newer than (files)
@@ -97,6 +100,18 @@
 		echo $file
 		string $file | grep '19%'
 	done
+
+  #prevent sub-shell issues in pipe:
+  echo hello | {
+    while IFS= read -r line
+    do
+      echo "$line"
+      lastLine="$line"
+    done
+
+    #won't work without the braces:
+    echo "$lastLine"
+  }
 
 	#counter:
 	X=0

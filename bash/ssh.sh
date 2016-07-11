@@ -61,7 +61,7 @@ ssh <remoteUser>@<remoteMachine> -R <remote listening port>:<remote machine refe
 	ssh user@host -D 9999
 
 	#copy authorized key from jumphost to internal host:
-	ssh internal-host 'cat >> .ssh/authorized_keys' < ~/.ssh/authorized_keys
+	ssh internal-host 'mkdir ~/.ssh;cat >> ~/.ssh/authorized_keys' < ~/.ssh/id_rsa.pub
 
 	#copy a file from internal host to localhost over jumphost:
 	ssh -fN -L 8071:internal:22 user@jumphost

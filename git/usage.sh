@@ -47,6 +47,11 @@
 		#list tags:
 		git tag
 		git tag -l "pattern*"
+		git show-ref --tags #sha
+		git tag -n1 #commit messages
+
+		#list remote tags:
+		git ls-remote -t
 		
 		#create tag:
 			#lightweight (unchangeable pointer to a specific commit)
@@ -63,6 +68,15 @@
 		
 		#checkout a new branch at a tagged point:
 		git checkout -b [branchname] [tagname]
+
+    #re-tag (update a tag)
+    git tag -f [tagname]
+    git push origin --force +master --tags
+
+    #delete local tag:
+    git tag -d [tagname]
+    #delete remote tag:
+    git push --delete origin [tagname]
 
 #merging:
 

@@ -9,11 +9,15 @@
 	yum check-update #like apt-get update, updates the package definitions without installing anything
 	yum update #will actually update packages
 	yum list --showduplicates mariadb #show all versions and indicate the one installed (if any)
+  yum whatprovides package
 	rpm -ql tomcat #show installed files
 	#install rpm:
 	rpm -ivh packagename.rpm
 	#upgrade rpm:
 	rpm -Uvh packagename.rpm
+
+  #find perl module (install yum-utils first):
+  repoquery -a --whatprovides 'perl(Net::HTTP)'
 #debian:
 	apt-get install package
 	apt-cache search package
@@ -54,6 +58,7 @@ cat << EOF > ~/.rpmmacros
 %_signature gpg
 %_gpg_name Name
 %debug_package %{nil}
+%__os_install_post %{nil}
 %_topdir   %(echo $HOME)/.rpm
 %_tmppath  %{_topdir}/tmp
 EOF
@@ -86,7 +91,7 @@ cp -a * %{buildroot}${base}
 
 %clean
 if [ -n "%{buildroot}" ];then
-  rm -Rf %{buildroot}/*
+  rm -Rf %{buildroot}
 fi
 
 %files

@@ -58,6 +58,12 @@
     #sed inplace replacement:
     sed 's/replace/regex/' -i file.txt
 
+    #only act on matching lines like awk:
+      #replace trailing comma on all lines matching regex with a semicolon
+      sed -i '/regex/ s/,$/;/' /dev/shm/file.$$
+      #remove last line's comma:
+      sed -i '$ s/,$//' /dev/shm/file.$$
+
   #END SUMMARY
 
 
@@ -158,7 +164,7 @@
 
         x
 
-        hen we replace the first line starting with nameserver by a line containing nameserver 127.0.0.1, a new line (represented by \ followed by a newline - maybe your sed version supports \n instead...) and the original line (represented by &):
+        Then we replace the first line starting with nameserver by a line containing nameserver 127.0.0.1, a new line (represented by \ followed by a newline - maybe your sed version supports \n instead...) and the original line (represented by &):
 
         s/nameserver .*\n/nameserver 127.0.0.1\
         &/
