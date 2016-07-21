@@ -28,13 +28,8 @@
     #padding:
     echo 1 | awk '{ printf("%02d\n", $1) }'
     #works with strings too:
-    ~ $ each pop "ls -lh /var/lcta/pop/logs/lcta_log | awk '{ printf(\"%5s\n\", \$5) }'"
-    m0004260
-        12G
-    m0004261
-       8.4G
-    m0004262
-       8.4G
+    ls -lh /var/log/test.log | awk '{ printf("%5s\n", $5) }'
+      12G
   #END SUMMARY
 
   #source: http://www.vectorsite.net/tsawk.html

@@ -18,6 +18,10 @@
 
   #find perl module (install yum-utils first):
   repoquery -a --whatprovides 'perl(Net::HTTP)'
+
+  #check if perl is installed and visible from path:
+  perl -e 'use Net::HTTP;'
+
 #debian:
 	apt-get install package
 	apt-cache search package

@@ -68,8 +68,8 @@ esac
 	xfce4-terminal -H -T "Title 1" -e "echo hello" --tab -H -T "Title 2" -e "echo world"
 #gnome/mate-terminal doesn't have the hold feature:
 	mate-terminal \
-		--tab-with-profile=Titleable -t "CS Tools (tomcat6)" -e "ssh $user@$dcc \"tail -f /var/lcta/tomcat6/logs/lcta_log\"" \
-		--tab-with-profile=Titleable -t "Apache (perl/CC)" -e "ssh $user@$cc \"tail -f /var/cc/logs/error_log-$cc\"" \
+		--tab-with-profile=Titleable -t "Test Log" -e "ssh $user@$host \"tail -f /var/log/test.log\"" \
+		--tab-with-profile=Titleable -t "Apache" -e "ssh $user@$host \"tail -f /var/log/httpd/error_log-$host\"" \
 
 
 #::::::::::::::::::::GLX GRAPHIC ACCELERATION::::::::::::::::::::

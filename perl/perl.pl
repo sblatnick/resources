@@ -24,3 +24,11 @@ foreach $element (@array){
 }
 
 $str =~ s/was/replace/;
+
+#exception handling:
+eval {
+  die "error";
+};
+if($@) {
+  print $@;
+}

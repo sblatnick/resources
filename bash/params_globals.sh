@@ -371,8 +371,8 @@ done
 
 case "$service" in
 	all)
-		services=(apache proxy glue tomcat pop dm qw resin cstools)
-		#intentionally left out: mig, ldap, "setup"
+		services=(proxy apache dm network)
+		#intentionally left out: "setup"
 		for name in ${services[@]}
 		do
 			$0 "$name" "$action"
@@ -384,19 +384,16 @@ case "$service" in
 			/etc/init.d/named restart
 		;;
 	proxy)
-		/usr/local/proxy/bin/apachectl "$action"
+		/etc/init.d/proxy "$action"
 		;;
 	apache)
-		/usr/local/common/cc/bin/apachectl "$action"
-		;;
-	ldap)
-		/var/mps/serverroot/slapd-devserver01/$action-slapd
+		/etc/init.d/httpd "$action"
 		;;
 	dm)
-		~/work/lcta/bin/pmtactl "$action"
+		/etc/init.d/dm "$action"
 		;;
 	*)
-		~/work/lcta/bin/${service}ctl "$action"
+		/etc/init.d/${service} "$action"
 		;;
 esac
 
