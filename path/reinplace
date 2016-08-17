@@ -1,9 +1,0 @@
-#!/bin/bash
-
-if [ $# -lt 1 ]; then
-  echo "Usage: ${0##*/} 's///' [file]"
-  echo "  Performs sed on the same file as passed, so you don't have to use different files manually"
-  exit
-fi
-work=/tmp/sed$$.tmp
-sed $1 < $2 > $work && cp $work $2
