@@ -13,7 +13,10 @@
     #use it like an sql query
     #print all the first columns before 1980:
     awk '{if ($3 < 1980) print $1}' db.txt
-    
+
+    #change delimiter (Field Separator):
+    awk 'BEGIN { FS = "," } ; { print $2 }' db.txt
+
     #it's like it's own programming language, with BEGIN for setup and END blocks for finishing:
     #END aggregates, NR is number of records
     awk 'END {print NR,"coins"}' coins.txt

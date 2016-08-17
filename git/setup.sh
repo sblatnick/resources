@@ -19,6 +19,9 @@ git config --global alias.modified '!git-modified'
 #remove custom alias/program:
 git config --global --unset alias.modified
 
+#alias helper to pull then push:
+git config --global alias.wash '!branch=$(git rev-parse --abbrev-ref HEAD);git pull origin $branch;if [ -n "$(git status --porcelain)" ];then echo -e "\033[33munmerged changes\033[0m";else git push origin $branch;fi'
+
 #alias helper to unapply a stash:
 git config --global alias.stash-unapply '!git stash show -p | git apply -R'
 git stash-unapply

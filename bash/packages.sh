@@ -22,6 +22,12 @@
   #check if perl is installed and visible from path:
   perl -e 'use Net::HTTP;'
 
+  #check installed packages:
+  yum list installed | grep drbd
+
+  #find installed version:
+  yum list installed kernel-headers -q | tail -n 1 | awk '{print $2}'
+
 #debian:
 	apt-get install package
 	apt-cache search package
@@ -106,3 +112,19 @@ fi
 - Initial build
 EOF
 rpmbuild -ba ~/.rpm/SPECS/${package}.spec
+
+#Build perl modules from CPAN as rpms (see http://perlhacks.com/2015/10/build-rpms-of-cpan-modules/):
+  #install the necessary build/PM software:
+  yum install -y rpm-build cpanspec
+  #Download the source from CPAN.org:
+  wget http://search.cpan.org/CPAN/authors/id/V/VI/VIPUL/Crypt-TripleDES-0.24.tar.gz
+  #create the spec file:
+  cpanspec --packager "Your Name email@example.com" Crypt::TripleDES
+  #or:
+  cpanspec --packager "Your Name email@example.com" Crypt-TripleDES-0.24.tar.gz
+  #move the source to where expected:
+  mv Crypt-TripleDES-0.24.tar.gz ~/rpmbuild/SOURCES/
+  #build the rpm:
+  rpmbuild -ba perl-Crypt-TripleDES.spec
+  #move the resulting rpm into your directory:
+  mv ~/rpmbuild/RPMS/noarch/perl-Crypt-TripleDES-0.24-1.el7.centos.noarch.rpm ./

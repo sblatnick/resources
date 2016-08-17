@@ -279,14 +279,14 @@ EOF
 		which perl
 		/usr/bin/perl
 
-
-#::::::::::::::::::::INIT/SYSTEMD::::::::::::::::::::
+#::::::::::::::::::::INIT::::::::::::::::::::
 #old way is via init scripts:
 /etc/init.d/tomcat start
 #list:
 chkconfig --list
 
-#systemd is the new way:
+#::::::::::::::::::::SYSTEMD::::::::::::::::::::
+#systemd replaces init.d:
 systemctl start tomcat
 #list:
 systemctl #no arguments
@@ -298,3 +298,8 @@ systemctl list-units
 journalctl -u tomcat
 #tail the log by the follow option:
 journalctl -fu tomcat
+
+#enable logs from previous boots:
+mkdir /var/log/journal
+systemd-tmpfiles --create --prefix /var/log/journal
+systemctl restart systemd-journald
