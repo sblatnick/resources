@@ -44,3 +44,5 @@
 	write
 	#send a message to all users:
 	wall -n "Message"
+	#echo to their command line ("who" can tell you which pts to use):
+	echo "hello world" > /dev/pts/4
