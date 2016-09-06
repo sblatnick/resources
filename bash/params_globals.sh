@@ -37,6 +37,11 @@
 			echo $i
 		done
 
+  #get the value of a variable by variable name (reflection, or parameter expansion):
+    example="name"
+    name="My Name"
+    echo ${!example} #prints: My Name
+
 #::::::::::::::::::::ARITHMETIC::::::::::::::::::::
 
 echo $((125924 + 31097))
@@ -50,6 +55,11 @@ echo $((125924 + variable))
 
 #division with formatting:
 progress=$(echo "${DONE}" "${TOTAL}" | awk '{printf "%.1f", $1/$2 * 100}' 2>/dev/null)
+bc <<< 'scale=2; 100/3'
+
+#bc can use variables (separate logic with newlines or semicolons):
+$ bc <<< 'four=4;3+four'
+7
 
 #::::::::::::::::::::PRAMETER VARIABLES::::::::::::::::::::
 

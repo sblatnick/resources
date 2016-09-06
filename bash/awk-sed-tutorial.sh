@@ -62,6 +62,9 @@
       #remove last line's comma:
       sed -i '$ s/,$//' /dev/shm/file.$$
 
+    -n = quiet (supress printing of pattern space)
+    -r = extended regex
+
   #END SUMMARY
 
 

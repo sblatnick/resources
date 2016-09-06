@@ -1,6 +1,9 @@
 #!/bin/bash
 #Permissions related help
 
+#Make a file immutable, even to root:
+chattr +i /path/to/file.txt
+
 #::::::::::::::::::::CHMOD::::::::::::::::::::
 #Examples:
 	chmod 700 filename

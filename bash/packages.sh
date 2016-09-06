@@ -128,3 +128,41 @@ rpmbuild -ba ~/.rpm/SPECS/${package}.spec
   rpmbuild -ba perl-Crypt-TripleDES.spec
   #move the resulting rpm into your directory:
   mv ~/rpmbuild/RPMS/noarch/perl-Crypt-TripleDES-0.24-1.el7.centos.noarch.rpm ./
+
+#Update/Downgrade in yum with a package list:
+
+#!/bin/bash
+
+packages="ack,package-1.0,etc" #comma separated
+IFS=',' read -ra PACKAGES <<< "$packages"
+
+check_package() {
+  package=$1
+  echo "looking for $package ..."
+  rpm -qa | grep "$package" && echo "correct version already installed" && return
+  base_package=$(yum list --showduplicates "$package" | tail -n 1 | sed 's/[\. ].*$//g')
+  if rpm -qa | grep -q "${base_package}";then
+    echo "already installed, attempting to downgrade..."
+    yum downgrade -y "$package" 2>&1 | perl -pe "END { exit \$status } \$status=1 if /Only Upgrade/;"
+
+    if [ 0 -eq "$?" ];then
+      echo "downgrade successful"
+      return
+    else
+      echo "downgrade failed, attempting upgrade"
+    fi
+  fi
+  yum install -y "$package" | perl -pe "END { exit \$status } \$status=1 if /Only Upgrade/;"
+  if [ 1 -eq "$?" ];then
+    echo "install failed, exiting early"
+    exit 1
+  fi
+}
+
+for package in ${PACKAGES[@]}
+do
+  echo "package: $package"
+  check_package "$package" 2>&1 | sed 's/^/  /'
+done
+echo "DONE"
+exit 0

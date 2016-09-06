@@ -26,6 +26,15 @@
 	ssh -q machine 'cat | /usr/bin/perl /dev/stdin arg1' < ./script.pl
 #you can direct STDOUT and it will print STDERR still:
 	ssh -q machine 'cat | /usr/bin/perl /dev/stdin arg1' < ./script.pl > outfile.txt
+#local function passed from script to host:
+  function check() {
+    echo "checking..."
+  }
+  ssh user@host "$(typeset -f check);check $param"
+  typeset -f check | ssh user@host "$(cat);check $param"
+
+  typeset -f #prints all local functions
+  typeset -f func #prints specified function definition
 
 #::::::::::::::::::::SSH TUNNEL::::::::::::::::::::
 
@@ -83,6 +92,9 @@ ssh <remoteUser>@<remoteMachine> -R <remote listening port>:<remote machine refe
 	ssh-keygen -p
 	#	changes the password
 	#you can also delete id_rsa and id_rsa.pub to start over
+
+#force no password to test:
+  ssh -o PreferredAuthentications=keyboard-interactive,password host
 
 #start agent and add keys:
 	eval `ssh-agent -s`
