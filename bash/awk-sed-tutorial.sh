@@ -4,7 +4,7 @@
 
   #MY SUMMARY
     #awk basically greps lines out and prints the results based on the actions passed:
-    
+
     #match lines with regex and print the first "column" delimited by whitespace (bash array),
     #followed by '=' and the second "column":
     awk '/regex/ {print $1,"=",$2}'
@@ -16,6 +16,9 @@
 
     #change delimiter (Field Separator):
     awk 'BEGIN { FS = "," } ; { print $2 }' db.txt
+
+    #print last column of each row:
+    awk '{print $NF}' db.txt
 
     #it's like it's own programming language, with BEGIN for setup and END blocks for finishing:
     #END aggregates, NR is number of records
@@ -105,7 +108,7 @@
         n N    Read/append the next line of input into the pattern space.
 
     #see: http://stackoverflow.com/questions/12833714/the-concept-of-hold-space-and-pattern-space-in-sed
-        
+
 
         When sed reads a file line by line, the line that has been currently read is inserted into the pattern buffer (pattern space).
         Pattern buffer is like the temporary buffer, the scratchpad where the current information is stored.

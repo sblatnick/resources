@@ -303,3 +303,118 @@ journalctl -fu tomcat
 mkdir /var/log/journal
 systemd-tmpfiles --create --prefix /var/log/journal
 systemctl restart systemd-journald
+
+#::::::::::::::::::::LIMITS::::::::::::::::::::
+#limits on file handles, processes, etc:
+
+#USER:
+  #list:
+  ulimit -a
+  #see a user that can't be logged in:
+  sudo -i -u mysql ulimit -a
+  #configured in:
+  /etc/security/limits.conf
+  /etc/security/limits.d/
+
+#SYSTEM:
+  #list:
+  sysctl -a
+
+  #configured in:
+  /etc/sysctl.conf
+  /etc/sysctl.d/
+
+  #get one:
+  /sbin/sysctl net.ipv4.tcp_challenge_ack_limit
+
+  #flush updates:
+  sysctl -p
+
+#::::::::::::::::::::PROXY::::::::::::::::::::
+
+#Setup named/bind as a service:
+yum install bind bind-utils
+systemctl start named
+systemctl enable named
+named-checkconf /etc/named.conf #test configuration
+yum install checkzone 
+named-checkzone example.com example.com #test zone file
+
+vi /etc/named.conf:
+  options {
+    directory "/var/named";
+    forward only;
+    forwarders { 8.8.8.8; 8.8.4.4; }; #replace with auth DNS IPs
+  };
+
+  zone "." {
+    type hint;
+    file "named.ca";
+  };
+
+  zone "example.com" {
+    type master;
+    file "example.com";
+  };
+
+vi /etc/httpd/conf/httpd.conf
+  ServerTokens OS
+  ServerSignature On
+  TraceEnable On
+
+  ServerName "host.com"
+  ServerRoot "/etc/httpd"
+  PidFile run/httpd.pid
+  Timeout 120
+  KeepAlive Off
+  MaxKeepAliveRequests 100
+  KeepAliveTimeout 15
+  LimitRequestFieldSize 8190
+
+  User nobody
+  Group nobody
+
+  AccessFileName .htaccess
+  <FilesMatch "^\.ht">
+      Require all denied
+  </FilesMatch>
+
+  <Directory />
+    Options FollowSymLinks
+    AllowOverride None
+  </Directory>
+
+  HostnameLookups Off
+  ErrorLog "/var/log/httpd/error_log"
+  EnableSendfile On
+
+  Listen 8085
+  UseCanonicalName On
+  ServerSignature On
+
+  Include "/etc/httpd/conf.modules.d/*.load"
+  Include "/etc/httpd/conf.modules.d/*.conf"
+  Include "/etc/httpd/conf/ports.conf"
+
+  #Concise log format, but verbose lines:
+  LogLevel trace8
+  ErrorLogFormat "%t[%m]: %M"
+
+  #This is just a proxy, so don't include other configs:
+  #IncludeOptional "/etc/httpd/conf.d/*.conf"
+
+  #Set up a local proxy using /etc/named DNS:
+  ProxyRequests On
+  ProxyVia On
+  RewriteEngine on
+  RewriteOptions AllowAnyURI
+
+  #Allow port override seamlessly (not redirected in browser) in the proxy:
+  AllowConnect 443 8443
+
+  RewriteCond %{HTTP_HOST} ^example.com$
+  RewriteCond %{SERVER_PORT} ^80$
+  RewriteRule example\.com/(.*)$ http://example.com:8080/$1 [L,P]
+
+  RewriteCond %{REQUEST_METHOD} CONNECT
+  RewriteRule example\.com:443$ example.com:8443 [L,P]

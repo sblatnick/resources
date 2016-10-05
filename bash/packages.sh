@@ -21,9 +21,12 @@
 
   #check if perl is installed and visible from path:
   perl -e 'use Net::HTTP;'
+  #check where the module is installed:
+  perl -e'my $module = shift;s/::/\//g, s/$/.pm/ for $module;print $INC{"$module"} . "\n" if require $module' Net::HTTP
 
   #check installed packages:
   yum list installed | grep drbd
+  rpm -qa | grep drbd
 
   #find installed version:
   yum list installed kernel-headers -q | tail -n 1 | awk '{print $2}'
@@ -61,7 +64,7 @@
 	sudo make install
 
 #create an rpm installing binaries (minimalistic):
-sudo yum install rpmdevtools #needed?
+sudo yum install -y rpmdevtools
 mkdir -p ~/.rpm/{RPMS,SRPMS,BUILD,SOURCES,SPECS,tmp}
 mkdir ~/.rpm/RPMS/{x86_64,noarch}
 cat << EOF > ~/.rpmmacros
@@ -73,7 +76,15 @@ cat << EOF > ~/.rpmmacros
 %_tmppath  %{_topdir}/tmp
 EOF
 
-##define variables, then generate the spec:
+##move binaries to the build directory:
+cp -a ${bin}/* ~/.rpm/BUILD
+##define variables:
+requires="requires: package"
+base="/path/to/install"
+package="package"
+version="1.0"
+release="custom"
+##generate the spec:
 cat << EOF > ~/.rpm/SPECS/${package}.spec
 Name: ${package}
 Version: ${version}
@@ -85,6 +96,7 @@ AutoReqProv: no
 License: All rights reserved
 Group: System Environment/Daemons
 URL: http://w3schools.com
+${requires}
 
 %description
 ${package} package.

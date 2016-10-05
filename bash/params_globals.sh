@@ -61,7 +61,7 @@ bc <<< 'scale=2; 100/3'
 $ bc <<< 'four=4;3+four'
 7
 
-#::::::::::::::::::::PRAMETER VARIABLES::::::::::::::::::::
+#::::::::::::::::::::PARAMETER VARIABLES::::::::::::::::::::
 
 $0	# basename of program, but use `basename $0` to get just the program
 		# (in case the user called it with a path)
@@ -90,6 +90,17 @@ $!	#PID of last running background process
 	echo `pwd` #current script directory
 	echo `basename $0` #name of the program
 	echo `dirname $0` #directory of the program
+
+#::::::::::::::::::::HISTORY EXPANSION::::::::::::::::::::
+
+  history | less #view history with line numbers
+  !24 #run 24th line in history
+  !! #run the last command
+  !!:/bash/ash/ #re-runs last command replacing text
+  !?bash?:s/bash/ash/ #re-runs last matching command replacing text
+  !?bash?:s/%/ash/
+  !-3 #execute 3rd to last command
+  !echo #execute last command starting with 'echo'
 
 #::::::::::::::::::::MULTITHREADED VARIABLES::::::::::::::::::::
 
@@ -444,3 +455,6 @@ else
 		process $pipe
 	done
 fi
+
+#sudo append to file:
+echo "text" | sudo tee -a /path/to/file
