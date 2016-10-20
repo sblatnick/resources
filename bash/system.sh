@@ -8,18 +8,18 @@ man 7 signals
 
 #::::::::::::::::::::TERMINAL NAVIGATION::::::::::::::::::::
 
-Ctrl+r 	#search history, ESC to paste the currently found entry
-! 			#reruns last command that uses the letter after the !
-	#Example:
-	!l #would run ls if it is the last command used starting with l
+Ctrl+r   #search history, ESC to paste the currently found entry
+!       #reruns last command that uses the letter after the !
+  #Example:
+  !l #would run ls if it is the last command used starting with l
 
 #::::::::::::::::::::X SESSIONS::::::::::::::::::::
 
 #start another x session
-	startx -- :1 (replace with :2, etc)
-	#(change file .xinitrc)
-	exec /usr/bin/enlightenment
-#	  *  KDE = startkde
+  startx -- :1 (replace with :2, etc)
+  #(change file .xinitrc)
+  exec /usr/bin/enlightenment
+#    *  KDE = startkde
 #    * Gnome = gnome-session
 #    * Blackbox = blackbox
 #    * FVWM = fvwm (or, for FVWM2 it's fvwm2, surprise)
@@ -38,15 +38,15 @@ xdotool windowminimize --sync $(xdotool search FreeRDP) #wait until minimized to
 
 xwininfo -id <windowid> | grep "Map State" #detect visibility
 #example notify-send if geany is not on the screen:
-	width=1600
-	geanyId=$(wmctrl -l | grep Geany)
-	geanyId=${geanyId%% *}
-	xPos=$(xwininfo -id $geanyId | grep "Absolute upper-left X:")
-	xPos=${xPos##* }
-	echo $xPos
-	if [ $xPos -gt 0 ] || [ $xPos -le -$width ]; then
-		notify-send "DEPLOYED $1"
-	fi
+  width=1600
+  geanyId=$(wmctrl -l | grep Geany)
+  geanyId=${geanyId%% *}
+  xPos=$(xwininfo -id $geanyId | grep "Absolute upper-left X:")
+  xPos=${xPos##* }
+  echo $xPos
+  if [ $xPos -gt 0 ] || [ $xPos -le -$width ]; then
+    notify-send "DEPLOYED $1"
+  fi
 
 #example toggle visibility of window (use shortcut to call this script):
 #!/bin/bash
@@ -64,42 +64,42 @@ esac
 #::::::::::::::::::::OPEN TERMINALS::::::::::::::::::::
 
 #terminal with multiple tabs from command line, hold (-H) open even when commands are complete:
-	xfce4-terminal -H -e "echo hello" --tab -H -e "echo world"
-	xfce4-terminal -H -T "Title 1" -e "echo hello" --tab -H -T "Title 2" -e "echo world"
+  xfce4-terminal -H -e "echo hello" --tab -H -e "echo world"
+  xfce4-terminal -H -T "Title 1" -e "echo hello" --tab -H -T "Title 2" -e "echo world"
 #gnome/mate-terminal doesn't have the hold feature:
-	mate-terminal \
-		--tab-with-profile=Titleable -t "Test Log" -e "ssh $user@$host \"tail -f /var/log/test.log\"" \
-		--tab-with-profile=Titleable -t "Apache" -e "ssh $user@$host \"tail -f /var/log/httpd/error_log-$host\"" \
+  mate-terminal \
+    --tab-with-profile=Titleable -t "Test Log" -e "ssh $user@$host \"tail -f /var/log/test.log\"" \
+    --tab-with-profile=Titleable -t "Apache" -e "ssh $user@$host \"tail -f /var/log/httpd/error_log-$host\"" \
 
 
 #::::::::::::::::::::GLX GRAPHIC ACCELERATION::::::::::::::::::::
 
-#	-b bitrate: set the video bitrate in kbit/s (default = 200 kb/s)
-#	-ab bitrate: set the audio bitrate in kbit/s (default = 64)
-#	-ar sample rate: set the audio samplerate in Hz (default = 44100 Hz)
-#	-s size: set frame size. The format is WxH (default 160×128 )
+#  -b bitrate: set the video bitrate in kbit/s (default = 200 kb/s)
+#  -ab bitrate: set the audio bitrate in kbit/s (default = 64)
+#  -ar sample rate: set the audio samplerate in Hz (default = 44100 Hz)
+#  -s size: set frame size. The format is WxH (default 160×128 )
 
 #Direct Rendering detection (glxgears)
-	glxinfo | grep direct
+  glxinfo | grep direct
 
 #compiz on nvidia with direct rendering
-	__GL_YEILD="NOTHING" compiz --replace --sm-disable --ignore-desktop-hints ccp&
+  __GL_YEILD="NOTHING" compiz --replace --sm-disable --ignore-desktop-hints ccp&
 
 
 #::::::::::::::::::::NETWORKING::::::::::::::::::::
 
 #IPX network:
-	sudo ipx_interface add -p eth0 802.2
+  sudo ipx_interface add -p eth0 802.2
 
 #find my local IP address:
-	ifconfig
+  ifconfig
 
 #all interfaces:
-	ifconfig -a
+  ifconfig -a
 #take an interface down:
-	ifdown eth0
+  ifdown eth0
 #start up an interface:
-	ifup eth0
+  ifup eth0
 #see also udev for defining interfaces:
 /etc/udev/rules.d/60-net.rules
 
@@ -107,89 +107,89 @@ esac
 service iptables stop
 chkconfig iptables off
 
-	#flush away the 'nat' rules
-		iptables -t nat -F
-	#set some rules:
-		iptables -t nat -A PREROUTING -p tcp -d 172.16.142.130 --dport 8443 -j DNAT --to 172.16.142.131:443
-		iptables -t nat -A OUTPUT -p tcp -d 172.16.142.130 --dport 8443 -j DNAT --to 172.16.142.131:443
-		#so anyone connecting to 172.16.142.130:8443 is forwarded to 172.16.142.131:443
-		#note: using -d 127.0.0.1 doesn't seem to work right for these rules
-	#list the 'nat' rules:
-		iptables -t nat -L 
-	#save rules for next boot:
-		/etc/init.d/iptables save #save the current rules
-		#which is like doing iptables-save > /etc/sysconfig/iptables
+  #flush away the 'nat' rules
+    iptables -t nat -F
+  #set some rules:
+    iptables -t nat -A PREROUTING -p tcp -d 172.16.142.130 --dport 8443 -j DNAT --to 172.16.142.131:443
+    iptables -t nat -A OUTPUT -p tcp -d 172.16.142.130 --dport 8443 -j DNAT --to 172.16.142.131:443
+    #so anyone connecting to 172.16.142.130:8443 is forwarded to 172.16.142.131:443
+    #note: using -d 127.0.0.1 doesn't seem to work right for these rules
+  #list the 'nat' rules:
+    iptables -t nat -L 
+  #save rules for next boot:
+    /etc/init.d/iptables save #save the current rules
+    #which is like doing iptables-save > /etc/sysconfig/iptables
 
 #see server IP address:
-	host google.com
+  host google.com
 
 #DNS lookup utility:
-	dig google.com
+  dig google.com
 
 #Look up mx record:
-	#MX = Mail Exchanger == SMTP for inbound
+  #MX = Mail Exchanger == SMTP for inbound
   nslookup -type=mx domain.com
   dig domain.com MX
   dig +trace domain.com
   host -t mx domain.com nameserver-local.com
 
 #RBL (Real-time-blacklist DNS) lookup:
-	#reverse the IP digits:
-		107.181.132.237 => 237.132.181.107
-	#append the rbl server and check:
-		nslookup 237.132.181.107.rblservice
+  #reverse the IP digits:
+    107.181.132.237 => 237.132.181.107
+  #append the rbl server and check:
+    nslookup 237.132.181.107.rblservice
 
-	#NOT in list:
-	#  ~ $ nslookup 237.132.181.107.rbl0101
-	#  Server:		192.168.1.219
-	#  Address:	192.168.1.219#53
-	#
-	#  ** server can't find 237.132.181.107.rbl0101: NXDOMAIN
+  #NOT in list:
+  #  ~ $ nslookup 237.132.181.107.rbl0101
+  #  Server:    192.168.1.219
+  #  Address:  192.168.1.219#53
+  #
+  #  ** server can't find 237.132.181.107.rbl0101: NXDOMAIN
 
-	#IN list (and therefor blocked):
-	#  Server:		192.168.1.219
-	#  Address:	192.168.1.219#53
-	#
-	#  Name:	rbl0105.sj2.proofpoint.com
-	#  Address: 192.168.0.251
+  #IN list (and therefor blocked):
+  #  Server:    192.168.1.219
+  #  Address:  192.168.1.219#53
+  #
+  #  Name:  rbl0105.sj2.proofpoint.com
+  #  Address: 192.168.0.251
 
 #scan for other computers (port sniff), their OSs and IP addresses:
-	sudo nmap -O -sS 192.168.0.1-255
+  sudo nmap -O -sS 192.168.0.1-255
 
 #list computers in your local network:
-	sudo arp-scan --interface=eth0 --localnet
+  sudo arp-scan --interface=eth0 --localnet
 
 #look at traffic:
-	wireshark
+  wireshark
 #set wireshark to allow non-root users:
-	sudo apt-get install wireshark
-	sudo dpkg-reconfigure wireshark-common #sometimes included in installation
-	sudo usermod -a -G wireshark $USER
-	#restart your login session
+  sudo apt-get install wireshark
+  sudo dpkg-reconfigure wireshark-common #sometimes included in installation
+  sudo usermod -a -G wireshark $USER
+  #restart your login session
 
 #look up my external IP:
-	curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//'
+  curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//'
 
 #telnet:
-	#IMAP:
-	telnet imap.email.com 143
-	x login user@email.com Password
-	x LIST "" "*"
-	#HTTP:
-	telnet hostname.com 80
-	GET / HTTP/1.1
-	Host: hostname.com
+  #IMAP:
+  telnet imap.email.com 143
+  x login user@email.com Password
+  x LIST "" "*"
+  #HTTP:
+  telnet hostname.com 80
+  GET / HTTP/1.1
+  Host: hostname.com
 
 #expect:
-	#smtp:
-	expect << EOF
+  #smtp:
+  expect << EOF
 set timeout 20
 spawn telnet hostname 8824
 expect "* ESMTP SERVER-BANNER"
 EOF
 
-	#imap:
-	expect << EOF
+  #imap:
+  expect << EOF
 set timeout 20
 spawn telnet $server $port
 expect "*Welcomes You"
@@ -197,8 +197,8 @@ send "a1 LOGIN $user $password\r"
 expect -re "NO|OK"
 EOF
 
-	#pop:
-	expect << EOF
+  #pop:
+  expect << EOF
 set timeout 20
 spawn telnet $server $port
 expect "OK"
@@ -209,75 +209,97 @@ expect -re "ERR|OK"
 EOF
 
 #netcat to push a binary payload to a host on a port:
-	nc -vv host 8080 < exploit_payload.bin
+  nc -vv host 8080 < exploit_payload.bin
 
 #look at open ports and the programs using them:
-	sudo netstat -ltnp
+  sudo netstat -ltnp
 
 #::::::::::::::::::::WIFI::::::::::::::::::::
 
 #activate:
-	sudo modprobe ndiswrapper
+  sudo modprobe ndiswrapper
 #install:
-	sudo ndiswrapper -i bcmwl5.inf #(fill out your own drivers for bcmwl5.inf)
+  sudo ndiswrapper -i bcmwl5.inf #(fill out your own drivers for bcmwl5.inf)
 #view what's installed:
-	sudo ndiswrapper -l (shows if the driver is installed)
+  sudo ndiswrapper -l (shows if the driver is installed)
 #activate and test:
-	sudo modprobe ndiswrapper
-	sudo dmesg (shows that the card is installed (hopefully))
-	sudo iwlist wlan0 scan (shows all APs surrounding you)
+  sudo modprobe ndiswrapper
+  sudo dmesg (shows that the card is installed (hopefully))
+  sudo iwlist wlan0 scan (shows all APs surrounding you)
 #load at bootup:
-	sudo ndiswrapper -m
+  sudo ndiswrapper -m
 
 #::::::::::::::::::::SYSTEM INFORMATION::::::::::::::::::::
 
 #find system info:
-	lshw
-	hwinfo
-	lspci
+  lshw
+  hwinfo
+  lspci
 
 #Find your distribution:
-	cat /etc/issue
+  cat /etc/issue
 #show system info like ram/memory bios, etc
-	sudo dmidecode
+  sudo dmidecode
 #process information
-	jobs
-	ps -elf | grep "process"
-	top
-	htop
-	jobs -p #get the pids of all thread started from within this shell/script
-	pgrep
-	pkill
-	kill -9 $pid #aggresively kill a stubborn process
-	killall
+  jobs
+  ps -elf | grep "process"
+  top
+  htop
+  jobs -p #get the pids of all thread started from within this shell/script
+  pgrep
+  pkill
+  kill -9 $pid #aggresively kill a stubborn process
+  killall
 
 #cpu speeds:
-	cat /proc/cpuinfo
+  cat /proc/cpuinfo
 #cpu set to performance:
-	sudo cpufreq-selector -c 0 -g performance
-	sudo cpufreq-selector -c 1 -g performance
+  sudo cpufreq-selector -c 0 -g performance
+  sudo cpufreq-selector -c 1 -g performance
 #cpu available frequencies:
-	cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+  cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
 #Check Soundcard for Hardware Mixing (playback >1 means it can do hardware mixing)
-	cat /proc/asound/pcm
+  cat /proc/asound/pcm
 
 #get linux kernel version:
-	uname -r
+  uname -r
 
 #get linux version (redhat flavors):
-	cat /etc/redhat-release
+  cat /etc/redhat-release
 
 #default applications are set in:
-	/etc/gnome/defaults.list
+  /etc/gnome/defaults.list
 
 #Edit gconf-editor from command line:
-	#(epiphany setting as example: Loading the clipboard url on middle-click like Mozilla)
-	gconftool-2 --set /apps/epiphany/general/middle_click_open_url --type bool true
+  #(epiphany setting as example: Loading the clipboard url on middle-click like Mozilla)
+  gconftool-2 --set /apps/epiphany/general/middle_click_open_url --type bool true
 
 #find path of an executable:
-	which command_name
-		which perl
-		/usr/bin/perl
+  which command_name
+    which perl
+    /usr/bin/perl
+
+#::::::::::::::::::::USERS::::::::::::::::::::
+#list distinct users:
+cut -d: -f1 /etc/passwd
+#list users currently logged in:
+users
+who
+#add user:
+sudo adduser name
+sudo useradd name
+#delete user:
+sudo userdel name
+#then clear the users home if applicable:
+sudo rm -Rf /home/name
+#modify user name:
+usermod -l new_username old_username
+#update user password:
+sudo passwd username
+#change shell for user:
+sudo chsh username
+#change user details:
+sudo chfn username
 
 #::::::::::::::::::::INIT::::::::::::::::::::
 #old way is via init scripts:
@@ -286,7 +308,7 @@ EOF
 chkconfig --list
 
 #::::::::::::::::::::SYSTEMD::::::::::::::::::::
-#systemd replaces init.d:
+#systemd replaces SysV init.d:
 systemctl start tomcat
 #list:
 systemctl #no arguments
@@ -303,6 +325,29 @@ journalctl -fu tomcat
 mkdir /var/log/journal
 systemd-tmpfiles --create --prefix /var/log/journal
 systemctl restart systemd-journald
+
+
+#Instead of modifying the script in /usr/lib/systemd/system/
+#I found this note in mariadb.service:
+
+  # It's not recommended to modify this file in-place, because it will be
+  # overwritten during package upgrades.  If you want to customize, the
+  # best way is to create a file "/etc/systemd/system/mariadb.service",
+  # containing
+  #	.include /lib/systemd/system/mariadb.service
+  #	...make your changes here...
+  # or create a file "/etc/systemd/system/mariadb.service.d/foo.conf",
+  # which doesn't need to include ".include" call and which will be parsed
+  # after the file mariadb.service itself is parsed.
+
+#Then reload after modifying:
+systemctl daemon-reload
+
+#NOTE: I couldn't get it to work through those other files
+
+#See also:
+# http://www.dynacont.net/documentation/linux/Useful_SystemD_commands/
+# https://blog.hqcodeshop.fi/archives/93-Handling-varrun-with-systemd.html
 
 #::::::::::::::::::::LIMITS::::::::::::::::::::
 #limits on file handles, processes, etc:

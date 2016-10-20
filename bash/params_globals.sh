@@ -61,6 +61,11 @@ bc <<< 'scale=2; 100/3'
 $ bc <<< 'four=4;3+four'
 7
 
+#extract digits:
+digits=$(tr -cd 0-9 <<<"spy007")
+#remove 0 padding:
+number=$((10#$digits))
+
 #::::::::::::::::::::PARAMETER VARIABLES::::::::::::::::::::
 
 $0	# basename of program, but use `basename $0` to get just the program
