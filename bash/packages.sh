@@ -31,6 +31,10 @@
   #find installed version:
   yum list installed kernel-headers -q | tail -n 1 | awk '{print $2}'
 
+  #revert install:
+  yum history #find the id
+  yum history undo 56 #undo the install by id
+
 #debian:
   apt-get install package
   apt-cache search package

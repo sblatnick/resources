@@ -133,9 +133,13 @@ Host bastion
 Host jumphost
 	ProxyCommand ssh -q tc@tinycore nc -w0 internal 22
 
-#Allow more connections on the ssh server:
 #vi /etc/ssh/sshd_config
-MaxStartups 1000
+  #Allow more connections on the ssh server:
+  MaxStartups 1000
+  #speed up connections:
+  UseDNS no
+  #disable authentication that may slow login:
+  GSSAPIAuthentication no
 
 #::::::::::::::::::::SSH CONNECTION::::::::::::::::::::
 
