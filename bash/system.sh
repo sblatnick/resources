@@ -103,6 +103,10 @@ esac
 #see also udev for defining interfaces:
 /etc/udev/rules.d/60-net.rules
 
+#check routes to see connectivity of interfaces:
+  /sbin/route -n
+  ip route
+
 #iptables firewall/rules:
 service iptables stop
 chkconfig iptables off
