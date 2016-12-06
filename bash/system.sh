@@ -107,6 +107,26 @@ esac
   /sbin/route -n
   ip route
 
+#if you can't resolve something like google, it's probably related to the GATEWAY:
+vi /etc/sysconfig/network
+  NETWORKING=yes
+  NETWORKING_IPV6=no
+  HOSTNAME=vm
+  GATEWAY=10.0.3.2
+vi /etc/sysconfig/network-scripts/ifcfg-eth0
+  DEVICE=eth0
+  BOOTPROTO=dhcp
+  ONBOOT=yes
+  HWADDR=xx:xx:xx:xx:xx:xx
+vi /etc/sysconfig/network-scripts/ifcfg-eth1
+  DEVICE=eth1
+  TYPE=Ethernet
+  BOOTPROTO=static
+  ONBOOT=yes
+  HWADDR=xx:xx:xx:xx:xx:xx
+  IPADDR=100.64.0.171
+  NETMASK=255.255.255.0
+
 #iptables firewall/rules:
 service iptables stop
 chkconfig iptables off
@@ -311,12 +331,21 @@ sudo chfn username
 #list:
 chkconfig --list
 
+#enabling:
+chkconfig tomcat on
+chkconfig tomcat off
+
 #::::::::::::::::::::SYSTEMD::::::::::::::::::::
 #systemd replaces SysV init.d:
 systemctl start tomcat
 #list:
 systemctl #no arguments
 systemctl list-units
+
+#enabling:
+systemctl enable tomcat
+systemctl disable tomcat
+systemctl is-enabled tomcat
 
 #the script it runs is:
 /usr/lib/systemd/system/tomcat.service
@@ -378,6 +407,13 @@ systemctl daemon-reload
 
   #flush updates:
   sysctl -p
+
+#::::::::::::::::::::KVM::::::::::::::::::::
+virt-manager
+virsh list --all
+virsh shutdown name
+virsh start name
+virsh destroy name #shutdown by power off
 
 #::::::::::::::::::::PROXY::::::::::::::::::::
 

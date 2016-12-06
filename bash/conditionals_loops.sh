@@ -194,6 +194,9 @@
 	
 	do_stuff ok
 
+  #export for a subshell:
+  export -f do_stuff
+
 #::::::::::::::::::::OPERATORS::::::::::::::::::::
 
 	#ARITHMATIC:

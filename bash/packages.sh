@@ -11,6 +11,7 @@
   yum list --showduplicates mariadb #show all versions and indicate the one installed (if any)
   yum whatprovides package
   rpm -ql tomcat #show installed files
+  rpm -qR tomcat #find dependencies
   #install rpm:
   rpm -ivh packagename.rpm
   #upgrade rpm:
@@ -23,6 +24,8 @@
   perl -e 'use Net::HTTP;'
   #check where the module is installed:
   perl -e'my $module = shift;s/::/\//g, s/$/.pm/ for $module;print $INC{"$module"} . "\n" if require $module' Net::HTTP
+  #check perl module version:
+  perl -MNet::ParseWhois -le 'print $Net::ParseWhois::VERSION'
 
   #check installed packages:
   yum list installed | grep drbd

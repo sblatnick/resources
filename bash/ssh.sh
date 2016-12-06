@@ -89,11 +89,12 @@ ssh <remoteUser>@<remoteMachine> -R <remote listening port>:<remote machine refe
 	#	then enter no password
 	#add the line in LOCALHOST: ~/.ssh/id_rsa.pub (without the .pub is your private key)
 	#	to the file REMOTEHOST: ~/.ssh/authorized_keys
-	ssh-keygen -p
-	#	changes the password
+
+  #change the password/passphrase:
+  ssh-keygen -p
 	#you can also delete id_rsa and id_rsa.pub to start over
 
-#force no password to test:
+#force no key to test using the user password:
   ssh -o PreferredAuthentications=keyboard-interactive,password host
 
 #start agent and add keys:
