@@ -418,12 +418,13 @@ virsh destroy name #shutdown by power off
 #::::::::::::::::::::PROXY::::::::::::::::::::
 
 #Setup named/bind as a service:
-yum install bind bind-utils
+yum install -y bind bind-utils
 systemctl start named
 systemctl enable named
 named-checkconf /etc/named.conf #test configuration
-yum install checkzone 
+yum install -y checkzone
 named-checkzone example.com example.com #test zone file
+yum install -y httpd mod_proxy_html
 
 vi /etc/named.conf:
   options {

@@ -43,6 +43,22 @@ chattr +i /path/to/file.txt
 #Sets permissions for all future files in a directory:
 setfacl -d -m u::rwx folder
 
+#(http://unix.stackexchange.com/questions/1314/how-to-set-default-file-permissions-for-all-folders-files-in-a-directory)
+chmod g+s <directory>  //set gid 
+setfacl -d -m g::rwx /<directory>  //set group to rwx default 
+setfacl -d -m o::rx /<directory>   //set other
+
+#Fix mounted flash drive permissions:
+sudo chmod g+s /media/<user>
+sudo setfacl -d -m u::rwx /media/<user>
+sudo setfacl -d -m u:<user>:rwx /media/<user>
+sudo setfacl -d -m g::rwx /media/<user>
+sudo setfacl -d -m o::rwx /media/<user>
+#check permissions were set:
+getfacl /media/<user>
+#You may have to fix permissions manually on previously mounted drives:
+sudo chmod 777 /media/<user>/<drive>
+
 #User defaults set by umask in /etc/profile or .bashrc:
 umask 022
 #source: http://www.cyberciti.biz/tips/understanding-linux-unix-umask-value-usage.html
