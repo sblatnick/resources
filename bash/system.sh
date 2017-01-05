@@ -478,6 +478,7 @@ vi /etc/httpd/conf/httpd.conf
   UseCanonicalName On
   ServerSignature On
 
+  LoadModule proxy modules/mod_proxy.so
   Include "/etc/httpd/conf.modules.d/*.load"
   Include "/etc/httpd/conf.modules.d/*.conf"
   Include "/etc/httpd/conf/ports.conf"

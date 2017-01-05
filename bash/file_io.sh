@@ -281,6 +281,11 @@ echo -en "\033]0;title\a"
 	ffmpeg -i input.flv -ab 56 -ar 22050 -b 500 -s 320x240 output.mpg
 	ffmpeg -i input.flv -f vcd output.mpg
 
+#re-container MOD to MP4:
+	ffmpeg -i video.MOD -c:copy video.mp4
+#find and convert all of the MOD files:
+	find ./ -type f -name "*.MOD" -exec ffmpeg -i "{}" -c:copy "{}.mp4" \;
+
 #minimum for no GUI:
 #	vlc -I http
 #	(then comes the filename or other commands)

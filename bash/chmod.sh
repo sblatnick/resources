@@ -59,6 +59,10 @@ getfacl /media/<user>
 #You may have to fix permissions manually on previously mounted drives:
 sudo chmod 777 /media/<user>/<drive>
 
+#Fix dirty bit on flash drive:
+fdisk -l #find the device
+dosfsck /dev/sdc1 #detect and fix the dirty bit from not umounting properly
+
 #User defaults set by umask in /etc/profile or .bashrc:
 umask 022
 #source: http://www.cyberciti.biz/tips/understanding-linux-unix-umask-value-usage.html
