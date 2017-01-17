@@ -121,7 +121,8 @@
 		git stash apply #most recent
 		git stash apply stash@{0}
 		git stash drop
-		git show stash@{0} > temp.diff
+		git stash show -p > temp.diff
+		git show stash@{0} > temp.diff #misses new files
 
 		#unapply stash:
 		git stash show -p stash@{0} | git apply -R
