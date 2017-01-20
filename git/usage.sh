@@ -8,6 +8,7 @@
 	git log #show git logs of commits
 	git --no-pager #don't use less
 	git --no-pager log --oneline --grep 'test' #search for the short sha with 'test' in the commit message
+	git -C /path #run as if in the git directory
 
 #branching:
 

@@ -253,6 +253,19 @@ EOF
 #load at bootup:
   sudo ndiswrapper -m
 
+#::::::::::::::::::::GRUB::::::::::::::::::::
+
+#edit grub default settings:
+  sudo vi /etc/default/grub
+    GRUB_TIMEOUT=0 #set to 0 wait time in grub menu
+#apply defaults:
+  #CentOS/Redhat:
+    sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+  #Debian:
+  sudo update-grub
+  
+#/boot/grub2/grub.cfg is where new kernels are listed when installed in /boot
+
 #::::::::::::::::::::SYSTEM INFORMATION::::::::::::::::::::
 
 #find system info:
