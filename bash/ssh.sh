@@ -19,6 +19,11 @@
 #remotely access GUI software over ssh:
 	ssh -X user@domain.com
 
+#options:
+	-o ConnectTimeout=1 #sets timeout
+	-o BatchMode=yes #keeps it from hanging with "host unknown"
+	-o StrictHostKeyChecking=no #automatically adds to known_hosts
+
 #execute a local script on a remote host:
 	ssh -q machine 'bash -s' < stats.sh
 #execute local script with arguments:

@@ -195,6 +195,9 @@ echo -en "\033]0;title\a"
 
 #::::::::::::::::::::COPYING::::::::::::::::::::
 
+#copy one file into many:
+	tee <oldFile newFile1 newFile2 >/dev/null
+
 #copy boot sector (rouphly)
 	dd if=/dev/hda of=WindowsXP.mbr bs=512 count=63
 #copy random data to dev null for testing:
@@ -271,6 +274,14 @@ echo -en "\033]0;title\a"
 
 #convert jpg to ascii:
 	jp2a Untitled.jpg > alien.txt
+
+#::::::::::::::::::::ENCODING/DECODING::::::::::::::::::::
+
+#encode binary to base64 plain text:
+  base64 file.bin > file.txt
+#convert base64 text into binary:
+  base64 -d <<< "aGVsbG8gd29ybGQK" > file.bin
+  base64 -d < file.txt > file.bin
 
 #::::::::::::::::::::VIDEO ENCODING/DECODING::::::::::::::::::::
 

@@ -12,6 +12,8 @@
   yum whatprovides package
   rpm -ql tomcat #show installed files
   rpm -qR tomcat #find dependencies
+  rpm -qip packagename.rpm #show information about the package not installed like signature
+  rpm -qf log4j.properties #find rpm package that installed the file
   #install rpm:
   rpm -ivh packagename.rpm
   #upgrade rpm:
@@ -46,6 +48,26 @@
   sudo update-alternatives --install /usr/bin/java java /opt/jre1.7.0_40/bin/java 1
   #choose version of java to use:
   sudo update-alternatives --config java
+
+#TinyCore Linux:
+tce #install packages
+backup #make persistent after reboot
+
+  #setup ssh server and static IP: (see: https://firewallengineer.wordpress.com/2012/04/01/how-to-install-and-configure-openssh-ssh-server-in-tiny-core-linux/)
+  # after installed to device: http://distro.ibiblio.org/tinycorelinux/install_manual.html
+  $ tce-load -wi openssh
+  $ cp /usr/local/etc/ssh/sshd_config.example sshd_config
+  $ vi /opt/.filetool.lst
+    /usr/local/etc/ssh
+    /etc/passwd
+    /etc/shadow
+    /etc/motd
+  $ vi /opt/bootlocal.sh
+    #!/bin/sh
+    # put other system startup commands here
+    /usr/local/etc/init.d/openssh start
+    ifconfig eth1 100.64.0.128 netmask 255.255.255.0
+  $ backup
 
 #OpenGL glut libraries:
   libgl1-mesa-dev
@@ -152,6 +174,18 @@ rpmbuild -ba ~/.rpm/SPECS/${package}.spec
   rpmbuild -ba perl-Crypt-TripleDES.spec
   #move the resulting rpm into your directory:
   mv ~/rpmbuild/RPMS/noarch/perl-Crypt-TripleDES-0.24-1.el7.centos.noarch.rpm ./
+
+#Sign an RPM with a gpgkey:
+function rpmSign() {
+  echo "signing $1..."
+  local pw=$(<~/.PW)
+  expect << EOF
+spawn bash -c "rpm --define=\"%_gpg_name <cert@example.com>\" --resign $1"
+expect -exact "Enter pass phrase: "
+send -- "$pw\r"
+expect eof
+EOF
+}
 
 #Update/Downgrade in yum with a package list:
 

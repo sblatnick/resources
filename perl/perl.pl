@@ -32,3 +32,15 @@ eval {
 if($@) {
   print $@;
 }
+
+#array reference handling: http://perldoc.perl.org/perlref.html
+  use JSON qw( from_json );
+  my @users = @{from_json get("https://restapi.com/customer/2/users")};
+  my $location = 'null';
+  #first user's location:
+  if(ref(@users) eq 'ARRAY' && exists $users[0] && $users[0]->{'location'}) {
+    $location = $users[0]->{'location'};
+  }
+  else {
+    print Dumper(@users);
+  }

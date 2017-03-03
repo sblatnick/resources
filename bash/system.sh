@@ -107,6 +107,9 @@ esac
   /sbin/route -n
   ip route
 
+#use tpcdump to listen to activity on a port:
+  sudo tcpdump -i eth0 host destination.com
+
 #if you can't resolve something like google, it's probably related to the GATEWAY:
 vi /etc/sysconfig/network
   NETWORKING=yes
@@ -211,6 +214,21 @@ set timeout 20
 spawn telnet hostname 8824
 expect "* ESMTP SERVER-BANNER"
 EOF
+
+for i in $(seq -f "%02g" 1 100)
+do
+    echo "$i attempt:"
+    expect << EOF | tail -n 1 | sed 's/^/  /'
+set timeout 5
+spawn telnet smtp.example.com 25
+expect {
+  timeout {puts "timed out"; exit}
+  "connection refused" {puts "connection refused"; exit}
+  "unknown host" {puts "connection refused"; exit}
+  "* ESMTP *" {puts "saw banner"; exit}
+}
+EOF
+done
 
   #imap:
   expect << EOF
@@ -395,6 +413,13 @@ systemctl daemon-reload
 # http://www.dynacont.net/documentation/linux/Useful_SystemD_commands/
 # https://blog.hqcodeshop.fi/archives/93-Handling-varrun-with-systemd.html
 
+#remove service:
+systemctl stop service
+systemctl disable service
+rm /usr/lib/systemd/system/service.service /usr/libexec/service
+systemctl daemon-reload
+systemctl reset-failed
+
 #::::::::::::::::::::LIMITS::::::::::::::::::::
 #limits on file handles, processes, etc:
 
@@ -438,6 +463,9 @@ named-checkconf /etc/named.conf #test configuration
 yum install -y checkzone
 named-checkzone example.com example.com #test zone file
 yum install -y httpd mod_proxy_html
+
+vi /etc/resolv.conf:
+  nameserver 127.0.0.1
 
 vi /etc/named.conf:
   options {
