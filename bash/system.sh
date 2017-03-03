@@ -398,8 +398,8 @@ systemctl restart systemd-journald
   # overwritten during package upgrades.  If you want to customize, the
   # best way is to create a file "/etc/systemd/system/mariadb.service",
   # containing
-  #	.include /lib/systemd/system/mariadb.service
-  #	...make your changes here...
+  #  .include /lib/systemd/system/mariadb.service
+  #  ...make your changes here...
   # or create a file "/etc/systemd/system/mariadb.service.d/foo.conf",
   # which doesn't need to include ".include" call and which will be parsed
   # after the file mariadb.service itself is parsed.

@@ -8,25 +8,25 @@ TEMP=/tmp/temp-$$.log
 
 function process_file()
 {
-	line=$(md5sum $1)
-	echo $line >> $FILES
-	echo ${line%% *} >> $SUMS
+  line=$(md5sum $1)
+  echo $line >> $FILES
+  echo ${line%% *} >> $SUMS
 }
 
 function process_directory()
 {
-	echo "  Processing $1"
-	for file in $(find $1 -maxdepth 1 -type f)
-	do
-		process_file $file
-	done
+  echo "  Processing $1"
+  for file in $(find $1 -maxdepth 1 -type f)
+  do
+    process_file $file
+  done
 }
 
 echo "Finding files"
 
 for directory in $(find . -type d)
 do
-	process_directory $directory &
+  process_directory $directory &
 done
 
 wait
@@ -43,11 +43,11 @@ let "line--"
 
 for info in $(head $SUMS -n $line)
 do
-	md5=${info##* }
-	count=${info% *}
-	count=${count// /}
-	echo "$count files repeated (md5):"
-	grep $md5 $FILES | sed "s/$md5\s*//" | sed 's/\.\///' | sed 's/^/  /g'
+  md5=${info##* }
+  count=${info% *}
+  count=${count// /}
+  echo "$count files repeated (md5):"
+  grep $md5 $FILES | sed "s/$md5\s*//" | sed 's/\.\///' | sed 's/^/  /g'
 done
 
 rm $FILES $SUMS $TEMP 2>/dev/null

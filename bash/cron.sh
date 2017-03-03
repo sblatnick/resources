@@ -21,9 +21,9 @@ crontab -e
 6 Saturday
 
 #cron:
-	/etc/cron.d/
-	/etc/crontab
-	/etc/cron.*/
+  /etc/cron.d/
+  /etc/crontab
+  /etc/cron.*/
 
 #Sometimes user isn't listed, depending on how the cron is set up:
 

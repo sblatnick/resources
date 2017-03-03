@@ -4,23 +4,23 @@
 #~ sleep 1
 #~ state=$(xset -q | grep 'LED mask:')
 #~ #mask values:
-#~ #	cap:    00000001 (first bit)
-#~ #	num:		 00000002 (second bit)
-#~ #	scroll: 00000004 (third bit)
+#~ #  cap:    00000001 (first bit)
+#~ #  num:     00000002 (second bit)
+#~ #  scroll: 00000004 (third bit)
 #~ state=${state##*LED mask: }
 #~ if ((($state&4)==4));then
 
 state=$(xmodmap -pke | grep 'keycode  38 = Left' -c)
 if [ 0 -eq $state ];then
-	notify-send "Gaming Keyboard"
-	xmodmap -e "keycode 38 = Left"
-	xmodmap -e "keycode 39 = Down"
-	xmodmap -e "keycode 40 = Right"
-	xmodmap -e "keycode 25 = Up"
+  notify-send "Gaming Keyboard"
+  xmodmap -e "keycode 38 = Left"
+  xmodmap -e "keycode 39 = Down"
+  xmodmap -e "keycode 40 = Right"
+  xmodmap -e "keycode 25 = Up"
 else
-	notify-send "Standard Keyboard"
-	xmodmap -e "keycode 38 = A"
-	xmodmap -e "keycode 39 = S"
-	xmodmap -e "keycode 40 = D"
-	xmodmap -e "keycode 25 = W"
+  notify-send "Standard Keyboard"
+  xmodmap -e "keycode 38 = A"
+  xmodmap -e "keycode 39 = S"
+  xmodmap -e "keycode 40 = D"
+  xmodmap -e "keycode 25 = W"
 fi

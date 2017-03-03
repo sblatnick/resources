@@ -62,8 +62,8 @@ sub subName
 
 ###Simple:
 
-#!/usr/bin/perl	
-	
+#!/usr/bin/perl
+
 use strict;
 if(@ARGV==0)
 {
@@ -78,7 +78,7 @@ foreach my $parm (@ARGV)
   $i++;
 }
 exit(0);
-	
+
 sub usage
 {
   print "Usage: program [blah]\n";
