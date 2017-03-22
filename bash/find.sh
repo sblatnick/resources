@@ -32,6 +32,26 @@ find . -path ./.git -prune -or -print
   #-print0 and -0 make sure that things are delimited by a null character to
   #handle spaces and newlines correctly
 
+  #Check a bunch of files for discrepancies between data and data/production
+  function check_diff() {
+    file=${1/\.\//}
+    d=$(diff -u "$file" "${file/data\//data\/production\/}" 2>/dev/null)
+    case "$?" in
+      0)
+          echo -e "$file \033[32mno change\033[0m"
+        ;;
+      1)
+          echo -e "$file \033[33mdifferences\033[0m:"
+          echo "$d" | sed 's/^/  /'
+        ;;
+      *)
+          echo -e "$file \033[31mmissing\033[0m"
+        ;;
+    esac
+  }
+  export -f check_diff
+  find . -not -path './data/production*' -type f \( -ipath '*_name*' -or -path '*_name2*' \) | grep '\.txt' | grep -Ev 'svn|git' | xargs -n 1 -I {} bash -c 'check_diff "$@"' _ {}
+
 #locate file:
   locate filename
 

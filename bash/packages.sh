@@ -19,6 +19,24 @@
   #upgrade rpm:
   rpm -Uvh packagename.rpm
 
+  #see changes since install from the package/rpm (https://www.novell.com/coolsolutions/feature/16238.html)
+  rpm -V package
+  # S file Size differs
+  # M Mode differs (includes permissions and file type)
+  # 5 MD5 sum differs
+  # D Device major/minor number mis-match
+  # L readLink(2) path mis-match
+  # U User ownership differs
+  # G Group ownership differs
+  # T mTime differs
+
+  # c %config configuration file.
+  # d %doc documentation file.
+  # g %ghost file (i.e. the file contents are not included in the package payload).
+  # l %license license file.
+  # r %readme readme file.
+
+
   #find perl module (install yum-utils first):
   repoquery -a --whatprovides 'perl(Net::HTTP)'
 

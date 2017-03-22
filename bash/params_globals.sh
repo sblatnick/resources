@@ -163,11 +163,14 @@ echo $(($(</dev/shm/foo)+1)) >/dev/shm/foo;
 ) 200>/var/lock/.myscript.exclusivelock
 
 #::::::::::::::::::::EXCEPTION HANDLING::::::::::::::::::::
-#EXCEPTION HANDLING using $?:
+#EXCEPTION HANDLING using $? (try/catch):
   /usr/local/bin/my-command
   if [ "$?" -ne "0" ]; then
     echo "Sorry, we had a problem there!"
   fi
+
+  set -e #causes a script to abort with any error
+  set +e #reverts error setting
 
 #::::::::::::::::::::SIGNAL HANDLING::::::::::::::::::::
 

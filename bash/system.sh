@@ -6,6 +6,21 @@
 #`man kill` says to see signals(7), so do this:
 man 7 signals
 
+#::::::::::::::::::::SUDO::::::::::::::::::::
+
+#Act as root:
+sudo su
+#Act as user when running commands and pass the password in using -S:
+echo "password" | sudo -S -H -u user bash -c "echo 'hello world'"
+
+#Even fake tty via 'script':
+script -q /dev/null cat << EOF
+  echo "password" | sudo -S -H -u xbuild bash -c "
+    cd ~/${VARIABLE}
+    pwd
+  "
+EOF
+
 #::::::::::::::::::::TERMINAL NAVIGATION::::::::::::::::::::
 
 Ctrl+r   #search history, ESC to paste the currently found entry
@@ -418,7 +433,7 @@ systemctl stop service
 systemctl disable service
 rm /usr/lib/systemd/system/service.service /usr/libexec/service
 systemctl daemon-reload
-systemctl reset-failed
+systemctl reset-failed #clear failures
 
 #::::::::::::::::::::LIMITS::::::::::::::::::::
 #limits on file handles, processes, etc:

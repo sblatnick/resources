@@ -57,6 +57,10 @@ bash -x run 2>output.txt
   echo -e "\033[32mThis is green.\033[0m"
 #view the file in less with coloring:
   less -R file.txt
+
+#watch with color using -c, also print logs indenting different files and removing the pid part of log name [pid].[service]:
+  watch -c "tail -n+1 13662.* | sed 's/^/  /' | sed 's/  ==> [0-9]*\.\([^ ]*\) <==/\1/'"
+
 #  (must close it or it will continue after)
 #or in C:
 #     printf("\033[34m This is blue.\033[0m\n");
