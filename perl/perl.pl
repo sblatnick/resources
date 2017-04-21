@@ -23,6 +23,10 @@ foreach $element (@array){
   print "$element\n";
 }
 
+for my $i ( 0 .. $#array ) {
+  print "$i: $array[$i]\n";
+}
+
 $str =~ s/was/replace/;
 
 #exception handling:

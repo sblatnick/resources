@@ -320,3 +320,15 @@ vlc -I http "$1" --sout="#transcode{vcodec=mp2v,vb=600,width=320,height=240, aco
 #change volume from the command line:
   amixer -q set Master 1- unmute
   amixer -q set Master 1+ unmute
+
+
+#::::::::::::::::::::MUSIC TAGGING::::::::::::::::::::
+id3v2 -t "Paranoid" -a "Garbage" Paranoid.mp3 
+id3v2 -l Paranoid.mp3 
+  id3v1 tag info for Paranoid.mp3:
+  Title  : Paranoid                        Artist: Garbage                       
+  Album  :                                 Year:     , Genre: Unknown (255)
+  Comment:                                 Track: 0
+  id3v2 tag info for Paranoid.mp3:
+  TIT2 (Title/songname/content description): Paranoid
+  TPE1 (Lead performer(s)/Soloist(s)): Garbage

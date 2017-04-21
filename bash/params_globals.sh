@@ -292,6 +292,10 @@ length=${#array[@]}
 IFS=',' read -ra VARIABLE <<< "$IN" #make sure $IN is wrapped in double quotes, or the array length is off
 IFS=$'\n' read -rd '' -a VARIABLE <<< "$(pgrep -f "--test $VAR")" #or "$(commands)" with no escaping necessary
 
+#Get variables in a CSV line:
+IFS=',' read first second third <<< "one,two,three"
+echo $third
+
 #Concatinate two arrays when delimeted by a newline:
 streams=`
 for x in ${pdf[@]}

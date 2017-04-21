@@ -31,9 +31,35 @@ Run Level    Mode                               Action
 
 #::::::::::::::::::::STARTUP::::::::::::::::::::
 
-#startup scripts:
-  /etc/rc.local/
+/etc/rc.local/
+#SysV startup scripts:
   /etc/init.d/
+#SystemD
+  #startup script as a setup service:
+    /usr/lib/systemd/system/setup.service:
+      [Unit]
+      Description=Setup Script at Boot
+      After=syslog.target network.target systemd-tmpfiles-setup.target
+      Before=httpd.service tomcat.service mysql.service mariadb.service
+
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/libexec/setup
+
+      [Install]
+      WantedBy=multi-user.target
+  #service:
+    /usr/lib/systemd/system/service.service:
+      [Unit]
+      Description=Service
+
+      [Service]
+      Type=forking
+      ExecStart=/usr/libexec/service start
+      ExecStop=/usr/libexec/service stop
+
+      [Install]
+      WantedBy=multi-user.target
 
 #::::::::::::::::::::MYSQL::::::::::::::::::::
 

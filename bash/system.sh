@@ -271,6 +271,10 @@ EOF
 #look at open ports and the programs using them:
   sudo netstat -ltnp
 
+#IP netmasks work left to right, so:
+127.0.0.0/8  == 127.0.0.0 - 127.255.255.255
+127.0.0.0/16 == 127.0.0.0 - 127.0.255.255
+
 #::::::::::::::::::::WIFI::::::::::::::::::::
 
 #activate:

@@ -199,6 +199,9 @@
     #Print from line 45 to line 50:
     sed -n '45,50 p' file.sql
 
+    #Delete lines matching the pattern:
+    sed -i '/PS1/d' ~/.bashrc
+
     echo "first1
 second1
 third1
@@ -242,3 +245,4 @@ ag 'search'
 ag 'search' --pager 'less -S' #truncating long lines in less
 ag 'search' | cut -c1-120 #truncating long lines for consumption to 120 characters
 
+cut -f1 -d' ' <<< "hello world"
