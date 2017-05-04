@@ -7,6 +7,7 @@ my ($variable) = $contentString =~ /regexwith(parenthesis)/ims;
 
 #replace:
 $replace =~ s/\n/ /sg;
+$replace =~ s/(capture)/<$1>/sg;
 
 #find match:
 if ($match =~ /under/)

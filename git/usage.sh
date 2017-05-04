@@ -23,6 +23,10 @@
     # 2. directs git pull without arguments to pull from the upstream when the new branch is checked out.
     #(source: http://stackoverflow.com/questions/10002239/difference-between-git-checkout-track-origin-branch-and-git-checkout-b-branch)
     git checkout --track origin/release2013_q1_01
+    #See which remote is being tracked:
+    git branch -vv
+    #Change remote: (source: http://stackoverflow.com/questions/4878249/how-do-i-change-the-remote-a-git-branch-is-tracking)
+    git branch branch_name -u your_new_remote/branch_name
     #vs copy but not tracking:
     git checkout -b release2013_q1_01 origin/release2013_q1_01
     #add a track:
