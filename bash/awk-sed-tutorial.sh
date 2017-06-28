@@ -246,3 +246,24 @@ ag 'search' --pager 'less -S' #truncating long lines in less
 ag 'search' | cut -c1-120 #truncating long lines for consumption to 120 characters
 
 cut -f1 -d' ' <<< "hello world"
+
+
+#Example to clean up /etc/hosts:
+  sed -i -n '/\(HEADER\|^10\.\)/!p;/m0/p' /etc/hosts
+
+  -i #edit file in place
+  -n #supress printing the output we will print with p instead
+
+  /\(HEADER\|^10\.\)/
+    Any line matching regex "(HEADER|^10\.)":
+      Lines with the word "HEADER"
+      OR
+      Lines starting with "10."
+  !p
+    Do not print the matching lines
+  ;
+    end of command
+  /m0/p
+    print lines with m0 in them
+  /etc/hosts
+    file to edit

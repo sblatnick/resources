@@ -4,6 +4,10 @@
 git clone https://github.com/geany/geany.git
 git clone git@github.com:geany/geany.git
 
+#remotes:
+git remote #list remotes
+git remote -v #show remotes and their urls
+
 #add git remote repo by alias "upstream":
 git remote add upstream git@github.com:geany/geany.git
 git remote add shanghai git@shanghai01:lcta.git

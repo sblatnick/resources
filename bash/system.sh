@@ -409,6 +409,11 @@ mkdir /var/log/journal
 systemd-tmpfiles --create --prefix /var/log/journal
 systemctl restart systemd-journald
 
+#look at previous logs:
+journalctl -o short-precise -k -b -1
+# -b means what boot relative to 0
+# -k means dmesg
+# -o means improves the readability to show human readable time
 
 #Instead of modifying the script in /usr/lib/systemd/system/
 #I found this note in mariadb.service:

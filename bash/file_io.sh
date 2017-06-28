@@ -156,6 +156,9 @@ else #running for file output or consumption, non-interactively:
 fi
 #Only run when interactive (example when setting terminal title):
 tty -s <&1 && echo -en "\033]0;TITLE\a"
+#Set title when wanting it to update on each prompt:
+PROMPT_COMMAND='printf "\033]0;%s@%s:%s\007" "${USER}" "${HOSTNAME%%.*}" "${PWD/#$HOME/~}"'
+PROMPT_COMMAND='echo -ne "\033]0;YOUR TITLE GOES HERE\007"'
 
 #::::::::::::::::::::TERMINAL PROMPT::::::::::::::::::::
 
@@ -300,6 +303,9 @@ echo -en "\033]0;title\a"
   ffmpeg -i video.MOD -c:copy video.mp4
 #find and convert all of the MOD files:
   find ./ -type f -name "*.MOD" -exec ffmpeg -i "{}" -c:copy "{}.mp4" \;
+
+#convert using mencoder (mplayer) from MTS to AVI:
+  mencoder "$1" -o "${1%.*}.avi" -oac copy -ovc lavc -lavcopts vcodec=mpeg4:vbitrate=10000 -fps 50 -vf scale=1920:1080
 
 #minimum for no GUI:
 #  vlc -I http

@@ -46,3 +46,9 @@
   wall -n "Message"
   #echo to their command line ("who" can tell you which pts to use):
   echo "hello world" > /dev/pts/4
+
+  ls -alrt /dev/pts #find the right terminal
+  cat > /dev/pts/4
+  Connection to 127.0.0.1 closed by remote host.
+  Connection to 127.0.0.1 closed.
+
