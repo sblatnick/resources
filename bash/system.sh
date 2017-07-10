@@ -158,9 +158,11 @@ chkconfig iptables off
     #note: using -d 127.0.0.1 doesn't seem to work right for these rules
   #list the 'nat' rules:
     iptables -t nat -L 
-  #save rules for next boot:
-    /etc/init.d/iptables save #save the current rules
-    #which is like doing iptables-save > /etc/sysconfig/iptables
+  #save current rules for next boot:
+    #sysv:
+    /etc/init.d/iptables save
+    #systemd:
+    iptables-save > /etc/sysconfig/iptables
 
 #see server IP address:
   host google.com
