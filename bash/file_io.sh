@@ -43,6 +43,15 @@ bash -x run 2>output.txt
   pr -mts' ' file1 file2
   paste -d' ' file1 file2
 
+#::::::::::::::::::::JOIN::::::::::::::::::::
+#source: https://stackoverflow.com/questions/1527049/join-elements-of-an-array
+
+foo=('foo bar' 'foo baz' 'bar baz')
+bar=$(printf ",%s" "${foo[@]}")
+bar=${bar:1}
+
+echo $bar
+
 #::::::::::::::::::::LINKS::::::::::::::::::::
 
 #symbolic link:
