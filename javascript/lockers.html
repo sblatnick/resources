@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lockers</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <style>
+      table td {
+        width: 80px;
+        height: 80px;
+        vertical-align: top;
+        padding: 3px;
+      }
+
+      .locker {
+        border: 1px solid black;
+      }
+      .locker:hover {
+        background-color: #eee;
+      }
+
+      .occupied {
+        background-color: red;
+      }
+      .occupied:hover {
+        background-color: #c00;
+      }
+
+      .selected {
+        border: 4px solid blue;
+        padding: 0px;
+      }
+    </style>
+    <script>
+      jQuery.fn.clickify = function(mode) {
+        //~ if(mode) {
+          //~ $("body").keydown(global);
+        //~ }
+        return this.each(function() {
+          var obj = $(this);
+          var owner = obj.attr("owner") ? obj.attr("owner") : "";
+          obj.html(obj.attr("locker") + "<br />" + owner);
+
+          var x = obj.index();
+          var y = obj.closest('tr').index();
+          //console.log("x: " + x + " y: " + y);
+          var preview = $("#preview")[0].getContext("2d");
+          preview.fillStyle="white";
+          preview.fillRect(x * 20, y * 20, 20, 20);
+          
+          if(owner == "") {
+            preview.strokeStyle="black";
+            preview.strokeRect(x * 20 + 1, y * 20 + 1, 18, 18);
+          }
+          else {
+            preview.fillStyle="red";
+            preview.fillRect(x * 20 + 1, y * 20 + 1, 18, 18);
+          }
+
+          preview.font="16px Courier";
+          preview.fillStyle="black";
+          preview.textBaseline="top";
+          preview.textAlign="center";
+          preview.fillText(obj.attr("locker"),x * 20 + 11,y * 20 + 1);
+
+          obj.click(function() {
+            $("[locker]").clickify();
+            if(!mode) {
+              var obj = $(this);
+              obj.off("click");
+              var locker = obj.attr("locker");
+              var owner = obj.attr("owner") ? obj.attr("owner") : "";
+              var html = obj.html();
+              $("body").unbind("keydown");
+              obj.html($("#template").clone().html());
+              $("span", obj).html(locker);
+              $("input[name='owner']", obj).val(owner).focus().select().keydown(function (e) {
+                switch(e.which) {
+                  case 13: //return
+                    $("input[name='save']", obj).click();
+                    break;
+                  case 27: //escape
+                    $("input[name='cancel']", obj).click();
+                    break;
+                }
+              });
+              $("input[name='cancel']", obj).click(function() {
+                $("[locker]").clickify(true);
+              });
+              $("input[name='save']", obj).click(function() {
+                var owner = $("input[name='owner']", obj).val();
+                obj.attr("owner", owner);
+                if(owner == "") {
+                  obj.removeClass("occupied");
+                }
+                else {
+                  obj.addClass("occupied");
+                }
+                $("[locker]").clickify(true);
+              });
+            }
+          });
+        });
+      };
+
+      var posX = 0;
+      var posY = 0;
+      function global(e) {
+        //console.log("keydown: " + e.which);
+        var dX = 0;
+        var dY = 0;
+        switch(e.which) {
+          case 37: //left
+            dX = -1;
+            break;
+          case 39: //right
+            dX = 1;
+            break;
+          case 38: //up
+            dY = -1;
+            break;
+          case 40: //down
+            dY = 1;
+            break;
+          case 13:
+            $("tr:eq(" + posY + ") td:eq(" + posX + ")").click();
+            return;
+            break;
+          default:
+            return;
+        }
+        var next = $("tr:eq(" + (posY + dY) + ") td:eq(" + (posX + dX) + ")");
+        if(next.attr("locker")) {
+          next.addClass("selected");
+          $("tr:eq(" + posY + ") td:eq(" + posX + ")").removeClass("selected");
+          posY = posY + dY;
+          posX = posX + dX;
+        }
+      }
+      
+      $(document).ready(function() {
+        $("[locker]")
+          .addClass("locker")
+          .clickify();
+        $("[locker][owner]").addClass("occupied");
+        //$("tr:eq(" + posY + ") td:eq(" + posX + ")").addClass("selected");
+        $("body").keydown(global);
+      });
+    </script>
+  </head>
+  <body>
+    <canvas id="preview" width="200" height="200" style="position: fixed; top: 5px; right: 5px; border: 2px solid black;">
+      No HTML5 Support
+    </canvas>
+    <div id="template" style="display: none;">
+      <span>&nbsp;</span>
+      <input name="owner" type="text" /><br />
+      <input name="save" type="button" value="Save" />
+      <input name="cancel" type="button" value="Cancel" />
+    </div>
+    <table>
+      <tr>
+        <td locker="1" owner="Jeff">&nbsp;</td>
+        <td locker="2">&nbsp;</td>
+        <td locker="3">&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td locker="4" owner="Matt">&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td locker="5">&nbsp;</td>
+      </tr>
+      <tr>
+        <td locker="6" owner="Tom">&nbsp;</td>
+        <td locker="7" owner="Larry">&nbsp;</td>
+        <td locker="8" owner="William">&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td locker="9">&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td locker="10">&nbsp;</td>
+      </tr>
+      <tr>
+        <td locker="11">&nbsp;</td>
+        <td locker="12" owner="Tim">&nbsp;</td>
+        <td locker="13">&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td locker="14" owner="Michael">&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td locker="15">&nbsp;</td>
+      </tr>
+    </table>
+  </body>
+</html>
