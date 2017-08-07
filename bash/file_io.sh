@@ -37,6 +37,10 @@ bash -x run 2>output.txt
 #print BOTH to stdout and to a file (-a means append):
   echo hello world | tee -a /tmp/column.csv.$pid | sed "s/^/  /"
 
+#tee and append to a log from within the script:
+  exec > >(tee -ai /tmp/script.log) 2>&1
+  
+
 #::::::::::::::::::::COMBINE COLUMNS::::::::::::::::::::
 
 #merge lines of a file:
