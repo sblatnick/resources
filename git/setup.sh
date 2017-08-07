@@ -32,6 +32,8 @@ git stash-unapply
 
 #other helpful aliases:
 git config --global alias.tut '!$EDITOR ~/projects/resources/git/usage.sh' #load usage guide in your editor
+#mac:
+git config --global alias.tut '!open -a "$EDITOR" ~/projects/resources/git/usage.sh'
 
 #change your name/email:
 git config --global user.name "<first> <last>"
