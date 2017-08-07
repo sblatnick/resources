@@ -1,5 +1,5 @@
 #!/bin/bash
-export PATH="$PATH:/home/$USER/projects/resources/path/"
+export PATH="$PATH:$HOME/projects/resources/path/"
 
 export GIT_MERGE_AUTOEDIT=no
 export LESS="${LESS}R"
