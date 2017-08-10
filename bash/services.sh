@@ -1,5 +1,5 @@
 #!/bin/bash
-#::::::::::::::::::::EDITING STARTUP::::::::::::::::::::
+#::::::::::::::::::::SYSV STARTUP::::::::::::::::::::
 
 #list services and their current status:
 service --status-all
@@ -29,37 +29,65 @@ Run Level    Mode                               Action
 5           X11                               As runlevel 3 + display manager(X)
 6           Reboot                             Reboots the system
 
-#::::::::::::::::::::STARTUP::::::::::::::::::::
-
 /etc/rc.local/
 #SysV startup scripts:
   /etc/init.d/
-#SystemD
-  #startup script as a setup service:
-    /usr/lib/systemd/system/setup.service:
-      [Unit]
-      Description=Setup Script at Boot
-      After=syslog.target network.target systemd-tmpfiles-setup.target
-      Before=httpd.service tomcat.service mysql.service mariadb.service
 
-      [Service]
-      Type=oneshot
-      ExecStart=/usr/libexec/setup
+#write your own:
+  #!/bin/bash
+  # chkconfig: 2345 20 80
+  # description: Description...
 
-      [Install]
-      WantedBy=multi-user.target
-  #service:
-    /usr/lib/systemd/system/service.service:
-      [Unit]
-      Description=Service
+  case "$1" in 
+      start)
+         ;;
+      stop)
+         ;;
+      restart)
+         $0 stop
+         $0 start
+         ;;
+      status)
+         ;;
+      *)
+         echo "Usage: $0 {start|stop|status|restart}"
+         ;;
+  esac
 
-      [Service]
-      Type=forking
-      ExecStart=/usr/libexec/service start
-      ExecStop=/usr/libexec/service stop
+#chkconfig line:
+  # chkconfig: 2345 20 80
+  # chkconfig: [runlevels] [start priority] [stop priority]
 
-      [Install]
-      WantedBy=multi-user.target
+#source: https://unix.stackexchange.com/questions/20357/how-can-i-make-a-script-in-etc-init-d-start-at-boot
+
+#::::::::::::::::::::SYSTEMD STARTUP::::::::::::::::::::
+
+
+#systemd startup script as a setup service:
+  /usr/lib/systemd/system/setup.service:
+    [Unit]
+    Description=Setup Script at Boot
+    After=syslog.target network.target systemd-tmpfiles-setup.target
+    Before=httpd.service tomcat.service mysql.service mariadb.service
+
+    [Service]
+    Type=oneshot
+    ExecStart=/usr/libexec/setup
+
+    [Install]
+    WantedBy=multi-user.target
+#service:
+  /usr/lib/systemd/system/service.service:
+    [Unit]
+    Description=Service
+
+    [Service]
+    Type=forking
+    ExecStart=/usr/libexec/service start
+    ExecStop=/usr/libexec/service stop
+
+    [Install]
+    WantedBy=multi-user.target
 
 #::::::::::::::::::::MYSQL::::::::::::::::::::
 
