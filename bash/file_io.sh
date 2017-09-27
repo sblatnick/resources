@@ -24,6 +24,9 @@ echo "hello" > /tmp/filename
 #append to the file:
 echo "world" >> /tmp/filename
 
+#store contents to variable:
+contents=$(</tmp/filename)
+
 #::::::::::::::::::::CHANNELS AND ROUTING::::::::::::::::::::
 
 #redirect STDERR to STDOUT:

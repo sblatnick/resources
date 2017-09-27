@@ -42,6 +42,13 @@
     name="My Name"
     echo ${!example} #prints: My Name
 
+  #store variable by name:
+    example="name"
+    declare $example="My Name"
+    echo $name #prints: My Name
+    echo ${!example} #prints: My Name
+  
+
 #::::::::::::::::::::ARITHMETIC::::::::::::::::::::
 
 echo $((125924 + 31097))
@@ -95,6 +102,10 @@ $!  #PID of last running background process
   echo `pwd` #current script directory
   echo `basename $0` #name of the program
   echo `dirname $0` #directory of the program
+
+  $RANDOM #built in bash function creating a random integer
+  echo $(($RANDOM % 100)) #random int from 0 to 99
+  echo $(expr $RANDOM % 1000)
 
 #::::::::::::::::::::HISTORY EXPANSION::::::::::::::::::::
 
@@ -229,9 +240,12 @@ echo $(($(</dev/shm/foo)+1)) >/dev/shm/foo;
   echo "${variable}stuff"
 
   #DEFAULT VALUE VARIABLE
-    echo "${myname:-John Doe}" #unset
-    echo "${myname:=John Doe}" #undefined
-    #uses "John Doe" if not set
+    #read variable with default:
+      echo "${myname-John Doe}"
+      echo "${myname:-John Doe}" #delcared, but null
+    #set variable with default:
+      echo "${myname=John Doe}"
+      echo "${myname:=John Doe}" #delcared, but null
 
 #::::::::::::::::::::READ::::::::::::::::::::
 

@@ -34,11 +34,11 @@
   -- Redefine column and add not null:
   ALTER TABLE db.tbl MODIFY col INT(11) NOT NULL;
   -- Change column order:
-  ALTER TABLE db.tbl CHANGE COLUMN col col INT(11) FIRST;
+  ALTER TABLE db.tbl CHANGE COLUMN col col2 INT(11) FIRST;
   -- Delete column:
   ALTER TABLE db.tbl DROP col;
   -- Add column:
-  ALTER TABLE db.tbl ADD col INT(11);
+  ALTER TABLE db.tbl ADD COLUMN col INT(11) AFTER col2;
 
 -- CREATE TABLE --
   CREATE TABLE db.tbl (

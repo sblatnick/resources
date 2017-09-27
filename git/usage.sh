@@ -11,6 +11,12 @@
   git --no-pager log --oneline --grep 'test' #search for the short sha with 'test' in the commit message
   git -C /path #run as if in the git directory
 
+#diff
+  #setup meld as a diff tool:
+  git config --global diff.tool meld
+  #compare differences in meld:
+  git difftool -d fcdc6566e07b3f801c3adbcf4cf1fbb89b01c8cd^..HEAD
+
 #branching:
 
   #create a new branch and switch to it:
