@@ -1,8 +1,21 @@
 #!/bin/bash
 #Permissions related help
 
+#::::::::::::::::::::ATTRIBUTES::::::::::::::::::::
+
 #Make a file immutable, even to root:
 chattr +i /path/to/file.txt
+#view attributes:
+lsattr /path/to/file.txt
+# ----i------------e- file.txt # i means immutable, e is there by default on ext4 as "extends"
+
+#Other attributes:
+# i = immutable
+# a = can only be appended to
+# Not honored on ext2/3/4 filesystems:
+# c = compressed
+# u = when deleted, contents are saved so it can be undeleted
+# s = when deleted, contents are zeroed
 
 #::::::::::::::::::::CHMOD::::::::::::::::::::
 #Examples:
