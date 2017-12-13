@@ -45,6 +45,14 @@
   #in other words: print the line just before the "$index"-th match of pattern "patt" to the first match of "complete" after that.
   awk -v n=$index -v patt="subject: $subject" -v complete='pipeline complete' '$0 ~ patt {++count} count >= n && $0 ~ complete {print;exit} count == n {print last;} count > n {print} {last=$0}' < logfile.log
 
+  #for all files with a yaml key, print until there is no more indentation
+  #xargs configured for mac
+  ag -l start::yaml::key | xargs -I@ cat @ | awk '
+    $0 ~ "start::yaml::key" {start=1}
+    start > 0 {print}
+    $0 !~ "^  |start::yaml::key" {start=0}
+  '
+
 #SED:
 
   #MY SUMMARY:

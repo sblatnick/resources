@@ -46,3 +46,5 @@
     PRIMARY KEY  (`col1`)
   );
 
+-- AGGREGATE COMPARISION --
+  GROUP BY ... HAVING COUNT(id) > 10

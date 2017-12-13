@@ -226,6 +226,9 @@
   #view logs on deleted file:
   git log --all -- path/to/file
 
+  #view logs on a moved file:
+  git log --follow path/to/current/file
+
   #view logs with files modified:
   git whatchanged
 

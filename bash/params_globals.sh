@@ -2,9 +2,18 @@
 
 #::::::::::::::::::::VARIABLE MANIPULATION::::::::::::::::::::
   ${variable%pattern}    #Trim the shortest match from the end
-  ${variable##pattern}  #Trim the longest match from the beginning
-  ${variable%%pattern}  #Trim the longest match from the end
+  ${variable##pattern}   #Trim the longest match from the beginning
+  ${variable%%pattern}   #Trim the longest match from the end
   ${variable#pattern}    #Trim the shortest match from the beginning
+
+  #question mark matches any character:
+  ${variable%?}          #Trim the last character no matter what it is
+
+  #array expressions work in bash 4.2 and above:
+  ${variable::-1}        #Trim last character
+  #pre-4.2 use spaces:
+  ${variable: : -1}
+  #see: https://unix.stackexchange.com/questions/144298/delete-the-last-character-of-a-string-using-string-manipulation-in-shell-script
 
   #Given:
     foo=/tmp/my.dir/filename.tar.gz
@@ -322,6 +331,19 @@ for x in ${doc[@]}
 do
   echo "$x"
 done`
+
+#2 ARRAY intersection:
+  IFS=$'\n'
+  for element in $(echo "${array_one[@]} ${array_two[@]}" | tr ' ' $'\n' | sort | uniq -d)
+  do
+    echo $element
+  done
+#2 ARRAY no-overlap (non-intersection)
+  IFS=$'\n'
+  for element in $(echo "${array_one[@]} ${array_two[@]}" | tr ' ' $'\n' | sort | uniq -u)
+  do
+    echo $element
+  done
 
 #::::::::::::::::::::QUOTES::::::::::::::::::::
 '' #raw

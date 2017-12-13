@@ -207,11 +207,15 @@ export PS1='\w\[\033[31m\]$\[\033[0m\] '
 # \r   A carriage return. 
 # \e   An escape character. 
 # \a   A bell character.
-# \\   A backslash. 
+# \\   A backslash.
 
-# \[   Begin a sequence of non-printing characters. (like color escape sequences).
-  #This allows bash to calculate word wrapping correctly.
-# \]   End a sequence of non-printing characters.
+#non-printing characters:
+  # echo -e to print without escaping
+    # octal: \012 == newline
+    # hex:   \x0a == newline
+  # \[   Begin a sequence of non-printing characters. (like color escape sequences).
+    #This allows bash to calculate word wrapping correctly.
+  # \]   End a sequence of non-printing characters.
 
 #Change the terminal title (or tab title) using this syntax:
 echo -en "\033]0;title\a"

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#::::::::::::::::::::LINUX::::::::::::::::::::
+
 #see what's installed example (debian):
   dpkg --list | grep [app_name]
 
@@ -18,7 +20,9 @@
   rpm -ivh packagename.rpm
   #upgrade rpm:
   rpm -Uvh packagename.rpm
-
+  #downgrade rpm:
+  rpm -Uvh --oldpackage packagename.rpm
+  
   #see changes since install from the package/rpm (https://www.novell.com/coolsolutions/feature/16238.html)
   rpm -V package
   # S file Size differs
@@ -57,6 +61,9 @@
   #revert install:
   yum history #find the id
   yum history undo 56 #undo the install by id
+
+  #extract rpm contents:
+  tar -xvzf package.rpm
 
 #debian:
   apt-get install package
@@ -242,3 +249,14 @@ do
 done
 echo "DONE"
 exit 0
+
+#::::::::::::::::::::MAC::::::::::::::::::::
+
+#Homebrew:
+  #list installed packages:
+  brew list
+
+#MacPorts:
+  #list installed packages:
+  port installed
+
