@@ -62,8 +62,47 @@
   yum history #find the id
   yum history undo 56 #undo the install by id
 
+  #download rpm (requires yum-utils):
+  yum install --downloadonly --downloaddir=/home/$USER/ package
+
   #extract rpm contents:
   tar -xvzf package.rpm
+
+  #Script to Update/Downgrade in yum with a package list:
+    #!/bin/bash
+    packages="ack,package-1.0,etc" #comma separated
+    IFS=',' read -ra PACKAGES <<< "$packages"
+
+    check_package() {
+      package=$1
+      echo "looking for $package ..."
+      rpm -qa | grep "$package" && echo "correct version already installed" && return
+      base_package=$(yum list --showduplicates "$package" | tail -n 1 | sed 's/[\. ].*$//g')
+      if rpm -qa | grep -q "${base_package}";then
+        echo "already installed, attempting to downgrade..."
+        yum downgrade -y "$package" 2>&1 | perl -pe "END { exit \$status } \$status=1 if /Only Upgrade/;"
+
+        if [ 0 -eq "$?" ];then
+          echo "downgrade successful"
+          return
+        else
+          echo "downgrade failed, attempting upgrade"
+        fi
+      fi
+      yum install -y "$package" | perl -pe "END { exit \$status } \$status=1 if /Only Upgrade/;"
+      if [ 1 -eq "$?" ];then
+        echo "install failed, exiting early"
+        exit 1
+      fi
+    }
+
+    for package in ${PACKAGES[@]}
+    do
+      echo "package: $package"
+      check_package "$package" 2>&1 | sed 's/^/  /'
+    done
+    echo "DONE"
+    exit 0
 
 #debian:
   apt-get install package
@@ -74,9 +113,37 @@
   #choose version of java to use:
   sudo update-alternatives --config java
 
+  #force 64 bit architecture on a x86 deb file:
+  sudo dpkg -i --force-architecture nameofpackage.deb
+
+  #how to install all build dependencies for a package:
+  sudo apt-get build-dep programName
+
+  #OpenGL glut libraries:
+    libgl1-mesa-dev
+    freeglut3-dev
+    xlibmesa-gl-dev
+    mesa-common-dev
+
+  #reinstall packages
+    sudo apt-get --reinstall install packageNames
+  #Reinstall OpenGL:
+    sudo apt-get install --reinstall libgl1-mesa-dev freeglut3-dev xlibmesa-gl-dev mesa-common-dev
+
+  #check package version:
+    dpkg -l packageName
+
+  #compile ffmpeg for mp4 aac audio (psp/ipod, patent issues?) DIDN'T WORK?!
+    apt-get source ffmpeg
+    cd ffmpeg-*/
+    ./configure --enable-gpl --enable-pp --enable-pthreads --enable-libogg --enable-a52 --enable-dts --enable-dc1394 --enable-libgsm --disable-debug --enable-libmp3lame --enable-libfaad --enable-libfaac --enable-xvid --enable-x264
+    #(keep running until all the dependencies are met)
+    make
+    sudo make install
+
 #TinyCore Linux:
-tce #install packages
-backup #make persistent after reboot
+  tce #install packages
+  backup #make persistent after reboot
 
   #setup ssh server and static IP: (see: https://firewallengineer.wordpress.com/2012/04/01/how-to-install-and-configure-openssh-ssh-server-in-tiny-core-linux/)
   # after installed to device: http://distro.ibiblio.org/tinycorelinux/install_manual.html
@@ -94,33 +161,17 @@ backup #make persistent after reboot
     ifconfig eth1 100.64.0.128 netmask 255.255.255.0
   $ backup
 
-#OpenGL glut libraries:
-  libgl1-mesa-dev
-  freeglut3-dev
-  xlibmesa-gl-dev
-  mesa-common-dev
+#::::::::::::::::::::MAC::::::::::::::::::::
 
-#force 64 bit architecture on a x86 deb file:
-  sudo dpkg -i --force-architecture nameofpackage.deb
+#Homebrew:
+  #list installed packages:
+  brew list
 
-#how to install building from source dependencies:
-  sudo apt-get build-dep programName
+#MacPorts:
+  #list installed packages:
+  port installed
 
-#reinstall packages
-  sudo apt-get --reinstall install packageNames
-#Reinstall OpenGL:
-  sudo apt-get install --reinstall libgl1-mesa-dev freeglut3-dev xlibmesa-gl-dev mesa-common-dev
-
-#check package version:
-  dpkg -l packageName
-
-#compile ffmpeg for mp4 aac audio (psp/ipod, patent issues?) DIDN'T WORK?!
-  apt-get source ffmpeg
-  cd ffmpeg-*/
-  ./configure --enable-gpl --enable-pp --enable-pthreads --enable-libogg --enable-a52 --enable-dts --enable-dc1394 --enable-libgsm --disable-debug --enable-libmp3lame --enable-libfaad --enable-libfaac --enable-xvid --enable-x264
-  #(keep running until all the dependencies are met)
-  make
-  sudo make install
+#::::::::::::::::::::RPM CREATION::::::::::::::::::::
 
 #create an rpm installing binaries (minimalistic):
 sudo yum install -y rpmdevtools
@@ -212,51 +263,4 @@ expect eof
 EOF
 }
 
-#Update/Downgrade in yum with a package list:
-
-#!/bin/bash
-
-packages="ack,package-1.0,etc" #comma separated
-IFS=',' read -ra PACKAGES <<< "$packages"
-
-check_package() {
-  package=$1
-  echo "looking for $package ..."
-  rpm -qa | grep "$package" && echo "correct version already installed" && return
-  base_package=$(yum list --showduplicates "$package" | tail -n 1 | sed 's/[\. ].*$//g')
-  if rpm -qa | grep -q "${base_package}";then
-    echo "already installed, attempting to downgrade..."
-    yum downgrade -y "$package" 2>&1 | perl -pe "END { exit \$status } \$status=1 if /Only Upgrade/;"
-
-    if [ 0 -eq "$?" ];then
-      echo "downgrade successful"
-      return
-    else
-      echo "downgrade failed, attempting upgrade"
-    fi
-  fi
-  yum install -y "$package" | perl -pe "END { exit \$status } \$status=1 if /Only Upgrade/;"
-  if [ 1 -eq "$?" ];then
-    echo "install failed, exiting early"
-    exit 1
-  fi
-}
-
-for package in ${PACKAGES[@]}
-do
-  echo "package: $package"
-  check_package "$package" 2>&1 | sed 's/^/  /'
-done
-echo "DONE"
-exit 0
-
-#::::::::::::::::::::MAC::::::::::::::::::::
-
-#Homebrew:
-  #list installed packages:
-  brew list
-
-#MacPorts:
-  #list installed packages:
-  port installed
 

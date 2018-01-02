@@ -127,6 +127,10 @@ chkconfig iptables off
   telnet hostname.com 80
   GET / HTTP/1.1
   Host: hostname.com
+  #HTTPS:
+  openssl s_client -connect example.com:443
+  GET / HTTP/1.1
+  Host: hostname.com
 
 #expect:
   #smtp:
@@ -173,9 +177,9 @@ EOF
 
   #ssl telnet:
     #POP:
-      openssl s_client -showcerts -connect mail.pop.net:995
+      openssl s_client -showcerts -connect mail.example.com:995
     #smtp using starttls:
-      openssl s_client -showcerts -connect smtp.sitestar.net:25 -starttls smtp
+      openssl s_client -showcerts -connect smtp.example.com:25 -starttls smtp
 
 
 #netcat to push a binary payload to a host on a port:
