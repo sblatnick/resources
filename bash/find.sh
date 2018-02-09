@@ -61,5 +61,8 @@ find . -path ./.git -prune -or -print
 #get largest directories (KB) in the current path:
 du -sx * 2>/dev/null | sort -r -n | head
 
+#list files which are being used by a process but have been deleted (like a run-away log file):
+lsof +L1
+
 cd /
 for dir in $(ls */ -d);do echo $dir;cd $dir;du -sx * 2>/dev/null | sort -r -n | head | sed 's/^/  /';cd /;done

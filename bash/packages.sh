@@ -104,6 +104,10 @@
     echo "DONE"
     exit 0
 
+  #Check for security remediation:
+  yum install --downloadonly --downloaddir=./ tomcat
+  rpm -pq --changelog tomcat-7.0.76-3.el7_4.noarch.rpm | head
+
 #debian:
   apt-get install package
   apt-cache search package
@@ -235,6 +239,8 @@ fi
 EOF
 rpmbuild -ba ~/.rpm/SPECS/${package}.spec
 
+#::::::::::::::::::::RPM CREATION from CPAN::::::::::::::::::::
+
 #Build perl modules from CPAN as rpms (see http://perlhacks.com/2015/10/build-rpms-of-cpan-modules/):
   #install the necessary build/PM software:
   yum install -y rpm-build cpanspec
@@ -251,6 +257,8 @@ rpmbuild -ba ~/.rpm/SPECS/${package}.spec
   #move the resulting rpm into your directory:
   mv ~/rpmbuild/RPMS/noarch/perl-Crypt-TripleDES-0.24-1.el7.centos.noarch.rpm ./
 
+#::::::::::::::::::::RPM SIGNING::::::::::::::::::::
+
 #Sign an RPM with a gpgkey:
 function rpmSign() {
   echo "signing $1..."
@@ -263,4 +271,30 @@ expect eof
 EOF
 }
 
+#::::::::::::::::::::RPM UPDATE/PATCH::::::::::::::::::::
+
+#Install tools:
+sudo yum install -y yum-utils rpmdevtools
+
+#prepare directories:
+mkdir -p ~/.rpm/{RPMS,SRPMS,BUILD,SOURCES,SPECS,tmp}
+mkdir ~/.rpm/RPMS/{x86_64,noarch}
+
+#Find dependencies (you may need to modify multiple packages):
+yum deplist tomcat
+#or:
+repoquery --requires --resolve tomcat
+
+#Download/install source rpms:
+yumdownloader --source tomcat
+rpm -ivh tomcat-7.0.76.src.rpm
+
+#Modify:
+cd ~/rpms/SOURCES
+tar zxf tomcat-7.0.76.tar.gz
+mv tomcat-7.0.76 tomcat-7.0.82
+vi ~/rpms/SPECS/tomcat.spec
+
+#Rebuild:
+rpmbuild -bb ~/rpms/SPECS/tomcat.spec
 

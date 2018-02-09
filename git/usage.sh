@@ -61,6 +61,7 @@
     git tag -l "pattern*"
     git show-ref --tags #sha
     git tag -n1 #commit messages
+    git log -1 --format=%ai tagname #get datetime of tag
 
     #list remote tags:
     git ls-remote -t

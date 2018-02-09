@@ -251,10 +251,10 @@ echo $(($(</dev/shm/foo)+1)) >/dev/shm/foo;
   #DEFAULT VALUE VARIABLE
     #read variable with default:
       echo "${myname-John Doe}"
-      echo "${myname:-John Doe}" #delcared, but null
+      echo "${myname:-John Doe}" #declared, but null
     #set variable with default:
       echo "${myname=John Doe}"
-      echo "${myname:=John Doe}" #delcared, but null
+      echo "${myname:=John Doe}" #declared, but null
 
 #::::::::::::::::::::READ::::::::::::::::::::
 

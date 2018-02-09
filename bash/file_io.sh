@@ -33,6 +33,8 @@ contents=$(</tmp/filename)
 script 2>&1
 #redirect STDERR to file:
 bash -x run 2>output.txt
+#print to STDERR:
+>&2 echo "error"
 
 #route to a null device
   > /dev/null
