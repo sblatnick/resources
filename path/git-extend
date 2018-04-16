@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+CONFIG=~/.git-extend
 
 #------------------------------------USAGE-------------------------------------#
 if [ $# -lt 1 ]; then
@@ -15,8 +16,8 @@ fi
 
 #------------------------------------SETUP-------------------------------------#
 
-if [ -f ~/.git-extend ];then
-  source ~/.git-extend
+if [ -f ${CONFIG} ];then
+  source ${CONFIG}
 else
   echo -e "\033[33m${0##*/} first run...\033[0m"
 
@@ -54,10 +55,11 @@ else
     esac
 
   echo "  setup extentions..."
-    for extension in do with dob mod mob
+    for extension in stats do with dob mod mob context
     do
       git config --global alias.${extension} "!git-extend ${extension}"
     done
+  touch ${CONFIG}
   echo -e "\033[32mDONE\033[0m"
 fi
 
@@ -68,10 +70,12 @@ function action() {
   shift
   local ARGS=$@
 
-  for repo in $(cat ~/.git-extend)
+  for repo in $(echo ${!current})
   do
+    repo=${repo//\~/$HOME}
+    start=$(pwd)
     cd ${repo}
-      repo=${1##*/}
+      repo=${repo##*/}
       local branch=$(git rev-parse --abbrev-ref HEAD)
       local dirty=''
       if [ -n "$(git status --porcelain)" ]; then
@@ -81,6 +85,7 @@ function action() {
 
       case "${ACTION}" in
         stats)
+            echo -e "${output}"
             git status -s
           ;;
         do)
@@ -115,7 +120,7 @@ function action() {
           exit 1
           ;;
       esac
-    cd -
+    cd $start
   done
 }
 
@@ -135,7 +140,7 @@ case "$1" in
     exit
     ;;
   wash)
-      !branch=$(git rev-parse --abbrev-ref HEAD)
+      branch=$(git rev-parse --abbrev-ref)
       git pull origin $branch
       if [ -n "$(git status --porcelain)" ];then
         echo -e "\033[33munmerged changes\033[0m"
@@ -144,7 +149,7 @@ case "$1" in
       fi
     ;;
   do|dob|mod|mob|with|stats)
-      BRANCH=$(git rev-parse --abbrev-ref HEAD)
+      BRANCH=$(set +e;git rev-parse --abbrev-ref HEAD 2>/dev/null;set -e)
       action $@
     ;;
   context)
