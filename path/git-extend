@@ -1,0 +1,159 @@
+#!/bin/bash
+
+set -e
+
+#------------------------------------USAGE-------------------------------------#
+if [ $# -lt 1 ]; then
+  echo "Usage: ${0##*/} [actions]
+  Actions:
+    context  = repo context maintenence
+    modified = open all of the modified files in ${EDITOR}
+    do|dob|mod|mob|with|stats = Current context actions
+"
+  exit
+fi
+
+#------------------------------------SETUP-------------------------------------#
+
+if [ -f ~/.git-extend ];then
+  source ~/.git-extend
+else
+  echo -e "\033[33m${0##*/} first run...\033[0m"
+
+  echo "  set pager, changing tab length"
+    git config --global core.pager 'less -x2'
+
+  echo "  allow simple push/pull"
+    git config --global push.default simple # tracking ?
+
+  echo "  setup colors..."
+    git config --global color.diff auto
+    git config --global color.branch auto
+    git config --global color.status auto
+
+    git config --global color.branch.current "yellow reverse"
+    git config --global color.branch.local yellow
+    git config --global color.branch.remote green
+
+    git config --global color.diff.whitespace "red reverse"
+
+    git config --global color.status.added yellow
+    git config --global color.status.changed green
+    git config --global color.status.untracked cyan
+
+  echo "  setup aliases..."
+    git config --global alias.rev 'checkout --'
+    git config --global alias.wash "!git-extend wash"
+    case "$(uname -s)" in
+      Darwin) #Mac
+          git config --global alias.tut "!open -a \"${EDITOR}\" ~/projects/resources/git/usage.sh"
+        ;;
+      Linux)
+          git config --global alias.tut "${EDITOR} ~/projects/resources/git/usage.sh"
+        ;;
+    esac
+
+  echo "  setup extentions..."
+    for extension in do with dob mod mob
+    do
+      git config --global alias.${extension} "!git-extend ${extension}"
+    done
+  echo -e "\033[32mDONE\033[0m"
+fi
+
+#----------------------------------FUNCTIONS-----------------------------------#
+
+function action() {
+  local ACTION=$1
+  shift
+  local ARGS=$@
+
+  for repo in $(cat ~/.git-extend)
+  do
+    cd ${repo}
+      repo=${1##*/}
+      local branch=$(git rev-parse --abbrev-ref HEAD)
+      local dirty=''
+      if [ -n "$(git status --porcelain)" ]; then
+        local dirty='*'
+      fi
+      local output="\033[34m${repo}\033[0m \033[32m$branch\033[36m$dirty\033[0m"
+
+      case "${ACTION}" in
+        stats)
+            git status -s
+          ;;
+        do)
+            echo -e "${output}"
+            eval "git $ARGS 2>&1"
+          ;;
+        dob)
+            if [ "$BRANCH" == "$branch" ]; then
+              echo -e "${output}"
+              eval "git $ARGS 2>&1"
+            fi
+          ;;
+        mod)
+            if [ -n "$(git status --porcelain)" ]; then
+              echo -e "${output}"
+              eval "git $ARGS 2>&1"
+            fi
+          ;;
+        mob)
+            if [[ "$BRANCH" == "$branch" && -n "$(git status --porcelain)" ]]; then
+              echo -e "${output}"
+              eval "git $ARGS 2>&1"
+            fi
+          ;;
+        with)
+            echo -e "${output}"
+            local ARGS=${ARGS//REPO/$repo}
+            eval "$ARGS"
+          ;;
+        *)
+          echo -e "\033[31mInvalid action:\033[0m ${ACTION}"
+          exit 1
+          ;;
+      esac
+    cd -
+  done
+}
+
+
+#------------------------------------MAIN--------------------------------------#
+
+ACTION='noop'
+
+case "$1" in
+  modified)
+    dir=$(pwd)
+    files=$(git status -s)
+    for file in $files
+    do
+      $EDITOR $dir/${file##* }
+    done
+    exit
+    ;;
+  wash)
+      !branch=$(git rev-parse --abbrev-ref HEAD)
+      git pull origin $branch
+      if [ -n "$(git status --porcelain)" ];then
+        echo -e "\033[33munmerged changes\033[0m"
+      else
+        git push origin $branch
+      fi
+    ;;
+  do|dob|mod|mob|with|stats)
+      BRANCH=$(git rev-parse --abbrev-ref HEAD)
+      action $@
+    ;;
+  context)
+      context $@
+    ;;
+  *)
+    echo -e "\033[31mInvalid action:\033[0m $1"
+    exit 1
+    ;;
+esac
+
+
