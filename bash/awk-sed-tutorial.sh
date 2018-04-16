@@ -52,6 +52,7 @@
     start > 0 {print}
     $0 !~ "^  |start::yaml::key" {start=0}
   '
+  ag 'org\.apache\.commons\.lang\.' -l | xargs -n 1 -I@ sed -i '' 's/org\.apache\.commons\.lang\./org.apache.commons.lang3./' @
 
 #SED:
 

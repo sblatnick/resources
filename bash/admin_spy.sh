@@ -39,6 +39,9 @@
       echo -e "Key: \"$key\""
     done
 
+#see when someone logged in to the server last:
+  last username
+
 #messaging:
   #send message to another user:
   write

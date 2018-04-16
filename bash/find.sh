@@ -7,10 +7,16 @@ find . -type d -empty -delete
 #Find newest modified files:
 find ./ -type f -exec stat --format '%Y :%y %n' "{}" \; | sort -nr | cut -d: -f2- | head
 
+#Find all images excluding hidden folders:
+find . -not -path '*/\.*' -name '*' -exec file {} \; | grep -Eo '^.+: \w+ image'
+
 find $1 \( -name "*$2" -o -name ".*$2" \) -print |
 while read f; do
   echo $f
 done
+
+#Find file/class in jars:
+for i in *.jar; do jar -tvf $i | grep ClassName && echo "$i"; done
 
 #conditionals:
   # -or == -o

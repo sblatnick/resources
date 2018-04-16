@@ -201,3 +201,7 @@ EOF
 #imap     143         993
 
 
+#::::::::::::::::::::OTHER::::::::::::::::::::
+
+#download public cert
+openssl s_client -connect https://website.com </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > website.cer

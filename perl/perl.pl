@@ -37,6 +37,17 @@ if($@) {
   print $@;
 }
 
+#escalate warning to exception:
+local $SIG{__WARN__} = sub {
+  die @_;
+};
+eval {
+  warn "There was a warning message here"; #could be passed from sub too
+};
+if($@) {
+  print "ERROR: $@\n";
+}
+
 #array reference handling: http://perldoc.perl.org/perlref.html
   use JSON qw( from_json );
   my @users = @{from_json get("https://restapi.com/customer/2/users")};

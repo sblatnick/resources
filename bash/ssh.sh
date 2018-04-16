@@ -23,6 +23,7 @@
   -o ConnectTimeout=1 #sets timeout
   -o BatchMode=yes #keeps it from hanging with "host unknown"
   -o StrictHostKeyChecking=no #automatically adds to known_hosts
+  -o PreferredAuthentications=publickey,password
 
 #execute a local script on a remote host:
   ssh -q machine 'bash -s' < stats.sh
@@ -106,6 +107,9 @@ ssh <remoteUser>@<remoteMachine> -R <remote listening port>:<remote machine refe
   eval `ssh-agent -s`
   ssh-add
 
+#disable agent for testing:
+  ssh -a # -A means agent forwarding
+
 #add ssh key to ssh host:
   #using default ssh key:
   ssh-copy-id user@remotehost.com
@@ -176,3 +180,6 @@ openssl req -new -key ~/.ssh/id_rsa -out id.csr
 openssl x509 -req -days 3650 -in id.csr -signkey ~/.ssh/id_rsa -out id.crt
 #convert pem to pkcs12:
 openssl pkcs12 -export -in id.crt -inkey id_rsa -out signature.p12 -name "Your Name"
+
+keytool -list -keystore cacerts -storepass changeme
+#https://connect2id.com/blog/importing-ca-root-cert-into-jvm-trust-store

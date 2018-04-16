@@ -17,6 +17,11 @@
   #compare differences in meld:
   git difftool -d fcdc6566e07b3f801c3adbcf4cf1fbb89b01c8cd^..HEAD
 
+  #full-context diff:
+  git diff -U$(wc -l file.txt) #single file patch
+  git format-patch --unified=1000 $sha #from commit to HEAD as patches each
+  git show --unified=1000 $sha > file.patch #single commit patch
+
 #branching:
 
   #create a new branch and switch to it:
@@ -74,6 +79,7 @@
 
     #add tag later at a commit:
     git tag -a [tag] [sha]
+    git tag -a -m "message" [tag] [sha]
 
     #push tags:
     git push origin --tags
@@ -104,6 +110,7 @@
   #revert merge:
   git reset 56e05fced
   git reset --hard #just before last merge, head by default
+  git reset --hard HEAD^ #revert to before last commit
 
   #revert to last:
   git reset --soft HEAD@{1}

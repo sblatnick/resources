@@ -66,7 +66,11 @@
   yum install --downloadonly --downloaddir=/home/$USER/ package
 
   #extract rpm contents:
+  rpm2cpio package.rpm | cpio -idmv
+  #extract on mac:
   tar -xvzf package.rpm
+  #delete file from jar/zip:
+  zip -d file.jar path/to/file.txt
 
   #Script to Update/Downgrade in yum with a package list:
     #!/bin/bash
@@ -107,6 +111,15 @@
   #Check for security remediation:
   yum install --downloadonly --downloaddir=./ tomcat
   rpm -pq --changelog tomcat-7.0.76-3.el7_4.noarch.rpm | head
+
+  #get repo urls for importing elsewhere:
+  grep baseurl /etc/yum.repos.d/*
+
+  #change repos:
+  yum-config-manager --disable
+  yum-config-manager --add-repo http://example.repo.com/yum/centos/7_latest/os/x86_64/
+  rpm --import http://example.repo.com/yum/centos/7_latest/os/x86_64/RPM-GPG-KEY-CentOS-7
+  yum clean all
 
 #debian:
   apt-get install package
@@ -170,10 +183,14 @@
 #Homebrew:
   #list installed packages:
   brew list
+  #install
+  brew install package
 
 #MacPorts:
   #list installed packages:
   port installed
+  #install package
+  port install package
 
 #::::::::::::::::::::RPM CREATION::::::::::::::::::::
 
