@@ -124,6 +124,29 @@ function action() {
   done
 }
 
+function context()
+{
+  local action=$1
+  case "$1" in
+    list)
+        grep -E '="$' ${CONFIG} | sed 's/="$//'
+      ;;
+    set|use)
+        echo "TODO"
+      ;;
+    add)
+        echo "TODO"
+      ;;
+    remove)
+        echo "TODO"
+      ;;
+    *)
+      echo -e "\033[31mInvalid context action:\033[0m $1"
+      exit 1
+      ;;
+  esac
+}
+
 
 #------------------------------------MAIN--------------------------------------#
 
@@ -153,6 +176,7 @@ case "$1" in
       action $@
     ;;
   context)
+      shift
       context $@
     ;;
   *)
