@@ -79,3 +79,23 @@ dosfsck /dev/sdc1 #detect and fix the dirty bit from not umounting properly
 #User defaults set by umask in /etc/profile or .bashrc:
 umask 022
 #source: http://www.cyberciti.biz/tips/understanding-linux-unix-umask-value-usage.html
+
+
+#::::::::::::::::::::SELINUX::::::::::::::::::::
+
+vi /etc/selinux/config
+  SELINUX=disabled
+$ semanage permissive -a mysqld_t
+$ getenforce
+Enforcing
+$ sudo setenforce 0
+$ sestatus
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   permissive
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Max kernel policy version:      28

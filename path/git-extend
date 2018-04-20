@@ -55,7 +55,7 @@ else
     esac
 
   echo "  setup extentions..."
-    for extension in stats do with dob mod mob context
+    for extension in modified stats do with dob mod mob context
     do
       git config --global alias.${extension} "!git-extend ${extension}"
     done
@@ -127,24 +127,72 @@ function action() {
 function context()
 {
   local action=$1
-  case "$1" in
+  shift
+
+  contexts=()
+  IFS=$'\n' read -ra contexts <<< $(grep -E '="$' ${CONFIG} | sed 's/="$//')
+
+  case "$action" in
     list)
-        grep -E '="$' ${CONFIG} | sed 's/="$//'
+        for context in ${contexts[@]}
+        do
+          if [ "$context" == "$current" ];then
+            echo -e "\033[32m${context}\033[36m*\033[0m"
+          else
+            echo -e "\033[32m${context}\033[0m"
+          fi
+        done
+        return
+      ;;
+    new)
+        local context=$1
+        shift
+        current="$context"
+        contexts="${contexts}
+${context}"
+        declare ${current}="
+"
       ;;
     set|use)
-        echo "TODO"
+        local context=$1
+        shift
+        current="$context"
       ;;
     add)
-        echo "TODO"
+        repos=$(echo "${!current}" | sed '/^$/d')
+        while [ -n "$1" ]
+        do
+          local repo=$1
+          cd ${repo}
+          repos="${repos}
+$(pwd)"
+          cd - >/dev/null
+          shift
+        done
+        declare ${current}="${repos}"
       ;;
     remove)
-        echo "TODO"
+        while [ -n "$1" ]
+        do
+          local repo=$1
+          shift
+          declare ${current}="$(sed "/\/${repo}$/d" <<< "$(echo "${!current}" | sed '/^$/d')")"
+        done
       ;;
     *)
       echo -e "\033[31mInvalid context action:\033[0m $1"
       exit 1
       ;;
   esac
+
+  echo "current=\"${current}\"" > ${CONFIG}
+  for context in $contexts
+  do
+    echo "${context}=\"
+${!context}
+\"" >> ${CONFIG}
+  done
+  echo "" >> ${CONFIG}
 }
 
 
@@ -155,6 +203,7 @@ ACTION='noop'
 case "$1" in
   modified)
     dir=$(pwd)
+    IFS=$'\n'
     files=$(git status -s)
     for file in $files
     do
