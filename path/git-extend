@@ -126,11 +126,16 @@ function action() {
 
 function context()
 {
-  local action=$1
-  shift
+  if [ $# -lt 1 ]; then
+    local action='list'
+  else
+    local action=$1
+    shift
+  fi
 
   contexts=()
   IFS=$'\n' read -ra contexts <<< $(grep -E '="$' ${CONFIG} | sed 's/="$//')
+  repos=$(echo "${!current}" | sed '/^$/d')
 
   case "$action" in
     list)
@@ -152,17 +157,19 @@ function context()
 ${context}"
         declare ${current}="
 "
+        echo "created and using ${context}"
       ;;
     set|use)
         local context=$1
         shift
         current="$context"
+        echo "using ${context}"
       ;;
     add)
-        repos=$(echo "${!current}" | sed '/^$/d')
         while [ -n "$1" ]
         do
           local repo=$1
+          echo "adding ${repo}"
           cd ${repo}
           repos="${repos}
 $(pwd)"
@@ -175,8 +182,9 @@ $(pwd)"
         while [ -n "$1" ]
         do
           local repo=$1
+          echo "removing ${repo}"
           shift
-          declare ${current}="$(sed "/\/${repo}$/d" <<< "$(echo "${!current}" | sed '/^$/d')")"
+          declare ${current}="$(sed "/\/${repo}$/d" <<< "${repos}")"
         done
       ;;
     *)
@@ -189,7 +197,7 @@ $(pwd)"
   for context in $contexts
   do
     echo "${context}=\"
-${!context}
+$(echo "${!context}" | sed '/^$/d')
 \"" >> ${CONFIG}
   done
   echo "" >> ${CONFIG}
