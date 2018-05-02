@@ -65,6 +65,9 @@
   #download rpm (requires yum-utils):
   yum install --downloadonly --downloaddir=/home/$USER/ package
 
+  #download url (requires yum-utils):
+  yumdownloader --urls package
+
   #extract rpm contents:
   rpm2cpio package.rpm | cpio -idmv
   #extract on mac:
@@ -315,3 +318,6 @@ vi ~/rpms/SPECS/tomcat.spec
 #Rebuild:
 rpmbuild -bb ~/rpms/SPECS/tomcat.spec
 
+#::::::::::::::::::::PYTHON PIP::::::::::::::::::::
+
+pip install package

@@ -203,7 +203,11 @@ openssl x509 -req -days 3650 -in id.csr -signkey ~/.ssh/id_rsa -out id.crt
     cp bin.pem /etc/pki/tls/certs
     c_rehash
   #Method 3: add it to shared system truststore:
+    cp bin.pem /etc/pki/ca-trust/source/anchors/
+    #or OpenSSL’s extended BEGIN TRUSTED CERTIFICATE format:
+    cp bin.crt /etc/pki/ca-trust/source/
     update-ca-trust
+    #may need to be enabled:
     update-ca-trust enable
 
 
