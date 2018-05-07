@@ -220,7 +220,7 @@ case "$1" in
     exit
     ;;
   wash)
-      branch=$(git rev-parse --abbrev-ref)
+      branch=$(git rev-parse --abbrev-ref HEAD)
       git pull origin $branch
       if [ -n "$(git status --porcelain)" ];then
         echo -e "\033[33munmerged changes\033[0m"
