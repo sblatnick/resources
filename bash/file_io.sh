@@ -39,7 +39,7 @@ bash -x run 2>output.txt
 scp $src $dst 2>&1 | sed "s/^/:: ${BASH_COMMAND} :: args: $src, $dst :: /"
 
 #capture output of time:
-{ time date 2>1 ; } 2>&1 | grep real
+{ time date 2>&1 ; } 2>&1 | grep real
 
 #route to a null device
   > /dev/null
