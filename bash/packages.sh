@@ -14,6 +14,7 @@
   yum whatprovides package
   rpm -ql tomcat #show installed files
   rpm -qR tomcat #find dependencies
+  rpm -qpR tomcat.rpm # -p means from the package file
   rpm -qip packagename.rpm #show information about the package not installed like signature
   rpm -qf log4j.properties #find rpm package that installed the file
   #install rpm:
@@ -22,6 +23,10 @@
   rpm -Uvh packagename.rpm
   #downgrade rpm:
   rpm -Uvh --oldpackage packagename.rpm
+  #install group:
+  yum groupinstall "Development Tools"
+  #install dependencies:
+  yum-builddep kernel-devel
   
   #see changes since install from the package/rpm (https://www.novell.com/coolsolutions/feature/16238.html)
   rpm -V package
@@ -302,6 +307,8 @@ mkdir ~/.rpm/RPMS/{x86_64,noarch}
 
 #Find dependencies (you may need to modify multiple packages):
 yum deplist tomcat
+#Install dependencies:
+yum-builddep tomcat
 #or:
 repoquery --requires --resolve tomcat
 
@@ -309,14 +316,52 @@ repoquery --requires --resolve tomcat
 yumdownloader --source tomcat
 rpm -ivh tomcat-7.0.76.src.rpm
 
+#find top directory:
+rpm --showrc | grep topdir #installing src rpm adds the spec file to ${_topdir:-~/rpmbuild}/SPEC/
+
 #Modify:
-cd ~/rpms/SOURCES
+cd ${_topdir:-~/rpmbuild}/SOURCES
 tar zxf tomcat-7.0.76.tar.gz
 mv tomcat-7.0.76 tomcat-7.0.82
-vi ~/rpms/SPECS/tomcat.spec
+vi ${_topdir:-~/rpmbuild}/SPECS/tomcat.spec
 
 #Rebuild:
-rpmbuild -bb ~/rpms/SPECS/tomcat.spec
+rpmbuild -bb ${_topdir:-~/rpmbuild}/SPECS/tomcat.spec
+rpmbuild -bp ${_topdir:-~/rpmbuild}/SPEC/package.spec
+
+# -ba    Build binary and source  packages  (after  doing  the  %prep,  %build,  and  %install stages)
+# -bb    Build a binary package (after doing the %prep, %build, and %install stages).
+# -bp    Executes  the  "%prep" stage from the spec file. Normally this involves unpacking the sources and applying any patches.
+# -bc    Do the "%build" stage from the spec file (after doing the %prep stage).  This  generally involves the equivalent of a "make".
+# -bi    Do the "%install" stage from the spec file (after doing the %prep and %build stages).  This generally involves the equivalent of a "make install".
+# -bl    Do a "list check".  The "%files" section from the spec file is  macro  expanded,  and checks are made to verify that each file exists.
+# -bs    Build just the source package.
+
+#::::::::::::::::::::RPM MOCK::::::::::::::::::::
+
+sudo yum install -y yum-utils epel-release mock rpm-build
+sudo usermod -a -G mock $USER
+
+#mock uses a source rpm.  If you don't have one, you will need to create it:
+rpmbuild -bs package.spec
+
+#Find the config file matching the kernel and architecture:
+ll /etc/mock/
+
+#initialize chroot to improve build time of future runs:
+mock -r epel-6-x86_64 --init
+#delete:
+mock -r epel-6-x86_64 --clean
+
+#rebuild rpm:
+mock -r epel-6-x86_64 rebuild package-1.1-1.src.rpm
+mock -r epel-6-x86_64 --resultdir ./ rebuild kernel-2.6.32-696.30.1.el6.src.rpm
+
+/var/lib/mock/epel-6-x86_64/result #build logs
+#mock
+# -r config
+# --resultdir = change output rpm directory
+
 
 #::::::::::::::::::::PYTHON PIP::::::::::::::::::::
 

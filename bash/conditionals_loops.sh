@@ -128,6 +128,14 @@
     let "i++"
   done
 
+  #set numbered parameters to each:
+  set -- one two three
+  while [ "$1" != "" ];do
+    variable="$1"
+    #do stuff
+    shift
+  done
+
 #FOR LOOP:
   #using a sub-shell, so variables can be read after the loop:
   for video in $(ls | grep .flv)
@@ -237,3 +245,32 @@ do
 done
 
 #Resource: http://steve-parker.org/sh/sh.shtml
+
+
+#::::::::::::::::::::GLOBBING::::::::::::::::::::
+
+*           #matches any characters
+[abc]       #matches any one character
+{this,that} #matches this or that
+
+
+#::::::::::::::::::::EXTENDED GLOBBING::::::::::::::::::::
+
+shopt -s extglob #set extended globbing
+
+  ?(pattern-list) #Matches zero or one occurrence of the given patterns
+  *(pattern-list) #Matches zero or more occurrences of the given patterns
+  +(pattern-list) #Matches one or more occurrences of the given patterns
+  @(pattern-list) #Matches one of the given patterns
+  !(pattern-list) #Matches anything except one of the given patterns
+
+shopt -u extglob #unset extended globbing
+
+#Source: https://stackoverflow.com/questions/216995/how-can-i-use-inverse-or-negative-wildcards-when-pattern-matching-in-a-unix-linu
+
+#get all directories without profile_ or role_ as a prefix:
+ls -d !(@(profile|role)_*)
+  #this does NOT work because ! is for only one pattern (returns all directories):
+  ls -d !({profile,role}_*)
+
+

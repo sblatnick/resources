@@ -22,6 +22,10 @@
   git format-patch --unified=1000 $sha #from commit to HEAD as patches each
   git show --unified=1000 $sha > file.patch #single commit patch
 
+  #show full contents of a file at a tag or commit sha:
+  git show ${tag}:filename.txt
+  git show ${sha}:filename.txt
+
 #branching:
 
   #create a new branch and switch to it:

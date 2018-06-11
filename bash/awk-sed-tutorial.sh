@@ -79,6 +79,8 @@
 
   #END SUMMARY
 
+  # $replace $search only on $match lines:
+  sed -i "/${match//\//\\/}/{s/${search//\//\\/}/${replace//\//\\/}/}" ${file}
 
   #source: http://www.grymoire.com/Unix/Sed.html
 

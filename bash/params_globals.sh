@@ -345,6 +345,10 @@ done`
     echo $element
   done
 
+#JOIN:
+csv=$(IFS=',';echo "${array[*]}")
+echo "${csv//,/, }" #add space
+
 #::::::::::::::::::::QUOTES::::::::::::::::::::
 '' #raw
 "" #pre-render
