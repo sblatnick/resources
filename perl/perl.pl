@@ -37,6 +37,10 @@ if($@) {
   print $@;
 }
 
+#verbose/trace output:
+perl -d:Trace script.pl
+#requires: sudo perl -MCPAN -e 'install Devel::Trace'
+
 #escalate warning to exception:
 local $SIG{__WARN__} = sub {
   die @_;

@@ -250,7 +250,8 @@ done
 #::::::::::::::::::::GLOBBING::::::::::::::::::::
 
 *           #matches any characters
-[abc]       #matches any one character
+?           #matches any one character
+[abc]       #matches any one character in the list
 {this,that} #matches this or that
 
 

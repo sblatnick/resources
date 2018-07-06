@@ -6,6 +6,14 @@ find . -type d -empty
 find . -type d -empty -delete
 #Find newest modified files:
 find ./ -type f -exec stat --format '%Y :%y %n' "{}" \; | sort -nr | cut -d: -f2- | head
+find . -type f -exec stat --format '%Y .%y. %n' "{}" \; | sort -nr | cut -d. -f2,5- | head
+
+find . -type f -exec stat --format '%Y .%y. %n' "{}" \; | sort -nr | cut -d. -f5- | head -n 20 |
+while read file
+do
+  echo -e "\033[34m${file}\033[0m"
+  tail -n 3 .${file} | sed 's/^/  /'
+done
 
 #Find all images excluding hidden folders:
 find . -not -path '*/\.*' -name '*' -exec file {} \; | grep -Eo '^.+: \w+ image'

@@ -19,6 +19,8 @@
   rpm -qf log4j.properties #find rpm package that installed the file
   #install rpm:
   rpm -ivh packagename.rpm
+  #uninstall rpm:
+  rpm -e package
   #upgrade rpm:
   rpm -Uvh packagename.rpm
   #downgrade rpm:
@@ -295,6 +297,12 @@ send -- "$pw\r"
 expect eof
 EOF
 }
+
+#::::::::::::::::::::RPM EDIT SPEC FILE::::::::::::::::::::
+
+rpmrebuild -e -p package.rpm #opens in vi
+Do you want to continue ? (y/N) y
+result: /root/rpmbuild/RPMS/x86_64/package.rpm
 
 #::::::::::::::::::::RPM UPDATE/PATCH::::::::::::::::::::
 

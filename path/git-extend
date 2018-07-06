@@ -8,7 +8,14 @@ if [ $# -lt 1 ]; then
   echo "Usage: ${0##*/} [actions]
   Actions:
     context  = repo context maintenence
+      list           = list contexts
+      new [name]     = create context
+      set|use [name] = switch to context
+      add [path]     = add pwd or path to the current context
+      remove         = remove from the current context
+
     modified = open all of the modified files in ${EDITOR}
+
     do|dob|mod|mob|with|stats = Current context actions
 "
   exit
@@ -124,6 +131,22 @@ function action() {
   done
 }
 
+function add_repo_to_context() {
+  set +e
+  local repo=$1
+  cd ${repo}
+  repo=$(basename $(git rev-parse --show-toplevel 2>/dev/null) 2>/dev/null)
+  if [[ "$?" -eq 0 ]];then
+    echo -e "\033[32madding\033[0m ${repo}"
+    #pwd only works here because git runs extensions from the top level
+    repos="${repos}
+$(pwd)"
+  else
+    echo -e "\033[31minvalid repo\033[0m ${1}"
+  fi
+  cd - >/dev/null
+}
+
 function context()
 {
   if [ $# -lt 1 ]; then
@@ -157,25 +180,24 @@ function context()
 ${context}"
         declare ${current}="
 "
-        echo "created and using ${context}"
+        echo -e "\033[33mcreated and using\033[0m \033[32m${context}\033[0m"
       ;;
     set|use)
         local context=$1
         shift
         current="$context"
-        echo "using ${context}"
+        echo -e "\033[33musing\033[0m \033[32m${context}\033[0m"
       ;;
     add)
-        while [ -n "$1" ]
-        do
-          local repo=$1
-          echo "adding ${repo}"
-          cd ${repo}
-          repos="${repos}
-$(pwd)"
-          cd - >/dev/null
-          shift
-        done
+        if [ -n "$1" ];then
+          while [ -n "$1" ]
+          do
+            add_repo_to_context $1
+            shift
+          done
+        else
+          add_repo_to_context $(pwd)
+        fi
         declare ${current}="${repos}"
       ;;
     remove)
@@ -187,9 +209,12 @@ $(pwd)"
           declare ${current}="$(sed "/\/${repo}$/d" <<< "${repos}")"
         done
       ;;
+    help)
+        git extend #print git extend usage
+      ;;
     *)
-      echo -e "\033[31mInvalid context action:\033[0m $1"
-      exit 1
+        echo -e "\033[31mInvalid context action:\033[0m $1"
+        exit 1
       ;;
   esac
 

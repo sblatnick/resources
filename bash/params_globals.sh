@@ -98,6 +98,23 @@ $$  #PID (process ID number) of currently running shell, usefull for temp
 $!  #PID of last running background process
     # "This is useful to keep track of the process as it gets on with its job."
 
+#$! is kinda tricky to use:
+  set -e
+  pid=$$
+  echo "Running installer:"
+  { ./installer.sh & echo $! > /tmp/${pid} ; } 2>&1 | sed 's/^/  /' || :
+  log="/tmp/installer_$(</tmp/${pid}).log"
+  echo "Log: $log"
+  cat $log | sed 's/^/  /'
+  rm -f $log /tmp/${pid}
+
+  #Parts:
+  #  ./installer.sh & echo $!  = run in background so you can echo the pid
+  #  > /tmp/${pid}             = output into a temp file
+  #  { ; }                     = run in a subshell
+  #  2>&1 | sed 's/^/  /'      = indent stdout and stderr
+  #  || :                      = skip exiting on errors if using set -e
+
 #::::::::::::::::::::GLOBAL VARIABLES::::::::::::::::::::
 #Internal Field Separator (See ARRAYS)
   IFS='
@@ -289,6 +306,13 @@ echo ${#ARRAY[@]} #8
 echo ${!ARRAY[@]} #indicies: 0 1 2 3 4 5 6 7
 indicies=(${!ARRAY[@]}) #store the indicies to an array
 echo "${indicies[@]}" #prints: 0 1 2 3 4 5 6 7
+
+#INDIRECTION array indices in loop:
+AR=('foo' 'bar' 'baz' 'bat')
+for i in "${!AR[@]}"; do
+  printf '${AR[%s]}=%s\n' "$i" "${AR[i]}"
+done
+#source: https://unix.stackexchange.com/questions/278502/accessing-array-index-variable-from-bash-shell-script-loop
 
 #Note: Arrays can have specified indicies (int), but not keys (string)
 #specify other indicies for a sparse array (notice numerical reordering)
