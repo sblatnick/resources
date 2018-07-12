@@ -115,6 +115,10 @@ $!  #PID of last running background process
   #  2>&1 | sed 's/^/  /'      = indent stdout and stderr
   #  || :                      = skip exiting on errors if using set -e
 
+set -e #error stops execution
+set +e #error continues execution (default)
+set -x #print every command executed to stdout
+
 #::::::::::::::::::::GLOBAL VARIABLES::::::::::::::::::::
 #Internal Field Separator (See ARRAYS)
   IFS='
