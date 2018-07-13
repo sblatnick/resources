@@ -2,6 +2,7 @@
 
 set -e
 CONFIG=~/.git-extend
+shopt -s extglob
 
 #------------------------------------USAGE-------------------------------------#
 if [ $# -lt 1 ]; then
@@ -159,6 +160,7 @@ function context()
   contexts=()
   IFS=$'\n' read -ra contexts <<< $(grep -E '="$' ${CONFIG} | sed 's/="$//')
   repos=$(echo "${!current}" | sed '/^$/d')
+  names=$(echo "$repos" | sed 's/^.*\///' | tr $'\n' '|')
 
   case "$action" in
     list)
@@ -211,6 +213,12 @@ ${context}"
       ;;
     help)
         git extend #print git extend usage
+      ;;
+    @(${names}))
+        repo=$(grep -Em 1 "${action}$" <<< "${repos}")
+        #cd doesn't work, subshell :-(
+        echo cd ${repo//\~/$HOME}
+        exit
       ;;
     *)
         echo -e "\033[31mInvalid context action:\033[0m $1"
