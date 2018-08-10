@@ -220,6 +220,9 @@
   #single line logs
   git log --oneline
 
+  #single line custom formatted logs (see `git help log`):
+  git log --branches --date='format:%Y-%m-%d %T' --format="%cd %Cblue%h%Creset %s"
+
   #find branch name from 6 digit sha:
   git branch -a --contains <commit>
 

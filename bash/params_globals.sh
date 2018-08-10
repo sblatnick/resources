@@ -137,6 +137,36 @@ set -x #print every command executed to stdout
   echo $(($RANDOM % 100)) #random int from 0 to 99
   echo $(expr $RANDOM % 1000)
 
+  #Bash Variables: https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html
+  #script.sh:
+    #!/bin/bash
+
+    VARS="BASH
+    BASHOPTS
+    BASH_ARGC
+    BASH_ARGV
+    BASH_CMDS
+    BASH_COMMAND
+    BASH_LINENO
+    BASH_SOURCE"
+
+    for var in $VARS
+    do
+      printf "%-22s %s\n" "${var}:" "${!var}"
+    done
+
+
+  ~ $ ./script.sh example script
+  BASH:                  /bin/bash
+  BASHOPTS:
+  BASH_ARGC:             2
+  BASH_ARGV:             script
+  BASH_CMDS:
+  BASH_COMMAND:          printf "%-22s %s\n" "${var}:" "${!var}"
+  BASH_LINENO:           0
+  BASH_SOURCE:           ./script.sh
+
+
 #::::::::::::::::::::HISTORY EXPANSION::::::::::::::::::::
 
   history | less #view history with line numbers
@@ -228,11 +258,35 @@ echo $(($(</dev/shm/foo)+1)) >/dev/shm/foo;
   }
   trap cleanup SIGHUP SIGINT SIGTERM
 
+  #example.sh
+    #!/bin/bash
+    echo start
+    trap 'echo ERROR in script $BASH_SOURCE on line $BASH_LINENO running command: \"$BASH_COMMAND\" exit code: $?;exit 1' ERR
+    echo source something
+    source something.sh
+    echo done
+
+  ~ $ ./example.sh
+  start
+  source something
+  ./example.sh: line 5: something.sh: No such file or directory
+  ERROR in script ./example.sh on line 0 running command: "source something.sh" exit code: 1
+
 #::::::::::::::::::::CHANNEL REDIRECTION::::::::::::::::::::
   #Piping errors shorthand:
     |&
   #shorthand for:
     2>&1 |
+
+  #Redirecting stderr and stdout shorthand:
+  &> file # (>& supported but not preferred because of appending)
+  #shorthand for:
+  > file 2>&1
+  #append shorthand:
+  &>> # (>>& is not supported)
+  #shorthand for:
+  >> file 2>&1
+
 #Example:
   #open up an extra input file
   exec 7</dev/tty

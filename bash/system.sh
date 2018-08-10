@@ -145,6 +145,7 @@ esac
   ps -elf | grep "process"
   ps -o etime= -p $(pgrep java) #how long java process has been running in days,hrs,etc
   ps -o etimes= -p $(pgrep java) #how long java process has been running in sec
+  ps auxwe | grep $pid #full command in process
   top
   htop
   jobs -p #get the pids of all thread started from within this shell/script
@@ -304,6 +305,7 @@ virsh list --all
 virsh shutdown name
 virsh start name
 virsh destroy name #shutdown by power off
+virsh undefine #delete the vm definition (does not delete volumes, `lvremove /dev/vol0/hostname`)
 
 #::::::::::::::::::::PROXY::::::::::::::::::::
 

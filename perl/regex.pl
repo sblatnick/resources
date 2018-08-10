@@ -22,3 +22,9 @@ $contentString =~ /(?=.*filename=".{8}\.zip";)(?=.*size=12561)/s;
 qr/(?|from=<([^>]+)>,src=|^\s+Sender:(.*?)$)/
 #get next match group? (I'm not sure):
 $+
+
+#named capture groups:
+$test =~ /(?<variable>\w{4})(?<example>\w{4})/;
+
+say 'variable:', $+{variable};
+say 'example:', $+{example};

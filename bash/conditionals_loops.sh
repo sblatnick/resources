@@ -39,10 +39,10 @@
 #  -z        operand has zero length                            1
 #  -d        there exists a directory whose name is operand    1
 #  -f        there exists a file whose name is operand          1
-# -s        there exists a file that with size greater than 0  1
-#  -eq        the operands are integers and they are equal      2
+# -s         there exists a file that with size greater than 0  1
+#  -eq       the operands are integers and they are equal      2
 #  -neq      the opposite of -eq                                2
-#  =          the operands are equal (as strings)                2
+#  =         the operands are equal (as strings)                2
 #  !=        opposite of =                                     2
 
 #INTEGERS ONLY:
@@ -57,12 +57,12 @@
 #see: http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_07_01.html
 
 #bash specific:
-#  -nt        newer than (files)
-#  -ot        older than (files)
+#  -nt       newer than (files)
+#  -ot       older than (files)
 #  -e        file exists
 #  -a        file exists
 #  -S        file is a socket
-#  -ef        paths refer to the same file
+#  -ef       paths refer to the same file
 #  -O        owned by my user
 
 #  -r        readable

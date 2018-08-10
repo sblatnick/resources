@@ -69,6 +69,9 @@ chkconfig iptables off
 #see server IP address:
   host google.com
 
+#see IP's hostname:
+  host 127.0.0.1
+
 #DNS lookup utility:
   dig google.com
 
