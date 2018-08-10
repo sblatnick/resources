@@ -1,0 +1,13 @@
+#!/bin/bash
+
+case "$(uname -s)" in
+  Darwin) #Mac
+      export LSCOLORS="ExGxcxdxbxegedabagacad"
+      function geany() {
+        open -a geany $@
+      }
+    ;;
+  Linux)
+      export LSCOLORS="di=1;34:ln=1;36:so=32:pi=33:ex=31:bd"
+    ;;
+esac

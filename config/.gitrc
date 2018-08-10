@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export GIT_MERGE_AUTOEDIT=no
 export GITEX_CONFIG=~/.git-extend
 export wgit=$(which git) #wrapped git
 shopt -s extglob
@@ -194,15 +195,7 @@ function git() {
       git config --global color.status.changed green
       git config --global color.status.untracked cyan
 
-    echo "  setup aliases..."
-      case "$(uname -s)" in
-        Darwin) #Mac
-            git config --global alias.tut "!open -a \"${EDITOR}\" ~/projects/resources/git/usage.sh"
-          ;;
-        Linux)
-            git config --global alias.tut "${EDITOR} ~/projects/resources/git/usage.sh"
-          ;;
-      esac
+    #echo "  setup aliases..."
 
     touch ${GITEX_CONFIG}
     echo -e "\033[32mDONE\033[0m"
@@ -253,6 +246,9 @@ function git() {
     context|go)
         shift
         gitex_context $@
+      ;;
+    tut)
+        geany ~/projects/resources/git/usage.sh
       ;;
     rev)
         shift
