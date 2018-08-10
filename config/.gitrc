@@ -1,8 +1,8 @@
 #!/bin/bash
 
 export GITEX_CONFIG=~/.git-extend
-shopt -s extglob
 export wgit=$(which git) #wrapped git
+shopt -s extglob
 
 #----------------------------------FUNCTIONS-----------------------------------#
 
@@ -22,7 +22,7 @@ function gitex_action() {
       if [ -n "$(git status --porcelain)" ]; then
         local dirty='*'
       fi
-      local output="\033[34m${repo}\033[0m \033[32m$branch\033[36m$dirty\033[0m"
+      local output="\033[34;1m${repo}\033[0m \033[32;1m$branch\033[36m$dirty\033[0m"
 
       case "${ACTION}" in
         stats)
@@ -195,7 +195,6 @@ function git() {
       git config --global color.status.untracked cyan
 
     echo "  setup aliases..."
-      git config --global alias.rev 'checkout --'
       case "$(uname -s)" in
         Darwin) #Mac
             git config --global alias.tut "!open -a \"${EDITOR}\" ~/projects/resources/git/usage.sh"
@@ -255,8 +254,12 @@ function git() {
         shift
         gitex_context $@
       ;;
+    rev)
+        shift
+        $wgit checkout -- $@
+      ;;
     *|'')
-        $wgit $@
+        $wgit "$@"
       ;;
   esac
 }
