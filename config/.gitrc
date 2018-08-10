@@ -1,79 +1,12 @@
 #!/bin/bash
 
-set -e
-CONFIG=~/.git-extend
+export GITEX_CONFIG=~/.git-extend
 shopt -s extglob
-
-#------------------------------------USAGE-------------------------------------#
-if [ $# -lt 1 ]; then
-  echo "Usage: ${0##*/} [actions]
-  Actions:
-    context  = repo context maintenence
-      list           = list contexts
-      new [name]     = create context
-      set|use [name] = switch to context
-      add [path]     = add pwd or path to the current context
-      remove         = remove from the current context
-
-    modified = open all of the modified files in ${EDITOR}
-
-    do|dob|mod|mob|with|stats = Current context actions
-"
-  exit
-fi
-
-#------------------------------------SETUP-------------------------------------#
-
-if [ -f ${CONFIG} ];then
-  source ${CONFIG}
-else
-  echo -e "\033[33m${0##*/} first run...\033[0m"
-
-  echo "  set pager, changing tab length"
-    git config --global core.pager 'less -x2'
-
-  echo "  allow simple push/pull"
-    git config --global push.default simple # tracking ?
-
-  echo "  setup colors..."
-    git config --global color.diff auto
-    git config --global color.branch auto
-    git config --global color.status auto
-
-    git config --global color.branch.current "yellow reverse"
-    git config --global color.branch.local yellow
-    git config --global color.branch.remote green
-
-    git config --global color.diff.whitespace "red reverse"
-
-    git config --global color.status.added yellow
-    git config --global color.status.changed green
-    git config --global color.status.untracked cyan
-
-  echo "  setup aliases..."
-    git config --global alias.rev 'checkout --'
-    git config --global alias.wash "!git-extend wash"
-    case "$(uname -s)" in
-      Darwin) #Mac
-          git config --global alias.tut "!open -a \"${EDITOR}\" ~/projects/resources/git/usage.sh"
-        ;;
-      Linux)
-          git config --global alias.tut "${EDITOR} ~/projects/resources/git/usage.sh"
-        ;;
-    esac
-
-  echo "  setup extentions..."
-    for extension in modified stats do with dob mod mob context
-    do
-      git config --global alias.${extension} "!git-extend ${extension}"
-    done
-  touch ${CONFIG}
-  echo -e "\033[32mDONE\033[0m"
-fi
+export wgit=$(which git) #wrapped git
 
 #----------------------------------FUNCTIONS-----------------------------------#
 
-function action() {
+function gitex_action() {
   local ACTION=$1
   shift
   local ARGS=$@
@@ -125,14 +58,14 @@ function action() {
           ;;
         *)
           echo -e "\033[31mInvalid action:\033[0m ${ACTION}"
-          exit 1
+          return 1
           ;;
       esac
     cd $start
   done
 }
 
-function add_repo_to_context() {
+function gitex_add_repo_to_context() {
   set +e
   local repo=$1
   cd ${repo}
@@ -148,7 +81,7 @@ $(pwd)"
   cd - >/dev/null
 }
 
-function context()
+function gitex_context()
 {
   if [ $# -lt 1 ]; then
     local action='list'
@@ -158,7 +91,7 @@ function context()
   fi
 
   contexts=()
-  IFS=$'\n' read -ra contexts <<< $(grep -E '="$' ${CONFIG} | sed 's/="$//')
+  IFS=$'\n' read -ra contexts <<< $(grep -E '="$' ${GITEX_CONFIG} | sed 's/="$//')
   repos=$(echo "${!current}" | sed '/^$/d')
   names=$(echo "$repos" | sed 's/^.*\///' | tr $'\n' '|')
 
@@ -194,11 +127,11 @@ ${context}"
         if [ -n "$1" ];then
           while [ -n "$1" ]
           do
-            add_repo_to_context $1
+            gitex_add_repo_to_context $1
             shift
           done
         else
-          add_repo_to_context $(pwd)
+          gitex_add_repo_to_context $(pwd)
         fi
         declare ${current}="${repos}"
       ;;
@@ -211,68 +144,119 @@ ${context}"
           declare ${current}="$(sed "/\/${repo}$/d" <<< "${repos}")"
         done
       ;;
-    help)
-        git extend #print git extend usage
-      ;;
     @(${names}))
         repo=$(grep -Em 1 "${action}$" <<< "${repos}")
-        #cd doesn't work, subshell :-(
-        echo cd ${repo//\~/$HOME}
-        exit
+        cd ${repo//\~/$HOME}
+        return
       ;;
     *)
         echo -e "\033[31mInvalid context action:\033[0m $1"
-        exit 1
+        return 1
       ;;
   esac
 
-  echo "current=\"${current}\"" > ${CONFIG}
+  echo "current=\"${current}\"" > ${GITEX_CONFIG}
   for context in $contexts
   do
     echo "${context}=\"
 $(echo "${!context}" | sed '/^$/d')
-\"" >> ${CONFIG}
+\"" >> ${GITEX_CONFIG}
   done
-  echo "" >> ${CONFIG}
+  echo "" >> ${GITEX_CONFIG}
 }
 
+function git() {
+  #------------------------------------SETUP-------------------------------------#
 
-#------------------------------------MAIN--------------------------------------#
+  if [ -f ${GITEX_CONFIG} ];then
+    source ${GITEX_CONFIG}
+  else
+    echo -e "\033[33mgitex first run...\033[0m"
 
-ACTION='noop'
+    echo "  set pager, changing tab length"
+      git config --global core.pager 'less -x2'
 
-case "$1" in
-  modified)
-    dir=$(pwd)
-    IFS=$'\n'
-    files=$(git status -s)
-    for file in $files
-    do
-      $EDITOR $dir/${file##* }
-    done
-    exit
-    ;;
-  wash)
-      branch=$(git rev-parse --abbrev-ref HEAD)
-      git pull origin $branch
-      if [ -n "$(git status --porcelain)" ];then
-        echo -e "\033[33munmerged changes\033[0m"
-      else
-        git push origin $branch
-      fi
-    ;;
-  do|dob|mod|mob|with|stats)
-      BRANCH=$(set +e;git rev-parse --abbrev-ref HEAD 2>/dev/null;set -e)
-      action $@
-    ;;
-  context)
-      shift
-      context $@
-    ;;
-  *)
-    echo -e "\033[31mInvalid action:\033[0m $1"
-    exit 1
-    ;;
-esac
+    echo "  allow simple push/pull"
+      git config --global push.default simple # tracking ?
 
+    echo "  setup colors..."
+      git config --global color.diff auto
+      git config --global color.branch auto
+      git config --global color.status auto
 
+      git config --global color.branch.current "yellow reverse"
+      git config --global color.branch.local yellow
+      git config --global color.branch.remote green
+
+      git config --global color.diff.whitespace "red reverse"
+
+      git config --global color.status.added yellow
+      git config --global color.status.changed green
+      git config --global color.status.untracked cyan
+
+    echo "  setup aliases..."
+      git config --global alias.rev 'checkout --'
+      case "$(uname -s)" in
+        Darwin) #Mac
+            git config --global alias.tut "!open -a \"${EDITOR}\" ~/projects/resources/git/usage.sh"
+          ;;
+        Linux)
+            git config --global alias.tut "${EDITOR} ~/projects/resources/git/usage.sh"
+          ;;
+      esac
+
+    touch ${GITEX_CONFIG}
+    echo -e "\033[32mDONE\033[0m"
+  fi
+
+  #------------------------------------MAIN--------------------------------------#
+  case "$1" in
+    help|ex)
+        echo -e "Extended Git Usage: git [actions]
+    Actions:
+      help|ex          = print this usage information
+      context|go       = repo context maintenence
+        list           = list contexts
+        new [name]     = create context
+        set|use [name] = switch to context
+        add [path]     = add pwd or path to the current context
+        remove         = remove from the current context
+
+      modified = open all of the modified files in ${EDITOR}
+      tut      = open git tutorial/cheatsheet in ${EDITOR}
+      rev      = revert file to last
+
+      do|dob|mod|mob|with|stats = Current context actions
+  "
+      ;;
+    modified)
+        dir=$(pwd)
+        IFS=$'\n'
+        files=$(git status -s)
+        for file in $files
+        do
+          $EDITOR $dir/${file##* }
+        done
+      ;;
+    wash)
+        branch=$(git rev-parse --abbrev-ref HEAD)
+        git pull origin $branch
+        if [ -n "$(git status --porcelain)" ];then
+          echo -e "\033[33munmerged changes\033[0m"
+        else
+          git push origin $branch
+        fi
+      ;;
+    do|dob|mod|mob|with|stats)
+        export GITEX_BRANCH=$(set +e;git rev-parse --abbrev-ref HEAD 2>/dev/null;set -e)
+        gitex_action $@
+      ;;
+    context|go)
+        shift
+        gitex_context $@
+      ;;
+    *|'')
+        $wgit $@
+      ;;
+  esac
+}
