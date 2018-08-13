@@ -297,6 +297,8 @@ $(echo "${!ctx}" | sed '/^$/d')
 }
 
 function git() {
-  source $BASH_SOURCE #keep gitex sourced for fast dev
+  if tty -s <&1; then
+    source $BASH_SOURCE #keep gitex sourced for fast dev
+  fi
   gitex "$@"
 }
