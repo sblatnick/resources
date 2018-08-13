@@ -44,6 +44,8 @@ function gitex() {
   fi
 
   #------------------------------------MAIN--------------------------------------#
+  actions=$(sed -n "/^##Group Actions:\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/).*$//' | tr $'\n' '|')
+
   case "$1" in
     help)
         $wgit help
@@ -64,7 +66,11 @@ function gitex() {
             printf "    \033[34;1m%-15s\033[0m %s\n" "${help%)?#*}" "${help#*#}"
           done
         done
-        echo ""
+        echo -e "
+  \033[1mDynamic Actions:\033[0m
+    \033[34;1m[context]\033[0m       switch active context
+    \033[34;1m[repo]\033[0m          cd to the repo
+"
       ;;
     modified) #open dirty files in $EDITOR
         dir=$(pwd)
@@ -84,7 +90,7 @@ function gitex() {
           git push origin $branch
         fi
       ;;
-    list|do|dob|mod|mob|with|stats)
+    @(${actions}))
         export GITEX_BRANCH=$(set +e;git rev-parse --abbrev-ref HEAD 2>/dev/null;set -e)
         gitex_action $@
       ;;
@@ -174,17 +180,35 @@ function gitex_add_repo_to_context() {
   cd ${repo}
   repo=$(basename $(git rev-parse --show-toplevel 2>/dev/null) 2>/dev/null)
   if [[ "$?" -eq 0 ]];then
-    echo -e "\033[32madding\033[0m ${repo}"
-    #pwd only works here because git runs extensions from the top level
-    repos="${repos}
+    if grep -q "${repo}\$" <<< "${repos}";then
+      echo -e "\033[31mskipping\033[0m adding \033[34;1m${repo}\033[0m"
+    else
+      echo -e "\033[32madding\033[0m \033[34;1m${repo}\033[0m"
+      #pwd only works here because git runs extensions from the top level
+      repos="${repos}
 $(pwd)"
+    fi
   else
     echo -e "\033[31minvalid repo\033[0m ${1}"
   fi
   cd - >/dev/null
 }
 
-##Context Actions:
+function gitex_remove_repo_from_context() {
+  set +e
+  local repo=$1
+  cd ${repo}
+  repo=$(basename $(git rev-parse --show-toplevel 2>/dev/null) 2>/dev/null)
+  if [[ "$?" -eq 0 ]];then
+    echo -e "\033[32mremoving\033[0m \033[34;1m${repo}\033[0m"
+    export ${current}="$(sed "/${repo}$/d" <<< "${repos}")"
+  else
+    echo -e "\033[31minvalid repo\033[0m ${1}"
+  fi
+  cd - >/dev/null
+}
+
+##Context Actions (context|ctx|go):
 function gitex_context()
 {
   if [ $# -lt 1 ]; then
@@ -196,36 +220,35 @@ function gitex_context()
 
   contexts=()
   IFS=$'\n' read -ra contexts <<< $(grep -E '="$' ${GITEX_CONFIG} | sed 's/="$//')
+  context=$(IFS='|';echo "${contexts[@]}")
   repos=$(echo "${!current}" | sed '/^$/d')
-  names=$(echo "$repos" | sed 's/^.*\///' | tr $'\n' '|')
+  repo=$(echo "$repos" | sed 's/^.*\///' | tr $'\n' '|')
 
   case "$action" in
     list|get) #list contexts (default)
-        for context in ${contexts[@]}
+        for ctx in ${contexts[@]}
         do
-          if [ "$context" == "$current" ];then
-            echo -e "\033[32m${context}\033[36m*\033[0m"
+          if [ "$ctx" == "$current" ];then
+            echo -e "\033[32m${ctx}\033[36m*\033[0m"
           else
-            echo -e "\033[32m${context}\033[0m"
+            echo -e "\033[32m${ctx}\033[0m"
           fi
         done
         return
       ;;
     new) #create and use new context
-        local context=$1
+        current="$1"
         shift
-        current="$context"
         contexts="${contexts}
-${context}"
+${current}"
         declare ${current}="
 "
-        echo -e "\033[33mcreated and using\033[0m \033[32m${context}\033[0m"
+        echo -e "\033[33mcreated and using\033[0m \033[32m${current}\033[0m"
       ;;
     set|use) #switch to context
-        local context=$1
+        current="$1"
         shift
-        current="$context"
-        echo -e "\033[33musing\033[0m \033[32m${context}\033[0m"
+        echo -e "\033[33musing\033[0m \033[32m${current}\033[0m"
       ;;
     add) #add repo to current context
         if [ -n "$1" ];then
@@ -240,16 +263,24 @@ ${context}"
         declare ${current}="${repos}"
       ;;
     remove) #delete repo from current context
-        while [ -n "$1" ]
-        do
-          local repo=$1
-          echo "removing ${repo}"
-          shift
-          declare ${current}="$(sed "/\/${repo}$/d" <<< "${repos}")"
-        done
+        if [ -n "$1" ];then
+          while [ -n "$1" ]
+          do
+            gitex_remove_repo_from_context $1
+            shift
+          done
+        else
+          gitex_remove_repo_from_context $(pwd)
+        fi
+        #declare ${current}="${repos}"
       ;;
-    @(${names}))
+    @(${context}))
+        current="$action"
+        echo -e "\033[33musing\033[0m \033[32m${current}\033[0m"
+      ;;
+    @(${repo}))
         repo=$(grep -Em 1 "${action}$" <<< "${repos}")
+        echo -e "\033[33mentering\033[0m \033[32m${action}\033[0m"
         cd ${repo//\~/$HOME}
         return
       ;;
@@ -258,12 +289,12 @@ ${context}"
         return 1
       ;;
   esac
-
+  
   echo "current=\"${current}\"" > ${GITEX_CONFIG}
-  for context in $contexts
+  for ctx in $contexts
   do
-    echo "${context}=\"
-$(echo "${!context}" | sed '/^$/d')
+    echo "${ctx}=\"
+$(echo "${!ctx}" | sed '/^$/d')
 \"" >> ${GITEX_CONFIG}
   done
   echo "" >> ${GITEX_CONFIG}
