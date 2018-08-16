@@ -427,6 +427,62 @@ done`
     echo $element
   done
 
+#3 ARRAY diff add/remove:
+  #!/bin/bash
+  TMP=/dev/shm/${PID} #shared memory
+
+  function cleanup()
+  {
+    rm -Rf ${TMP} 2>/dev/null
+  }
+  trap "cleanup" SIGINT SIGTERM EXIT
+  mkdir ${TMP}
+
+  function action_diff() {
+    declare -a LEFT=("${!1}") #pass array by reference
+    shift
+    declare -a RIGHT=("${!1}")
+    shift
+    adder=${1}
+    shift
+    remover=${1}
+    shift
+
+    #clear temp files
+    echo -n "" > ${TMP}/left 
+    echo -n "" > ${TMP}/right
+
+    printf '%s\n' "${LEFT[@]}" | sed 's/^\/opt\/src/\/opt\/dest/' | sort > ${TMP}/left
+    printf '%s\n' "${RIGHT[@]}" | sort > ${TMP}/right
+
+    diff ${TMP}/left ${TMP}/right | grep -P '^(<|>)' | \
+    while read -r line
+    do
+      case "$line" in
+        "< "*) #add
+            path="${line#< }"
+            eval ${adder} "${path}"
+            echo -e "${path} \033[32madded\033[0m"
+          ;;
+        "> "*) #remove
+            path="${line#> }"
+            eval ${remover} "${path}"
+            echo -e "${path} \033[33mremoved\033[0m"
+          ;;
+      esac
+    done
+  }
+
+  left=(1 2 4)
+  right=(1 2 3)
+  action_diff left[@] right[@] "echo adder" "echo remover"
+  #output:
+    adder 4
+    4 added
+    remover 3
+    3 removed
+
+
 #JOIN:
 csv=$(IFS=',';echo "${array[*]}")
 echo "${csv//,/, }" #add space

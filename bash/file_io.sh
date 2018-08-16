@@ -316,6 +316,9 @@ echo -en "\033]0;title\a"
 #convert base64 text into binary:
   base64 -d <<< "aGVsbG8gd29ybGQK" > file.bin
   base64 -d < file.txt > file.bin
+#dump hex from binary by piping to xxd or passing it in as a file:
+  ~ $ base64 -D <<< "aGVsbG8gd29ybGQK" | xxd
+  00000000: 6865 6c6c 6f20 776f 726c 640a            hello world.
 
 #::::::::::::::::::::VIDEO ENCODING/DECODING::::::::::::::::::::
 
