@@ -138,6 +138,8 @@ esac
 
 #Find your distribution:
   cat /etc/issue
+#Find kernel parameters passed at boot by grub:
+  cat /proc/cmdline
 #show system info like ram/memory bios, etc
   sudo dmidecode
 #process information
