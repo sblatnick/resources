@@ -23,6 +23,9 @@ while read f; do
   echo $f
 done
 
+#Find all file extensions for ascii test filetypes:
+find . -type f -exec file -i "{}" \; | grep -P 'charset=us-ascii$' | cut -d: -f1 | grep -Po '\.[^./]*$' | sort | uniq -c | sort -nr
+
 #Find file/class in jars:
 for i in *.jar; do jar -tvf $i | grep ClassName && echo "$i"; done
 

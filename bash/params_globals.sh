@@ -129,9 +129,9 @@ set -x #print every command executed to stdout
 
   EDITOR=geany #Set default editor
   PATH #Search path for executables
-  echo `pwd` #current script directory
-  echo `basename $0` #name of the program
-  echo `dirname $0` #directory of the program
+  echo `pwd` #working directory
+  echo `basename $0` #name of the program, same as ${0%/*}
+  echo `dirname $0` #directory of the program, same as ${0##*/}
 
   $RANDOM #built in bash function creating a random integer
   echo $(($RANDOM % 100)) #random int from 0 to 99

@@ -63,7 +63,7 @@ function gitex() {
           sed -n "/^${section}\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | \
           while read help
           do
-            printf "    \033[34;1m%-15s\033[0m %s\n" "${help%)?#*}" "${help#*#}"
+            printf "    \033[34;1m%-15s\033[0m %s\n" "${help%%)*#*}" "${help#*#}"
           done
         done
         echo ""
@@ -216,7 +216,7 @@ function gitex_context()
 
   contexts=()
   IFS=$'\n' read -ra contexts <<< $(grep -E '="$' ${GITEX_CONFIG} | sed 's/="$//')
-  context=$(IFS='|';echo "${contexts[@]}")
+  context=$(echo "${contexts[@]}" | tr ' ' '|')
   repos=$(echo "${!current}" | sed '/^$/d')
   repo=$(echo "$repos" | sed 's/^.*\///' | tr $'\n' '|')
 
@@ -270,7 +270,7 @@ ${current}"
         fi
         #declare ${current}="${repos}"
       ;;
-    ${contexts[@]}) #switch to using this context
+    @(${context})) #switch to using this context
         current="$action"
         echo -e "\033[33musing\033[0m \033[32m${current}\033[0m"
       ;;

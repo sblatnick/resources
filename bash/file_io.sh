@@ -71,6 +71,8 @@ echo $bar
 #symbolic link:
   ln -s target link #(use -t for a directory)
   ln -s /path/to/real/file /path/to/non-existant/file
+  #get target path from link:
+  readlink -f /path/to/link
 #hard link
   ln target link
 
