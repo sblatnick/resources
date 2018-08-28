@@ -6,6 +6,11 @@ alias grep='grep --color=auto'
 #alias diff='diff -u' #use +- instead of <>
 alias agg='ag --color -H' #keep ag coloring in piped output
 
+#ag coloring and pipe to less
+lag() {
+  ag --color -H "$@" | less -R
+}
+
 passed() {
   start=$(date --date="$1" +%s)
   end=$(date --date="$2" +%s)
