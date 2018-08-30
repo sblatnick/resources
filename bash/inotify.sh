@@ -9,7 +9,7 @@ inotifywait
 #make service: https://www.server-world.info/en/note?os=CentOS_6&p=inotify
 
 #!/bin/bash
-#get information about a short-lived pid in McAfee Application Control
+#get information about a short-lived pid in McAfee Application Control (MAC)
 scl=/var/log/mcafee/solidcore/solidcore.log
 inotifywait -e modify $scl
 read process id pid < <(tail -n 1 $scl | grep -Po 'Process Id: \d+')
@@ -23,7 +23,9 @@ echo $auxwe | sed 's/^/  /'
 echo -e "\033[32mpstree:\033[0m"
 echo $tree | sed 's/^/  /'
 
-
+#take an MAC xray of the process:
+scl=/var/log/mcafee/solidcore/solidcore.log
+inotifywait -e modify $scl;sadmin xray
 
 #::::::::::::::::::::TAIL::::::::::::::::::::
 inotail

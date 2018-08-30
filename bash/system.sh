@@ -148,6 +148,8 @@ esac
   ps -o etime= -p $(pgrep java) #how long java process has been running in days,hrs,etc
   ps -o etimes= -p $(pgrep java) #how long java process has been running in sec
   ps auxwe | grep $pid #full command in process
+  ps axjf #like pstree
+  pstree
   top
   htop
   jobs -p #get the pids of all thread started from within this shell/script
