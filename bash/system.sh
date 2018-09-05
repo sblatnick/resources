@@ -142,21 +142,6 @@ esac
   cat /proc/cmdline
 #show system info like ram/memory bios, etc
   sudo dmidecode
-#process information
-  jobs
-  ps -elf | grep "process"
-  ps -o etime= -p $(pgrep java) #how long java process has been running in days,hrs,etc
-  ps -o etimes= -p $(pgrep java) #how long java process has been running in sec
-  ps auxwe | grep $pid #full command in process
-  ps axjf #like pstree
-  pstree
-  top
-  htop
-  jobs -p #get the pids of all thread started from within this shell/script
-  pgrep
-  pkill
-  kill -9 $pid #aggresively kill a stubborn process
-  killall
 
 #cpu speeds:
   cat /proc/cpuinfo
@@ -185,6 +170,36 @@ esac
   which command_name
     which perl
     /usr/bin/perl
+
+#::::::::::::::::::::PROCESS INFORMATION::::::::::::::::::::
+
+  jobs
+  ps -elf | grep "process"
+  ps -o etime= -p $(pgrep java) #how long java process has been running in days,hrs,etc
+  ps -o etimes= -p $(pgrep java) #how long java process has been running in sec
+  ps auxwe | grep $pid #full command in process
+  ps axjf #like pstree
+  pstree
+  top
+  htop
+  jobs -p #get the pids of all thread started from within this shell/script
+  pgrep
+  pkill
+  kill -9 $pid #aggresively kill a stubborn process
+  killall
+
+  ps options:
+    Selection:
+      a       all tty
+      x       all non-tty
+    Output:
+      u       user-oriented format
+      f       ASCII-art process hierarchy
+      w       wide
+      ww      unlimited wide
+      e       environment
+      j       BSD job control format
+
 
 #::::::::::::::::::::USERS::::::::::::::::::::
 #list distinct users:

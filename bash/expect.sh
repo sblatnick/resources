@@ -8,6 +8,22 @@ send "password\r"
 expect eof
 EOF
 
+#Only pass the password if prompted:
+expect << EOF | grep -vF 'Password:'
+  log_user 0
+  spawn sadmin $@
+  log_user 1
+  expect {
+    "Password:" {
+      send "password\r"
+      expect eof
+    }
+    timeout {
+      exit
+    }
+  }
+EOF
+
 #generate script for you:
 autoexpect commands to run
 

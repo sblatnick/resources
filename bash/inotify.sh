@@ -27,6 +27,9 @@ echo $tree | sed 's/^/  /'
 scl=/var/log/mcafee/solidcore/solidcore.log
 inotifywait -e modify $scl;sadmin xray
 
+#look at whole process tree:
+inotifywait -e modify /var/log/mcafee/solidcore/solidcore.log;ps axwwejf | less
+
 #::::::::::::::::::::TAIL::::::::::::::::::::
 inotail
 
