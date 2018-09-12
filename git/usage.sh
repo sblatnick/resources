@@ -258,3 +258,46 @@
   git show sha
   git show sha^
   git log --reverse --ancestry-path sha^..master
+
+
+#git-svn (https://git-scm.com/book/en/v1/Git-and-Other-Systems-Git-and-Subversion)
+  #cloning from svn takes a LONG time and downloads A LOT of data:
+  git svn clone svn://svn.site.com/repo -s
+  # (roughly 1 Terabyte of downloads became 13GB on disk)
+
+  #clone just master and branch:
+    #get latest revision:
+      svn log --stop-on-copy svn://svn.site.com/repo/branches/opera | egrep "r[0-9]+" | tail -1
+    #clone from revision to HEAD:
+      git svn clone -r 400000:HEAD -s svn://svn.site.com/repo
+
+  #resetting to HEAD will leave untracked changes:
+  git reset --hard
+  #remove untracked files:
+  git clean -f -d
+
+  #commit as usual:
+  git commit -am 'message'
+  #push commits to svn:
+  git svn dcommit
+  #pull latest, fix conflicts using rebase:
+  git svn rebase
+  #don't merge locally, only rebase or the linear history of svn hides your work from dev branches
+
+  #create a new svn branch (does not switch to branch):
+  git svn branch release01
+  #track svn branches:
+  git branch opera origin/opera
+  #merging back will effectively --squash the history:
+  git merge master
+
+  #svn-style logs:
+  git svn log
+  #lines edited by who (svn annotate):
+  git svn blame file.txt
+
+  #svn info:
+  git svn info
+
+  #avoid .gitignore in svn project:
+  git svn show-ignore > .git/info/exclude

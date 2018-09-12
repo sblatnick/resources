@@ -107,6 +107,12 @@ FORMAT:
 
 #::::::::::::::::::::USAGE::::::::::::::::::::
 
+#convert from epoch:
+date --date @1535130434
+  Fri Aug 24 10:07:14 PDT 2018
+date -d @1535130434
+  Fri Aug 24 10:07:14 PDT 2018
+
 #Time passed since last ERROR logged in McAfee Application Control:
 last_log() {
   read month day year time < <(grep 'ERROR' /var/log/mcafee/solidcore/solidcore.log | tail -n 1 | grep -Po '[^\s]+ \d+ \d\d\d\d:\d\d:\d\d:\d\d' | sed 's/:/ /')

@@ -63,3 +63,11 @@ if($@) {
   else {
     print Dumper(@users);
   }
+
+#read file to array:
+use File::Slurp qw(read_file);
+my @array = read_file("list.conf", chomp => 1) or ();
+
+#convert array to hash:
+my %hash = map { $_ => 1 } @array;
+if(exists($hash{$file})) { ... }
