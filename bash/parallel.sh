@@ -1,3 +1,24 @@
+#::::::::::::::::::::JOBS::::::::::::::::::::
+
+Ctrl+Z                          #background process
+$ jobs                          #list jobs
+[1]+  Stopped    ./script.sh
+$ bg %1                         #run in background
+[1]+ ./script.sh &
+$ %1 &                          #run in background (alternate method)
+[1]+ ./script.sh &
+$ jobs
+[1]+  Running    ./script.sh &
+$ disown -h                     #move to nohup, so you can close shell
+$ disown -h %1
+
+
+disown [-ar] [-h] [jobspec ...]
+       #no args, disowns "current" job
+  -h   #keeps jobs in table, but doesn't send SIGHUP when exiting
+  -a   #all jobs
+  -r   #running jobs
+
 #::::::::::::::::::::GNU PARALLEL::::::::::::::::::::
 
 #TODO

@@ -215,6 +215,31 @@
   #Substitute all:
     echo "hello world" | tr 'hell' '+' #++++o wor+d
 
+#::::::::::::::::::::HEX/BITMASKS::::::::::::::::::::
+
+#Make sure a bitmap is at least as restrictive:
+  grep -PHon "^\s*create\s+\d+\s+.+\s+.+" /etc/logrotate.d/service | sed -r 's/[: ]+/ /g' | \
+  while read file line create bitmask user group
+  do
+    if [ $((0x${bitmask} | 0x740)) -gt $((0x740)) ];then
+      new=$(printf "%03x\n" $((0x${bitmask} & 0x740)))
+      sed -i "${line} s/ ${bitmask}/ ${new}/" ${file}
+      echo -e "    ${file}:${line} \033[33mupdated\033[0m ${bitmask} to ${new}"
+    fi
+  done
+
+#Make sure the umask is as restrictive (SAR config):
+  grep -PHon "^\s*umask\s+\d+" /usr/lib64/sa/sa1 /usr/lib64/sa/sa2 | sed -r 's/[: ]+/ /g' | \
+  while read file line umask bitmask
+  do
+    if [ $((0x${bitmask} & 0x37)) -lt $((0x37)) ];then
+      new=$(printf "%04x\n" $((0x${bitmask} | 0x37)))
+      sed -i "${line} s/ ${bitmask}/ ${new}/" ${file}
+      echo -e "    ${file}:${line} \033[33mupdated\033[0m ${bitmask} to ${new}"
+    fi
+  done
+
+
 #::::::::::::::::::::REGEX::::::::::::::::::::
 #by Mitch Frazier, the System Administrator at Linux Journal.
 

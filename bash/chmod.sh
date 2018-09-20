@@ -80,6 +80,8 @@ dosfsck /dev/sdc1 #detect and fix the dirty bit from not umounting properly
 umask 022
 #source: http://www.cyberciti.biz/tips/understanding-linux-unix-umask-value-usage.html
 
+umask 0077 #results in 600 permissions
+#SAR umask on CentOS defined in: /usr/lib64/sa/sa1 /usr/lib64/sa/sa2
 
 #::::::::::::::::::::SELINUX::::::::::::::::::::
 
