@@ -7,6 +7,7 @@ $ bg %1                         #run in background
 [1]+ ./script.sh &
 $ %1 &                          #run in background (alternate method)
 [1]+ ./script.sh &
+$ fg %1                         #run in forground
 $ jobs
 [1]+  Running    ./script.sh &
 $ disown -h                     #move to nohup, so you can close shell
@@ -18,6 +19,27 @@ disown [-ar] [-h] [jobspec ...]
   -h   #keeps jobs in table, but doesn't send SIGHUP when exiting
   -a   #all jobs
   -r   #running jobs
+
+#::::::::::::::::::::NOHUP::::::::::::::::::::
+
+nohup command   #run in background, disowned, logging stdout/err to nohup.out
+nohup command & #same, except show in jobs list
+fg %1           #move command into forground
+kill -9 $pid    #kill by process id
+
+#Source: https://www.computerhope.com/unix/unohup.htm
+
+#::::::::::::::::::::NICE::::::::::::::::::::
+
+#Change priority of a process
+nice command      #run command as a priority 10 (nice default)
+nice -n13 command #run command as a priority 13
+
+#Range:
+# -20  most favorable to the process
+#  19  least favorable to the process
+
+#Source: https://www.computerhope.com/unix/unice.htm
 
 #::::::::::::::::::::GNU PARALLEL::::::::::::::::::::
 

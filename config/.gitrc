@@ -86,6 +86,14 @@ function gitex() {
           git push origin $branch
         fi
       ;;
+    glog) #grep the log commit messages
+        shift
+        if [ -z "$@" ];then
+          $wgit --no-pager log --oneline
+        else
+          $wgit --no-pager log --oneline --grep "$@"
+        fi
+      ;;
     @(${actions}))
         export GITEX_BRANCH=$(set +e;git rev-parse --abbrev-ref HEAD 2>/dev/null;set -e)
         gitex_action $@
