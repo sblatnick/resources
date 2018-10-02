@@ -113,6 +113,14 @@
     echo "$lastLine"
   }
 
+  #prevent multiple reads from using the same stdin as input
+  #read -u [channel]
+  while read -u 3 node
+  do
+    $0 ${node} #outputs something, breaking stdin channel 1
+  done 3< <(echo ${hosts} | tr ' ' $'\n')
+  #See: https://superuser.com/questions/421701/bash-reading-input-within-while-read-loop-doesnt-work
+
   #counter:
   X=0
   while [ $X -le 20 ]

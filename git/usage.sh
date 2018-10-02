@@ -270,6 +270,9 @@
       svn log --stop-on-copy svn://svn.site.com/repo/branches/opera | egrep "r[0-9]+" | tail -1
     #clone from revision to HEAD:
       git svn clone -r 400000:HEAD -s svn://svn.site.com/repo
+    #kill early and just follow that branch:
+      git branch opera origin/opera
+      git checkout opera
 
   #resetting to HEAD will leave untracked changes:
   git reset --hard

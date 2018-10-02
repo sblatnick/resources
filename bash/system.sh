@@ -21,6 +21,9 @@ script -q /dev/null cat << EOF
   "
 EOF
 
+#run command as user
+su user -c command
+
 #::::::::::::::::::::TERMINAL NAVIGATION::::::::::::::::::::
 
 Ctrl+r   #search history, ESC to paste the currently found entry

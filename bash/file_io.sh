@@ -50,6 +50,27 @@ scp $src $dst 2>&1 | sed "s/^/:: ${BASH_COMMAND} :: args: $src, $dst :: /"
 #tee and append to a log from within the script:
   exec > >(tee -ai /tmp/script.log) 2>&1
   
+#redirect stdout/stderr of current script to log:
+  exec 1>log.out 2>&1
+#same as before, but output to CLI too:
+  exec 1> >(tee log.out) 2>&
+#roll logs and log to two files and stdout:
+  exec 1> >(tee /var/log/cron.wrapper /var/log/cron.wrapper.$(date +%F-%H)) 2>&1
+  echo "Cleanup old logs"
+  cutoff=$(date -d "2 weeks ago" +%s)
+  ls -1 /var/log/cron.wrapper.* | grep -P '\d\d\d\d-\d\d-\d\d' | sort | \
+  while read log
+  do
+    when=$(echo ${log} | grep -Po '\d\d\d\d-\d\d-\d\d')
+    when=$(date --date="${when}" +%s)
+    if [ "${when}" -gt "${cutoff}" ];then
+      break
+    fi
+    echo "  deleting ${log}"
+    rm -f ${log}
+  done
+#print commands run:
+  set -x
 
 #::::::::::::::::::::COMBINE COLUMNS::::::::::::::::::::
 
