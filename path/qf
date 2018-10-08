@@ -11,16 +11,6 @@ trap "cleanup" SIGINT EXIT
 mkdir $TMP
 DB=${TMP}/db
 
-IFS=$'\n'
-while read -r file
-do
-  printf "%s\t" ${file} >> $DB
-  printf "%s\t" ${file##*/} >> $DB
-  printf "%s\t" "$(md5sum ${file} | cut -d' ' -f1)" >> $DB
-  printf "%s" "$(stat "${file}" -c '%y' | cut -d':' -f1 | sed 's/ /-/')" >> $DB
-  printf "\n" >> $DB
-done < <(find . -type f)
-
 #DEFAULTS:
 SORT='time'
 UNIQ='no'
@@ -87,6 +77,16 @@ case "${SORT}" in
       exit
     ;;
 esac
+
+IFS=$'\n'
+while read -r file
+do
+  printf "%s\t" ${file} >> $DB
+  printf "%s\t" ${file##*/} >> $DB
+  printf "%s\t" "$(md5sum ${file} | cut -d' ' -f1)" >> $DB
+  printf "%s" "$(stat "${file}" -c '%y' | cut -d':' -f1 | sed 's/ /-/')" >> $DB
+  printf "\n" >> $DB
+done < <(find . -type f)
 
 case "${UNIQ}" in
   'yes')
