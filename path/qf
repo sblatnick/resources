@@ -11,13 +11,13 @@ trap "cleanup" SIGINT EXIT
 mkdir $TMP
 DB=${TMP}/db
 
-
-while read file
+IFS=$'\n'
+while read -r file
 do
   printf "%s\t" ${file} >> $DB
   printf "%s\t" ${file##*/} >> $DB
   printf "%s\t" "$(md5sum ${file} | cut -d' ' -f1)" >> $DB
-  printf "%s" "$(stat ${file} -c '%y' | cut -d':' -f1 | sed 's/ /-/')" >> $DB
+  printf "%s" "$(stat "${file}" -c '%y' | cut -d':' -f1 | sed 's/ /-/')" >> $DB
   printf "\n" >> $DB
 done < <(find . -type f)
 
@@ -92,9 +92,12 @@ case "${UNIQ}" in
   'yes')
       while read line
       do
+        line=$(echo ${line} | sed 's/^ *//')
+        if [ "1" == "$(echo ${line} | cut -d' ' -f1)" ];then
+          break
+        fi
         echo -e "\033[34;1m${line}:\033[0m"
-        value=$(echo "${line}" | tr $'\t' ' ' | cut -d' ' -f2)
-        grep "${value}" $DB | sort | sed 's/^/  /'
+        grep "${line#* }" $DB | sort | sed 's/^/  /'
       done < <(awk -F '\t' "{print \$$SORT}" $DB | sort | uniq -c | sort -nr)
     ;;
   'no')
