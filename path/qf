@@ -1,0 +1,106 @@
+#!/bin/bash
+PID=$$
+TMP=/dev/shm/${0##*/}.${PID}
+
+cleanup()
+{
+  rm -rf $TMP 2>/dev/null
+  kill -- -$$
+}
+trap "cleanup" SIGINT EXIT
+mkdir $TMP
+DB=${TMP}/db
+
+#DEFAULTS:
+SORT='time'
+UNIQ='no'
+
+#awk '/regex/ {print $1,"=",$2}'
+while
+  parameter=${1%%=*}
+  value=${1/$parameter/}
+  shift
+
+  #FLAGS
+  case ${parameter} in
+    help|-h|--help) #print this usage information
+        echo -e "\033[1mQuery Files:\033[0m ${0##*/} [\033[34;1moptions\033[0m]"
+        sed -n "/^while\$/,/^do\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | \
+        while read help
+        do
+          printf "    \033[34;1m%-15s\033[0m %s\n" "${help%%)*#*}" "${help#*#}"
+        done
+        exit
+      ;;
+    --uniq|-u) #unique by sorting column, ordered by count descending
+        UNIQ='yes'
+        continue
+      ;;
+  esac
+
+  case "${value}" in
+    '')
+      value=$1
+      shift
+      ;;
+    '='*)
+      value="${value#=}"
+      ;;
+  esac
+
+  #ARGUMENTS
+  case ${parameter} in
+    --sort|-s) #sort: time (default), name, path, md5
+        SORT=$value
+      ;;
+  esac
+  [ -n "$1" ]
+do
+  continue
+done
+
+case "${SORT}" in
+  'time')
+      SORT=4
+    ;;
+  'md5')
+      SORT=3
+    ;;
+  'name')
+      SORT=2
+    ;;
+  'path')
+      SORT=1
+    ;;
+  *)
+      echo "invalid sort: '${SORT}' (time, name, path)"
+      exit
+    ;;
+esac
+
+IFS=$'\n'
+while read -r file
+do
+  printf "%s\t" ${file} >> $DB
+  printf "%s\t" ${file##*/} >> $DB
+  printf "%s\t" "$(md5sum ${file} | cut -d' ' -f1)" >> $DB
+  printf "%s" "$(stat "${file}" -c '%y' | cut -d':' -f1 | sed 's/ /-/')" >> $DB
+  printf "\n" >> $DB
+done < <(find . -type f)
+
+case "${UNIQ}" in
+  'yes')
+      while read line
+      do
+        line=$(echo ${line} | sed 's/^ *//')
+        if [ "1" == "$(echo ${line} | cut -d' ' -f1)" ];then
+          break
+        fi
+        echo -e "\033[34;1m${line}:\033[0m"
+        grep "${line#* }" $DB | sort | sed 's/^/  /'
+      done < <(awk -F '\t' "{print \$$SORT}" $DB | sort | uniq -c | sort -nr)
+    ;;
+  'no')
+      sort -t$'\t' -k$SORT $DB
+    ;;
+esac
