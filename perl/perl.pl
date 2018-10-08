@@ -71,3 +71,6 @@ my @array = read_file("list.conf", chomp => 1) or ();
 #convert array to hash:
 my %hash = map { $_ => 1 } @array;
 if(exists($hash{$file})) { ... }
+
+#print from one line to another (from shell):
+perl -ne 'print if /^ *<Directory *\//i .. /<\/Directory/i' $file

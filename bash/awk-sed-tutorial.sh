@@ -239,6 +239,9 @@ seventh2" > test.txt
         fourth2
         fifth2
 
+    #perl print from one to another:
+    perl -ne 'print if /^ *<Directory *\//i .. /<\/Directory/i' $file
+
 
 #grep:
 grep -r 'search' path/
@@ -278,3 +281,52 @@ cut -f1 -d' ' <<< "hello world"
     print lines with m0 in them
   /etc/hosts
     file to edit
+
+
+
+#Scan HTTPD configs recursively:
+HTTPD_CONF="
+  /var/httpd/admin/conf/httpd.conf
+  /var/httpd/user/conf/httpd.conf
+"
+
+#search for regex without comments:
+function search_conf() {
+  local regex=$1
+  shift
+
+  for configs in $HTTPD_CONF
+  do
+    echo -e "\033[34;1m${configs##*/}:\033[0m"
+    #Included configs:
+    while read line
+    do
+      configs="${configs} ${line##*Include }"
+    done < <(grep -P "^\s*Include\s+" "${configs}" 2>/dev/null)
+
+    for conf in $configs
+    do
+      echo -e "  \033[32m${conf##*/}:\033[0m"
+      grep --color=always -P "${regex}" "${conf}" 2>&1 | sed '/^[ ]*#/d' | sed 's/^/    /'
+    done
+  done
+}
+
+#print <Directory> without comments:
+function print_directories() {
+  for configs in $HTTPD_CONF
+  do
+    echo -e "\033[34;1m${configs##*/}:\033[0m"
+    #Included configs:
+    while read line
+    do
+      configs="${configs} ${line##*Include }"
+    done < <(grep -P "^\s*Include\s+" "${configs}" 2>/dev/null)
+
+    for conf in $configs
+    do
+      echo -e "  \033[32m${conf##*/}:\033[0m"
+      perl -ne 'print if /^ *<Directory /i .. /<\/Directory/i' $conf | sed '/^[ ]*#/d' | sed 's/^/    /'
+    done
+  done
+}
