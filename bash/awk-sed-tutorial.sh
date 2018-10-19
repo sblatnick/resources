@@ -79,6 +79,22 @@
 
   #END SUMMARY
 
+  #sed character classes: https://www.gnu.org/software/sed/manual/html_node/Character-Classes-and-Bracket-Expressions.html
+    [:alnum:]  # [0-9A-Za-z]
+    [:alpha:]  # [A-Za-z]
+    [:blank:]  # space and tab.
+    [:cntrl:]  # control characters, octal codes 000 through 037, and 177 (DEL)
+    [:digit:]  # [0-9]
+    [:graph:]  # [:alnum:] and [:punct:]
+    [:lower:]  # [a-z]
+    [:print:]  # [:alnum:] [:punct:] and space
+    [:punct:]  # ! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ ` { | } ~.
+    [:space:]  # tab, newline, vertical tab, form feed, carriage return, and space.
+    [:upper:]  # [A-Z]
+    [:xdigit:] # Hexadecimal digits: [0-9a-fA-F]
+  When used in [] must still include [] of the class:
+    sed 's/^[[:space:]]*//' $file
+
   # $replace $search only on $match lines:
   sed -i "/${match//\//\\/}/{s/${search//\//\\/}/${replace//\//\\/}/}" ${file}
 

@@ -83,3 +83,16 @@ lsof +L1
 
 cd /
 for dir in $(ls */ -d);do echo $dir;cd $dir;du -sx * 2>/dev/null | sort -r -n | head | sed 's/^/  /';cd /;done
+
+
+
+#Set sticky bit on all world writable, skipping spool directory:
+df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' build -not \( -path '/var/spool/*' -prune \) -xdev -type d -perm -0002 2>/dev/null | \
+while read path
+do
+  mode=$(stat -c '%f' ${path})
+  if [ $(( 0x0200 & 0x${mode} )) -eq 0 ];then
+    chmod a+t ${path}
+    echo -e "  ${path} \033[33mupdated\033[0m"
+  fi
+done

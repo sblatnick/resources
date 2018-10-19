@@ -5,6 +5,32 @@ export GITEX_CONFIG=~/.git-extend
 export wgit=$(which git) #wrapped git
 shopt -s extglob
 
+#----------------------------------COMPLETIONS-----------------------------------#
+#~ function gitex_complete() {
+  #~ case "${#COMP_WORDS[@]}" in
+    #~ 1)
+        #~ COMPREPLY=($(compgen -W "$($wgit help -a)" -- "${COMP_WORDS[1]}"))
+      #~ ;;
+  #~ esac
+  #~ return
+  
+
+  #~ local IFS=$'\n'
+  #~ local suggestions=($(compgen -W "$(fc -l -50 | sed 's/\t//')" -- "${COMP_WORDS[1]}"))
+
+  #~ if [ "${#suggestions[@]}" == "1" ]; then
+    #~ local number="${suggestions[0]/%\ */}"
+    #~ COMPREPLY=("$number")
+  #~ else
+    #~ for i in "${!suggestions[@]}"; do
+      #~ suggestions[$i]="$(printf '%*s' "-$COLUMNS"  "${suggestions[$i]}")"
+    #~ done
+
+    #~ COMPREPLY=("${suggestions[@]}")
+  #~ fi
+#~ }
+#~ complete -F gitex_complete git
+
 #----------------------------------FUNCTIONS-----------------------------------#
 function bash_prompt()
 {
@@ -58,7 +84,10 @@ function gitex() {
 
   case "$1" in
     help)
-        $wgit help
+        $wgit $@
+        if [ $# -gt 1 ];then
+          return
+        fi
         echo ""
         git ex
       ;;
@@ -80,7 +109,7 @@ function gitex() {
       ;;
     modified) #open dirty files in $EDITOR
         dir=$(pwd)
-        IFS=$'\n'
+        local IFS=$'\n'
         files=$($wgit status -s)
         for file in $files
         do
@@ -233,7 +262,7 @@ function gitex_context()
   fi
 
   contexts=()
-  IFS=$'\n' read -ra contexts <<< $(grep -E '="$' ${GITEX_CONFIG} | sed 's/="$//')
+  local IFS=$'\n' read -ra contexts <<< $(grep -E '="$' ${GITEX_CONFIG} | sed 's/="$//')
   context=$(echo "${contexts[@]}" | tr ' ' '|')
   repos=$(echo "${!current}" | sed '/^$/d')
   repo=$(echo "$repos" | sed 's/^.*\///' | tr $'\n' '|')

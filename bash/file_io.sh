@@ -107,6 +107,13 @@ echo $bar
 #watch with color using -c, also print logs indenting different files and removing the pid part of log name [pid].[service]:
   watch -c "tail -n+1 13662.* | sed 's/^/  /' | sed 's/  ==> [0-9]*\.\([^ ]*\) <==/\1/'"
 
+#watch a function:
+export -f check_cfg
+watch check_cfg
+
+#print all files with file name in blue:
+  tail -n +1 ${WORK}/* 2>/dev/null | sed 's/^/    /' | sed "s/  ==> ${escaped}\/\(.*\) <==/$(printf '\033[34m')\1$(printf '\033[0m')/"
+
 #  (must close it or it will continue after)
 #or in C:
 #     printf("\033[34m This is blue.\033[0m\n");

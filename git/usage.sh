@@ -111,6 +111,9 @@
   #get all updates, even from remote branches on secondary sources (in case of tracking problems):
   git fetch --all
 
+  #revert uncommitted changes/merge:
+  git reset --hard HEAD
+
   #revert merge:
   git reset 56e05fced
   git reset --hard #just before last merge, head by default
@@ -270,9 +273,36 @@
       svn log --stop-on-copy svn://svn.site.com/repo/branches/opera | egrep "r[0-9]+" | tail -1
     #clone from revision to HEAD:
       git svn clone -r 400000:HEAD -s svn://svn.site.com/repo
+      cd repo
     #kill early and just follow that branch:
       git branch opera origin/opera
       git checkout opera
+
+  #switch branches/tags and merge:
+    #get other branch:
+    git svn clone -r 400000:HEAD -s svn://svn.site.com/repo
+    cd repo
+    #enter other branch:
+    git branch opera origin/opera
+    git checkout opera
+    #get latest (especially if you killed early):
+    git svn rebase
+    #checkout the branch you want to merge to:
+    git checkout master
+    #merge (didn't work for me):
+    git merge --allow-unrelated-histories --squash origin/opera
+    #???? git rebase origin/tag branch
+    #problems? revert:
+    git reset --hard HEAD
+    #commit and push:
+    git commit -a -m "message"
+    git svn dcommit
+
+  #find tag path:
+    svn ls svn://svn.site.com/repo/tags
+
+  #diff tags using svn:
+    cvs diff -u -r 1.17 -r 1.18
 
   #resetting to HEAD will leave untracked changes:
   git reset --hard

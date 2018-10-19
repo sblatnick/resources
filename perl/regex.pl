@@ -28,3 +28,17 @@ $test =~ /(?<variable>\w{4})(?<example>\w{4})/;
 
 say 'variable:', $+{variable};
 say 'example:', $+{example};
+
+
+$arg =~ s[(?x)                    # free spacing mode, ignore whitespace and allow these comments
+  (?<!\\)                         # a non-backslash, followed by
+  ((?:\\\\)*+)                    # an even number of backslashes
+  (?:(\\[bBgkNopPx]{)|
+  {                               # an open brace
+  (?!                             # *not* followed by...
+          \d+                     # a number
+          (?:,\d*)?               # an optional comma-number
+          }                       # then a close brace
+  )
+  )
+][ $1.($2 // '\\{') ]eg;            # if so, then insert a backslash
