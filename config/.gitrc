@@ -220,6 +220,7 @@ function gitex_action() {
 function gitex_add_repo_to_context() {
   set +e
   local repo=$1
+  OWD=$OLDPWD
   cd ${repo}
   repo=$(basename $($wgit rev-parse --show-toplevel 2>/dev/null) 2>/dev/null)
   if [[ "$?" -eq 0 ]];then
@@ -236,11 +237,13 @@ $(pwd)"
     echo -e "\033[31minvalid repo\033[0m ${1}"
   fi
   cd - >/dev/null
+  OLDPWD=$OWD
 }
 
 function gitex_remove_repo_from_context() {
   set +e
   local repo=$1
+  OWD=$OLDPWD
   cd ${repo}
   repo=$(basename $($wgit rev-parse --show-toplevel 2>/dev/null) 2>/dev/null)
   if [[ "$?" -eq 0 ]];then
@@ -251,6 +254,7 @@ function gitex_remove_repo_from_context() {
     echo -e "\033[31minvalid repo\033[0m ${1}"
   fi
   cd - >/dev/null
+  OLDPWD=$OWD
 }
 
 ##Context Actions (context|ctx|go):

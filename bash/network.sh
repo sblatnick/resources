@@ -24,6 +24,12 @@
   /sbin/route -n
   ip route
 
+#traceroute:
+traceroute example.com
+  -w 5  # wait 5 seconds (default)
+  -q 1  # 1 query (default)
+  -m 30 # max 30 hops (default)
+
 #use tpcdump to listen to activity on a port:
   sudo tcpdump -i eth0 host destination.com
 

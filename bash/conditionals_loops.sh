@@ -76,6 +76,11 @@
 
 #  -d        is a directory
 
+#  -t        file descriptor is open and refers to a terminal
+
+
+#see: https://www.gnu.org/software/bash/manual/html_node/Bash-Conditional-Expressions.html
+
 #::::::::::::::::::::LOOPS::::::::::::::::::::
 
 #WHILE
