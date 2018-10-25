@@ -271,10 +271,10 @@
   #clone just master and branch:
     #get latest revision:
       svn log --stop-on-copy svn://svn.site.com/repo/branches/opera | egrep "r[0-9]+" | tail -1
-    #clone from revision to HEAD:
-      git svn clone -r 400000:HEAD -s svn://svn.site.com/repo
+    #clone revision:
+      git svn clone -r 400000 -s svn://svn.site.com/repo
       cd repo
-    #kill early and just follow that branch:
+    #follow that branch:
       git branch opera origin/opera
       git checkout opera
 

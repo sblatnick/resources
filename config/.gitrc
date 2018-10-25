@@ -148,6 +148,10 @@ function gitex() {
         shift
         $wgit checkout -- $@
       ;;
+    svn)
+        shift
+        gitex_svn $@
+      ;;
     *|'')
         $wgit "$@"
       ;;
@@ -346,6 +350,41 @@ $(echo "${!ctx}" | sed '/^$/d')
 \"" >> ${GITEX_CONFIG}
   done
   echo "" >> ${GITEX_CONFIG}
+}
+
+##SVN Actions:
+function gitex_svn()
+{
+  case "$1" in
+    co) #Checkout remote branch and track
+        shift
+        local branch=$1
+        shift
+        repo=$($wgit rev-parse --show-toplevel 2>/dev/null)
+        url=$($wgit config --get svn-remote.svn.url)
+
+        OWD=$OLDPWD
+        CWD=$PWD
+        cd ${repo}/../
+
+        revision=$(svn log --stop-on-copy ${url}/${repo##*/}/branches/${branch} | egrep "r[0-9]+" | tail -1 | cut -d' ' -f1)
+        echo -e "\033[32mCloning ${branch} from ${revision}\033[0m"
+        git svn clone -r ${revision#r} -s ${url}/${repo##*/}
+
+        cd ${repo}
+        git branch ${branch} origin/${branch}
+        git checkout ${branch}
+
+        cd $CWD >/dev/null
+        OLDPWD=$OWD
+      ;;
+    push) #alias to dcommit
+        $wgit svn dcommit
+      ;;
+    *) #git-svn
+        $wgit svn "$@"
+      ;;
+  esac
 }
 
 function git() {
