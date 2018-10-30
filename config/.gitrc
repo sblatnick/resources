@@ -7,7 +7,7 @@ shopt -s extglob
 
 #----------------------------------COMPLETIONS-----------------------------------#
 #~ function gitex_complete() {
-  #~ case "${#COMP_WORDS[@]}" in
+  #~ case "${COMP_CWORD}" in
     #~ 1)
         #~ COMPREPLY=($(compgen -W "$($wgit help -a)" -- "${COMP_WORDS[1]}"))
       #~ ;;
@@ -34,7 +34,7 @@ shopt -s extglob
 #----------------------------------FUNCTIONS-----------------------------------#
 function bash_prompt()
 {
-  branch=$($wgit rev-parse --abbrev-ref HEAD 2>/dev/null)
+  local branch=$($wgit rev-parse --abbrev-ref HEAD 2>/dev/null)
   dirty=''
   if [ -n "$($wgit status --porcelain 2>/dev/null)" ]; then
     dirty='*'
@@ -106,6 +106,15 @@ function gitex() {
           done
         done
         echo ""
+      ;;
+    com|cam|cc) #alias to commit -a -m
+        shift
+        if [ -z "$@" ];then
+          $wgit commit -a -m "$@"
+        else
+          echo -e "\033[31mNo commit message specified\033[0m"
+          return 1
+        fi
       ;;
     modified) #open dirty files in $EDITOR
         dir=$(pwd)

@@ -9,6 +9,7 @@
   git log #show git logs of commits
   git --no-pager #don't use less
   git --no-pager log --oneline --grep 'test' #search for the short sha with 'test' in the commit message
+  git --no-pager log --oneline --author $USER #get all of your own commits on the branch
   git -C /path #run as if in the git directory
 
 #diff
@@ -334,3 +335,10 @@
 
   #avoid .gitignore in svn project:
   git svn show-ignore > .git/info/exclude
+
+
+#Apply all of your changes from one branch to another:
+  for sha in $(git --no-pager log ${branch} --oneline --reverse --author ${USER} | awk '{print $1}')
+  do
+    git cherry-pick -n $sha -Xtheirs
+  done
