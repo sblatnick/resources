@@ -6,30 +6,45 @@ export wgit=$(which git) #wrapped git
 shopt -s extglob
 
 #----------------------------------COMPLETIONS-----------------------------------#
-#~ function gitex_complete() {
-  #~ case "${COMP_CWORD}" in
-    #~ 1)
-        #~ COMPREPLY=($(compgen -W "$($wgit help -a)" -- "${COMP_WORDS[1]}"))
-      #~ ;;
-  #~ esac
-  #~ return
-  
+function gitex_complete() {
+  case "${COMP_CWORD}" in
+    1)
+        #core commands:
+        COMPREPLY=($(compgen -W "$(git help -a | grep "^  [a-z]")" -- "${COMP_WORDS[1]}"))
 
-  #~ local IFS=$'\n'
-  #~ local suggestions=($(compgen -W "$(fc -l -50 | sed 's/\t//')" -- "${COMP_WORDS[1]}"))
+        for section in $(grep -Eom 2 '^##.*$' $BASH_SOURCE)
+        do
+          for help in $(sed -n "/^${section}\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/) .*$//')
+          do
+            COMPREPLY+=($(compgen -W "$(echo "${help}" | tr '|' ' ')" -- "${COMP_WORDS[1]}"))
+          done
+        done
+      ;;
+    2)
+        case "${COMP_WORDS[1]}" in
+          context|ctx|go)
+              COMPREPLY=()
+              section="Context Actions (context|ctx|go):"
+              #FIXME:
+              # 1. actions not added properly (svn is): list|get|new|set|use|add|remove
+              # 2. add ${context}
+              # 3. add ${repo}
+            ;;
+          svn)
+              COMPREPLY=($(compgen -W "$($wgit svn 2>&1 | grep "^  [a-z]" | cut -d' ' -f3)" -- "${COMP_WORDS[2]}"))
+              COMPREPLY+=($(compgen -W "co push" -- "${COMP_WORDS[2]}"))
+              section="SVN Actions:"
+            ;;
+        esac
 
-  #~ if [ "${#suggestions[@]}" == "1" ]; then
-    #~ local number="${suggestions[0]/%\ */}"
-    #~ COMPREPLY=("$number")
-  #~ else
-    #~ for i in "${!suggestions[@]}"; do
-      #~ suggestions[$i]="$(printf '%*s' "-$COLUMNS"  "${suggestions[$i]}")"
-    #~ done
-
-    #~ COMPREPLY=("${suggestions[@]}")
-  #~ fi
-#~ }
-#~ complete -F gitex_complete git
+        for help in $(sed -n "/^${section}\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/) .*$//' | grep -Ev '[\$\*]')
+        do
+          COMPREPLY+=($(compgen -W "$(echo "${help}" | tr '|' ' ')" -- "${COMP_WORDS[2]}"))
+        done
+      ;;
+  esac
+}
+complete -F gitex_complete git
 
 #----------------------------------FUNCTIONS-----------------------------------#
 function bash_prompt()
