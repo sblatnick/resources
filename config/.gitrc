@@ -24,16 +24,18 @@ function gitex_complete() {
         case "${COMP_WORDS[1]}" in
           context|ctx|go)
               COMPREPLY=()
-              section="Context Actions (context|ctx|go):"
-              #FIXME:
-              # 1. actions not added properly (svn is): list|get|new|set|use|add|remove
-              # 2. add ${context}
-              # 3. add ${repo}
+              section="##Context Actions (context|ctx|go):"
+              if [ -f ${GITEX_CONFIG} ];then
+                source ${GITEX_CONFIG}
+                #add contexts:
+                COMPREPLY+=($(compgen -W "$(grep -E '="$' ${GITEX_CONFIG} | sed 's/="$//' | tr $'\n' ' ')" -- "${COMP_WORDS[2]}"))
+                #add repos:
+                COMPREPLY+=($(compgen -W "$(echo "${!current}" | sed -e '/^$/d' -e 's/\/.*\///g' | tr $'\n' ' ')" -- "${COMP_WORDS[2]}"))
+              fi
             ;;
           svn)
               COMPREPLY=($(compgen -W "$($wgit svn 2>&1 | grep "^  [a-z]" | cut -d' ' -f3)" -- "${COMP_WORDS[2]}"))
-              COMPREPLY+=($(compgen -W "co push" -- "${COMP_WORDS[2]}"))
-              section="SVN Actions:"
+              section="##SVN Actions:"
             ;;
         esac
 
