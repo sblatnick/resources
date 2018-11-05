@@ -1,5 +1,44 @@
 #!/bin/bash
 
+#::::::::::::::::::::VARIABLES::::::::::::::::::::
+  #no spaces!
+  variable=34
+  # use $ after declared
+  echo "$variable"
+  # use {} to separate variable from content
+  echo "${variable}stuff"
+
+  #DEFAULT VALUE VARIABLE
+    #read variable with default:
+      echo "${myname-John Doe}"
+      echo "${myname:-John Doe}" #declared, but null
+    #set variable with default:
+      echo "${myname=John Doe}"
+      echo "${myname:=John Doe}" #declared, but null
+
+#::::::::::::::::::::READ::::::::::::::::::::
+
+  echo -n "type something: "
+  read variable
+  echo $variable "is what you typed!"
+
+#::::::::::::::::::::SUB-SHELL::::::::::::::::::::
+
+  #Keep a scripts variables by not running in a sub-shell:
+    #running the program with
+      . ./executable
+    #instead of:
+      ./executable
+
+  #COMMAND SUBSTITUTION:
+    files=$(ls)
+    files=`ls`
+
+#::::::::::::::::::::QUOTES::::::::::::::::::::
+'' #raw
+"" #pre-render
+`` #pre-execute
+
 #::::::::::::::::::::VARIABLE MANIPULATION::::::::::::::::::::
   ${variable%pattern}    #Trim the shortest match from the end
   ${variable##pattern}   #Trim the longest match from the beginning
@@ -81,6 +120,16 @@ $ bc <<< 'four=4;3+four'
 digits=$(tr -cd 0-9 <<<"spy007")
 #remove 0 padding:
 number=$((10#$digits))
+
+#::::::::::::::::::::OPERATORS::::::::::::::::::::
+
+  #ARITHMATIC:
+    X=`expr 3 \* 2 + 4` #escape *
+    #WRONG: X=`expr "3 * 2 + 4"`
+    #WRONG: X=`expr "3 \* 2 + 4"`
+
+  #Substitute all:
+    echo "hello world" | tr 'hell' '+' #++++o wor+d
 
 #::::::::::::::::::::PARAMETER VARIABLES::::::::::::::::::::
 
@@ -178,6 +227,90 @@ set -x #print every command executed to stdout
   !-3 #execute 3rd to last command
   !echo #execute last command starting with 'echo'
 
+#::::::::::::::::::::HEX/BITMASKS::::::::::::::::::::
+
+#Make sure a bitmap is at least as restrictive:
+  grep -PHon "^\s*create\s+\d+\s+.+\s+.+" /etc/logrotate.d/service | sed -r 's/[: ]+/ /g' | \
+  while read file line create bitmask user group
+  do
+    if [ $((0x${bitmask} | 0x740)) -gt $((0x740)) ];then
+      new=$(printf "%03x\n" $((0x${bitmask} & 0x740)))
+      sed -i "${line} s/ ${bitmask}/ ${new}/" ${file}
+      echo -e "    ${file}:${line} \033[33mupdated\033[0m ${bitmask} to ${new}"
+    fi
+  done
+
+#Make sure the umask is as restrictive (SAR config):
+  grep -PHon "^\s*umask\s+\d+" /usr/lib64/sa/sa1 /usr/lib64/sa/sa2 | sed -r 's/[: ]+/ /g' | \
+  while read file line umask bitmask
+  do
+    if [ $((0x${bitmask} & 0x37)) -lt $((0x37)) ];then
+      new=$(printf "%04x\n" $((0x${bitmask} | 0x37)))
+      sed -i "${line} s/ ${bitmask}/ ${new}/" ${file}
+      echo -e "    ${file}:${line} \033[33mupdated\033[0m ${bitmask} to ${new}"
+    fi
+  done
+
+
+#::::::::::::::::::::REGEX::::::::::::::::::::
+#by Mitch Frazier, the System Administrator at Linux Journal.
+
+if [[ $# -lt 2 ]]; then
+  echo "Usage: $0 PATTERN STRINGS..."
+  exit 1
+fi
+regex=$1
+shift
+echo "regex: $regex"
+echo
+
+while [[ $1 ]]
+do
+  if [[ $1 =~ $regex ]]; then
+    echo "$1 matches"
+    i=1
+    n=${#BASH_REMATCH[*]}
+    while [[ $i -lt $n ]]
+    do
+      echo "  capture[$i]: ${BASH_REMATCH[$i]}"
+      let i++
+    done
+  else
+    echo "$1 does not match"
+  fi
+  shift
+done
+
+#Resource: http://steve-parker.org/sh/sh.shtml
+
+
+#::::::::::::::::::::GLOBBING::::::::::::::::::::
+
+*           #matches any characters
+?           #matches any one character
+[abc]       #matches any one character in the list
+{this,that} #matches this or that
+
+
+#::::::::::::::::::::EXTENDED GLOBBING::::::::::::::::::::
+
+shopt -s extglob #set extended globbing
+
+  ?(pattern-list) #Matches zero or one occurrence of the given patterns
+  *(pattern-list) #Matches zero or more occurrences of the given patterns
+  +(pattern-list) #Matches one or more occurrences of the given patterns
+  @(pattern-list) #Matches one of the given patterns
+  !(pattern-list) #Matches anything except one of the given patterns
+
+shopt -u extglob #unset extended globbing
+
+#Source: https://stackoverflow.com/questions/216995/how-can-i-use-inverse-or-negative-wildcards-when-pattern-matching-in-a-unix-linu
+
+#get all directories without profile_ or role_ as a prefix:
+ls -d !(@(profile|role)_*)
+  #this does NOT work because ! is for only one pattern (returns all directories):
+  ls -d !({profile,role}_*)
+
 #::::::::::::::::::::MULTITHREADED VARIABLES::::::::::::::::::::
 
 #source: http://stackoverflow.com/questions/13207292/bash-background-process-modify-global-variable
@@ -264,257 +397,6 @@ echo $(($(</dev/shm/foo)+1)) >/dev/shm/foo;
   set -e #causes a script to abort with any error
   set +e #reverts error setting
 
-#::::::::::::::::::::SIGNAL HANDLING::::::::::::::::::::
-
-#kill children processes of a bash script (untested):
-  trap 'kill $(jobs -p)' SIGINT
-  trap "kill -- -$$" SIGINT
-
-  function cleanup
-  {
-    echo "cleanup"
-    rm report.csv
-    kill -- -$$
-    exit
-  }
-  trap cleanup SIGHUP SIGINT SIGTERM
-
-  #example.sh
-    #!/bin/bash
-    echo start
-    trap 'echo ERROR in script $BASH_SOURCE on line $BASH_LINENO running command: \"$BASH_COMMAND\" exit code: $?;exit 1' ERR
-    echo source something
-    source something.sh
-    echo done
-
-  ~ $ ./example.sh
-  start
-  source something
-  ./example.sh: line 5: something.sh: No such file or directory
-  ERROR in script ./example.sh on line 0 running command: "source something.sh" exit code: 1
-
-  #example with exit:
-    trap 'if [ "$?" -eq "0" ]; then exit; fi; echo -e "\033[31mERROR:\033[0m in script $BASH_SOURCE on line $BASH_LINENO running command: \"$BASH_COMMAND\"";exit 1' ERR EXIT
-
-#::::::::::::::::::::CHANNEL REDIRECTION::::::::::::::::::::
-  #Piping errors shorthand:
-    |&
-  #shorthand for:
-    2>&1 |
-
-  #Redirecting stderr and stdout shorthand:
-  &> file # (>& supported but not preferred because of appending)
-  #shorthand for:
-  > file 2>&1
-  #append shorthand:
-  &>> # (>>& is not supported)
-  #shorthand for:
-  >> file 2>&1
-
-#Example:
-  #open up an extra input file
-  exec 7</dev/tty
-  #read each file from standard input, prompting for file
-  #deletion and reading response from extra input
-  while read file
-  do
-    echo -n "Do you want to delete file $file (y/n)? "
-    read resp <&7
-    case "$resp" in [yY]*) rm -f "$file" ;; *) ;; esac
-  done
-  #close the extra input file
-  exec 7<&-
-
-#::::::::::::::::::::PARAMETERS::::::::::::::::::::
-  #GET MORE THAN 9 PARAMETERS: (shifts off paramters until there aren't any left)
-    while [ "$#" -gt "0" ]
-    do
-      echo "\$1 is $1"
-      shift
-    done
-
-  #USAGE INFORMATION:
-    if [[ $# -lt 1 ]]; then
-      echo "Usage: ${0##*/} [param]"
-      exit 1
-    fi
-
-#::::::::::::::::::::VARIABLES::::::::::::::::::::
-  #no spaces!
-  variable=34
-  # use $ after declared
-  echo "$variable"
-  # use {} to separate variable from content
-  echo "${variable}stuff"
-
-  #DEFAULT VALUE VARIABLE
-    #read variable with default:
-      echo "${myname-John Doe}"
-      echo "${myname:-John Doe}" #declared, but null
-    #set variable with default:
-      echo "${myname=John Doe}"
-      echo "${myname:=John Doe}" #declared, but null
-
-#::::::::::::::::::::READ::::::::::::::::::::
-
-  echo -n "type something: "
-  read variable
-  echo $variable "is what you typed!"
-
-#::::::::::::::::::::SUB-SHELL::::::::::::::::::::
-
-  #Keep a scripts variables by not running in a sub-shell:
-    #running the program with
-      . ./executable
-    #instead of:
-      ./executable
-
-  #COMMAND SUBSTITUTION:
-    files=$(ls)
-    files=`ls`
-
-#::::::::::::::::::::ARRAYS::::::::::::::::::::
-
-${#ArrayName[@]} #array length
-unset array[$element] #delete element in an array
-
-ARRAY=() #initialize
-ARRAY+=('element') #add element
-echo ${ARRAY[@]: -5:3} #5th-to-last element and the next 2, or start:count
-echo ${ARRAY[@]: 0:3} #first 3 elements
-
-ARRAY=(a b c d e f g h)
-echo ${#ARRAY[@]} #8
-echo ${!ARRAY[@]} #indicies: 0 1 2 3 4 5 6 7
-indicies=(${!ARRAY[@]}) #store the indicies to an array
-echo "${indicies[@]}" #prints: 0 1 2 3 4 5 6 7
-
-#INDIRECTION array indices in loop:
-AR=('foo' 'bar' 'baz' 'bat')
-for i in "${!AR[@]}"; do
-  printf '${AR[%s]}=%s\n' "$i" "${AR[i]}"
-done
-#source: https://unix.stackexchange.com/questions/278502/accessing-array-index-variable-from-bash-shell-script-loop
-
-#Note: Arrays can have specified indicies (int), but not keys (string)
-#specify other indicies for a sparse array (notice numerical reordering)
-declare -a ARRAY='([5]="my" [10]="very" [14]="energetic" [25]="mother" [26]="just" [74]="bought" [47]="me" [56]="nine pizzas")'
-echo ${ARRAY[@]} #my very energetic mother just me nine pizzas bought
-echo ${!ARRAY[@]} #5 10 14 25 26 47 56 74
-
-#EXAMPLE:
-IFS='
-'
-array=($(ls | grep .flv))
-for video in ${array[@]}
-do
-  echo $video
-done
-
-#Don't forget the outter () when creating an array.
-#Otherwise it's just a single string.
-#The loop still works since it iterates over strings dilimited by whitespace
-#but the array length is off:
-length=${#array[@]}
-
-#You can set the delimiter just to create an array and have it revert back in one line:
-IFS=',' read -ra VARIABLE <<< "$IN" #make sure $IN is wrapped in double quotes, or the array length is off
-IFS=$'\n' read -rd '' -a VARIABLE <<< "$(pgrep -f "--test $VAR")" #or "$(commands)" with no escaping necessary
-
-#Get variables in a CSV line:
-IFS=',' read first second third <<< "one,two,three"
-echo $third
-
-#Concatinate two arrays when delimeted by a newline:
-streams=`
-for x in ${pdf[@]}
-do
-  echo "$x"
-done
-`'
-'`
-for x in ${doc[@]}
-do
-  echo "$x"
-done`
-
-#2 ARRAY intersection:
-  IFS=$'\n'
-  for element in $(echo "${array_one[@]} ${array_two[@]}" | tr ' ' $'\n' | sort | uniq -d)
-  do
-    echo $element
-  done
-#2 ARRAY no-overlap (non-intersection)
-  IFS=$'\n'
-  for element in $(echo "${array_one[@]} ${array_two[@]}" | tr ' ' $'\n' | sort | uniq -u)
-  do
-    echo $element
-  done
-
-#3 ARRAY diff add/remove:
-  #!/bin/bash
-  TMP=/dev/shm/${PID} #shared memory
-
-  function cleanup()
-  {
-    rm -Rf ${TMP} 2>/dev/null
-  }
-  trap "cleanup" SIGINT SIGTERM EXIT
-  mkdir ${TMP}
-
-  function action_diff() {
-    declare -a LEFT=("${!1}") #pass array by reference
-    shift
-    declare -a RIGHT=("${!1}")
-    shift
-    adder=${1}
-    shift
-    remover=${1}
-    shift
-
-    #clear temp files
-    echo -n "" > ${TMP}/left 
-    echo -n "" > ${TMP}/right
-
-    printf '%s\n' "${LEFT[@]}" | sed 's/^\/opt\/src/\/opt\/dest/' | sort > ${TMP}/left
-    printf '%s\n' "${RIGHT[@]}" | sort > ${TMP}/right
-
-    diff ${TMP}/left ${TMP}/right | grep -P '^(<|>)' | \
-    while read -r line
-    do
-      case "$line" in
-        "< "*) #add
-            path="${line#< }"
-            eval ${adder} "${path}"
-            echo -e "${path} \033[32madded\033[0m"
-          ;;
-        "> "*) #remove
-            path="${line#> }"
-            eval ${remover} "${path}"
-            echo -e "${path} \033[33mremoved\033[0m"
-          ;;
-      esac
-    done
-  }
-
-  left=(1 2 4)
-  right=(1 2 3)
-  action_diff left[@] right[@] "echo adder" "echo remover"
-  #output:
-    adder 4
-    4 added
-    remover 3
-    3 removed
-
-
-#JOIN:
-csv=$(IFS=',';echo "${array[*]}")
-echo "${csv//,/, }" #add space
-
-#::::::::::::::::::::QUOTES::::::::::::::::::::
-'' #raw
-"" #pre-render
-`` #pre-execute
 
 #::::::::::::::::::::MULTILINE STRING/COMMENT::::::::::::::::::::
 
@@ -565,116 +447,15 @@ cat <<- EOF
   Variable: $var
 EOF
 
-#Change indentation width in printed output:
-tabs 4
+#::::::::::::::::::::FUNCTIONS::::::::::::::::::::
 
-#::::::::::::::::::::PARAMETER CAPTURING::::::::::::::::::::
+  do_stuff()
+  {
+    echo "this is a script function, $1"
+  {
+  
+  do_stuff ok
 
-while [ -n "$1" ]; do
-  case $1 in
-    (--help|-help)           help ;;
-    (--profile|-profile)     _profile=$2; shift ;;
-    (--gui|-gui)             _gui=true ;;
-    (--nogui|-nogui)         _gui=false ;;
-    (--nojava|-nojava)       _java=false ;;
-    (--root|-root)           _rootok=true ;;
-    (--fg|-fg)               _background=false ;;
-    (--deconfig|-deconfig)   uninstall=false ;;
-    (--uninstall|-uninstall) uninstall=true ;;
-    (--kill)                 kill=true ;;
-    (--) shift; break ;;
-    (*) break ;;
-  esac
-  shift
-done
+  #export for a subshell:
+  export -f do_stuff
 
-while
-  case $1 in
-    (--freq|-f)
-        frequency="$2"
-        shift
-        if ! [[ "$frequency" =~ 'daily|hourly|ten-minutes' ]];then
-          echo "ERROR: invalid frequency parameter"
-          usage
-          exit
-        fi
-      ;;
-    (--help|-h|*)
-        usage
-        exit
-      ;;
-  esac
-  shift
-  [ -n "$1" ]
-do
-  continue
-done
-
-case "$service" in
-  all)
-    services=(proxy apache dm network)
-    #intentionally left out: "setup"
-    for name in ${services[@]}
-    do
-      $0 "$name" "$action"
-    done
-    ;;
-  setup)
-      echo -e "\033[32m${service}\033[0m"
-      cp /etc/resolv.conf.bak /etc/resolv.conf
-      /etc/init.d/named restart
-    ;;
-  proxy)
-    /etc/init.d/proxy "$action"
-    ;;
-  apache)
-    /etc/init.d/httpd "$action"
-    ;;
-  dm)
-    /etc/init.d/dm "$action"
-    ;;
-  *)
-    /etc/init.d/${service} "$action"
-    ;;
-esac
-
-
-#take list from pipe, file or args:
-
-function process()
-{
-  dist=$1
-  echo "Processing $dist"
-  #ssh takes stdin, so you have to switch it to use /dev/null:
-  ssh "$destination" "./addActiveSync.pl $dist" < /dev/null
-  echo "next"
-}
-
-if [ -t 0 ];then
-  if [ "$#" -lt 1 ];then
-    echo -e "Usage: ${0##*/} [distids|csv files]"
-    echo "You can also pipe distids"
-    exit
-  else
-    while [ -n "$1" ]; do
-      if [ -f $1 ];then
-        cat $1 |
-        while read pipe
-        do
-          process $pipe
-        done
-      else
-        process $1
-      fi
-      shift
-    done
-  fi
-else
-  while read pipe
-  do
-    process $pipe
-  done
-fi
-
-#sudo append to file:
-echo "text" | sudo tee -a /path/to/file

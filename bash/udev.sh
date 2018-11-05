@@ -27,5 +27,3 @@ KERNEL=="card1-DVI-I-1", ACTION=="remove", RUN+="/opt/udev/screens.sh kensington
 # Plugable (left)
 KERNEL=="card2-DVI-I-3", ACTION=="add", RUN+="/opt/udev/screens.sh plugable start"
 KERNEL=="card2-DVI-I-3", ACTION=="remove", RUN+="/opt/udev/screens.sh plugable stop"
-
-# screens.sh:

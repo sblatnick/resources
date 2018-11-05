@@ -29,11 +29,10 @@ notify-send -i [icon file or stock name] [main message] [secondary message]
 
 #::::::::::::::::::::WMCTRL::::::::::::::::::::
 
-#list windows:
-wmctrl -l
-
-#focus control on a window:
-wmctrl -a Audacious
+wmctrl
+wmctrl -l         #list windows
+wmctrl -a Firefox #focus window with this string in the title, going to the desktop
+wmctrl -R Firefox #focus window with this string in the title, putting it on the current desktop
 
 Actions:
   -m = window manager info
@@ -213,26 +212,42 @@ xdotool SCRIPTS
   windowmove %3 0 $3
   windowmove %4 $2 $3
 
+#Examples:
+  xdotool windowminimize $(xdotool getactivewindow)
+  xdotool windowminimize $(xdotool search FreeRDP)
+  xdotool windowminimize --sync $(xdotool search FreeRDP) #wait until minimized to move on
+
 #::::::::::::::::::::EXAMPLES::::::::::::::::::::
 
-#Find if geany is on the active desktop and if not,
-#notify the deploy completed:
+xwininfo -id <windowid> | grep "Map State" #detect visibility
 
-width=1600
-geanyId=$(wmctrl -l | grep Geany)
-geanyId=${geanyId%% *}
-xPos=$(xwininfo -id $geanyId | grep "Absolute upper-left X:")
-xPos=${xPos##* }
-if [ $xPos -gt 0 ] || [ $xPos -le -$width ]; then
-  notify-send "DEPLOYED $1"
-fi
+#Notification only if geany is not on the screen:
+  width=1600
+  geanyId=$(wmctrl -l | grep Geany)
+  geanyId=${geanyId%% *}
+  xPos=$(xwininfo -id $geanyId | grep "Absolute upper-left X:")
+  xPos=${xPos##* }
+  if [ $xPos -gt 0 ] || [ $xPos -le -$width ]; then
+    notify-send "DEPLOYED $1"
+  fi
 
 #Fix Audacious from not focusing on the global shortcut in compiz:
-audacious -m
-id=$(wmctrl -l | grep Audacious)
-id=${id%% *}
-xdotool windowactivate $id
+  audacious -m
+  id=$(wmctrl -l | grep Audacious)
+  id=${id%% *}
+  xdotool windowactivate $id
 
 #Focus pidgin:
-xdotool windowactivate $(xdotool search --onlyvisible --class pidgin)
+  xdotool windowactivate $(xdotool search --onlyvisible --class pidgin)
 
+#Toggle visibility of window (use shortcut to call this script):
+  #!/bin/bash
+  focused=$(xdotool getwindowfocus getwindowname)
+  case $focused in
+    *FreeRDP*)
+        xdotool windowminimize --sync $(xdotool search FreeRDP)
+      ;;
+    *)
+        wmctrl -R 'FreeRDP'
+      ;;
+  esac

@@ -28,16 +28,7 @@ sudo nano /etc/acpi/powerbtn-acpi-support.sh
   acpi_fakekey 107
   exit 0
 
-
-
-
-
-
-
-
-############################################COPIED FROM rapoomap
-
-
+#::::::::::::::::::::RAPOO MOUSE MAP::::::::::::::::::::
 #!/bin/bash
 echo '
 xkb_keymap {

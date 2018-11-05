@@ -1,99 +1,44 @@
-#!/bin/bash
 
-#AWK:
 
-  #MY SUMMARY
-    #awk basically greps lines out and prints the results based on the actions passed:
+#SUMMARY:
 
-    #match lines with regex and print the first "column" delimited by whitespace (bash array),
-    #followed by '=' and the second "column":
-    awk '/regex/ {print $1,"=",$2}'
-    #match all lines (no patter specified) and print the whole line:
-    awk '{print}'
-    #use it like an sql query
-    #print all the first columns before 1980:
-    awk '{if ($3 < 1980) print $1}' db.txt
+  #sed replaces by regex instances of a string in a file
+  sed 's/replace/regex/' <oldFile >newFile
+  #backreferences use \1
+  #flags: normal regex has 's///g' for greedy, but sed has:
+  #'s///2g' meaning greedy from the 2nd on
+  #'s///3' meaning only the 3rd instance
 
-    #change delimiter (Field Separator):
-    awk 'BEGIN { FS = "," } ; { print $2 }' db.txt
+  #sed inplace replacement:
+  sed 's/replace/regex/' -i file.txt
 
-    #print last column of each row:
-    awk '{print $NF}' db.txt
+  #only act on matching lines like awk:
+    #replace trailing comma on all lines matching regex with a semicolon
+    sed -i '/regex/ s/,$/;/' /dev/shm/file.$$
+    #remove last line's comma:
+    sed -i '$ s/,$//' /dev/shm/file.$$
 
-    #it's like it's own programming language, with BEGIN for setup and END blocks for finishing:
-    #END aggregates, NR is number of records
-    awk 'END {print NR,"coins"}' coins.txt
+  -n = quiet (supress printing of pattern space)
+  -r = extended regex
 
-    awk '{sum+=$1} END {print sum}' coins.txt
 
-    #like tail -n +1, printing the whole file with everything except the first line:
-    awk 'NR > 1' file #print is implied, or: awk 'NR > 2 { print }' file
-    #pipe works too:
-    echo -e "$results" | awk 'NR > 1'
+#Character Classes: https://www.gnu.org/software/sed/manual/html_node/Character-Classes-and-Bracket-Expressions.html
+  [:alnum:]  # [0-9A-Za-z]
+  [:alpha:]  # [A-Za-z]
+  [:blank:]  # space and tab.
+  [:cntrl:]  # control characters, octal codes 000 through 037, and 177 (DEL)
+  [:digit:]  # [0-9]
+  [:graph:]  # [:alnum:] and [:punct:]
+  [:lower:]  # [a-z]
+  [:print:]  # [:alnum:] [:punct:] and space
+  [:punct:]  # ! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ ` { | } ~.
+  [:space:]  # tab, newline, vertical tab, form feed, carriage return, and space.
+  [:upper:]  # [A-Z]
+  [:xdigit:] # Hexadecimal digits: [0-9a-fA-F]
+  #When used in [] must still include [] of the class:
+  sed 's/^[[:space:]]*//' $file
 
-    #padding:
-    echo 1 | awk '{ printf("%02d\n", $1) }'
-    #works with strings too:
-    ls -lh /var/log/test.log | awk '{ printf("%5s\n", $5) }'
-      12G
-  #END SUMMARY
-
-  #source: http://www.vectorsite.net/tsawk.html
-  #source: http://www.vectorsite.net/tsawk_1.html#m1
-
-  #print range of file from nth match to match, include the line just before too
-  #in other words: print the line just before the "$index"-th match of pattern "patt" to the first match of "complete" after that.
-  awk -v n=$index -v patt="subject: $subject" -v complete='pipeline complete' '$0 ~ patt {++count} count >= n && $0 ~ complete {print;exit} count == n {print last;} count > n {print} {last=$0}' < logfile.log
-
-  #for all files with a yaml key, print until there is no more indentation
-  #xargs configured for mac
-  ag -l start::yaml::key | xargs -I@ cat @ | awk '
-    $0 ~ "start::yaml::key" {start=1}
-    start > 0 {print}
-    $0 !~ "^  |start::yaml::key" {start=0}
-  '
-  ag 'org\.apache\.commons\.lang\.' -l | xargs -n 1 -I@ sed -i '' 's/org\.apache\.commons\.lang\./org.apache.commons.lang3./' @
-
-#SED:
-
-  #MY SUMMARY:
-
-    #sed replaces by regex instances of a string in a file
-    sed 's/replace/regex/' <oldFile >newFile
-    #backreferences use \1
-    #flags: normal regex has 's///g' for greedy, but sed has:
-    #'s///2g' meaning greedy from the 2nd on
-    #'s///3' meaning only the 3rd instance
-
-    #sed inplace replacement:
-    sed 's/replace/regex/' -i file.txt
-
-    #only act on matching lines like awk:
-      #replace trailing comma on all lines matching regex with a semicolon
-      sed -i '/regex/ s/,$/;/' /dev/shm/file.$$
-      #remove last line's comma:
-      sed -i '$ s/,$//' /dev/shm/file.$$
-
-    -n = quiet (supress printing of pattern space)
-    -r = extended regex
-
-  #END SUMMARY
-
-  #sed character classes: https://www.gnu.org/software/sed/manual/html_node/Character-Classes-and-Bracket-Expressions.html
-    [:alnum:]  # [0-9A-Za-z]
-    [:alpha:]  # [A-Za-z]
-    [:blank:]  # space and tab.
-    [:cntrl:]  # control characters, octal codes 000 through 037, and 177 (DEL)
-    [:digit:]  # [0-9]
-    [:graph:]  # [:alnum:] and [:punct:]
-    [:lower:]  # [a-z]
-    [:print:]  # [:alnum:] [:punct:] and space
-    [:punct:]  # ! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ ` { | } ~.
-    [:space:]  # tab, newline, vertical tab, form feed, carriage return, and space.
-    [:upper:]  # [A-Z]
-    [:xdigit:] # Hexadecimal digits: [0-9a-fA-F]
-  When used in [] must still include [] of the class:
-    sed 's/^[[:space:]]*//' $file
+#Commands:
 
   # $replace $search only on $match lines:
   sed -i "/${match//\//\\/}/{s/${search//\//\\/}/${replace//\//\\/}/}" ${file}
@@ -257,92 +202,3 @@ seventh2" > test.txt
 
     #perl print from one to another:
     perl -ne 'print if /^ *<Directory *\//i .. /<\/Directory/i' $file
-
-
-#grep:
-grep -r 'search' path/
-grep -C 15 'search' file.txt #context of 15 lines
-grep -B 5 'search' file.txt #only before context of 5 lines
-grep -A 5 'search' file.txt #only after context of 5 lines
-grep -c 'search' file.txt #print matches (per file with -r)
-grep -m 1 'search' file.txt #only get the first match per file
-
-#ack-grep/ack (faster than grep by skipping hidden and binary files):
-ack-grep "search"
-
-#ag silversearcher (fastest, rewritten in c):
-ag 'search'
-ag 'search' --pager 'less -S' #truncating long lines in less
-ag 'search' | cut -c1-120 #truncating long lines for consumption to 120 characters
-
-cut -f1 -d' ' <<< "hello world"
-
-
-#Example to clean up /etc/hosts:
-  sed -i -n '/\(HEADER\|^10\.\)/!p;/m0/p' /etc/hosts
-
-  -i #edit file in place
-  -n #supress printing the output we will print with p instead
-
-  /\(HEADER\|^10\.\)/
-    Any line matching regex "(HEADER|^10\.)":
-      Lines with the word "HEADER"
-      OR
-      Lines starting with "10."
-  !p
-    Do not print the matching lines
-  ;
-    end of command
-  /m0/p
-    print lines with m0 in them
-  /etc/hosts
-    file to edit
-
-
-
-#Scan HTTPD configs recursively:
-HTTPD_CONF="
-  /var/httpd/admin/conf/httpd.conf
-  /var/httpd/user/conf/httpd.conf
-"
-
-#search for regex without comments:
-function search_conf() {
-  local regex=$1
-  shift
-
-  for configs in $HTTPD_CONF
-  do
-    echo -e "\033[34;1m${configs##*/}:\033[0m"
-    #Included configs:
-    while read line
-    do
-      configs="${configs} ${line##*Include }"
-    done < <(grep -P "^\s*Include\s+" "${configs}" 2>/dev/null)
-
-    for conf in $configs
-    do
-      echo -e "  \033[32m${conf##*/}:\033[0m"
-      grep --color=always -P "${regex}" "${conf}" 2>&1 | sed '/^[ ]*#/d' | sed 's/^/    /'
-    done
-  done
-}
-
-#print <Directory> without comments:
-function print_directories() {
-  for configs in $HTTPD_CONF
-  do
-    echo -e "\033[34;1m${configs##*/}:\033[0m"
-    #Included configs:
-    while read line
-    do
-      configs="${configs} ${line##*Include }"
-    done < <(grep -P "^\s*Include\s+" "${configs}" 2>/dev/null)
-
-    for conf in $configs
-    do
-      echo -e "  \033[32m${conf##*/}:\033[0m"
-      perl -ne 'print if /^ *<Directory /i .. /<\/Directory/i' $conf | sed '/^[ ]*#/d' | sed 's/^/    /'
-    done
-  done
-}

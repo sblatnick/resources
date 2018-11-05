@@ -50,6 +50,9 @@ function gitex_complete() {
           done
         fi
       ;;
+    *)
+        COMPREPLY=($(compgen -f -- "${COMP_WORDS[${COMP_CWORD}]}"))
+      ;;
   esac
 }
 complete -F gitex_complete git
