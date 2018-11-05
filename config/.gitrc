@@ -12,18 +12,19 @@ function gitex_complete() {
         #core commands:
         COMPREPLY=($(compgen -W "$(git help -a | grep "^  [a-z]")" -- "${COMP_WORDS[1]}"))
 
+        local IFS=$'\n'
         for section in $(grep -Eom 2 '^##.*$' $BASH_SOURCE)
         do
-          for help in $(sed -n "/^${section}\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/) .*$//')
+          for cmd in $(sed -n "/^${section}\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/) .*$//')
           do
-            COMPREPLY+=($(compgen -W "$(echo "${help}" | tr '|' ' ')" -- "${COMP_WORDS[1]}"))
+            COMPREPLY+=($(compgen -W "$(echo "${cmd}" | tr '|' ' ')" -- "${COMP_WORDS[1]}"))
           done
         done
       ;;
     2)
+        COMPREPLY=($(compgen -f -- "${COMP_WORDS[2]}"))
         case "${COMP_WORDS[1]}" in
           context|ctx|go)
-              COMPREPLY=()
               section="##Context Actions (context|ctx|go):"
               if [ -f ${GITEX_CONFIG} ];then
                 source ${GITEX_CONFIG}
@@ -34,15 +35,20 @@ function gitex_complete() {
               fi
             ;;
           svn)
-              COMPREPLY=($(compgen -W "$($wgit svn 2>&1 | grep "^  [a-z]" | cut -d' ' -f3)" -- "${COMP_WORDS[2]}"))
+              COMPREPLY+=($(compgen -W "$($wgit svn 2>&1 | grep "^  [a-z]" | cut -d' ' -f3)" -- "${COMP_WORDS[2]}"))
               section="##SVN Actions:"
+            ;;
+          do|dob|mod|mob)
+              COMPREPLY+=($(compgen -W "$(git help -a | grep "^  [a-z]")" -- "${COMP_WORDS[2]}"))
             ;;
         esac
 
-        for help in $(sed -n "/^${section}\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/) .*$//' | grep -Ev '[\$\*]')
-        do
-          COMPREPLY+=($(compgen -W "$(echo "${help}" | tr '|' ' ')" -- "${COMP_WORDS[2]}"))
-        done
+        if [ -n "${section}" ];then
+          for cmd in $(sed -n "/^${section}\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/) .*$//' | grep -Ev '[\$\*]')
+          do
+            COMPREPLY+=($(compgen -W "$(echo "${cmd}" | tr '|' ' ')" -- "${COMP_WORDS[2]}"))
+          done
+        fi
       ;;
   esac
 }
@@ -174,7 +180,7 @@ function gitex() {
         shift
         $wgit checkout -- $@
       ;;
-    svn)
+    svn) #git-svn extras
         shift
         gitex_svn $@
       ;;
