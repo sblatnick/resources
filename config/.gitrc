@@ -153,12 +153,22 @@ function gitex() {
         done
       ;;
     wash) #pull and push
-        branch=$($wgit rev-parse --abbrev-ref HEAD)
-        $wgit pull origin $branch
-        if [ -n "$($wgit status --porcelain)" ];then
-          echo -e "\033[33munmerged changes\033[0m"
+        url=$($wgit config --get svn-remote.svn.url)
+        if [ -z "${url}" ];then
+          branch=$($wgit rev-parse --abbrev-ref HEAD)
+          $wgit pull origin $branch
+          if [ -n "$($wgit status --porcelain)" ];then
+            echo -e "\033[33munmerged changes\033[0m"
+          else
+            $wgit push origin $branch
+          fi
         else
-          $wgit push origin $branch
+          $wgit svn rebase
+          if [ -n "$($wgit status --porcelain)" ];then
+            echo -e "\033[33munmerged changes\033[0m"
+          else
+            $wgit svn dcommit
+          fi
         fi
       ;;
     glog) #grep the log commit messages
