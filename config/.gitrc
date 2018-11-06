@@ -25,6 +25,7 @@ function gitex_complete() {
         COMPREPLY=($(compgen -f -- "${COMP_WORDS[2]}"))
         case "${COMP_WORDS[1]}" in
           context|ctx|go)
+              COMPREPLY=()
               section="##Context Actions (context|ctx|go):"
               if [ -f ${GITEX_CONFIG} ];then
                 source ${GITEX_CONFIG}
@@ -35,11 +36,11 @@ function gitex_complete() {
               fi
             ;;
           svn)
-              COMPREPLY+=($(compgen -W "$($wgit svn 2>&1 | grep "^  [a-z]" | cut -d' ' -f3)" -- "${COMP_WORDS[2]}"))
+              COMPREPLY=($(compgen -W "$($wgit svn 2>&1 | grep "^  [a-z]" | cut -d' ' -f3)" -- "${COMP_WORDS[2]}"))
               section="##SVN Actions:"
             ;;
           do|dob|mod|mob)
-              COMPREPLY+=($(compgen -W "$(git help -a | grep "^  [a-z]")" -- "${COMP_WORDS[2]}"))
+              COMPREPLY=($(compgen -W "$(git help -a | grep "^  [a-z]")" -- "${COMP_WORDS[2]}"))
             ;;
         esac
 
