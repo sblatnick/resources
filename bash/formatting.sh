@@ -53,6 +53,11 @@ echo -n "text" #skips newline at end
 #Change indentation width in printed output:
   tabs 4
 
+#args on newlines:
+  echo "args:  $(xargs -n 1 <<< "$@")"
+#args with whitespace trimmed to one:
+  echo "args:  $(xargs <<< "$@")"
+
 #::::::::::::::::::::COMBINE COLUMNS::::::::::::::::::::
 
 #merge lines of a file:

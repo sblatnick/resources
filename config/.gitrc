@@ -22,7 +22,7 @@ function gitex_complete() {
         done
       ;;
     2)
-        COMPREPLY=($(compgen -f -- "${COMP_WORDS[2]}"))
+        COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d {} ];then echo {}/;else echo {}; fi'))
         case "${COMP_WORDS[1]}" in
           context|ctx|go)
               COMPREPLY=()
@@ -52,11 +52,11 @@ function gitex_complete() {
         fi
       ;;
     *)
-        COMPREPLY=($(compgen -f -- "${COMP_WORDS[${COMP_CWORD}]}"))
+        COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d {} ];then echo {}/;else echo {}; fi'))
       ;;
   esac
 }
-complete -F gitex_complete git
+complete -o nospace -F gitex_complete git
 
 #----------------------------------FUNCTIONS-----------------------------------#
 function bash_prompt()
