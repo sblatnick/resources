@@ -136,7 +136,7 @@ function gitex() {
       ;;
     com|cam|cc) #alias to commit -a -m
         shift
-        if [ -z "$@" ];then
+        if [ -n "$@" ];then
           $wgit commit -a -m "$@"
         else
           echo -e "\033[31mNo commit message specified\033[0m"
@@ -170,6 +170,16 @@ function gitex() {
             $wgit svn dcommit
           fi
         fi
+      ;;
+    giff) #show differences in order
+        shift
+        local IFS=$'\n'
+        for line in $($wgit --no-pager log --oneline $@)
+        do
+          sha=${line%% *}
+          echo -e "\033[33m${sha}\033[0m ${line#* }"
+          $wgit --no-pager show --color ${sha} $@ | sed 's/^/  /'
+        done | less -x2 -S #eval $($wgit config --get core.pager)
       ;;
     glog) #grep the log commit messages
         shift

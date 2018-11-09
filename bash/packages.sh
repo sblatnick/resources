@@ -69,6 +69,10 @@
   yum history #find the id
   yum history undo 56 #undo the install by id
 
+  yum history list #list is default, same as list history
+  yum history list package #list package changes
+  yum history info package #details of package history
+
   #download rpm (requires yum-utils):
   yum install --downloadonly --downloaddir=/home/$USER/ package
 
