@@ -15,6 +15,9 @@ ag 'search'
 ag 'search' --pager 'less -S' #truncating long lines in less
 ag 'search' | cut -c1-120 #truncating long lines for consumption to 120 characters
 
+#search for one pattern, but only highlighting another:
+ag --color -H --color-match '0' '^[^#\n]*reboot' | ag --passthrough 'reboot'
+
 cut -f1 -d' ' <<< "hello world"
 
 #Scan HTTPD configs recursively:

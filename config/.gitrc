@@ -143,6 +143,10 @@ function gitex() {
           return 1
         fi
       ;;
+    co) #alias to checkout
+        shift
+        $wgit checkout $@
+      ;;
     modified) #open dirty files in $EDITOR
         dir=$(pwd)
         local IFS=$'\n'
@@ -419,20 +423,12 @@ function gitex_svn()
         repo=$($wgit rev-parse --show-toplevel 2>/dev/null)
         url=$($wgit config --get svn-remote.svn.url)
 
-        OWD=$OLDPWD
-        CWD=$PWD
-        cd ${repo}/../
-
         revision=$(svn log --stop-on-copy ${url}/${repo##*/}/branches/${branch} | egrep "r[0-9]+" | tail -1 | cut -d' ' -f1)
-        echo -e "\033[32mCloning ${branch} from ${revision}\033[0m"
-        git svn clone -r ${revision#r} -s ${url}/${repo##*/}
+        echo -e "\033[32mFetching ${branch} from ${revision}\033[0m"
+        git svn fetch -r ${revision#r} #${url}/${repo##*/}
 
-        cd ${repo}
         git branch ${branch} origin/${branch}
         git checkout ${branch}
-
-        cd $CWD >/dev/null
-        OLDPWD=$OWD
       ;;
     push) #alias to dcommit
         $wgit svn dcommit
