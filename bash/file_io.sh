@@ -27,51 +27,6 @@ echo "world" >> /tmp/filename
 #store contents to variable:
 contents=$(</tmp/filename)
 
-#::::::::::::::::::::CHANNELS AND ROUTING::::::::::::::::::::
-
-#redirect STDERR to STDOUT:
-script 2>&1
-#redirect STDERR to file:
-bash -x run 2>output.txt
-#print to STDERR:
->&2 echo "error"
-#print errors with the commands that caused them:
-scp $src $dst 2>&1 | sed "s/^/:: ${BASH_COMMAND} :: args: $src, $dst :: /"
-
-#capture output of time:
-{ time date 2>&1 ; } 2>&1 | grep real
-
-#route to a null device
-  > /dev/null
-
-#print BOTH to stdout and to a file (-a means append):
-  echo hello world | tee -a /tmp/column.csv.$pid | sed "s/^/  /"
-
-#tee and append to a log from within the script:
-  exec > >(tee -ai /tmp/script.log) 2>&1
-  
-#redirect stdout/stderr of current script to log:
-  exec 1>log.out 2>&1
-#same as before, but output to CLI too:
-  exec 1> >(tee log.out) 2>&
-#roll logs and log to two files and stdout:
-  exec 1> >(tee /var/log/cron.wrapper /var/log/cron.wrapper.$(date +%F-%H)) 2>&1
-  echo "Cleanup old logs"
-  cutoff=$(date -d "2 weeks ago" +%s)
-  ls -1 /var/log/cron.wrapper.* | grep -P '\d\d\d\d-\d\d-\d\d' | sort | \
-  while read log
-  do
-    when=$(echo ${log} | grep -Po '\d\d\d\d-\d\d-\d\d')
-    when=$(date --date="${when}" +%s)
-    if [ "${when}" -gt "${cutoff}" ];then
-      break
-    fi
-    echo "  deleting ${log}"
-    rm -f ${log}
-  done
-#print commands run:
-  set -x
-
 #::::::::::::::::::::LINKS::::::::::::::::::::
 
 #symbolic link:
@@ -174,6 +129,24 @@ scp $src $dst 2>&1 | sed "s/^/:: ${BASH_COMMAND} :: args: $src, $dst :: /"
 #dump hex from binary by piping to xxd or passing it in as a file:
   ~ $ base64 -D <<< "aGVsbG8gd29ybGQK" | xxd
   00000000: 6865 6c6c 6f20 776f 726c 640a            hello world.
+
+#::::::::::::::::::::COMPRESSION/DECOMPRESSION::::::::::::::::::::
+
+  #INPLACE:
+    #view list of contained files:
+      less archive.tgz
+    #print contents of a file:
+      tar xfO archive.tgz README.txt
+    #delete file from jar/zip:
+      zip -d file.jar path/to/file.txt
+
+  #Extract:
+    tar xvzf archive.tar.gz
+      -x  extract
+      -v  verbose
+      -z  uncompress
+      -f  filename
+      -C  ./output/path
 
 #::::::::::::::::::::VIDEO ENCODING/DECODING::::::::::::::::::::
 

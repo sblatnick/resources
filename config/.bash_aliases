@@ -31,3 +31,14 @@ passed() {
   echo "$((passed / 60)) min $(( passed % 60 )) sec"
 }
 
+tea() {
+  file="$1"
+  shift
+  line="$@"
+  cnt=$(grep -cF "${line}" "${file}" 2>/dev/null)
+  if [ "$cnt" -eq 0 ];then
+    tee -a "${file}" <<< $(printf "\n${line}") 2>/dev/null
+  else
+    echo -e "\033[33mskipping\033[0m ${file}"
+  fi
+}

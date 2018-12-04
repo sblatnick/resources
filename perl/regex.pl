@@ -12,6 +12,9 @@ $replace =~ s/(capture)/<$1>/sg;
 #find match:
 if ($match =~ /under/)
 
+#negate match group (anything but):
+qr/(?!bad),/
+
 #AND regex logic:
 $contentString =~ /(?=.*filename=".{8}\.zip";)(?=.*size=12561)/s;
 #In Java, flags are set before (http://kodejava.org/how-do-i-write-embedded-flag-expression/):

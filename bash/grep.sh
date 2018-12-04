@@ -7,6 +7,13 @@ grep -A 5 'search' file.txt #only after context of 5 lines
 grep -c 'search' file.txt #print matches (per file with -r)
 grep -m 1 'search' file.txt #only get the first match per file
 
+#don't match sub-string (how to ignore ! in "")
+  value='bad'
+  set +H #disable history expansion
+  #match anything but:
+  grep -P "((?!${value}).)," file.txt
+  #source: https://stackoverflow.com/questions/406230/regular-expression-to-match-a-line-that-doesnt-contain-a-word
+
 #ack-grep/ack (faster than grep by skipping hidden and binary files):
 ack-grep "search"
 

@@ -168,6 +168,14 @@ set -e #error stops execution
 set +e #error continues execution (default)
 set -x #print every command executed to stdout
 
+set -Eeuxo pipefail
+  -e          #error stops execution
+  -o pipefail #sets exit status $? to rightmost non-zero exit code
+  -u          #unset variables throw an error, use defaults: if [ -z "${VARIABLE:-}" ]
+  -x          #print commands executed
+  -E          #allow ERR to execute trap before -e causes an exit (alternatively the trap can call exit)
+  #source: https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+
 #::::::::::::::::::::GLOBAL VARIABLES::::::::::::::::::::
 #Internal Field Separator (See ARRAYS)
   IFS='
@@ -402,7 +410,7 @@ echo $(($(</dev/shm/foo)+1)) >/dev/shm/foo;
 
 #"EOF" = no escaping, just variable interpolation
 #'EOF' = no escaping, no variables
-#<<-   = trip proceeding newline
+#<<-   = trim proceeding newline
 
 #See: https://unix.stackexchange.com/questions/399488/keep-backslash-and-linebreak-with-eof
 
@@ -446,6 +454,19 @@ cat <<- EOF
 
   Variable: $var
 EOF
+
+#on OSX, trimming via <<- doesn't seem to work when reading into a variable,
+#and only trims the first line
+
+#Use this to combine http GET parameters with comment removed:
+#(but no anchor links)
+read -r -d '' parameters <<- EOF
+  variable=example
+  data=2
+  component=${var} #comment within string
+  #product=${var2} #commentted out parameter
+EOF
+parameters=$(echo "${parameters}" | sed -e 's/#.*$//' -e 's/^  *//' -e 's/  *$//' -e '/^$/d' | tr $'\n' '&' | sed 's/\&$//')
 
 #::::::::::::::::::::FUNCTIONS::::::::::::::::::::
 
