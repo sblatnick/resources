@@ -13,6 +13,11 @@ tty -s <&1 && echo -en "\033]0;TITLE\a"
 PROMPT_COMMAND='printf "\033]0;%s@%s:%s\007" "${USER}" "${HOSTNAME%%.*}" "${PWD/#$HOME/~}"'
 PROMPT_COMMAND='echo -ne "\033]0;YOUR TITLE GOES HERE\007"'
 
+#::::::::::::::::::::DETECT TERMINAL SIZE::::::::::::::::::::
+
+tput cols  #columns
+tput lines #rows
+
 #::::::::::::::::::::TERMINAL PROMPT::::::::::::::::::::
 
 #Escape coloring effecting the buffer when changing PS1:

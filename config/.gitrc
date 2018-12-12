@@ -158,6 +158,7 @@ function gitex() {
       ;;
     wash) #pull and push
         url=$($wgit config --get svn-remote.svn.url)
+        #git-svn repo?
         if [ -z "${url}" ];then
           branch=$($wgit rev-parse --abbrev-ref HEAD)
           $wgit pull origin $branch
@@ -432,6 +433,9 @@ function gitex_svn()
       ;;
     push) #alias to dcommit
         $wgit svn dcommit
+      ;;
+    pull) #alias to rebase
+        $wgit svn rebase
       ;;
     *) #git-svn
         $wgit svn "$@"

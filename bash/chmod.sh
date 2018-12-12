@@ -53,9 +53,21 @@ lsattr /path/to/file.txt
   chown $(whoami):group file
 
 #::::::::::::::::::::DIRECTORY DEFAULT PERMISSIONS::::::::::::::::::::
-#Sets permissions for all future files in a directory:
-setfacl -d -m u::rwx folder
+#ACL=Access Control Lists
 
+#Sets permissions for all current and future files in a directory:
+setfacl -Rdm u::rwx folder
+setfacl -Rdm u::7,g::4,o::0 folder
+  -R = recursive
+  -d = default (new files)
+  -m = modify
+  u:username:rwx
+  g:groupname:rwx
+
+getfacl folder
+
+#(https://www.computerhope.com/unix/usetfacl.htm)
+#(https://serverfault.com/questions/444867/linux-setfacl-set-all-current-future-files-directories-in-parent-directory-to)
 #(http://unix.stackexchange.com/questions/1314/how-to-set-default-file-permissions-for-all-folders-files-in-a-directory)
 chmod g+s <directory>  //set gid 
 setfacl -d -m g::rwx /<directory>  //set group to rwx default 

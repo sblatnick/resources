@@ -115,6 +115,16 @@
   #revert uncommitted changes/merge:
   git reset --hard HEAD
 
+  #remove large file from commit history (DANGEROUS):
+  git filter-branch --prune-empty --index-filter "git rm --cached -f --ignore-unmatch img/boot/tinycore.gz" --tag-name-filter cat -- --all
+    Rewrite a9a124822407f28f1b622d2a28b08f879bf5b12a (12/15) (0 seconds passed, remaining 0 predicted)    rm 'img/boot/tinycore.gz'
+    Rewrite ea5d987ae1167bf471f9f2e3f071a0cc2c7c8883 (13/15) (0 seconds passed, remaining 0 predicted)    rm 'img/boot/tinycore.gz'
+    Rewrite e9fe720f2a2ca2c174cce831ea99a228c483a91a (14/15) (1 seconds passed, remaining 0 predicted)    rm 'img/boot/tinycore.gz'
+    Rewrite cb3335a87ec52af0825a7d0f778d20466f778af6 (14/15) (1 seconds passed, remaining 0 predicted)
+    Ref 'refs/heads/master' was rewritten
+    Ref 'refs/remotes/origin/master' was rewritten
+  #source: https://stackoverflow.com/questions/2100907/how-to-remove-delete-a-large-file-from-commit-history-in-git-repository
+
   #revert merge:
   git reset 56e05fced
   git reset --hard #just before last merge, head by default
