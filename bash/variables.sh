@@ -176,6 +176,9 @@ set -Eeuxo pipefail
   -E          #allow ERR to execute trap before -e causes an exit (alternatively the trap can call exit)
   #source: https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 
+  #see: http://linuxcommand.org/lc3_man_pages/seth.html
+  +H          #disable $! history substitution (helpful for regex not match word expressions: "(?!${value}),"
+
 #::::::::::::::::::::GLOBAL VARIABLES::::::::::::::::::::
 #Internal Field Separator (See ARRAYS)
   IFS='

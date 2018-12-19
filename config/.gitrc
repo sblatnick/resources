@@ -424,7 +424,7 @@ function gitex_svn()
         repo=$($wgit rev-parse --show-toplevel 2>/dev/null)
         url=$($wgit config --get svn-remote.svn.url)
 
-        revision=$(svn log --stop-on-copy ${url}/${repo##*/}/branches/${branch} | egrep "r[0-9]+" | tail -1 | cut -d' ' -f1)
+        revision=$(svn log --stop-on-copy ${url}/${repo##*/}/branches/${branch} | egrep "r[0-9]+" | head -1 | cut -d' ' -f1)
         echo -e "\033[32mFetching ${branch} from ${revision}\033[0m"
         git svn fetch -r ${revision#r} #${url}/${repo##*/}
 

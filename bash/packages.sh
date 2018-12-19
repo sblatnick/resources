@@ -8,13 +8,15 @@
 #rpm/fedora/yum based linux:
   yum install fuse-sshfs
   yum search package
-  yum check-update #like apt-get update, updates the package definitions without installing anything
-  yum update #will actually update packages
+  yum check-update         #like apt-get update, updates the package definitions without installing anything
+  yum clean expire-cache   #clear cache to see recent changes to the repos
+  yum clean all            #delete cached packages
+  yum update               #will actually update packages
   yum list --showduplicates mariadb #show all versions and indicate the one installed (if any)
   yum whatprovides package
-  rpm -ql tomcat #show installed files
-  rpm -qR tomcat #find dependencies
-  rpm -qpR tomcat.rpm # -p means from the package file
+  rpm -ql tomcat           #show installed files
+  rpm -qR tomcat           #find dependencies
+  rpm -qpR tomcat.rpm      # -p means from the package file
   rpm -qip packagename.rpm #show information about the package not installed like signature
   rpm -qf log4j.properties #find rpm package that installed the file
   #install rpm:

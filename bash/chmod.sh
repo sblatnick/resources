@@ -95,6 +95,12 @@ umask 022
 umask 0077 #results in 600 permissions
 #SAR umask on CentOS defined in: /usr/lib64/sa/sa1 /usr/lib64/sa/sa2
 
+#change default group
+  setfacl -d -m group:<group>:r /path/to/directory #not working?
+  #(old way):
+  chgrp <group> <directory>
+  chmod g+s <directory>
+
 #::::::::::::::::::::SELINUX::::::::::::::::::::
 
 vi /etc/selinux/config
