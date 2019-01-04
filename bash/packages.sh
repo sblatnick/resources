@@ -21,6 +21,8 @@
   rpm -qf log4j.properties #find rpm package that installed the file
   #install rpm:
   rpm -ivh packagename.rpm
+  #install rpm with repo-based dependencies:
+  yum --nogpgcheck localinstall package.rpm
   #uninstall rpm:
   rpm -e package
   #upgrade rpm:

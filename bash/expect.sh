@@ -8,6 +8,17 @@ send "password\r"
 expect eof
 EOF
 
+#Handle escaping of special characters:
+expect << EOF
+  set password {${PASSWORD}}
+  spawn sadmin passwd
+  expect "New Password:"
+  send "\${password}\r"
+  expect "Retype Password:"
+  send "\${password}\r"
+  expect eof
+EOF
+
 #Only pass the password if prompted:
 expect << EOF | grep -vF 'Password:'
   log_user 0

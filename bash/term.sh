@@ -20,6 +20,15 @@ tput lines #rows
 
 #::::::::::::::::::::TERMINAL PROMPT::::::::::::::::::::
 
+
+#PS1 == default interactive prompt
+#PS2 == continuation on next line (default: '> ')
+#PS3 == select prompt (displayed by "select" command, see below)
+#PS4 == `set -x` prefix shell output trace (default: '++', I suggest: '${0##*/}.${LINENO}: ')
+#PROMPT_COMMAND == executes just before PS1, and can modify PS1 (Example: use it for showing current git branch/state)
+
+#source: https://www.thegeekstuff.com/2008/09/bash-shell-take-control-of-ps1-ps2-ps3-ps4-and-prompt_command
+
 #Escape coloring effecting the buffer when changing PS1:
 export PS1='\w\[\033[31m\]$\[\033[0m\] '
 #WRONG: export PS1='\w\033[31m$\033[0m '
@@ -84,3 +93,19 @@ man 7 signals
   mate-terminal \
     --tab-with-profile=Titleable -t "Test Log" -e "ssh $user@$host \"tail -f /var/log/test.log\"" \
     --tab-with-profile=Titleable -t "Apache" -e "ssh $user@$host \"tail -f /var/log/httpd/error_log-$host\"" \
+
+
+#::::::::::::::::::::SELECT COMMAND::::::::::::::::::::
+
+# select i in one two three
+> do
+> echo $i
+> done
+1) one
+2) two
+3) three
+#? 2
+two
+#? ^C
+
+#source: https://www.thegeekstuff.com/2008/09/bash-shell-take-control-of-ps1-ps2-ps3-ps4-and-prompt_command

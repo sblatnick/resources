@@ -24,6 +24,11 @@ lag() {
   agg "$@" | less
 }
 
+#remove comment lines and blank lines
+nocomment() {
+  cat $@ | sed -e '/^[ ]*#/d' -e '/^[ ]*\/\//d' -e '/^[ ]*$/d'
+}
+
 passed() {
   start=$(date --date="$1" +%s)
   end=$(date --date="$2" +%s)

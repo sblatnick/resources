@@ -471,6 +471,11 @@ read -r -d '' parameters <<- EOF
 EOF
 parameters=$(echo "${parameters}" | sed -e 's/#.*$//' -e 's/^  *//' -e 's/  *$//' -e '/^$/d' | tr $'\n' '&' | sed 's/\&$//')
 
+#download urls:
+cat << EOF | xargs wget -c
+https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-18.09.0-3.el7.x86_64.rpm
+EOF
+
 #::::::::::::::::::::FUNCTIONS::::::::::::::::::::
 
   do_stuff()
