@@ -12,6 +12,9 @@ git remote -v #show remotes and their urls
 git remote add upstream git@github.com:geany/geany.git
 git remote add shanghai git@shanghai01:lcta.git
 
+#disable pushing to remote (by invalid url, but you can still pull, and you may want to set upstream):
+git remote set-url --push origin no_push
+
 #assign multiple remotes to a single alias (so you can push to more than one at once):
 git remote add all git@yorktown:bin.git
 git remote set-url --add all git@shanghai:bin.git
