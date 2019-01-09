@@ -1,0 +1,95 @@
+
+#===================================EXAMPLES===================================#
+
+#--------------------------------DOCKER-COMPOSE--------------------------------#
+  #sample yaml:
+  version: '2'
+  services:
+    httpd:
+      image: website
+    curl:
+      image: api
+      depends_on:
+        - website
+      command: curl -s website
+      restart: always
+
+  #running:
+  docker-compose up -d #starts services and logs to stdout
+
+#-----------------------------KUBERNETES / MINIKUBE----------------------------#
+
+  #pod 1: website
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    metadata:
+      name: httpd
+    spec:
+      replicas: 1
+      minReadySeconds: 15
+    template:
+      metadata:
+        labels:
+          app: website
+      spec:
+        containers:
+          - name: website
+            image: httpd
+    ---
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: website
+    spec:
+      selector:
+        app: website
+      ports:
+        - port: 80
+
+  #pod 2: curl
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    metadata:
+      name: api
+    spec:
+      replicas: 2
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 0
+          maxSurge: 50%
+      template:
+        metadata:
+          labels:
+            app: api
+        spec:
+          containers:
+            - name: api
+              image: dev/api
+              args: ["curl", "-s", "api"] #kuberneties runs skydns, and every entry is mapped by name
+
+
+  #Taints/Tolerances - Specify where to run in AWS:
+    apiVersion: kops/v1alpha2
+    kind: InstanceGroup
+    metadata:
+      creationTimestamp: 2017-12-19T23:11:29Z
+      labels:
+        kops.k8s.io/cluster: cluster.intra.net
+      name: my-nodes
+    spec:
+      image: 686629711285/Ubuntu 1604 LTS KUBE
+      machineType: m4.xlarge
+      maxSize: 3
+      minSize: 3
+      nodeLabels:
+        kops.k8s.io/instancegroup: my-nodes
+        service: my-service
+      role: Node
+      rootVolumeSize: 128
+      subnets:
+      - us-east-1a
+      - us-east-1b
+      - us-east-1c
+      taints:
+      - dedicated=my-service:NoSchedule

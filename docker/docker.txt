@@ -1,0 +1,95 @@
+#Setup:
+  #Linux Only: Fix socket permissions to the docker service by adding yourself to the group:
+  sudo usermod -a -G docker ${USER}
+
+  #aliases:
+  alias docker-rm-stopped='docker rm -v $(docker ps -a -q -f status=exited)'
+  alias docker-rm-dangling='docker rmi $(docker images -q -f dangling=true)'
+
+#Repos:
+
+  #Login to your own docker repo:
+  docker login repo.intra.net
+
+  #Pull image from repo:
+  docker pull repo.intra.net/dev/centos:6
+  #Push
+  docker push repo.intra.net/dev/centos:6
+
+  #Tagging
+  docker tag centos:6 repo.intra.net/dev/centos:6
+
+#Dockerfile - blueprint to create an image
+
+  #Helpful for adding yum repos to image based on an existing machine:
+  grep -Ph '^(baseurl|gpgkey)' /etc/yum.repos.d/* | sort | uniq | sed -e 's/^baseurl=/yum-config-manager --add-repo /' -e 's/gpgkey=/rpm --import /'
+
+
+#===================================COMMANDS===================================#
+#Usage:
+
+  #Dockerfile - create images
+  #docker run - run images as containers
+
+  #-d means stdout:
+  docker run ${IMAGE}:${TAG} -d --name ${NAME}
+  #log to file:
+  docker logs -f ${NAME}
+
+
+  #OPTIONS:
+    ps #lists running containers
+    ps -a #containers on the system, keeps logs after it dies (eats your space)
+    rm ${NAME} #or container id, cleanup, don't use "device mapper", /var/lib/docker is where everything is stored, latest is "overlay"
+    --rm #utilities clean up on exit
+    images #lists images you have
+    volume ls #lists volumes
+    run ${ENTRYPOINT} ${PARAMETERS} #run an image
+    exec
+    cp ${SRC} ${DST} #copy from container
+    push #push the image
+    pull #get the image
+    build -t ${NAME}:${TAG} #build the image
+    commit #save an image
+    search #find public images
+    --entrypoint #binary to run
+    -d #daemon/detached, logs to stdout but in the background
+    -f #file to log to
+    -u $(id -u) #user to run as, with an id (useradd needed to use user names, 65534 == NOBODY)
+    -v ${LOCAL_PATH}:${CONTAINER_PATH/FILE}:ro #mounts "volume" folders or paths into image
+    -P ${PORT} #uses the port in the container, chooses random, high number local port to access it with
+    -p ${LOCAL_PORT}:${PORT} #same thing, but let's you specify the local port to access it with
+    -p ${IP}:${LOCAL_PORT}:${PORT} #same thing, but let's you specify the local address to make it not accessible from others
+    --link ${NAME}:${ALIAS} #links to another named container, don't need to know ports, translates commands
+    --name ${NAME} #names the container for linking
+    -it #interactive tty
+    stop ${name} #shutdown container, terminate if using --rm
+
+  #Examples:
+    docker exec -it ${NAME} bash #connect to a running container
+    docker run -it centos:7 bash #create centos7 container and enter it via bash
+    docker build -t dev-base:0.1 . #create image from docker file
+    cat Dockerfile.webapp | docker build -t webapp:0.1 - #build image from stdin
+    docker stop ${NAME} #kill container
+
+  #Dockerfiles:
+    #DECLARATIONS:
+    ENTRYPOINT #binary to run
+    CMD #entrypoint + parameters, or just parameters if the entrypoint is specified
+    EXPOSE 80
+    RUN yum -y install curl && yum clean-all #run cleanup on the same layer because it will store the garbage in the deltas between layers
+    && \ #continue on next line
+
+  #Troubleshooting:
+    #shell access:
+    docker run -it ${NAME} bash
+    docker run -it --entrypoint bash ${NAME}
+    # when you exit, everything is gone
+    # easiest way to work on a docker file
+
+    #enter running container:
+    docker exec -it ${NAME} bash #second command
+
+    #get contents, no bash needed:
+    docker cp ${SRC} ${DST}
+    docker cp ${NAME}:/ root/

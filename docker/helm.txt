@@ -1,0 +1,60 @@
+#Helm
+  #Helm is like yum/apt, and installs to the current kubectl context using Tiller
+
+  #Install:
+  brew install kubernetes-helm
+
+  #Initialize:
+  helm init
+  #TODO: check using TLS and securing
+
+  #Update repo chart cache:
+  helm repo update
+  
+  #Install mysql server pod:
+  helm install stable/mysql
+
+  #Look at features:
+  helm inspect stable/mysql
+
+  #List deployed releases:
+  helm list
+
+  #Remove release:
+  helm delete wintering-rodent
+
+  #Status (works after deletion):
+  helm status wintering-rodent
+
+  #Undelete:
+  helm rollback
+
+  #Help:
+  helm help
+  helm -h
+  helm get -h
+
+  #Search:
+  helm search cassandra
+
+  #Helm Packages are called "charts", and can be in .tgz or just a folder
+
+  helm create mychart
+    mychart
+    |-- Chart.yaml
+    |-- charts
+    |-- templates #rendered using 'Go template' https://golang.org/pkg/text/template/
+    |   |-- NOTES.txt
+    |   |-- _helpers.tpl
+    |   |-- deployment.yaml
+    |   |-- ingress.yaml
+    |   |-- service.yaml
+    |-- values.yaml
+    |-- requirements.yaml #dependencies
+
+  helm install --dry-run --debug ./mychart --set service.internalPort=8080
+
+  #Run local repository:
+  helm serve
+
+  helm search local

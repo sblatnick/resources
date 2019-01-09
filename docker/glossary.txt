@@ -1,0 +1,63 @@
+#-----------------------------------GLOSSARY-----------------------------------#
+
+Docker
+
+  docker          = containerization of services into a linux
+  image           = like a class definition, spec of a non-running container
+  container       = like an instance of an object, image in action
+                      tightly coupled functionality of a service
+  layer           = slices of an image to reduce build time, max of 127
+  tag             = version images to commit and reuse
+  Dockerfile      = organize an image for build time
+
+
+Kubernetes
+
+  kubernetes      = clusterable services, typically docker, organized into pods
+  k8s             = kubernetes
+  kube-shell      = work with multiple clusters
+  docker-compose  = simple clustering of docker
+  kubectl         = kubernetes CLI client
+                      filesystem
+                      process stack
+                      network stack
+                    namespace like chroot
+  minikube        = local cluster
+  namespace       = filter cluster context
+  context         = cluster and namespace kubectl connects to
+  pod             = one or more containers
+  yaml            = file format used to organize deployments/services
+  JSON            = alternative format used to organize deployments/services
+  deployment      = group of pods for a service
+  service         = port/networks settings for a deployment
+  helm            = package manager, organize kubernetes/docker information into yaml/json
+  chart           = helm package definitions
+  label           = help find and apply configs to certain containers/pods
+  selector        = select by label/tag
+  kops            = kubectl for clusters in AWS
+  LoadBalancer    = Load balancing of pods
+  Ingress         = Advanced Load balancing, inboudn connection rules
+  sidecar         = container that prepares something and exits
+
+
+#------------------------------------NOTES-------------------------------------#
+
+  General
+    * dev and prod can be identical architecture
+  Docker
+
+  Kubernetes
+    * labels/selectors/tags saying you need certain resources
+    * ships stdout for you for all running instances for easy monitoring
+
+#-----------------------------------VOLUMES------------------------------------#
+
+  Volumes:
+    PersistentVolume (PVC)
+    Secrets
+    ConfigMaps
+
+  Secrets:
+    1. define secrets using yaml or kubectl to generate the yaml
+    2. `kubectl create` the secret
+    3. reference them in the volumes section in a Pod/Deployment/etc

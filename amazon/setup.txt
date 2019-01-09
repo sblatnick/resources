@@ -1,0 +1,18 @@
+#SETUP:
+  #Install python3, which comes with pip:
+    brew install python3 #Mac
+  #Install aws-shell:
+    pip3 install aws-shell
+  #CLI configure the aws shell to connect to our AWS cloud:
+  aws configure
+    AWS Access Key ID [None]: $id
+    AWS Secret Access Key [None]: $access 
+    Default region name [None]: us-east-1
+    Default output format [None]: json
+  #Or edit file:
+  vi ~/.aws/config:
+    [default]
+    aws_access_key_id = ABCDEFGHIJKLMNOPQRS123
+    aws_secret_access_key = abcdefghijklmnopqrs123
+    region = us-east-1
+    output = json

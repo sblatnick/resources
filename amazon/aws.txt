@@ -1,0 +1,192 @@
+#upload cert:
+aws iam upload-server-certificate --server-certificate-name MyCert --certificate-body cert.pem --private-key key.pem
+
+
+#---------------------------------Helper script--------------------------------#
+#!/bin/bash
+
+# USAGE: see below or just run the command with no arguments
+
+###GLOBALS###
+dev_instance='i-abcdef123'
+dev_size='c4.xlarge'
+dev_secgrp='sg-abcdef123'
+
+httpd_instance='i-abcdef123'
+httpd_size='c4.xlarge'
+httpd_secgrp='sg-abcdef123'
+
+suffix=$(date -u +'%Y%m%dT%H%MZ')
+
+###FUNCTIONS###
+
+#aws wait image-available not flexible enough
+function waiting()
+{
+  ami=$1
+  shift
+  status=$1
+  shift
+
+  echo -n "  checking for ami ${image}"
+  current=""
+  while [ 1 ]
+  do
+    current=$(aws ec2 describe-images --filters Name=name,Values=${ami} --query 'Images[0].[State]' --no-paginate --output text)
+    if [ "${current}" == "${status}" ];then
+      if [ -z "${status}" ];then
+        echo " deprovisioned"
+      else
+        echo " ${status}"
+      fi
+      break
+    fi
+    echo -n "."
+    sleep 3
+  done
+}
+
+#re-creates an AMI
+function redefine()
+{
+  service=$1
+  shift
+
+  instance="${service}_instance"
+  instance="${!instance}"
+  size="${service}_size"
+  size="${!size}"
+  secgrp="${service}_secgrp"
+  secgrp="${!secgrp}"
+
+  ami="dev-${service}-ami-${suffix}"
+  config="dev-${service}-cfg-${suffix}"
+  group="dev-${service}-elc"
+
+  echo "ACTION: update the launch configuration to use the current template instance"
+  echo "1. cleanup old AMI"
+  for old in $(aws ec2 describe-images --filters "Name=name,Values=dev-${service}-ami-*" --query "Images[0].[ImageId]" --no-paginate --output text)
+  do
+    echo "  found: $old"
+    aws ec2 deregister-image --image-id "${old}"
+    echo "  deregistered $old"
+  done
+
+  echo "2. create ami ${ami}"
+  id=$(aws ec2 create-image --instance-id "${instance}" --no-reboot --name "${ami}" --query "[ImageId]" --output text)
+  if [ -n "${id}" ];then
+    echo "  created ami ${id}"
+    waiting "${ami}" "available"
+  else
+    echo -e "  \033[31munable to create ami\033[0m"
+    exit 1
+  fi
+
+  echo "3. create-launch-configuration ${config}"
+  aws autoscaling create-launch-configuration \
+    --launch-configuration-name "${config}" \
+    --image-id "${id}" \
+    --instance-type "${size}" \
+    --security-groups "${secgrp}" \
+    --no-associate-public-ip-address \
+    --block-device-mappings "DeviceName=/dev/sda1,Ebs={VolumeSize=8}"
+
+  echo "4. update-auto-scaling-group ${group}"
+  old=$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names "${group}" --query "AutoScalingGroups[0].[LaunchConfigurationName]" --no-paginate --output text)
+  echo "  updating from ${old} to ${config}"
+  aws autoscaling update-auto-scaling-group \
+    --auto-scaling-group-name "${group}" \
+    --launch-configuration-name "${config}"
+  echo "  deleting ${old}"
+  aws autoscaling delete-launch-configuration --launch-configuration-name "${old}"
+}
+
+function flush()
+{
+  service=$1
+  shift
+  group="dev-${service}-elc"
+
+  echo "ACTION: terminate old instances in pool ${group}"
+  for old in $(aws autoscaling describe-auto-scaling-instances --query "AutoScalingInstances[?AutoScalingGroupName=='${group}'].[InstanceId]" --output text --no-paginate)
+  do
+    echo "  terminating instance ${old}"
+    aws autoscaling terminate-instance-in-auto-scaling-group \
+      --instance-id "${old}" \
+      --no-should-decrement-desired-capacity \
+      --query "Activity.Description" \
+      --output text \
+    2>&1 | sed '/^$/d' | sed 's/^/    /'
+  done
+}
+
+function process()
+{
+  service=$1
+  shift
+  action=$1
+  shift
+
+  case "${action}" in
+    '')
+        redefine "${service}"
+        flush "${service}"
+      ;;
+    redefine|flush)
+        ${action} "${service}"
+      ;;
+    *)
+        echo "no such action: ${action}"
+        exit 1
+      ;;
+  esac
+}
+
+###MAIN###
+
+if [ $# -lt 1 ]; then
+  echo "Usage: ${0##*/} [service] [action]
+
+  service:   dev|httpd|all
+  action:    redefine|flush       
+  no action: perform all default actions
+
+  Examples:
+    ${0##*/}             #print this usage information
+    ${0##*/} dev         #redefine and flush the dev pool
+    ${0##*/} all flush   #flush all pools, terminating current instances
+"
+  exit
+fi
+
+service=$1
+shift
+action=$1
+shift
+
+set -e
+
+case "${service}" in
+  all)
+      for service in $(echo "dev httpd" | tr ' ' $'\n')
+      do
+        echo -e "\033[34m${service}\033[0m:"
+        process "${service}" "${action}"
+      done
+    ;;
+  dev|httpd)
+    process "${service}" "${action}"
+    ;;
+  *)
+      echo "no such service: ${service}"
+      exit 1
+    ;;
+esac
+
+
+
+
+
+
+
+

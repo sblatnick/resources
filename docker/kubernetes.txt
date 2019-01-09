@@ -1,0 +1,143 @@
+#Structure:
+
+  #OBJECTS (see hierarchy.txt):
+    services (svc)
+    deployment (deploy)
+      replicaset (rs)
+        pod (po)
+          #container (docker, not a k8n object)
+
+    #Other objects:
+    configmaps
+    replicationcontrollers #old, use deployments instead
+
+#----------------------------------k8n CLUSTER---------------------------------#
+Kubernetes master has config files for the daemons:
+  /etc/kubernetes/manifests/kube-controller-manager.manifest
+
+Example arguments:
+  https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/
+
+  kube-controller-manager
+    --horizontal-pod-autoscaler-upscale-delay 1m0s
+
+#===================================COMMANDS===================================#
+
+  kubectl [action] [object] [name] [flagged args]
+    #can use a "/" between [object] and [name]
+    #can pass [flagged args] as "--arg=value" or "--arg value"
+    #can use abbreviated aliases for [object], in singular or plural form
+
+  #ACTIONS:
+
+    #create:
+    kubectl create -f resource.yaml
+      #service (can also be created in yaml):
+      kubectl expose deployment my-deployment --type="LoadBalancer" --name="my-pod"
+
+    #update:
+    kubectl apply -f resource.yaml
+
+    #attach:
+    kubectl exec -it my-deployment-98789595c-z6r9w -- /bin/bash
+    kubectl -n my-namespace exec -c http-request -it my-pod-dd9b6b858-2q9r2 -- /bin/sh
+    # -n = namespace
+
+    #logs from stdout:
+    kubectl logs my-deployment-8474cdbc55-kc78n
+
+    #delete:
+    kubectl delete service my-service
+    kubectl delete service -l key=value # -l selects groups of objects by labels
+
+    #set: update deployment image version:
+    kubectl set image deployment/my-deployment my-pod=repo.intra.net/dev/my-pod:0.1
+
+    #get:
+    kubectl get deployments
+    kubectl get pods
+    kubectl get services
+    kubectl get services my-service
+    kubectl get services/my-service -o go-template='{{(index .spec.ports 0).nodePort}}')
+    kubectl get all
+
+    kubectl get pod my-pod -o=jsonpath="{.spec.containers[*].name}"
+    kubectl -n my-namespace get pod my-pod-dd9b6b858-2q9r2 -o=json | jq -r '.spec.containers[].name'
+
+    #get k8s nodes:
+    kubectl get nodes
+
+    #get k8s system pods:
+    kubectl get pods -n kube-system
+    #if something isn't running you are expecting, try rebooting
+    #the network plugin "weave" uses two pods per node
+
+    #describe:
+    kubectl describe deployments
+    kubectl describe deployment my-deployment
+    kubectl describe pods my-deployment
+    kubectl describe pod my-deployment-98789595c-z6r9w
+
+    #help/documentation:
+    kubectl explain hpa.spec.scaleTargetRef
+
+    #history:
+    kubectl rollout history deployment/my-deployment #only displays CHANGE-CAUSE if --record passed during creation/update
+    kubectl rollout history deployment/my-deployment --revision=1 #show what was changed in REVISION 1      
+
+    #status:
+    kubectl rollout status deploy/my-deployment
+
+    #Flush pod within Deployment by changing a variable:
+    kubectl set env deployment/my-deployment "DEPLOY_DATE=$(date +'%m-%d-%y-%T')"
+    kubectl apply -f deployment.yaml
+
+  #Contexts:
+
+    #See cluster information for the current context:
+    kubectl cluster-info
+
+    #List contexts:
+    kubectl config get-contexts
+
+    #Switch contexts:
+    kubectl config use-context dev
+
+  #MISC:
+
+    #resources:
+    kubectl set resources deployment my-deployment -c=resource --limits=cpu=200m,memory=512Mi
+
+    #pause:
+    kubectl rollout pause deployment/my-deployment
+
+    #revert:
+    kubectl rollout undo deployment/my-deployment
+    kubectl rollout undo deployment/my-deployment --to-revision=2
+
+    #scale:
+    kubectl scale deployment my-deployment --replicas=3
+    kubectl scale deployment my-deployment --min=10 --max=15 --cpu-percent=80
+
+    #label:
+    kubectl label pod my-deployment-98789595c-z6r9w key=value
+
+    #opens editor for editing yaml state used currently:
+    kubectl edit deployment/my-deployment
+
+    #patch:
+    kubectl patch deployment my-deployment --patch "$(cat patch.yaml)"
+    kubectl patch deploy/my-deployment -p '{"spec":{"progressDeadlineSeconds":600}}'
+
+    #Run pods:
+    kubectl run hello-world --replicas=5 --labels="run=load-balancer-example" --image=gcr.io/google-samples/node-hello:1.0  --port=8080
+
+    #Run Centos 7 from our repo:
+    docker run -it --rm -v ${HOME}:/root/ -h centos7 repo.intra.net/dev/centos:7 /bin/bash
+
+    #Rolling updates (replaced by Deployments):
+    kubectl rolling-update -f my-rolling-update.yaml
+    kubectl replace -f my-rolling-update.yaml
+
+    #get minicube IP:
+    minikube ip

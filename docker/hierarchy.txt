@@ -1,0 +1,18 @@
+
+#----------------------------------HIERARCHY-----------------------------------#
+
+kubernetes / docker-compose
+  cluster / minikube
+    namespace
+      Deployment / StatefulSet / DaemonSet (Controller, InstanceGroup)
+        ReplicaSet
+          pod
+            container
+              image
+                layer
+              Volumes
+                PersistentVolume (PVC)
+                Secrets
+                ConfigMaps
+            label / selector / tag
+      service

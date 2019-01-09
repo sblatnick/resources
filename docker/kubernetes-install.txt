@@ -1,0 +1,75 @@
+#Install kubectl (client setup)
+
+  #1. Install docker: https://www.docker.com/community-edition
+  #2. Install kubectl:
+    #Mac (Requires https://brew.sh/ homebrew):
+      curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/darwin/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+      brew install kubectl
+      brew cask install minikube
+      brew install bash-completion
+  #3. Configure kubectl using a copy of ~/.kube/config replacing "s/sblatnick/${NAME}/"
+  #4. (Optional) Login to your own docker repo:
+    docker login repo.intra.net
+  #5. Querying pods will verify your kubectl for auth:
+    kubectl get pods
+
+#Minikube
+  #Adds context minikube and start it:
+  minikube start
+
+#Install Kubernetes using Kubespray
+  #CentOS7 Each node:
+    yum install net-tools libselinux-python
+
+  #On client box:
+    #Get kubespray:
+    git clone https://github.com/kubernetes-incubator/kubespray
+    cd kubespray
+
+    #Install dependencies:
+    brew install ansible #Mac
+    sudo pip install -r requirements.txt
+
+    #Copy/update configs:
+    cp -rfp inventory/sample inventory/mycluster
+    declare -a IPS=(192.168.0.1 192.168.0.2 192.168.0.3) #Must use IPs not hostnames here
+    CONFIG_FILE=inventory/mycluster/hosts.ini python3 contrib/inventory_builder/inventory.py ${IPS[@]}
+
+    #Reconfigure to use weave instead of calico (default for kubespray):
+    sed -i '' 's/^kube_network_plugin: calico$/kube_network_plugin: weave/' inventory/mycluster/group_vars/k8s-cluster/k8s-cluster.yml #Mac needs '' for -i
+
+    #(Optional) Change hostnames of nodes:
+    sed -i '' 's/^node/mynode0/' inventory/mycluster/hosts.ini
+
+    #(Optional) Choose nodes that are masters:
+    vi inventory/mycluster/hosts.ini
+      [kube-master]
+      mynode01
+      mynode02
+
+    #Run playbook:
+    ansible-playbook -u root -b -i inventory/mycluster/hosts.ini cluster.yml
+    #If you need to update something, use scale.yml instead of cluster.yml.
+    #You can add ssh args: --ssh-extra-args "-o StrictHostKeyChecking=no"
+
+  #Configure kubectl:
+    kubectl config set-context my --cluster=my-cluster --user=my-admin
+    kubectl config use-context my
+
+    scp root@mynode01.lab.ppops.net:/etc/kubernetes/admin.conf /tmp/
+    kubectl config set-cluster my-cluster --server=https://10.24.252.1:6443
+    kubectl config set clusters.my-cluster.certificate-authority-data "$(grep 'certificate-authority-data: ' /tmp/admin.conf | sed 's/^[ ]*.*: //')"
+    kubectl config set users.my-admin.client-key-data "$(grep 'client-key-data: ' /tmp/admin.conf | sed 's/^[ ]*.*: //')"
+    kubectl config set users.my-admin.client-certificate-data "$(grep 'client-certificate-data: ' /tmp/admin.conf | sed 's/^[ ]*.*: //')"
+    rm /tmp/admin.conf
+
+    #Check for k8 pods:
+    kubectl get pods -n kube-system
+    #Each node should have 2 weave pods
+
+    ~ $ kubectl get nodes
+    NAME      STATUS    ROLES         AGE       VERSION
+    mynode01  Ready     master,node   2d        v1.13.1
+    mynode02  Ready     master,node   2d        v1.13.1
+    mynode03  Ready     node          2d        v1.13.1
+
