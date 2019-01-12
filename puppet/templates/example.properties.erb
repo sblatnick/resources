@@ -1,0 +1,8 @@
+#GENERATED VIA PUPPET, DO NOT MODIFY
+count=<%= @pools.length %>
+
+<% @pools.each_with_index do |pool, index| -%>
+<% pool.each do |key, value| -%>
+pool.<%= index+1 -%>.<%= key -%> = <%= value %>
+<% end %>
+<% end -%>

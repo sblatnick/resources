@@ -1,0 +1,55 @@
+
+
+
+key:
+  subkey:
+    - "list"
+    - "list 2"
+  subkey2:
+    level3: "value"
+  multiline: |
+    example
+    of "text"
+    until
+    unindented
+  no-newline-at-end: |-
+    trim EOF newline
+  folding: >
+    put
+    every line
+    together on the same line with spaces
+    but retain last newline
+  folding-preserved: >-
+    put
+    every line
+    together without trailing newline
+    but \n preserved
+---
+document: 1
+...
+---
+document: 2
+...
+
+---
+#comment
+
+#puppet hiera example:
+hiera::configs:
+  '/etc/config.properties': |
+    datacenter=%{hiera('corporate::datacenter')}
+    zone_mapping={\
+      "PT":"US",\
+      "MST":"US",\
+      "ET":"US",\
+    }
+  '/etc/cron.d/example': |
+    #############################################
+    # CRON JOBS
+    #############################################
+    15 * * * * root echo hello world
+    30 * * * * root echo hello world 2
+    
+#puppet must be programmed to write these to files
+
+...

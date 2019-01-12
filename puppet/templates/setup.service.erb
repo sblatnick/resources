@@ -1,0 +1,12 @@
+[Unit]
+Description=Setup Script at Boot
+After=syslog.target network.target
+Before=httpd.service tomcat.service mysql.service mariadb.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/example/setup
+
+[Install]
+WantedBy=multi-user.target
+

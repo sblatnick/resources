@@ -11,7 +11,7 @@ kubernetes / docker-compose
               image
                 layer
               Volumes
-                PersistentVolume (PVC)
+                PersistentVolume (PVC = Persistent Volume Claim)
                 Secrets
                 ConfigMaps
             label / selector / tag

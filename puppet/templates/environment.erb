@@ -1,0 +1,14 @@
+#!/bin/bash
+
+JAVAARGS=""
+<% @javaargs.each do |argument| -%>
+  JAVAARGS="$JAVAARGS <%= argument -%>"
+<% end -%>
+
+<% @env.each do |env_key, env_value| -%>
+  export <%= env_key -%>="<%= env_value -%>"
+<% end -%>
+
+export JAVAARGS
+export JAVA_HOME="/usr/lib/jvm/jre"
+

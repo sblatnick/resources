@@ -1,0 +1,14 @@
+{
+  "name" : "profile_example",
+  "version": "37",
+  "author" : null,
+  "summary" : "Generic profile",
+  "license" : "Copyright",
+  "source" : "ssh://git@intra.net/profile_example.git",
+  "project_page" : null,
+  "issues_url" : null,
+  "dependencies" : [ ],
+  "operatingsystem_support" : [
+    { "operatingsystem" : "CentOS", "operatingsystemrelease" : [ "7" ] }
+  ]
+}

@@ -1,15 +1,53 @@
-#Structure:
+#Resources (objects)
 
-  #OBJECTS (see hierarchy.txt):
+  #Structure (see hierarchy.txt):
     services (svc)
     deployment (deploy)
       replicaset (rs)
         pod (po)
-          #container (docker, not a k8n object)
+          #container (docker, not a k8n resource)
 
-    #Other objects:
-    configmaps
-    replicationcontrollers #old, use deployments instead
+  #RESOURCE TYPES and abbreviations: https://kubernetes.io/docs/reference/kubectl/overview/#resource-types
+    apiservices
+    certificatesigningrequests    csr
+    clusters
+    clusterrolebindings
+    clusterroles
+    componentstatuses             cs
+    configmaps                    cm
+    controllerrevisions
+    cronjobs
+    customresourcedefinition      crd
+    daemonsets                    ds
+    deployments                   deploy
+    endpoints                     ep
+    events                        ev
+    horizontalpodautoscalers      hpa
+    ingresses                     ing
+    jobs
+    limitranges                   limits
+    namespaces                    ns
+    networkpolicies               netpol
+    nodes                         no
+    persistentvolumeclaims        pvc
+    persistentvolumes             pv
+    poddisruptionbudget           pdb
+    podpreset
+    pods                          po
+    podsecuritypolicies           psp
+    podtemplates
+    replicasets                   rs
+    replicationcontrollers        rc      #old, use deployments instead
+    resourcequotas                quota
+    rolebindings
+    roles
+    secrets
+    serviceaccounts               sa
+    services                      svc
+    statefulsets
+    storageclasses
+    Output                        opti
+
 
 #----------------------------------k8n CLUSTER---------------------------------#
 Kubernetes master has config files for the daemons:
@@ -23,10 +61,13 @@ Example arguments:
 
 #===================================COMMANDS===================================#
 
-  kubectl [action] [object] [name] [flagged args]
-    #can use a "/" between [object] and [name]
+  kubectl [action] [resource] [name] [flagged args]
+    #can use a "/" between [resource] and [name]
     #can pass [flagged args] as "--arg=value" or "--arg value"
-    #can use abbreviated aliases for [object], in singular or plural form
+    #can use abbreviated aliases for [resource], in singular or plural form
+    #can pass multiple resources: `kubectl delete pod one two three`
+
+  #Cheat Sheet: https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 
   #ACTIONS:
 
@@ -48,7 +89,7 @@ Example arguments:
 
     #delete:
     kubectl delete service my-service
-    kubectl delete service -l key=value # -l selects groups of objects by labels
+    kubectl delete service -l key=value # -l selects groups of resources by labels
 
     #set: update deployment image version:
     kubectl set image deployment/my-deployment my-pod=repo.intra.net/dev/my-pod:0.1
@@ -63,6 +104,17 @@ Example arguments:
 
     kubectl get pod my-pod -o=jsonpath="{.spec.containers[*].name}"
     kubectl -n my-namespace get pod my-pod-dd9b6b858-2q9r2 -o=json | jq -r '.spec.containers[].name'
+
+      -o --output             output format
+        name                  print resource names
+        wide                  node name included
+        yaml                  yaml-formatted api object
+        json                  json-formatted api object
+        jsonpath              jsonpath expression of fields to print
+        jsonpath-file         file with jsonpath expression of fields to print
+        custom-columns        print table with col_name01,col_name02,...
+        custom-columns-file   file with table column names
+      -v --v                  verbosity 0-9
 
     #get k8s nodes:
     kubectl get nodes
@@ -91,6 +143,11 @@ Example arguments:
     #Flush pod within Deployment by changing a variable:
     kubectl set env deployment/my-deployment "DEPLOY_DATE=$(date +'%m-%d-%y-%T')"
     kubectl apply -f deployment.yaml
+
+  #Delete retained local PersistentVolume permanently:
+    kubectl delete pv my-persistent-volume
+    kubectl delete pvc my-persistent-volume-claim #claim must be deleted
+    #source: https://kubernetes.io/docs/tasks/run-application/delete-stateful-set/
 
   #Contexts:
 

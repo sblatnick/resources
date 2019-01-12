@@ -1,18 +1,35 @@
 #Helm
-  #Helm is like yum/apt, and installs to the current kubectl context using Tiller
+  #Helm is like yum/apt, and installs to the current kubectl context
+  #Tiller is the server component
 
   #Install:
   brew install kubernetes-helm
 
+  #Add incubator repo to helm (in addition to stable):
+  helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com/
+
+  #Modify charts:
+  git clone git@github.com:helm/charts.git
+
   #Initialize:
   helm init
+  helm init --update #update tiller to latest
   #TODO: check using TLS and securing
+
+  #Fix "Error: no available release name found"
+  kubectl create serviceaccount --namespace kube-system tiller
+  kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+  kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
+  #source: https://github.com/helm/helm/issues/3055
 
   #Update repo chart cache:
   helm repo update
   
   #Install mysql server pod:
   helm install stable/mysql
+
+  #Update chart definition
+  helm upgrade release_name ./path/chart
 
   #Look at features:
   helm inspect stable/mysql
@@ -37,24 +54,210 @@
   #Search:
   helm search cassandra
 
-  #Helm Packages are called "charts", and can be in .tgz or just a folder
-
-  helm create mychart
-    mychart
-    |-- Chart.yaml
-    |-- charts
-    |-- templates #rendered using 'Go template' https://golang.org/pkg/text/template/
-    |   |-- NOTES.txt
-    |   |-- _helpers.tpl
-    |   |-- deployment.yaml
-    |   |-- ingress.yaml
-    |   |-- service.yaml
-    |-- values.yaml
-    |-- requirements.yaml #dependencies
-
-  helm install --dry-run --debug ./mychart --set service.internalPort=8080
+  #Debugging:
+    #Test generated definitions:
+    helm install --dry-run --debug ./my-chart --set service.internalPort=8080
+    #Check syntax:
+    helm lint
 
   #Run local repository:
   helm serve
 
   helm search local
+
+#Charts
+
+  #Helm Packages are called "charts", and can be in .tgz or just a folder
+
+  helm create mychart
+    mychart
+    |-- Chart.yaml
+    |-- charts              #sub-charts, which can inherit from parent's values.yaml "mysubchart:" sections
+    |-- templates           #rendered using 'Go template' https://golang.org/pkg/text/template/
+    |   |-- NOTES.txt       #printed on deployment as useful info, rendered as a template
+    |   |-- _helpers.tpl
+    |   |-- deployment.yaml
+    |   |-- ingress.yaml
+    |   |-- service.yaml
+    |-- values.yaml
+    |-- requirements.yaml   #dependencies (optional)
+
+#Templates
+  #source: https://docs.helm.sh/chart_template_guide/
+
+  #All files in templates/ will be parsed using GoTemplates except NOTES.txt
+  #convention:
+  # .yaml for specs
+  # .tpl for helpers
+  # _ prefix means not to create resources from it (not a manifest)
+
+  #namespaced objects:
+
+    {{ .Release.Name }}           #release name
+    {{ .Release.Time }}           #time of release
+    {{ .Release.Namespace }}      #namespace to be released into
+    {{ .Release.Service }}        #name of releasing service (always Tiller)
+    {{ .Release.Revision }}       #begins at 1, increments with each `helm upgrade`
+    {{ .Release.IsUpgrade }}      #true if current operation is an upgrade or rollback
+    {{ .Release.IsInstall }}      #true if current operation is an install
+
+    {{ .Values.first.second }}    #from values.yaml heirarchy (default: empty)
+    {{ .Chart }}                  #from Chart.yaml
+
+    #Files
+    {{ .Files.Get config.ini }}   #get file by name
+    {{ .Files.GetBytes c.ini }}   #get file as array of bytes
+
+      #Globbing Files:
+      {{ range $path, $bytes := .Files.Glob "foo/*" }}
+      {{ base $path }}: '{{ $root.Files.Get $path | b64enc }}'
+      {{ end }}
+      #Lines:
+      data:
+        some-file.txt: {{ range .Files.Lines "foo/bar.txt" }}
+          {{ . }}{{ end }}
+
+    #Capabilities the Kubernetes cluster supports:
+    {{ .Capabilities.APIVersions }}
+    {{ .Capabilities.APIVersions.Has "batch/v1" }}
+    {{ .Capabilities.KubeVersion.Major }}
+    {{ .Capabilities.KubeVersion.Minor }}
+    {{ .Capabilities.KubeVersion.GitVersion }}
+    {{ .Capabilities.KubeVersion.GitCommit }}
+    {{ .Capabilities.KubeVersion.GitTreeState }}
+    {{ .Capabilities.KubeVersion.BuildDate }}
+    {{ .Capabilities.KubeVersion.GoVersion }}
+    {{ .Capabilities.KubeVersion.Compiler }}
+    {{ .Capabilities.KubeVersion.Platform }}
+    {{ .Capabilities.TillerVersion.SemVer }}
+    {{ .Capabilities.TillerVersion.GitCommit }}
+    {{ .Capabilities.TillerVersion.GitTreeState }}
+
+    #Info about the current template being executed:
+    {{ .Template.Name }}          #namespaced filepath mychart/templates/mytemplate.yaml
+    {{ .Template.BasePath }}      #namespaced path to templates directory mychart/templates
+
+  #Delete key:
+    key: null
+
+  #Functions/Pipes:
+    #Usage:
+      {{ quote .Values.example }}
+      {{ Values.example | quote }}
+    #Built in:
+      indent 2 "string"
+      | quote
+      | default "value"
+      | upper
+      | nindent 4 #multiline indent, useful with include
+      | b64enc
+    #Path helpers:
+      base
+      dir
+      ext
+      isAbs
+      clean
+
+  #Boolean:
+    false: false, zero, "", nil, null, empty collection
+
+  #Operators:
+    {{ if PIPELINE }}
+      # Do something
+    {{ else if OTHER PIPELINE }}
+      # Do something else
+    {{ else }}
+      # Default case
+    {{ end }}
+    if
+    else
+    with
+    range
+    define
+    template
+    block
+
+  #Formatting:
+    {{- #trim preceeding whitespace/newline
+    -}} #trim trailing whitespace/newline
+
+  #Scope:
+    $. #$. is always global/root context $.Values
+
+    #with:
+      {{- with .Values.favorite }}
+      drink: {{ .drink | default "tea" | quote }}
+      food: {{ .food | upper | quote }}
+      {{- end }}
+      release: {{ .Release.Name }} #must put any non-scoped outside
+
+  #Variables:
+    {{ $variable := "example" }}
+
+  #Loops:
+
+    #Array:
+      toppings: |- #multiline string with - meaning to trim off the newline, + means preserve
+        {{- range .Values.pizzaToppings }}
+        - {{ . | title | quote }}
+        {{- end }}
+      #Inline:
+      sizes: |-
+        {{- range tuple "small" "medium" "large" }}
+        - {{ . }}
+        {{- end }}
+    #Index:
+      toppings: |-
+        {{- range $index, $topping := .Values.pizzaToppings }}
+          {{ $index }}: {{ $topping }}
+        {{- end }}
+    #Key/Value:
+      {{- range $key, $val := .Values.favorite }}
+      {{ $key }}: {{ $val | quote }}
+      {{- end}}
+
+  #Collections:
+    map
+    slice
+    tuple #list of fixed size
+    dict
+    array
+
+  #Documentation:
+    {{/* Text */}}
+
+  #Templates:
+    #Named Templates are like snippets
+    #shared between parent chart and all subcharts
+    #template/define (normally in _helpers.tpl)
+      #template is an action, not function, so it can't be post processed
+      {{ define "mychart.snippet" }}
+        # body of template here
+      {{ end }}
+      
+      {{ template "mychart.snippet" . }} # . = scope passed in
+    
+    #include/define
+      #same as template, but pipeable like a function
+
+      labels:
+        {{- include "mychart.snippet" . | nindent 4 }}
+
+    #block
+      #discouraged in helm charts as they claim if defined multiple times, it is unclear which is used
+      #same as define and print template in one line:
+      {{ block "mychart.snippet" | quote }}
+        # body of template here
+      {{ end }}
+
+      #source: https://www.reddit.com/r/golang/comments/7apv04/what_is_the_difference_between_template_and_block/
+
+
+#values.yaml:
+
+  example:
+    - "hiera"
+  mysubchart:
+    example: "" #addressable in subchart as Values.example and in parent chart as Values.mysubchart.example
+  global:
+    example: "" #addressable from any template as Values.global.example

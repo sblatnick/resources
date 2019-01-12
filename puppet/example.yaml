@@ -1,0 +1,70 @@
+#normally this is not located within the puppet module
+
+#common packages:
+preinstall::packages:
+  'the_silver_searcher':
+    'ensure': '2.0.0-1.el7'
+  'vim-enhanced':
+    'ensure': '7.4.160-2.el7'
+  'telnet':
+    'ensure': '0.17-59.el7'
+  'rsync':
+    'ensure': '3.0.9-18.el7'
+  'wget':
+    'ensure': '1.14-15.el7_4.1'
+
+directories:
+  - '/etc/example'
+  - '/etc/example/example2'
+
+javaargs:
+  - "-Djava.net.preferIPv4Stack=true"
+  - "-Djavax.net.ssl.trustStore=/var/ssl/truststore.jks"
+
+apache_certs: 
+  '/etc/httpd/conf/ssl/intra.net.crt': 
+    'content': "%{hiera('intranet::crt')}"
+
+#Binary file encrypted into eyaml and base64 encoded:
+keystores:
+  '/etc/httpd/conf/ssl/intra.net.p12': "%{hiera('intranet::p12')}"
+
+sysctl::base::values:
+  vm.swappiness:
+    value: '1'
+
+#Nagios Checks:
+nagios::client::check_hash:
+  "DISK":
+    "command": "%{hiera('nagios::plugin_dir')}/check_disk -e -l -X tmpfs -w 10% -c 5% -p / -r /.*"
+    "runbook": "https://link.com"
+
+
+javaargs:
+  - "-Dexample.disabled=false"
+
+mounts:
+  '/mnt/users':
+    'device': 'netapp.intra.net:/users'
+  '/mnt/admins':
+    'device': 'netapp.intra.net:/admins'
+
+
+env:
+  "DEV": 1
+  "HOME": '/root'
+
+example::configs:
+  '/etc/example/test.json': |
+    {
+      "json": [
+        {
+        }
+      ]
+    }
+
+pools:
+  - name: 'EXAMPLE'
+    hostname: 'example.intra.net'
+  - name: 'EXAMPLE2'
+    hostname: 'example2.intra.net'
