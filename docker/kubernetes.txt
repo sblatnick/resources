@@ -59,6 +59,83 @@ Example arguments:
   kube-controller-manager
     --horizontal-pod-autoscaler-upscale-delay 1m0s
 
+#===================================CONCEPTS===================================#
+#-----------------------------------AFFINITY-----------------------------------#
+  #Affinity: Where to place or not place
+
+  #affinity replaces nodeSelector
+
+  requiredDuringSchedulingIgnoredDuringExecution  #enforced affinity
+  preferredDuringSchedulingIgnoredDuringExecution #soft affinity
+
+  #Types:
+    podAffinity   podAntiAffinity
+    nodeAffinity  nodeAntiAffinity #beta
+
+  #Operators:
+    In
+    NotIn
+    Exists
+    DoesNotExist
+    Gt
+    Lt
+
+  #Examples:
+    #Make sure StatefulSet spread across nodes:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - {{ template "cassandra.name" . }}
+            topologyKey: "kubernetes.io/hostname"
+
+
+#------------------------------------LABELS------------------------------------#
+
+  kubectl label nodes <node-name> <label-key>=<label-value>
+  kubectl get nodes --show-labels
+
+  #Built-in Labels:]
+    kubernetes.io/hostname
+    failure-domain.beta.kubernetes.io/zone
+    failure-domain.beta.kubernetes.io/region
+    beta.kubernetes.io/instance-type
+    beta.kubernetes.io/os
+    beta.kubernetes.io/arch
+
+#-------------------------------TAINT/TOLERATION-------------------------------#
+  #Source: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+
+  #Taint: Disallow
+  #Toleration: Exceptions to taints
+
+  #Add Taint:
+  kubectl taint nodes node1 key=value:NoSchedule
+
+  #Remove Taint:
+  kubectl taint nodes node1 key=value:NoSchedule-
+
+  #Built-in Taints:
+  node.kubernetes.io/not-ready                      #NodeCondition Ready = "False"
+  node.kubernetes.io/unreachable                    #Unreachable from the node controller. NodeCondition Ready = "Unknown"
+  node.kubernetes.io/out-of-disk                    #Node becomes out of disk.
+  node.kubernetes.io/memory-pressure                #Node has memory pressure.
+  node.kubernetes.io/disk-pressure                  #Node has disk pressure.
+  node.kubernetes.io/network-unavailable            #Node's network is unavailable.
+  node.kubernetes.io/unschedulable                  #Node is unschedulable.
+  node.cloudprovider.kubernetes.io/uninitialized    #When the kubelet is started with "external" cloud provider,
+                                                    #   this taint is set on a node to mark it as unusable.
+                                                    #   After a controller from the cloud-controller-manager initializes this node,
+                                                    #   the kubelet removes this taint.
+
+  #Default taint NoSchedule on master node(s):
+  kubectl taint node mymasternode node-role.kubernetes.io/master:NoSchedule-
+
+
 #===================================COMMANDS===================================#
 
   kubectl [action] [resource] [name] [flagged args]
@@ -90,6 +167,7 @@ Example arguments:
     #delete:
     kubectl delete service my-service
     kubectl delete service -l key=value # -l selects groups of resources by labels
+    kubectl delete $(kubectl get pvc -o=name) #delete all persistentvolumeclaims
 
     #set: update deployment image version:
     kubectl set image deployment/my-deployment my-pod=repo.intra.net/dev/my-pod:0.1
