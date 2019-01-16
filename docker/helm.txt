@@ -2,7 +2,7 @@
   #Helm is like yum/apt, and installs to the current kubectl context
   #Tiller is the server component
 
-  #Install:
+  #Install helm client:
   brew install kubernetes-helm
 
   #Add incubator repo to helm (in addition to stable):
@@ -25,8 +25,20 @@
   #Update repo chart cache:
   helm repo update
   
-  #Install mysql server pod:
-  helm install stable/mysql
+  #Install packages:
+    helm install stable/mysql
+    helm install incubator/cassandra #experimental
+
+    #Install using different releases and namespaces with the same charts:
+    helm install -f "values.yaml,cassandra.yaml" --namespace cassandra -n cassandra-storage ./local-storage
+    #Install using local settings:
+    helm install -f "values.yaml,cassandra.yaml" --namespace cassandra -n cassandra incubator/cassandra
+
+    #Uninstall:
+    helm delete --purge cassandra-storage cassandra
+    #Cleanup local volumes:
+    kubectl -n cassandra delete $(kubectl -n cassandra get pvc -o=name)
+  
 
   #Update chart definition
   helm upgrade release_name ./path/chart

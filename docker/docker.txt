@@ -72,6 +72,14 @@
     cat Dockerfile.webapp | docker build -t webapp:0.1 - #build image from stdin
     docker stop ${NAME} #kill container
 
+    #Run util script and clean up:
+    docker run -i --rm \
+      -v ${WORK:-~/workspace}:/root/work:cached \
+      -v ${DOCKER_HOME}/include/build/bashrc:/root/.bashrc \
+      --entrypoint "/bin/bash" \
+      build-image:0.1 \
+      -c "/root/build.sh $@"
+
   #Dockerfiles:
     #DECLARATIONS:
     ENTRYPOINT #binary to run
