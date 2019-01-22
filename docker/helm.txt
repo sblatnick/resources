@@ -39,6 +39,8 @@
     #Cleanup local volumes:
     kubectl -n cassandra delete $(kubectl -n cassandra get pvc -o=name)
 
+    #Note: When installing without the -n, a random release name is created, which can be viewed using `helm list`
+
   #Dependencies:
     cd mychart
     helm dependency update

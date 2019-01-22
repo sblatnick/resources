@@ -2,7 +2,7 @@
 #Kubernetes (k8s) helper scripts
 
 if [ $# -lt 1 ];then
-  echo -e "\033[1mUsage:\033[0m \033[33;1m${0##*/}\033[0m [\033[36;1maction\033[0m]"
+  echo -e "\033[1mUsage:\033[0m \033[33;1m${0##*/}\033[0m [\033[32;1mresource\033[0m] [\033[36;1maction\033[0m]"
   grep -Eo '^##.*$' $BASH_SOURCE | \
   while read section
   do
@@ -56,11 +56,14 @@ shopt -s expand_aliases extglob
 #FUNCTIONS
 
 function kate_summary() {
-  local pod=$1
+  local resource=$1
+  shift
+  local name=$1
   shift
 
-  echo -e "\033[32m$pod\033[0m"
-  kubectl describe pod $pod | sed -n '/^Events:$/,$ p' | sed 's/^/  /'
+  echo -e "\033[32m$name\033[0m"
+  kubectl describe $resource $name | sed 's/^/  /'
+  #sed -n '/^Events:$/,$ p'
 }
 export -f kate_summary
 
@@ -68,13 +71,15 @@ export -f kate_summary
 
 echo -e "\033[33;1m${0##*/} $(xargs <<< "$@")\033[0m"
 
+resource="$1"
+shift
 action="$1"
 shift
 
-##Main:
+##Actions:
 case "${action}" in
-  describe|pods|status) ##Show reasons pods are pending
-      kubectl get pod | grep Pending | cut -d' ' -f1 | xargs -n 1 -I{} bash -c 'kate_summary "$@"' _ {}
+  describe|pods|status) ##Show reasons resources are pending
+      kubectl get $resource | grep Pending | cut -d' ' -f1 | xargs -n 1 -I{} bash -c 'kate_summary '$resource' "$@"' _ {}
       exit
     ;;
   *)
