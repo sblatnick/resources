@@ -202,3 +202,4 @@ seventh2" > test.txt
 
     #perl print from one to another:
     perl -ne 'print if /^ *<Directory *\//i .. /<\/Directory/i' $file
+    #see awk.sh "print range" too

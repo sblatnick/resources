@@ -52,6 +52,11 @@ lsattr /path/to/file.txt
   chown user:group file
   chown $(whoami):group file
 
+#::::::::::::::::::::INSTALL::::::::::::::::::::
+
+#create empty file with ownership and permissions:
+install -m 640 -o user -g group /dev/null /var/log/example
+
 #::::::::::::::::::::DIRECTORY DEFAULT PERMISSIONS::::::::::::::::::::
 #ACL=Access Control Lists
 

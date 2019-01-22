@@ -238,6 +238,14 @@ Example arguments:
     #Switch contexts:
     kubectl config use-context dev
 
+    #Set context properties:
+    kubectl config set-context my --cluster=my-cluster --user=my-admin --namespace my-namespace
+    kubectl config set-credentials my-admin --client-certificate=my-cert.crt --client-key=my-cert.key
+
+    #Set property not addressed by api (inline data):
+    kubectl config set users.my-admin.client-key-data "$(grep 'client-key-data: ' /tmp/admin.conf | sed 's/^[ ]*.*: //')"
+    kubectl config set users.my-admin.client-certificate-data "$(grep 'client-certificate-data: ' /tmp/admin.conf | sed 's/^[ ]*.*: //')"
+
   #MISC:
 
     #resources:

@@ -38,7 +38,11 @@
     helm delete --purge cassandra-storage cassandra
     #Cleanup local volumes:
     kubectl -n cassandra delete $(kubectl -n cassandra get pvc -o=name)
-  
+
+  #Dependencies:
+    cd mychart
+    helm dependency update
+    #creates requirements.lock and downloads tgz of reqs to mychart/chart/
 
   #Update chart definition
   helm upgrade release_name ./path/chart
@@ -48,9 +52,11 @@
 
   #List deployed releases:
   helm list
+  helm ls --all
 
   #Remove release:
   helm delete wintering-rodent
+  helm del --purge honorary-crab
 
   #Status (works after deletion):
   helm status wintering-rodent

@@ -42,9 +42,9 @@ find . -path ./.git -prune -or -print
 
 #actions using xargs:
   #move all found directories somewhere:
-  find . -print0 | xargs -0 -iSUB mv SUB /tmp/
+  find . -print0 | xargs -0 -ISUB mv SUB /tmp/
   #xargs can take -n1 to limit output to just 1 per run:
-  find . -print0 | xargs -0 -iSUB -n1 mv SUB /tmp/
+  find . -print0 | xargs -0 -ISUB -n1 mv SUB /tmp/
   #otherwise, xargs takes the max arguments per run of the command
   #-print0 and -0 make sure that things are delimited by a null character to
   #handle spaces and newlines correctly

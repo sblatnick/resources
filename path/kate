@@ -1,0 +1,94 @@
+#!/bin/bash
+#Kubernetes (k8s) helper scripts
+
+if [ $# -lt 1 ];then
+  echo -e "\033[1mUsage:\033[0m \033[33;1m${0##*/}\033[0m [\033[36;1maction\033[0m]"
+  grep -Eo '^##.*$' $BASH_SOURCE | \
+  while read section
+  do
+    echo ""
+    echo -e "  \033[1m${section#\#\#}\033[0m"
+    sed -n "/^${section}\$/,/^##/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | \
+    while read help
+    do
+      params=${help#*#}
+      params=${params%%#*}
+      if [ -z "${params}" ];then
+        params="$(grep -A 1 -F "${help}" $BASH_SOURCE | tail -n 1 | grep 'trap' | grep -Eo '\[[^]]*\]' | tr $'\n' ' ')"
+      fi
+      col=$(printf "\033[33;1m%s\033[0m %s" "${help%%)*#*}" "${params}")
+      printf "    %-60s %s\n" "${col}" "${help##*#}"
+    done
+  done
+  exit
+fi
+
+case "$(uname -s)" in
+  Darwin) #Mac
+      TMP=/tmp
+      alias md5sum=md5
+      alias sedi="sed -i ''"
+      alias tac="tail -r"
+      alias browser="open"
+    ;;
+  Linux)
+      TMP=/dev/shm
+      alias sedi="sed -i"
+      alias browser="python -m webbrowser"
+    ;;
+  *)
+      echo "Unsupported host OS"
+      exit 1
+    ;;
+esac
+
+PID=$$
+export TMP=${TMP}/${PID}
+mkdir ${TMP}
+
+trap "rm -rf ${TMP} >/dev/null 2>&1" EXIT
+trap "rm -rf ${TMP} >/dev/null 2>&1;kill -- -$$" SIGINT
+
+IFS='|'
+shopt -s expand_aliases extglob
+
+#FUNCTIONS
+
+function remote_diff() {
+
+}
+
+#MAIN
+
+echo -e "\033[33;1m${0##*/} $(xargs <<< "$@")\033[0m"
+
+action="$1"
+shift
+
+##Main:
+case "${action}" in
+  describe) ##Show reasons pods are pending
+      echo -e "\033[34;1mClusters:\033[0m"
+
+
+      exit
+    ;;
+##Misc Actions:
+  example) ##Example
+
+      exit
+    ;;
+  *)
+      echo -e "\033[33mno such action:\033[0m $action"
+      exit
+    ;;
+esac
+
+target=$1
+shift
+
+case "${target}" in
+##Target Actions:
+  example) ##Example
+    ;;
+esac

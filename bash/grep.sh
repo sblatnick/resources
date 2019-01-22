@@ -7,6 +7,9 @@ grep -A 5 'search' file.txt #only after context of 5 lines
 grep -c 'search' file.txt #print matches (per file with -r)
 grep -m 1 'search' file.txt #only get the first match per file
 
+#search for every match:
+grep -F 'RCPT TO: <admin@intra.net>' pipe_log | grep -Po 'Thread-\d+' | xargs -n 1 -I{} grep {} pipe_log
+
 #don't match sub-string (how to ignore ! in "")
   value='bad'
   set +H #disable history expansion
