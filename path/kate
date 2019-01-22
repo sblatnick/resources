@@ -20,6 +20,7 @@ if [ $# -lt 1 ];then
       printf "    %-60s %s\n" "${col}" "${help##*#}"
     done
   done
+  echo ""
   exit
 fi
 
@@ -54,9 +55,14 @@ shopt -s expand_aliases extglob
 
 #FUNCTIONS
 
-function remote_diff() {
+function kate_summary() {
+  local pod=$1
+  shift
 
+  echo -e "\033[32m$pod\033[0m"
+  kubectl describe pod $pod | sed -n '/^Events:$/,$ p' | sed 's/^/  /'
 }
+export -f kate_summary
 
 #MAIN
 
@@ -67,15 +73,8 @@ shift
 
 ##Main:
 case "${action}" in
-  describe) ##Show reasons pods are pending
-      echo -e "\033[34;1mClusters:\033[0m"
-
-
-      exit
-    ;;
-##Misc Actions:
-  example) ##Example
-
+  describe|pods|status) ##Show reasons pods are pending
+      kubectl get pod | grep Pending | cut -d' ' -f1 | xargs -n 1 -I{} bash -c 'kate_summary "$@"' _ {}
       exit
     ;;
   *)
@@ -84,11 +83,3 @@ case "${action}" in
     ;;
 esac
 
-target=$1
-shift
-
-case "${target}" in
-##Target Actions:
-  example) ##Example
-    ;;
-esac
