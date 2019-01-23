@@ -55,17 +55,32 @@ shopt -s expand_aliases extglob
 
 #FUNCTIONS
 
-function kate_summary() {
+function kate_events() {
+  local namespace=$1
+  shift
+  local object=$1
+  shift
+  kubectl -n $namespace describe $object | sed -n '/^Events:$/,$ p' | sed -e 's/^/  /'
+}
+function kate_namespaces() {
+  local IFS=$'\n'
   local resource=$1
   shift
-  local name=$1
+  local action=$1
   shift
 
-  echo -e "\033[32m$name\033[0m"
-  kubectl describe $resource $name | sed 's/^/  /'
-  #sed -n '/^Events:$/,$ p'
+  for namespace in $(kubectl get namespace -o=name | grep -v 'namespaces/kube-' | sed 's/namespaces\///')
+  do
+    echo -e "\033[34m$namespace\033[0m"
+    for object in $(kubectl -n $namespace get $resource -o=name)
+    do
+      echo -e "  \033[32m$object\033[0m"
+      $action $namespace $object | sed 's/^/    /'
+    done
+  done
 }
-export -f kate_summary
+
+export -f kate_namespaces kate_events
 
 #MAIN
 
@@ -76,10 +91,12 @@ shift
 action="$1"
 shift
 
-##Actions:
+
+
+##All-Namespace Actions:
 case "${action}" in
-  describe|pods|status) ##Show reasons resources are pending
-      kubectl get $resource | grep Pending | cut -d' ' -f1 | xargs -n 1 -I{} bash -c 'kate_summary '$resource' "$@"' _ {}
+  event|events) ##Show events from resources
+        kate_namespaces $resource kate_events
       exit
     ;;
   *)

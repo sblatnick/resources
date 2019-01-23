@@ -125,3 +125,18 @@ export -f last_log
 watch bash -c last_log #watch uses sh by default, so use bash explicitly
 
 #watch -d "command" #shows differences highlighted
+
+
+#::::::::::::::::::::NTP::::::::::::::::::::
+#Network Time Protocol
+yum install ntpdate
+ntpdate 1.ro.pool.ntp.org
+
+#SystemD also has a ctl script, although I still had to use ntpdate above:
+timedatectl set-ntp true
+#Set to local timezone:
+timedatectl set-local-rtc 1
+#Set to UTC:
+timedatectl set-local-rtc 0
+#Get information about the clock:
+timedatectl

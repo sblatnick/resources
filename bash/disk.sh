@@ -2,6 +2,7 @@
 
 #LVM - Logical Volume Management
   fdisk -l #list devices and partitions
+  lsblk    #list attached block devices, even non-mounted
 
   #command prefixes:
     pv = physical volume
@@ -48,3 +49,12 @@
     dmsetup remove /dev/dm-14
     #remove volume:
     lvremove -f /dev/vol0/m0405116
+
+  #Create loopback device:
+    dd if=/dev/zero of=HDD.img bs=1G count=10
+    mkfs.ext4 -F HDD.img
+    losetup -Pf --show HDD.img
+    #detach loopback device:
+    losetup -d /dev/loop0
+    #list block devices:
+    lsblk
