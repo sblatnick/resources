@@ -55,13 +55,6 @@ shopt -s expand_aliases extglob
 
 #FUNCTIONS
 
-function kate_events() {
-  local namespace=$1
-  shift
-  local object=$1
-  shift
-  kubectl -n $namespace describe $object | sed -n '/^Events:$/,$ p' | sed -e 's/^/  /'
-}
 function kate_namespaces() {
   local IFS=$'\n'
   local resource=$1
@@ -69,18 +62,32 @@ function kate_namespaces() {
   local action=$1
   shift
 
+  local STDOUT=${TMP}/stdout
+  local OUTPUT=${TMP}/output
   for namespace in $(kubectl get namespace -o=name | grep -v 'namespaces/kube-' | sed 's/namespaces\///')
   do
-    echo -e "\033[34m$namespace\033[0m"
+    echo -e "\033[34m$namespace\033[0m" > $STDOUT
     for object in $(kubectl -n $namespace get $resource -o=name)
     do
-      echo -e "  \033[32m$object\033[0m"
-      $action $namespace $object | sed 's/^/    /'
+      echo -e "  \033[32m$object\033[0m" >> $STDOUT
+      case "${action}" in
+        get|describe)
+            kubectl -n $namespace $action $object > $OUTPUT #| sed -n '/^Events:$/,$ p'
+          ;;
+        event|events)
+            kubectl -n $namespace describe $object | sed -n '/^Events:$/,$ p' > $OUTPUT
+          ;;
+      esac
+      if [ -s $OUTPUT ];then
+        cat $STDOUT
+        cat $OUTPUT | sed 's/^/    /'
+      fi
+      rm $STDOUT $OUTPUT
     done
   done
 }
 
-export -f kate_namespaces kate_events
+export -f kate_namespaces
 
 #MAIN
 
@@ -95,8 +102,8 @@ shift
 
 ##All-Namespace Actions:
 case "${action}" in
-  event|events) ##Show events from resources
-        kate_namespaces $resource kate_events
+  get|describe|event|events) ##Show information from resources
+        kate_namespaces $resource $action
       exit
     ;;
   *)
