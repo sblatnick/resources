@@ -47,3 +47,15 @@ tea() {
     echo -e "\033[33mskipping\033[0m ${file}"
   fi
 }
+
+#KUBERNETES
+  #kubectl less = KL
+  kl() {
+    kubectl $@ | less
+  }
+  #kube control = KC
+  alias kc='kubectl'
+
+  #for fun mappings:
+  alias klh='kl'
+  alias kfc='kc'

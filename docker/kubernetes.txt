@@ -165,9 +165,14 @@ Example arguments:
     kubectl logs my-deployment-8474cdbc55-kc78n
 
     #delete:
+    kubectl delete -f resource.yaml
     kubectl delete service my-service
     kubectl delete service -l key=value # -l selects groups of resources by labels
     kubectl delete $(kubectl get pvc -o=name) #delete all persistentvolumeclaims
+
+    kubectl delete $(kubectl get pv -o=name)
+    kubectl delete $(kubectl get crd -o=name)
+    kubectl delete $(kubectl get sc -o=name)
 
     #set: update deployment image version:
     kubectl set image deployment/my-deployment my-pod=repo.intra.net/dev/my-pod:0.1
@@ -179,6 +184,7 @@ Example arguments:
     kubectl get services my-service
     kubectl get services/my-service -o go-template='{{(index .spec.ports 0).nodePort}}')
     kubectl get all
+    kubectl get pod --all-namespaces
 
     kubectl get pod my-pod -o=jsonpath="{.spec.containers[*].name}"
     kubectl -n my-namespace get pod my-pod-dd9b6b858-2q9r2 -o=json | jq -r '.spec.containers[].name'
@@ -207,6 +213,11 @@ Example arguments:
     kubectl describe deployment my-deployment
     kubectl describe pods my-deployment
     kubectl describe pod my-deployment-98789595c-z6r9w
+
+    #troubleshooting:
+    kubectl get pod my-pod -o=yaml
+    kubectl get pod --output=yaml
+    #source: https://kubernetes.io/docs/tasks/debug-application-cluster/determine-reason-pod-failure/
 
     #help/documentation:
     kubectl explain hpa.spec.scaleTargetRef
@@ -245,6 +256,26 @@ Example arguments:
     #Set property not addressed by api (inline data):
     kubectl config set users.my-admin.client-key-data "$(grep 'client-key-data: ' /tmp/admin.conf | sed 's/^[ ]*.*: //')"
     kubectl config set users.my-admin.client-certificate-data "$(grep 'client-certificate-data: ' /tmp/admin.conf | sed 's/^[ ]*.*: //')"
+
+    #Unset config:
+    kubectl config unset contexts.my-context.namespace
+
+    #Will unset namespace in ~/.kube/config:
+      contexts:
+      - context:
+          cluster: my-cluster
+          namespace: my-namespace
+          user: my-admin
+        name: my-context
+
+  #Access Services
+    #source: https://kubernetes.io/docs/tasks/administer-cluster/access-cluster-services/
+
+    #get builtin services:
+    kubectl cluster-info
+      Kubernetes master is running at https://10.24.1.1:6443
+      coredns is running at https://10.24.1.1:6443/api/v1/namespaces/kube-system/services/coredns:dns/proxy
+      kubernetes-dashboard is running at https://10.24.1.1:6443/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy
 
   #MISC:
 
