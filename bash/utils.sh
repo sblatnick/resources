@@ -38,3 +38,8 @@
 
 #Mac alias:
 alias tac="tail -r"
+
+#::::::::::::::::::::ZIP::::::::::::::::::::
+
+#compress:
+tar -czvf archive.tar.gz ./directory

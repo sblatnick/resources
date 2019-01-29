@@ -1,4 +1,5 @@
 #!/bin/bash
+#prefix _ to source first and allow using these in other rc files
 
 case "$(uname -s)" in
   Darwin) #Mac

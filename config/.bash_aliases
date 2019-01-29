@@ -6,6 +6,12 @@ alias grep='grep --color=auto'
 #alias diff='diff -u' #use +- instead of <>
 alias less='less -SRi'
 
+#set search in less:
+less_search() {
+  sedi "s/^\.shell\$/\"$1/" ${HOME}/.lesshst
+  echo '.shell' >> ${HOME}/.lesshst
+}
+
 #keep ag coloring in piped output, highlighting match groups if applicable
 agg() {
   args="$@"
@@ -21,6 +27,7 @@ agg() {
 
 #ag coloring and pipe to less
 lag() {
+  less_search "$@"
   agg "$@" | less
 }
 
