@@ -455,28 +455,32 @@ function gitex_subtree()
           local url=$1
           local path=$2
           local branch=${3:-master}
-          echo "${path}=${url},${branch}" >> ${GITEX_SUBTREE}
           git subtree add -P ${path} ${url} ${branch} --squash
+          echo "${path}=${url},${branch}" >> ${GITEX_SUBTREE}
         fi
       ;;
     remove) #remove [subtree]
         sedi "/$1=/d" ${GITEX_SUBTREE} #requires ._osrc
       ;;
     pull|update) #update the named subtree
-        if [ "all" == "$1" ];then
-          for line in $(cat ${GITEX_SUBTREE})
-          do
-            $wgit sub update "${name##*/}"
-          done
-        else
-          local line=$(grep "$1=" ${GITEX_SUBTREE})
-          local name=${line%%=*}
-          local repo=${line#*=}
-          local repo=${repo%,*}
-          local branch=${line##*,}
-          echo -e "updating \033[34;1m${name##*/}\033[0m ${repo} \033[32;1m${branch}\033[0m"
-          git subtree pull --prefix ${name} "${repo}" "${branch}" --squash        
-        fi
+        case "${1}" in
+          all|"")
+              for line in $(cat ${GITEX_SUBTREE})
+              do
+                local name=${line%%=*}
+                git sub update "${name##*/}"
+              done
+            ;;
+          *)
+              local line=$(grep "$1=" ${GITEX_SUBTREE})
+              local name=${line%%=*}
+              local repo=${line#*=}
+              local repo=${repo%,*}
+              local branch=${line##*,}
+              echo -e "updating \033[34;1m${name##*/}\033[0m ${repo} \033[32;1m${branch}\033[0m"
+              git subtree pull --prefix ${name} "${repo}" "${branch}" --squash
+            ;;
+        esac
       ;;
     *)
         echo -e "\033[31mInvalid subtree action:\033[0m $1"
