@@ -2,7 +2,6 @@
 
 export GIT_MERGE_AUTOEDIT=no
 export GITEX_CONFIG=~/.git-extend
-export GITEX_SUBTREE=~/.git-subtree
 export wgit=$(which git) #wrapped git
 shopt -s extglob
 
@@ -436,10 +435,11 @@ function gitex_subtree()
   local OWD=$OLDPWD
   local repo=$($wgit rev-parse --show-toplevel 2>/dev/null)
   cd ${repo}
+  local GITEX_SUBTREE=${repo}/.git-subtree
 
   case "$action" in
     list|get) #list subtrees (default)
-        for line in $(cat ${GITEX_SUBTREE})
+        for line in $(cat ${GITEX_SUBTREE} 2>/dev/null)
         do
           local name=${line%%=*}
           local repo=${line#*=}
