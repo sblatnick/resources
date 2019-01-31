@@ -2,6 +2,7 @@
 
 export GIT_MERGE_AUTOEDIT=no
 export GITEX_CONFIG=~/.git-extend
+export GITEX_SUBTREE=~/.git-subtree
 export wgit=$(which git) #wrapped git
 shopt -s extglob
 
@@ -194,6 +195,10 @@ function gitex() {
           $wgit --no-pager log --oneline --grep "$@"
         fi
       ;;
+    sub|tree) #simplified subtree actions
+        shift
+        gitex_subtree $@
+      ;;
     @(${actions}))
         export GITEX_BRANCH=$(set +e;$wgit rev-parse --abbrev-ref HEAD 2>/dev/null;set -e)
         gitex_action $@
@@ -225,67 +230,72 @@ function gitex_action() {
   shift
   local ARGS=$@
 
+  local OWD=$OLDPWD
+  local start=$(pwd)
+
   for repo in $(echo ${!current})
   do
     repo=${repo//\~/$HOME}
-    start=$(pwd)
     cd ${repo}
-      repo=${repo##*/}
-      local branch=$($wgit rev-parse --abbrev-ref HEAD)
-      local dirty=''
-      if [ -n "$($wgit status --porcelain)" ]; then
-        local dirty='*'
-      fi
-      local output="\033[34;1m${repo}\033[0m \033[32;1m$branch\033[36m$dirty\033[0m"
+    repo=${repo##*/}
+    local branch=$($wgit rev-parse --abbrev-ref HEAD)
+    local dirty=''
+    if [ -n "$($wgit status --porcelain)" ]; then
+      local dirty='*'
+    fi
+    local output="\033[34;1m${repo}\033[0m \033[32;1m$branch\033[36m$dirty\033[0m"
 
-      case "${ACTION}" in
-        list) #list repos and branches in current context
-            echo -e "${output}"
-          ;;
-        stats) #show status -s on repos in the current context
-            echo -e "${output}"
-            $wgit status -s
-          ;;
-        do) #exec git on repos in the current context
+    case "${ACTION}" in
+      list) #list repos and branches in current context
+          echo -e "${output}"
+        ;;
+      stats) #show status -s on repos in the current context
+          echo -e "${output}"
+          $wgit status -s
+        ;;
+      do) #exec git on repos in the current context
+          echo -e "${output}"
+          eval "git $ARGS 2>&1"
+        ;;
+      dob) #exec git on repos in the current context of the same branch as the CWD
+          if [ "$BRANCH" == "$branch" ]; then
             echo -e "${output}"
             eval "git $ARGS 2>&1"
-          ;;
-        dob) #exec git on repos in the current context of the same branch as the CWD
-            if [ "$BRANCH" == "$branch" ]; then
-              echo -e "${output}"
-              eval "git $ARGS 2>&1"
-            fi
-          ;;
-        mod) #exec git on dirty repos in the current context
-            if [ -n "$(git status --porcelain)" ]; then
-              echo -e "${output}"
-              eval "git $ARGS 2>&1"
-            fi
-          ;;
-        mob) #exec git on dirty repos in the current context of the same branch as the CWD
-            if [[ "$BRANCH" == "$branch" && -n "$(git status --porcelain)" ]]; then
-              echo -e "${output}"
-              eval "git $ARGS 2>&1"
-            fi
-          ;;
-        with) #eval on repos in the current context replacing REPO
+          fi
+        ;;
+      mod) #exec git on dirty repos in the current context
+          if [ -n "$(git status --porcelain)" ]; then
             echo -e "${output}"
-            local ARGS=${ARGS//REPO/$repo}
-            eval "$ARGS"
-          ;;
-        *)
-          echo -e "\033[31mInvalid action:\033[0m ${ACTION}"
-          return 1
-          ;;
-      esac
-    cd $start
+            eval "git $ARGS 2>&1"
+          fi
+        ;;
+      mob) #exec git on dirty repos in the current context of the same branch as the CWD
+          if [[ "$BRANCH" == "$branch" && -n "$(git status --porcelain)" ]]; then
+            echo -e "${output}"
+            eval "git $ARGS 2>&1"
+          fi
+        ;;
+      with) #eval on repos in the current context replacing REPO
+          echo -e "${output}"
+          local ARGS=${ARGS//REPO/$repo}
+          eval "$ARGS"
+        ;;
+      *)
+        echo -e "\033[31mInvalid action:\033[0m ${ACTION}"
+        cd $start
+        OLDPWD=$OWD
+        return 1
+        ;;
+    esac
   done
+  cd $start
+  OLDPWD=$OWD
 }
 
 function gitex_add_repo_to_context() {
   set +e
   local repo=$1
-  OWD=$OLDPWD
+  local OWD=$OLDPWD
   cd ${repo}
   repo=$(basename $($wgit rev-parse --show-toplevel 2>/dev/null) 2>/dev/null)
   if [[ "$?" -eq 0 ]];then
@@ -308,7 +318,7 @@ $(pwd)"
 function gitex_remove_repo_from_context() {
   set +e
   local repo=$1
-  OWD=$OLDPWD
+  local OWD=$OLDPWD
   cd ${repo}
   repo=$(basename $($wgit rev-parse --show-toplevel 2>/dev/null) 2>/dev/null)
   if [[ "$?" -eq 0 ]];then
@@ -412,6 +422,74 @@ $(echo "${!ctx}" | sed '/^$/d')
   done
   echo "" >> ${GITEX_CONFIG}
 }
+
+##Subtree Actions (sub|tree):
+function gitex_subtree()
+{
+  if [ $# -lt 1 ]; then
+    local action='list'
+  else
+    local action=$1
+    shift
+  fi
+
+  local OWD=$OLDPWD
+  local repo=$($wgit rev-parse --show-toplevel 2>/dev/null)
+  cd ${repo}
+
+  case "$action" in
+    list|get) #list subtrees (default)
+        for line in $(cat ${GITEX_SUBTREE})
+        do
+          local name=${line%%=*}
+          local repo=${line#*=}
+          local repo=${repo%,*}
+          local branch=${line##*,}
+          echo -e "\033[34;1m${name##*/}\033[0m ${repo} \033[32;1m${branch}\033[0m"
+        done
+      ;;
+    add) #add a subtree repo
+        if [ $# -lt 2 ]; then
+          echo "Usage: git [sub|tree] add [url] [path within repo] [branch]"
+        else
+          local url=$1
+          local path=$2
+          local branch=${3:-master}
+          echo "${path}=${url},${branch}" >> ${GITEX_SUBTREE}
+          git subtree add -P ${path} ${url} ${branch} --squash
+        fi
+      ;;
+    remove) #remove [subtree]
+        sedi "/$1=/d" ${GITEX_SUBTREE} #requires ._osrc
+      ;;
+    pull|update) #update the named subtree
+        if [ "all" == "$1" ];then
+          for line in $(cat ${GITEX_SUBTREE})
+          do
+            $wgit sub update "${name##*/}"
+          done
+        else
+          local line=$(grep "$1=" ${GITEX_SUBTREE})
+          local name=${line%%=*}
+          local repo=${line#*=}
+          local repo=${repo%,*}
+          local branch=${line##*,}
+          echo -e "updating \033[34;1m${name##*/}\033[0m ${repo} \033[32;1m${branch}\033[0m"
+          git subtree pull --prefix ${name} "${repo}" "${branch}" --squash        
+        fi
+      ;;
+    *)
+        echo -e "\033[31mInvalid subtree action:\033[0m $1"
+        cd - >/dev/null
+        OLDPWD=$OWD
+        return 1
+      ;;
+  esac
+
+  cd - >/dev/null
+  OLDPWD=$OWD
+}
+
 
 ##SVN Actions:
 function gitex_svn()

@@ -203,12 +203,16 @@
   brew list
   #install
   brew install package
+  #update:
+  brew upgrade package
 
 #MacPorts:
   #list installed packages:
   port installed
   #install package
   port install package
+  #update:
+  port upgrade package
 
 #::::::::::::::::::::RPM CREATION::::::::::::::::::::
 
