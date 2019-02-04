@@ -61,8 +61,5 @@ tea() {
     kubectl $@ | less
   }
   #kube control = KC
-  alias kc='kubectl'
-
-  #for fun mappings:
-  alias klh='kl'
-  alias kfc='kc'
+  alias k='kubectl'
+  alias k8='kate'
