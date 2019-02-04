@@ -355,7 +355,7 @@ function gitex_context()
   repo=$(echo "$repos" | sed 's/^.*\///' | tr $'\n' '|')
 
   case "$action" in
-    list|get) #list contexts (default)
+    list|get) ##list contexts (default)
         for ctx in ${contexts}
         do
           if [ "$ctx" == "$current" ];then
@@ -456,7 +456,7 @@ function gitex_subtree()
         done
       ;;
     add) ##add a subtree repo
-        trap "echo 'Usage: git [sub|tree] add [url] [path within repo] [branch]';exit 1" ERR
+        trap "echo 'Usage: git [sub|tree] add [url] [path within repo] [branch]';return 1" ERR
         local url=$1
         shift
         local path=$1
@@ -508,7 +508,7 @@ function gitex_svn()
 {
   case "$1" in
     co) ##Checkout remote branch and track
-        trap "echo 'Usage: git svn co [branch]';exit 1" ERR
+        trap "echo 'Usage: git svn co [branch]';return 1" ERR
         shift
         local branch=$1
         shift
