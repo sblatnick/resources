@@ -30,7 +30,7 @@ case "${1}" in
       done
     ;;
   @(${contexts}))
-        kubectl config use-context $1 2>/dev/null
+        kubectl config use-context $1 >/dev/null
         echo -en "Switching to context \033[32;1m${1}\033[0m";
         trap "$0 default;exit" ERR
         shift

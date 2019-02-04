@@ -1,0 +1,28 @@
+#!/bin/bash
+
+context=$(kubectl config current-context)
+source $CONFIG 2>/dev/null #get current namespace
+contexts=$(kubectl config get-contexts -o=name | tr $'\n' '|')
+namespaces=$(kubectl get namespace -o name | sed 's/namespace\///' | tr $'\n' '|')
+
+#----------------------------------Kubernetes Kate Script-----------------------------------#
+function kate_complete() {
+  case "${COMP_CWORD}" in
+    1)
+        #kubectl:
+        COMPREPLY=($(compgen -W "$(kubectl -h | grep -o "^  [a-z][a-z]*")" -- "${COMP_WORDS[1]}"))
+        #contexts:
+        COMPREPLY+=($(compgen -W "$(kubectl config get-contexts -o=name)" -- "${COMP_WORDS[1]}"))
+        #namespaces:
+        COMPREPLY+=($(compgen -W "$(kubectl get namespace -o name | sed 's/namespace\///')" -- "${COMP_WORDS[1]}"))
+      ;;
+    2)
+        #namespaces:
+        COMPREPLY=($(compgen -W "$(kubectl get namespace -o name | sed 's/namespace\///')" -- "${COMP_WORDS[1]}"))
+      ;;
+    *)
+        COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d {} ];then echo {}/;else echo {}; fi'))
+      ;;
+  esac
+}
+complete -o nospace -F kate_complete kate k8 k
