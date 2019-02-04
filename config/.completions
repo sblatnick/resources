@@ -25,4 +25,4 @@ function kate_complete() {
       ;;
   esac
 }
-complete -o nospace -F kate_complete kate k8 k
+complete -o nospace -F kate_complete kate k8 kl k

@@ -46,6 +46,28 @@
     helm dependency update
     #creates requirements.lock and downloads tgz of reqs to mychart/chart/
 
+    #Example requirements.yaml:
+    dependencies:
+    - name: cassandra
+      version: 0.10.2
+      repository: https://kubernetes-charts-incubator.storage.googleapis.com/
+    - name: prometheus
+      version: 8.6.1
+      repository: https://kubernetes-charts.storage.googleapis.com/
+    #Example configuration of subcharts in values.yaml:
+    cassandra:
+      persistence:
+        enabled: true
+        size: 100Gi
+        storageClass: openebs-standard
+    prometheus:
+      alertmanager:
+        persistentVolume:
+          storageClass: openebs-standard
+      server:
+        persistentVolume:
+          storageClass: openebs-standard
+
   #Update chart definition
   helm upgrade release_name ./path/chart
 
