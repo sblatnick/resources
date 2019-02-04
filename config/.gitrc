@@ -118,7 +118,7 @@ function gitex() {
         echo ""
         git ex
       ;;
-    ex) #print this usage information
+    ex) ##print this usage information
         echo -e "\033[1mExtended Git Usage:\033[0m git [\033[34;1mactions\033[0m]"
 
         grep -Eo '^##.*$' $BASH_SOURCE |
@@ -129,12 +129,19 @@ function gitex() {
           sed -n "/^${section}\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | \
           while read help
           do
-            printf "    \033[34;1m%-15s\033[0m %s\n" "${help%%)*#*}" "${help#*#}"
+            params=${help#*#}
+            params=${params%%#*}
+            if [ -z "${params}" ];then
+              params="$(grep -A 1 -F "${help}" $BASH_SOURCE | tail -n 1 | grep 'trap' | grep -Eo '\[[^]]*\]' | tr $'\n' ' ')"
+            fi
+            col=$(printf "\033[34;1m%s\033[0m %s" "${help%%)*#*}" "${params}")
+            printf "    %-60s %s\n" "${col}" "${help##*#}"
+            #printf "    \033[34;1m%-15s\033[0m %s\n" "${help%%)*#*}" "${help#*#}"
           done
         done
         echo ""
       ;;
-    com|cam|cc) #alias to commit -a -m
+    com|cam|cc) #[message]#alias to commit -a -m
         shift
         if [ -n "$@" ];then
           $wgit commit -a -m "$@"
@@ -143,11 +150,11 @@ function gitex() {
           return 1
         fi
       ;;
-    co) #alias to checkout
+    co) ##alias to checkout
         shift
         $wgit checkout $@
       ;;
-    modified) #open dirty files in $EDITOR
+    modified) ##open dirty files in $EDITOR
         dir=$(pwd)
         local IFS=$'\n'
         files=$($wgit status -s)
@@ -156,7 +163,7 @@ function gitex() {
           $EDITOR $dir/${file##* }
         done
       ;;
-    wash) #pull and push
+    wash) ##pull and push
         url=$($wgit config --get svn-remote.svn.url)
         #git-svn repo?
         if [ -z "${url}" ];then
@@ -176,7 +183,7 @@ function gitex() {
           fi
         fi
       ;;
-    giff) #show differences in order
+    giff) ##show differences in order
         shift
         local IFS=$'\n'
         for line in $($wgit --no-pager log --oneline $@)
@@ -186,7 +193,7 @@ function gitex() {
           $wgit --no-pager show --color ${sha} $@ | sed 's/^/  /'
         done | less -x2 -S #eval $($wgit config --get core.pager)
       ;;
-    glog) #grep the log commit messages
+    glog) ##grep the log commit messages
         shift
         if [ -z "$@" ];then
           $wgit --no-pager log --oneline
@@ -194,7 +201,7 @@ function gitex() {
           $wgit --no-pager log --oneline --grep "$@"
         fi
       ;;
-    sub|tree) #simplified subtree actions
+    sub|tree) ##simplified subtree actions
         shift
         gitex_subtree $@
       ;;
@@ -202,18 +209,18 @@ function gitex() {
         export GITEX_BRANCH=$(set +e;$wgit rev-parse --abbrev-ref HEAD 2>/dev/null;set -e)
         gitex_action $@
       ;;
-    context|ctx|go) #context handling
+    context|ctx|go) #[$context|$repo|$action]#context handling
         shift
         gitex_context $@
       ;;
-    tut) #open tutorial in $EDITOR
+    tut) ##open tutorial in $EDITOR
         $EDITOR ~/projects/resources/git/usage.sh
       ;;
-    rev) #revert file(s) to HEAD
+    rev) #[path|file]#revert file(s) to HEAD
         shift
         $wgit checkout -- $@
       ;;
-    svn) #git-svn extras
+    svn) ##git-svn extras
         shift
         gitex_svn $@
       ;;
@@ -245,36 +252,36 @@ function gitex_action() {
     local output="\033[34;1m${repo}\033[0m \033[32;1m$branch\033[36m$dirty\033[0m"
 
     case "${ACTION}" in
-      list) #list repos and branches in current context
+      list) ##list repos and branches in current context
           echo -e "${output}"
         ;;
-      stats) #show status -s on repos in the current context
+      stats) ##show status -s on repos in the current context
           echo -e "${output}"
           $wgit status -s
         ;;
-      do) #exec git on repos in the current context
+      do) ##exec git on repos in the current context
           echo -e "${output}"
           eval "git $ARGS 2>&1"
         ;;
-      dob) #exec git on repos in the current context of the same branch as the CWD
+      dob) ##exec git on repos in the current context of the same branch as the CWD
           if [ "$BRANCH" == "$branch" ]; then
             echo -e "${output}"
             eval "git $ARGS 2>&1"
           fi
         ;;
-      mod) #exec git on dirty repos in the current context
+      mod) ##exec git on dirty repos in the current context
           if [ -n "$(git status --porcelain)" ]; then
             echo -e "${output}"
             eval "git $ARGS 2>&1"
           fi
         ;;
-      mob) #exec git on dirty repos in the current context of the same branch as the CWD
+      mob) ##exec git on dirty repos in the current context of the same branch as the CWD
           if [[ "$BRANCH" == "$branch" && -n "$(git status --porcelain)" ]]; then
             echo -e "${output}"
             eval "git $ARGS 2>&1"
           fi
         ;;
-      with) #eval on repos in the current context replacing REPO
+      with) ##eval on repos in the current context replacing REPO
           echo -e "${output}"
           local ARGS=${ARGS//REPO/$repo}
           eval "$ARGS"
@@ -359,7 +366,7 @@ function gitex_context()
         done
         return
       ;;
-    new) #create and use new context
+    new) #[name]#create and use new context
         current="$1"
         shift
         contexts="${contexts}
@@ -368,12 +375,12 @@ ${current}"
 "
         echo -e "\033[33mcreated and using\033[0m \033[32m${current}\033[0m"
       ;;
-    set|use) #switch to context
+    set|use) #[context]#switch to context
         current="$1"
         shift
         echo -e "\033[33musing\033[0m \033[32m${current}\033[0m"
       ;;
-    add) #add repo to current context
+    add) #[path]#add repo to current context
         if [ -n "$1" ];then
           while [ -n "$1" ]
           do
@@ -385,7 +392,7 @@ ${current}"
         fi
         declare ${current}="${repos}"
       ;;
-    remove) #delete repo from current context
+    remove) #[repo]#delete repo from current context
         if [ -n "$1" ];then
           while [ -n "$1" ]
           do
@@ -396,11 +403,11 @@ ${current}"
           gitex_remove_repo_from_context $(pwd)
         fi
       ;;
-    @(${context})) #switch to using this context
+    @(${context})) #[context]#switch to using this context
         current="$action"
         echo -e "\033[33musing\033[0m \033[32m${current}\033[0m"
       ;;
-    @(${repo})) #cd to this repo
+    @(${repo})) #[repo]#cd to this repo
         repo=$(grep -Em 1 "${action}$" <<< "${repos}")
         echo -e "\033[33mentering\033[0m \033[32m${action}\033[0m"
         cd ${repo//\~/$HOME}
@@ -438,7 +445,7 @@ function gitex_subtree()
   local GITEX_SUBTREE=${repo}/.git-subtree
 
   case "$action" in
-    list|get) #list subtrees (default)
+    list|get) ##list subtrees (default)
         for line in $(cat ${GITEX_SUBTREE} 2>/dev/null)
         do
           local name=${line%%=*}
@@ -448,21 +455,22 @@ function gitex_subtree()
           echo -e "\033[34;1m${name##*/}\033[0m ${repo} \033[32;1m${branch}\033[0m"
         done
       ;;
-    add) #add a subtree repo
-        if [ $# -lt 2 ]; then
-          echo "Usage: git [sub|tree] add [url] [path within repo] [branch]"
-        else
-          local url=$1
-          local path=$2
-          local branch=${3:-master}
-          git subtree add -P ${path} ${url} ${branch} --squash
-          echo "${path}=${url},${branch}" >> ${GITEX_SUBTREE}
-        fi
+    add) ##add a subtree repo
+        trap "echo 'Usage: git [sub|tree] add [url] [path within repo] [branch]';exit 1" ERR
+        local url=$1
+        shift
+        local path=$1
+        shift
+        local branch=${1:-master}
+        shift
+        trap - ERR
+        git subtree add -P ${path} ${url} ${branch} --squash
+        echo "${path}=${url},${branch}" >> ${GITEX_SUBTREE}
       ;;
-    remove) #remove [subtree]
+    remove) #[repo]#remove subtree repo
         sedi "/$1=/d" ${GITEX_SUBTREE} #requires ._osrc
       ;;
-    pull|update) #update the named subtree
+    pull|update) #[repo|all]#update the named subtree, or all (default)
         case "${1}" in
           all|"")
               for line in $(cat ${GITEX_SUBTREE})
@@ -499,10 +507,13 @@ function gitex_subtree()
 function gitex_svn()
 {
   case "$1" in
-    co) #Checkout remote branch and track
+    co) ##Checkout remote branch and track
+        trap "echo 'Usage: git svn co [branch]';exit 1" ERR
         shift
         local branch=$1
         shift
+        trap - ERR
+
         repo=$($wgit rev-parse --show-toplevel 2>/dev/null)
         url=$($wgit config --get svn-remote.svn.url)
 
@@ -513,13 +524,13 @@ function gitex_svn()
         git branch ${branch} origin/${branch}
         git checkout ${branch}
       ;;
-    push) #alias to dcommit
+    push) ##alias to dcommit
         $wgit svn dcommit
       ;;
-    pull) #alias to rebase
+    pull) ##alias to rebase
         $wgit svn rebase
       ;;
-    *) #git-svn
+    *) ##git-svn
         $wgit svn "$@"
       ;;
   esac

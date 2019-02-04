@@ -267,6 +267,9 @@
   #find and restore deleted:
   git checkout $(git rev-list -n 1 HEAD -- "$file")^ -- "$file"
 
+  #find all authors and sort by commit counts:
+  git --no-pager log | grep 'Author' | sort | uniq -c | sort -nr
+
 #revision references:
 
   git show sha
