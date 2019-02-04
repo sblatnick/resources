@@ -46,7 +46,7 @@ case "${1}" in
       exit
     ;;
   *)
-      kubectl $@
+      kubectl -n ${namespace} $@
     ;;
 esac
 

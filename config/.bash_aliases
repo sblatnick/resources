@@ -58,7 +58,7 @@ tea() {
 #KUBERNETES
   #kubectl less = KL
   kl() {
-    kubectl $@ | less
+    kate $@ | less
   }
   #kube control = KC
   alias k='kubectl'
