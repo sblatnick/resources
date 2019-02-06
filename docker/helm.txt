@@ -54,6 +54,10 @@
     - name: prometheus
       version: 8.6.1
       repository: https://kubernetes-charts.storage.googleapis.com/
+      condition: subchart1.enabled,global.subchart1.enabled
+      alias: subchart1
+      tags:
+        - back-end
     #Example configuration of subcharts in values.yaml:
     cassandra:
       persistence:
@@ -67,6 +71,8 @@
       server:
         persistentVolume:
           storageClass: openebs-standard
+    #Example accessing value in subchart with a - in the name:
+    {{ if index .Values "prometheus-operator" "enabled" }}
 
   #Update chart definition
   helm upgrade release_name ./path/chart

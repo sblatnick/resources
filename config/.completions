@@ -1,10 +1,5 @@
 #!/bin/bash
 
-context=$(kubectl config current-context)
-source $CONFIG 2>/dev/null #get current namespace
-contexts=$(kubectl config get-contexts -o=name | tr $'\n' '|')
-namespaces=$(kubectl get namespace -o name | sed 's/namespace\///' | tr $'\n' '|')
-
 #----------------------------------Kubernetes Kate Script-----------------------------------#
 function kate_complete() {
   case "${COMP_CWORD}" in
