@@ -45,31 +45,22 @@
 
   #source: http://www.grymoire.com/Unix/Sed.html
 
-    #Sed has several commands, but most people only learn the substitute command: s. The substitute command changes all occurrences of the regular expression into a new value. A simple example is changing "day" in the "old" file to "night" in the "new" file:
-
-    sed s/day/night/ <old >new
-
-    #Or another way (for Unix beginners),
-
-    sed s/day/night/ old >new
-
-    #and for those who want to test this:
-
-    echo day | sed s/day/night/ 
-
-    #This will output "night".
-
-    #I didn't put quotes around the argument because this example didn't need them. If you read my earlier tutorial on quotes, you would understand why it doesn't need quotes. However, I recommend you do use quotes. If you have meta-characters in the command, quotes are necessary. And if you aren't sure, it's a good habit, and I will henceforth quote future examples to emphasize the "best practice." Using the strong (single quote) character, that would be:
-
+    #substitute command: s
     sed 's/day/night/' <old >new
-
-    #example:
-    #note: escape parenthesis and plus, don't use \d, etc
-    cd /home/steve/work/www/
-    ack-grep '"http://www\.everyone\.net' | cat | sed 's/:\([0-9]\+\):.*/:\1/g'
+    sed 's/day/night/' old >new
+    echo day | sed 's/day/night/' 
 
 
-    #sed can also do commands?
+    #escape parenthesis
+    #+ not supported
+    #perl's \d and character classes not supported by default
+    #capture group:
+    echo -e "100: something\n200: else" | sed 's/^\([0-9][0-9]*\):.*$/\1/g'
+      100
+      200
+
+
+    #sed can also do commands
     sed -n 'H;${x;s/nameserver .*\n/nameserver 127.0.0.1\
 &/;p;}' resolv.conf
 
@@ -203,3 +194,17 @@ seventh2" > test.txt
     #perl print from one to another:
     perl -ne 'print if /^ *<Directory *\//i .. /<\/Directory/i' $file
     #see awk.sh "print range" too
+
+
+#Insert line after match:
+sed -i '/^pattern$/a\    indented text' test.txt
+#Insert line before match:
+sed -i '/^pattern$/i\    indented text' test.txt
+
+#Replace from first match to first match:
+sed -i '/^start$/,/^end$/ s/search/replace/' test.txt
+#Multiple replace within matches (group commands)
+sed -i '/^start$/,/^end$/ {s/search/replace/;s/one/two/}' test.txt
+
+#mac OSX:
+  brew install gsed #gnu sed

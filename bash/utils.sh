@@ -43,3 +43,5 @@ alias tac="tail -r"
 
 #compress:
 tar -czvf archive.tar.gz ./directory
+#decompress:
+tar -zxvf filename.tgz

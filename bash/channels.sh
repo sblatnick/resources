@@ -1,4 +1,14 @@
 
+#::::::::::::::::::::FILE DESCRIPTORS::::::::::::::::::::
+#source: https://stackoverflow.com/questions/7082001/how-do-file-descriptors-work
+0 #stdin
+1 #stdout
+2 #stderr
+
+3-9 #additional which need to be opened first:
+exec 3<> /tmp/foo #open fd 3
+echo "test" >&3   #use fd 3
+exec 3>&-         #close fd 3.
 
 #::::::::::::::::::::CHANNEL REDIRECTION::::::::::::::::::::
   #Piping errors shorthand:

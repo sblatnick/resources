@@ -41,6 +41,20 @@
 
     #Note: When installing without the -n, a random release name is created, which can be viewed using `helm list`
 
+    #Download chart:
+    helm fetch stable/mysql
+
+    #parse unique hiera values from helm templates:
+    while read -u 3 line
+    do
+      output=""
+      for attribute in $(echo "${line}" | tr '.' ' ')
+      do
+        output="$output.$attribute"
+        echo "$output"
+      done
+    done 3< <(grep -hEro '.Values.[a-zA-Z.]*' templates/ | sort | uniq | cut -d. -f 3-) | sort | uniq | sed -e 's/^.//' -e 's/[^\.]*\./  /g' -e 's/$/:/'
+
   #Dependencies:
     cd mychart
     helm dependency update

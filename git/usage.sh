@@ -276,6 +276,19 @@
   git show sha^
   git log --reverse --ancestry-path sha^..master
 
+#git-filter
+  #filter to gitignore lines (via deletion) before commit:
+    #source: https://stackoverflow.com/questions/16244969/how-to-tell-git-to-ignore-individual-lines-i-e-gitignore-for-specific-lines-of
+    #WARNING: wipes lines out for every pull
+    .gitattributes #in repo
+    /.git/info/attributes #local only
+      *.txt filter=gitignore #syntax: pattern filter=filter_name
+
+    git config --global filter.gitignore.clean "sed '/#gitignore$/'d" #delete lines before commit
+    git config --global filter.gitignore.smudge cat #do nothing when pulling
+
+    #You could also try a pre-commit hook that warns if the line was modified.
+    #githooks: https://git-scm.com/docs/githooks#_pre_commit
 
 #git-svn (https://git-scm.com/book/en/v1/Git-and-Other-Systems-Git-and-Subversion)
   #cloning from svn takes a LONG time and downloads A LOT of data:

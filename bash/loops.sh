@@ -117,3 +117,14 @@
     echo -e "$server" > /tmp/left.csv.$pid
     ssh $server -q "$param" >> /tmp/left.csv.$pid 2>&1
   done
+
+#parse unique hiera values from helm templates:
+while read -u 3 line
+do
+  output=""
+  for attribute in $(echo "${line}" | tr '.' ' ')
+  do
+    output="$output.$attribute"
+    echo "$output"
+  done
+done 3< <(grep -hEro '.Values.[a-zA-Z.]*' templates/ | sort | uniq | cut -d. -f 3-) | sort | uniq | sed -e 's/^.//' -e 's/[^\.]*\./  /g' -e 's/$/:/'
