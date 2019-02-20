@@ -5,48 +5,52 @@ shopt -s extglob
 
 context=$(kubectl config current-context)
 source $CONFIG 2>/dev/null #get current namespace
-contexts=$(kubectl config get-contexts -o=name | tr $'\n' '|')
-namespaces=$(kubectl get namespace -o name | sed 's/namespace\///' | tr $'\n' '|')
 
-case "${1}" in
-  '') #list contexts and namespaces
-      IFS='|'
-      for ctx in ${contexts}
+function set_namespace() {
+  echo "namespace=\"${1}\"" > ${CONFIG}
+  echo -e " namespace \033[34;1m${1}\033[0m";
+}
+
+if [ -z ${1} ]; then
+  IFS='|'
+  for ctx in $(kubectl config get-contexts -o=name | tr $'\n' '|')
+  do
+    if [ "$ctx" == "$context" ];then
+      echo -e "\033[32;1m${ctx}\033[36m*\033[0m"
+      kubectl get namespace -o name | sed 's/namespace\///' |
+      while read ns
       do
-        if [ "$ctx" == "$context" ];then
-          echo -e "\033[32;1m${ctx}\033[36m*\033[0m"
-          kubectl get namespace -o name | sed 's/namespace\///' |
-          while read ns
-          do
-            if [ "$ns" == "$namespace" ];then
-              echo -e "  \033[34;1m${ns}\033[36m*\033[0m"
-            else
-              echo -e "  \033[34;1m${ns}\033[0m"
-            fi
-          done
+        if [ "$ns" == "$namespace" ];then
+          echo -e "  \033[34;1m${ns}\033[36m*\033[0m"
         else
-          echo -e "\033[32;1m${ctx}\033[0m"
+          echo -e "  \033[34;1m${ns}\033[0m"
         fi
       done
-    ;;
-  @(${contexts}))
-        kubectl config use-context $1 >/dev/null
-        echo -en "Switching to context \033[32;1m${1}\033[0m";
-        trap "$0 default;exit" ERR
-        shift
-        namespace=$1
-        shift
-        trap - ERR
-        $0 $namespace
-      exit
-    ;;
-  @(${namespaces}))
-        echo "namespace=\"${1}\"" > ${CONFIG}
-        echo -e " namespace \033[34;1m${1}\033[0m";
-      exit
-    ;;
-  *)
+    else
+      echo -e "\033[32;1m${ctx}\033[0m"
+    fi
+  done
+else
+  kubectl config get-contexts $1 >/dev/null 2>&1
+  if [ "$?" -ne "0" ]; then
+    kubectl get namespace $1 >/dev/null 2>&1
+    if [ "$?" -ne "0" ]; then
+      #passthrough
       kubectl -n ${namespace} $@
-    ;;
-esac
+    else
+      set_namespace $1
+    fi
+  else
+    #set context
+    kubectl config use-context $1 >/dev/null 2>&1
+    echo -en "Switching to context \033[32;1m${1}\033[0m";
+    if [ -z ${2} ]; then
+      set_namespace default
+    else
+      shift
+      $0 $@
+    fi
+  fi
+fi
+
 

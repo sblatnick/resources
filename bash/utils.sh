@@ -18,6 +18,44 @@
     echo "hello world and everybody in it" | rev | cut -d' ' -f 1-2 | rev
       in it
 
+#::::::::::::::::::::SORT::::::::::::::::::::
+
+  sort
+    -n, --numeric-sort                  #compare according to string numerical value
+    -r, --reverse                       #reverse the result of comparisons
+    -u, --unique                        #with -c, check for strict ordering; without -c, output only the first of an equal run
+    -V, --version-sort                  #natural sort of (version) numbers within text
+
+    -k, --key=POS1[,POS2]               #start a key at POS1 (origin 1), end it at POS2 (default end of line)
+    -t, --field-separator=SEP           #use SEP instead of non-blank to blank transition
+
+    -b, --ignore-leading-blanks         #ignore leading blanks
+    -i, --ignore-nonprinting            #consider only printable characters
+    -f, --ignore-case                   #fold lower case to upper case characters
+
+    -d, --dictionary-order              #consider only blanks and alphanumeric characters
+    -g, --general-numeric-sort          #compare according to general numerical value
+    -M, --month-sort                    #compare (unknown) < 'JAN' < ... < 'DEC'
+    -h, --human-numeric-sort            #compare human readable numbers (e.g., 2K 1G)
+
+    -R, --random-sort                   #sort by random hash of keys
+    --random-source=FILE                #get random bytes from FILE
+    --sort=WORD                         #sort according to WORD: general-numeric -g, human-numeric -h, month -M, numeric -n, random -R, version -V
+
+    -c, --check, --check=diagnose-first #check for sorted input; do not sort
+    -C, --check=quiet, --check=silent   #like -c, but do not report first bad line
+
+    -m, --merge                         #merge already sorted files; do not sort
+    --batch-size=NMERGE                 #merge at most NMERGE inputs at once; for more use temp files
+    --compress-program=PROG             #compress temporaries with PROG; decompress them with PROG -d
+    --files0-from=F                     #read input from the files specified by NUL-terminated names in file F; If F is - then read names from standard input
+
+    -o, --output=FILE                   #write result to FILE instead of standard output
+    -s, --stable                        #stabilize sort by disabling last-resort comparison
+    -S, --buffer-size=SIZE              #use SIZE for main memory buffer
+    -T, --temporary-directory=DIR       #use DIR for temporaries, not $TMPDIR or /tmp; multiple options specify multiple directories
+    -z, --zero-terminated               #end lines with 0 byte, not newline
+
 #::::::::::::::::::::REV::::::::::::::::::::
 
 #reverse any string:
