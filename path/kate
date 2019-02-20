@@ -31,22 +31,34 @@ if [ -z ${1} ]; then
     fi
   done
 else
+  case "${1}" in
+    -*) #options passthrough
+        kubectl -n ${namespace} $@
+        exit
+      ;;
+    @($(kubectl help | sed -n '/^  [^ ]*/ p' | cut -d' ' -f3 | tr $'\n' '|'))) #command passthrough
+        kubectl -n ${namespace} $@
+        exit
+      ;;
+  esac
+
+  #contexts
   kubectl config get-contexts $1 >/dev/null 2>&1
   if [ "$?" -ne "0" ]; then
+    #namespaces
     kubectl get namespace $1 >/dev/null 2>&1
     if [ "$?" -ne "0" ]; then
-      #passthrough
+      #passthrough (probably an error)
       kubectl -n ${namespace} $@
     else
       set_namespace $1
     fi
-  else
-    #set context
+  else #set context
     kubectl config use-context $1 >/dev/null 2>&1
     echo -en "Switching to context \033[32;1m${1}\033[0m";
     if [ -z ${2} ]; then
       set_namespace default
-    else
+    else #recurse
       shift
       $0 $@
     fi
