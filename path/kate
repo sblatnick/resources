@@ -16,12 +16,12 @@ if [ -z ${1} ]; then
   for ctx in $(kubectl config get-contexts -o=name | tr $'\n' '|')
   do
     if [ "$ctx" == "$context" ];then
-      echo -e "\033[32;1m${ctx}\033[36m*\033[0m"
+      echo -e "\033[33;1m${ctx}\033[0m"
       kubectl get namespace -o name | sed 's/namespace\///' |
       while read ns
       do
         if [ "$ns" == "$namespace" ];then
-          echo -e "  \033[34;1m${ns}\033[36m*\033[0m"
+          echo -e "  \033[36;1m${ns}\033[0m"
         else
           echo -e "  \033[34;1m${ns}\033[0m"
         fi

@@ -163,6 +163,7 @@ Example arguments:
 
     #logs from stdout:
     kubectl logs my-deployment-8474cdbc55-kc78n
+    kubectl logs my-pod -c my-container
 
     #delete:
     kubectl delete -f resource.yaml
@@ -181,6 +182,7 @@ Example arguments:
     kubectl get deployments
     kubectl get pods
     kubectl get services
+    kubectl get configmap ${name} -o=yaml
     kubectl get services my-service
     kubectl get services/my-service -o go-template='{{(index .spec.ports 0).nodePort}}')
     kubectl get all

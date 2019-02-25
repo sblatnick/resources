@@ -26,8 +26,8 @@
   helm repo update
   
   #Install packages:
-    helm install stable/mysql
-    helm install incubator/cassandra #experimental
+    helm install stable/mysql incubator/cassandra
+    #incubator: experimental
 
     #Install using different releases and namespaces with the same charts:
     helm install -f "values.yaml,cassandra.yaml" --namespace cassandra -n cassandra-storage ./local-storage
@@ -43,6 +43,14 @@
 
     #Download chart:
     helm fetch stable/mysql
+
+    helm get [command] [release]
+      #commands:
+        <not passed> #all sections
+        hooks
+        manifest
+        notes
+        values
 
     #parse unique hiera values from helm templates:
     while read -u 3 line

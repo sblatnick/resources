@@ -14,21 +14,20 @@ less_search() {
 
 #keep ag coloring in piped output, highlighting match groups if applicable
 agg() {
-  args="$@"
   local IFS=$'\n'
-  local groups=$(echo "${args}" | grep -Eo '\([^)]*\)')
+  local groups=$(echo "$@" | grep -Eo '\([^)]*\)')
   if [ -z "${groups}" ];then
-    ag --color -W $(tput cols) -H "${args}"
+    ag --color -W $(tput cols) -H $@
   else
     pattern=$(echo -n "${groups}" | tr $'\n' '|')
-    ag --color -W $(tput cols) -H --color-match '0' "${args}" | ag --color --passthrough "${pattern}"
+    ag --color -W $(tput cols) -H --color-match '0' $@ | ag --color --passthrough "${pattern}"
   fi
 }
 
 #ag coloring and pipe to less
 lag() {
   less_search "$@"
-  agg "$@" | less
+  agg $@ | less
 }
 
 #remove comment lines and blank lines
