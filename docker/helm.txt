@@ -129,6 +129,9 @@
     helm install --dry-run --debug ./my-chart --set service.internalPort=8080
     #Check syntax:
     helm lint
+    #Look at tiller logs:
+    kubectl -n kube-system get pod
+    kubectl -n kube-system logs -f tiller-deploy-8485766469-pkgwz
 
   #Run local repository:
   helm serve

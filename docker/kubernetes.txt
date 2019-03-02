@@ -279,6 +279,11 @@ Example arguments:
       coredns is running at https://10.24.1.1:6443/api/v1/namespaces/kube-system/services/coredns:dns/proxy
       kubernetes-dashboard is running at https://10.24.1.1:6443/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy
 
+    #port forward:
+    kubectl port-forward svc/service 8080:80
+    kubectl port-forward my-pod 8080:80
+      # <localhost port>:<service port>
+
   #MISC:
 
     #resources:

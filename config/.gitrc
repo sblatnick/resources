@@ -107,7 +107,7 @@ function gitex() {
   fi
 
   #------------------------------------MAIN--------------------------------------#
-  actions=$(sed -n "/^##Group Actions:\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/).*$//' | tr $'\n' '|')
+  actions=$(sed -n "/^##Group Actions:\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/).*$//' | tr $'\n' '|' | sed 's/|$//')
 
   case "$1" in
     help)

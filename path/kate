@@ -58,9 +58,16 @@ else
     echo -en "Switching to context \033[32;1m${1}\033[0m";
     if [ -z ${2} ]; then
       set_namespace default
-    else #recurse
+    else
       shift
-      $0 $@
+      #namespaces
+      kubectl get namespace $1 >/dev/null 2>&1
+      if [ "$?" -ne "0" ]; then
+        #passthrough (probably an error)
+        kubectl -n ${namespace} $@
+      else
+        set_namespace $1
+      fi
     fi
   fi
 fi
