@@ -325,8 +325,10 @@ function gitex_remove_repo_from_context() {
   set +e
   local repo=$1
   local OWD=$OLDPWD
-  cd ${repo}
-  repo=$(basename $($wgit rev-parse --show-toplevel 2>/dev/null) 2>/dev/null)
+  cd ${repo} 2>/dev/null
+  if [[ "$?" -eq 0 ]];then
+    repo=$(basename $($wgit rev-parse --show-toplevel 2>/dev/null) 2>/dev/null)
+  fi
   if [[ "$?" -eq 0 ]];then
     echo -e "\033[32mremoving\033[0m \033[34;1m${repo}\033[0m"
     repos=$(sed "/\/${repo}$/d" <<< "${repos}")
@@ -392,7 +394,7 @@ ${current}"
         fi
         declare ${current}="${repos}"
       ;;
-    remove) #[repo]#delete repo from current context
+    remove|rm) #[repo]#delete repo from current context
         if [ -n "$1" ];then
           while [ -n "$1" ]
           do

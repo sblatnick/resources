@@ -104,7 +104,7 @@ Run Level    Mode                               Action
     #N = skip column names
     #e = execute statements
 
-#::::::::::::::::::::APACHE::::::::::::::::::::
+#::::::::::::::::::::APACHE/HTTPD::::::::::::::::::::
 
 #restart apache2
   sudo /etc/init.d/apache2 restart
@@ -156,6 +156,17 @@ Run Level    Mode                               Action
 
 #apache2 history of visitors:
   /var/log/apache2/access.log
+
+#::::::::::::::::::::CASSANDRA::::::::::::::::::::
+
+#install client (centos7):
+yum install -y epel-release python2-pip
+pip install --upgrade pip
+pip install cqlsh
+
+#connect to server:
+cqlsh cassandra.intra.net
+cqlsh --cqlversion 3.4.4 cassandra.intra.net 9042
 
 #::::::::::::::::::::PHP::::::::::::::::::::
 

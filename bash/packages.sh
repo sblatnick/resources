@@ -388,3 +388,4 @@ mock -r epel-6-x86_64 --resultdir ./ rebuild kernel-2.6.32-696.30.1.el6.src.rpm
 pip install package
 
 pip install cqlsh #Cassandra Query Language Shell
+pip install 'cqlsh>=5.0.1' --force-reinstall

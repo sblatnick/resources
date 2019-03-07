@@ -141,6 +141,16 @@ chkconfig iptables off
   GET / HTTP/1.1
   Host: hostname.com
 
+#no telnet? can't install? use /dev/tcp:
+(echo > /dev/tcp/hostname/22) >/dev/null 2>&1 \
+    && echo "It's up" || echo "It's down"
+It's up
+
+(echo > /dev/tcp/hostname/222) >/dev/null 2>&1 && \
+    echo "It's up" || echo "It's down"
+It's down
+#source: https://superuser.com/questions/621870/test-if-a-port-on-a-remote-system-is-reachable-without-telnet
+
 #expect:
   #smtp:
   expect << EOF
