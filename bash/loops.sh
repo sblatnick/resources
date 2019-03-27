@@ -66,6 +66,29 @@
     shift
   done
 
+  #while loop run-once then check conditional
+  while
+    case $1 in
+      (--freq|-f)
+          frequency="$2"
+          shift
+          if ! [[ "$frequency" =~ 'daily|hourly|ten-minutes' ]];then
+            echo "ERROR: invalid frequency parameter"
+            usage
+            exit
+          fi
+        ;;
+      (--help|-h|*)
+          usage
+          exit
+        ;;
+    esac
+    shift
+    [ -n "$1" ]
+  do
+    continue
+  done
+
 #FOR LOOP:
   #using a sub-shell, so variables can be read after the loop:
   for video in $(ls | grep .flv)

@@ -151,3 +151,12 @@ done`
 #IFS:
   csv=$(IFS=',';echo "${array[*]}")
   echo "${csv//,/, }" #add space
+
+
+#::::::::::::::::::::SPLIT STRING TO VARIABLES::::::::::::::::::::
+example="one two three"
+IFS=' ' read one two <<< "${example}"
+$ echo $one
+one
+$ echo $two
+two three

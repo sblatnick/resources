@@ -4,6 +4,9 @@
 git clone https://github.com/geany/geany.git
 git clone git@github.com:geany/geany.git
 
+#shallow copy subdirectory contents: (disabled for github)
+git archive --remote=<repo_url> <branch> <path> | tar xvf -=
+
 #remotes:
 git remote #list remotes
 git remote -v #show remotes and their urls

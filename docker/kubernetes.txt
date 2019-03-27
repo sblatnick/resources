@@ -165,6 +165,14 @@ Example arguments:
     kubectl logs my-deployment-8474cdbc55-kc78n
     kubectl logs my-pod -c my-container
 
+    #Large logs:
+      # Display only the most recent 20 lines of output in pod nginx
+      kubectl logs --tail=20 nginx
+
+      # Show all logs from pod nginx written in the last hour
+      kubectl logs --since=1h nginx
+    #source: https://stackoverflow.com/questions/51835066/tailing-few-lines-from-huge-logs-of-kubectl-logs-f
+
     #delete:
     kubectl delete -f resource.yaml
     kubectl delete service my-service
@@ -174,6 +182,7 @@ Example arguments:
     kubectl delete $(kubectl get pv -o=name)
     kubectl delete $(kubectl get crd -o=name)
     kubectl delete $(kubectl get sc -o=name)
+    kubectl delete $(kubectl get pv -o jsonpath='{range.items[?(@.status.phase=="Released")]}{"pv/"}{.metadata.name}{"\n"}{end}') #delete released persistent volumes
 
     #set: update deployment image version:
     kubectl set image deployment/my-deployment my-pod=repo.intra.net/dev/my-pod:0.1
@@ -181,15 +190,17 @@ Example arguments:
     #get:
     kubectl get deployments
     kubectl get pods
+    kubectl get pod,statefulset #multiples
     kubectl get services
     kubectl get configmap ${name} -o=yaml
     kubectl get services my-service
     kubectl get services/my-service -o go-template='{{(index .spec.ports 0).nodePort}}')
-    kubectl get all
+    kubectl get all #alias for pod,service,deployment,replicaset,statefulset +others?
     kubectl get pod --all-namespaces
 
     kubectl get pod my-pod -o=jsonpath="{.spec.containers[*].name}"
     kubectl -n my-namespace get pod my-pod-dd9b6b858-2q9r2 -o=json | jq -r '.spec.containers[].name'
+    kubectl get pv -o jsonpath='{range.items[?(@.status.phase=="Released")]}{.metadata.name}{"\n"}{end}' #get all persistent volumes with released claims
 
       -o --output             output format
         name                  print resource names

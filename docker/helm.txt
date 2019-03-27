@@ -124,6 +124,9 @@
   #Search:
   helm search cassandra
 
+  #List versions available:
+  helm search -l stable/mysql
+
   #Debugging:
     #Test generated definitions:
     helm install --dry-run --debug ./my-chart --set service.internalPort=8080

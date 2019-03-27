@@ -188,6 +188,11 @@ cqlsh --cqlversion 3.4.4 cassandra.intra.net 9042
   sudo /etc/init.d/gdm stop
   sudo /etc/init.d/mdm restart
 
+#::::::::::::::::::::MAC OSX::::::::::::::::::::
+sudo su #if you want root services
+launchctl list | less #show running services
+launchctl remove com.mcafee.agent.ma #remove service from startup
+
 #::::::::::::::::::::OTHER::::::::::::::::::::
 
 #mailserver:
