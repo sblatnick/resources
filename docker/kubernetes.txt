@@ -209,7 +209,7 @@ Example arguments:
         json                  json-formatted api object
         jsonpath              jsonpath expression of fields to print
         jsonpath-file         file with jsonpath expression of fields to print
-        custom-columns        print table with col_name01,col_name02,...
+        custom-columns        print table with specified columns, example: -o=custom-columns=name:metadata.name,status:status.phase
         custom-columns-file   file with table column names
       -v --v                  verbosity 0-9
 

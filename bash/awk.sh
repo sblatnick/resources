@@ -42,6 +42,16 @@
   #in other words: print the line just before the "$index"-th match of pattern "patt" to the first match of "complete" after that.
   awk -v n=$index -v patt="subject: $subject" -v complete='pipeline complete' '$0 ~ patt {++count} count >= n && $0 ~ complete {print;exit} count == n {print last;} count > n {print} {last=$0}' < logfile.log
 
+  #distinct values from one column:
+  awk '{ a[$2]++ } END { for (b in a) { print b } }' file
+  #source: https://www.commandlinefu.com/commands/view/10840/display-unique-values-of-a-column
+
+  #1. get ${chart} pods in ${namespace}
+  #2. sum the ready #/# fractions
+  #3. print distinct status in parentheses
+  #4. print total restarts
+  kubectl -n ${namespace:-$chart} get pod | awk "/^${chart}/ {split(\$2,r,/\//);ready+=r[1];total+=r[2];restarts+=\$4;s[\$3]++} END {for (d in s) { status=status d};printf(\"%s/%s (%s, %s restarts)\n\", ready, total, status, restarts)}"
+
   #for all files with a yaml key, print until there is no more indentation
   #xargs configured for mac
   ag -l start::yaml::key | xargs -I@ cat @ | awk '
