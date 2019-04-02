@@ -83,3 +83,8 @@ alias tac="tail -r"
 tar -czvf archive.tar.gz ./directory
 #decompress:
 tar -zxvf filename.tgz
+
+#::::::::::::::::::::YOUTUBE DOWNLOAD::::::::::::::::::::
+
+#download a whole playlist and convert the audio into mp3:
+youtube-dl -x -f bestaudio[ext=m4a] --audio-format mp3 https://www.youtube.com/playlist?list=OLAK5uy_m6XppHGJtFY4ISTqrGEuYDiRrBJVEnveQ
