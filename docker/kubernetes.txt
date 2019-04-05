@@ -232,6 +232,18 @@ Example arguments:
     kubectl get pod --output=yaml
     #source: https://kubernetes.io/docs/tasks/debug-application-cluster/determine-reason-pod-failure/
 
+    #container restarting? add this to deployment:
+           containers:
++        - name: test
++          image: nicolaka/netshoot
++          command: ["sh", "-c", "tail -f /dev/null"]
+         - name: service
+    #redeploy, then enter busybox container:
+    kubectl -n my-namespace exec -it my-pod -c test -- sh
+
+    #start container for quick testing:
+    kubectl -n my-namespace run -it busybox --image=nicolaka/netshoot --restart=Never -- sh
+
     #help/documentation:
     kubectl explain hpa.spec.scaleTargetRef
 
