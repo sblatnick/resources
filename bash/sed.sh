@@ -206,5 +206,9 @@ sed -i '/^start$/,/^end$/ s/search/replace/' test.txt
 #Multiple replace within matches (group commands)
 sed -i '/^start$/,/^end$/ {s/search/replace/;s/one/two/}' test.txt
 
+#Remove last 10 lines:
+sed -e :a -e '$d;N;2,10ba' -e 'P;D'
+#source: https://stackoverflow.com/questions/13380607/how-to-use-sed-to-remove-the-last-n-lines-of-a-file
+
 #mac OSX:
   brew install gsed #gnu sed

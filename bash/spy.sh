@@ -10,6 +10,8 @@
   who
   #run a program in a terminal fullscreen, repeating the output:
   watch
+  #watch with color:
+  watch -c
   #current process for each user:
   w
   #watch the current process for each user:
