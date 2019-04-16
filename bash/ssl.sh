@@ -11,6 +11,9 @@ openssl x509 -req -days 3650 -in id.csr -signkey ~/.ssh/id_rsa -out id.crt
   #pem to pkcs12:
     openssl pkcs12 -export -in id.crt -inkey id_rsa -out signature.p12 -name "Your Name"
 
+  #pem to crt:
+    openssl x509 -outform der -in your-cert.pem -out your-cert.crt
+
 #test CA using curl (must be pem format or silently ignored):
   curl --cacert bin.pem -v  https://website.com:443/index.html
 

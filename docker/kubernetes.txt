@@ -199,6 +199,7 @@ Example arguments:
     kubectl get pod --all-namespaces
 
     kubectl get pod my-pod -o=jsonpath="{.spec.containers[*].name}"
+    kubectl -n nginx-ingress get service/nginx-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[].ip}'
     kubectl -n my-namespace get pod my-pod-dd9b6b858-2q9r2 -o=json | jq -r '.spec.containers[].name'
     kubectl get pv -o jsonpath='{range.items[?(@.status.phase=="Released")]}{.metadata.name}{"\n"}{end}' #get all persistent volumes with released claims
 
