@@ -13,7 +13,7 @@
 
   #Initialize:
   helm init
-  helm init --update #update tiller to latest
+  helm init --upgrade #update tiller to latest
   #TODO: check using TLS and securing
 
   #Fix "Error: no available release name found"

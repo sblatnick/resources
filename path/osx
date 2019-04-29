@@ -1,0 +1,92 @@
+#!/bin/bash
+#Apple Script helper
+
+IFS='|'
+shopt -s expand_aliases extglob
+set -o pipefail
+
+case "$(uname -s)" in
+  #Mac
+  Darwin)
+    ;;
+  Linux|*)
+      echo -e "\033[31mUnsupported OS\033[0m"
+      exit 1
+    ;;
+esac
+
+shopt -s extglob
+
+SCRIPTS=$(ls -1 ~/applescript/* ~/projects/resources/applescript/* 2>/dev/null | sed -e 's/^.*\///g' -e 's/.scpt$//' | sort -u)
+
+PID=$$
+TMP=${TMP-/tmp}/${PID}
+mkdir ${TMP}
+trap "rm -rf ${TMP} >/dev/null 2>&1" EXIT
+trap "rm -rf ${TMP} >/dev/null 2>&1;kill -- -$$" SIGINT
+
+function osx_section() {
+  section=$1
+  echo ""
+  echo -e "  \033[1m${section#\#\#}\033[0m"
+  set +e
+  sed -n "/^${section}\$/,/^##/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | \
+  while read help
+  do
+    params=${help#*#}
+    params=${params%%#*}
+    if [ -z "${params}" ];then
+      params="$(grep -A 1 -F "${help}" $BASH_SOURCE | tail -n 1 | grep 'trap' | grep -Eo '\[[^]]*\]' | tr $'\n' ' ')"
+    fi
+    col=$(printf "\033[33;1m%s\033[0m %s" "${help%%)*#*}" "${params}")
+    printf "    %-60s %s\n" "${col}" "${help##*#}"
+  done
+}
+
+if [ $# -lt 1 ];then
+  echo -e "\033[1mUsage:\033[0m \033[33;1m${0##*/}\033[0m [\033[36;1mscript|action\033[0m]"
+  grep -Eo '^##.*$' $BASH_SOURCE | \
+  while read section
+  do
+    osx_section "$section"
+  done
+  exit
+fi
+
+#FUNCTIONS
+function osx_run()
+{
+  osascript $1
+}
+
+function osx_main()
+{
+  action="$1"
+  shift
+
+  case "${action}" in
+##Actions:
+    list|ls) ##List AppleScripts
+        echo ${SCRIPTS}
+        return
+      ;;
+##Scripts:
+    *) ##Run AppleScript
+        for path in ~/applescript ~/projects/resources/applescript
+        do
+          for scpt in ${path}/${action}.scpt ${path}/${action}
+          do
+            if [ -f ${scpt} ];then
+              osx_run $scpt
+              return
+            fi
+          done
+        done
+      ;;
+  esac
+}
+
+#MAIN
+#>&2 echo -e "\033[33;1m${0##*/} $(xargs <<< "$@")\033[0m"
+osx_main $@
+

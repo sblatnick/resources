@@ -21,3 +21,34 @@ function kate_complete() {
   esac
 }
 complete -o nospace -F kate_complete kate k8 kl k
+
+#----------------------------------osx Apple Script Helper-----------------------------------#
+function osx_complete() {
+  case "${COMP_CWORD}" in
+    1)
+        #custom local script:
+        COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d {} ];then echo {}/;else echo {}; fi'))
+
+        #actions:
+        for cmd in $(cat ~/projects/resources/path/osx | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/) .*$//' | grep -Ev '[\$\*]')
+        do
+          COMPREPLY+=($(compgen -W "$(echo "${cmd}" | tr '|' ' ')" -- "${COMP_WORDS[${COMP_CWORD}]}"))
+        done
+
+        #known scripts:
+        COMPREPLY+=($(compgen -W "$(ls -1 ~/applescript/* ~/projects/resources/applescript/* 2>/dev/null | sed -e 's/^.*\///g' -e 's/.scpt$//' | sort -u | tr $'\n' ' ')" -- "${COMP_WORDS[${COMP_CWORD}]}"))
+      ;;
+    *)
+        COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d {} ];then echo {}/;else echo {}; fi'))
+      ;;
+  esac
+}
+
+#Only set up OS specific completions:
+case "$(uname -s)" in
+  Darwin) #Mac
+      complete -o nospace -F osx_complete osx
+    ;;
+  Linux)
+    ;;
+esac

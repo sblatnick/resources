@@ -310,6 +310,9 @@ Example arguments:
 
   #MISC:
 
+    #run cronjob now:
+    kubectl create job --from=cronjob/my-job my-pod
+
     #resources:
     kubectl set resources deployment my-deployment -c=resource --limits=cpu=200m,memory=512Mi
 
