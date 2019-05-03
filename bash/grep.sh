@@ -7,6 +7,13 @@ grep -A 5 'search' file.txt #only after context of 5 lines
 grep -c 'search' file.txt #print matches (per file with -r)
 grep -m 1 'search' file.txt #only get the first match per file
 
+#grep | line buffering:
+#  grep uses line buffering only in a terminal, and because of the pipe,
+#  it thinks it isn't running in a terminal
+#You can force line buffering with the --line-buffered option
+  grep --line-buffered | program
+#source: https://blog.jpalardy.com/posts/grep-and-output-buffering/
+
 #search for every match:
 grep -F 'RCPT TO: <admin@intra.net>' pipe_log | grep -Po 'Thread-\d+' | xargs -n 1 -I{} grep {} pipe_log
 

@@ -202,6 +202,8 @@ Example arguments:
     kubectl -n nginx-ingress get service/nginx-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[].ip}'
     kubectl -n my-namespace get pod my-pod-dd9b6b858-2q9r2 -o=json | jq -r '.spec.containers[].name'
     kubectl get pv -o jsonpath='{range.items[?(@.status.phase=="Released")]}{.metadata.name}{"\n"}{end}' #get all persistent volumes with released claims
+    kubectl get pod -o jsonpath='{range.items[*]}{.metadata.name}{"\n"}{end}' #get all pod names
+    kubectl get pod -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{range @.status.containerStatuses[*]}{"  "}{.imageID}{"\n"}{end}{"\n"}{end}' #get pods with image ids indented
 
       -o --output             output format
         name                  print resource names
