@@ -9,13 +9,20 @@ curl -q -X POST -H "Content-Type: application/json" -d "@${DATA}" https://${DEST
   ciphers=AES256-SHA256
 
 #OPTIONS:
-  -q #ignore ~/.curlrc
-  -X #request type, like GET, POST, SET
-  -H #headers
-  -d #data
-  -d "@filename" #file containing data
-  -d "@-" #stdin containing data
-
+    -q #ignore ~/.curlrc
+    -X #request type, like GET, POST, SET
+    -k #insecure
+    -u user:password #basic auth
+  #INPUT:
+    -H #headers
+    -d #data
+    -d "@filename" #file containing data
+    -d "@-" #stdin containing data
+  #OUTPUT:
+    -s #silent (no progress bar)
+    -D #dump headers into file
+    -D - #dump headers into stdout
+    -o #dump response contents to file (no headers)
 
 #curl: (60) Peer's Certificate issuer is not recognized.
   #Download public cert:

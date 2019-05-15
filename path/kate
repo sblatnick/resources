@@ -40,6 +40,16 @@ else
         kubectl -n ${namespace} $@
         exit
       ;;
+    #Custom commands:
+    tail)
+        which kubetail >/dev/null 2>&1
+        if [ "$?" -ne "0" ]; then
+          echo -e "\033[31mkubetail not installed in path\033[0m git clone git@github.com:johanhaleby/kubetail.git"
+          exit
+        fi
+        kubetail $2 -z 1,2,3,4,16,17,18 -n ${namespace}
+        exit
+      ;;
   esac
 
   #contexts

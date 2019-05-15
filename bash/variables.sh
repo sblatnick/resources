@@ -54,6 +54,10 @@
   ${variable: : -1}
   #see: https://unix.stackexchange.com/questions/144298/delete-the-last-character-of-a-string-using-string-manipulation-in-shell-script
 
+  #Bash 4+:
+  ${variable,,} #lower case
+  #source: https://stackoverflow.com/questions/41166026/what-does-2-commas-after-variable-name-mean-in-bash
+
   #Given:
     foo=/tmp/my.dir/filename.tar.gz
 

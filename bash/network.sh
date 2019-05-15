@@ -64,6 +64,8 @@ chkconfig iptables off
     iptables -t nat -A OUTPUT -p tcp -d 172.16.142.130 --dport 8443 -j DNAT --to 172.16.142.131:443
     #so anyone connecting to 172.16.142.130:8443 is forwarded to 172.16.142.131:443
     #note: using -d 127.0.0.1 doesn't seem to work right for these rules
+  #list rules:
+    iptables -L
   #list the 'nat' rules:
     iptables -t nat -L 
   #save current rules for next boot:
@@ -71,6 +73,88 @@ chkconfig iptables off
     /etc/init.d/iptables save
     #systemd:
     iptables-save > /etc/sysconfig/iptables
+
+  #Options:
+    -t #table
+    -A --append
+    -C --check
+    -D --delete
+    -I --insert
+    -R --replace
+    -L --list
+    -S --list-rules
+    -F --flush #delete all
+    -Z --zero #reset counters
+    -N --new-chain chain
+    -X --delete-chain [chain] #If no argument is given, it will attempt to delete every non-builtin chain in the table.
+    -P --policy chain target
+    -E --rename-chain old-chain new-chain
+    -h #Help
+
+    -v --verbose
+    -w --wait [seconds] #wait (indefinitely or for optional seconds) until the exclusive xtables lock can be obtained
+    -W --wait-interval microseconds #make each iteration take the amount of time specified (default 1 second, only works with -w)
+    -n --numeric #IP addresses and port numbers will be printed in numeric format
+    -x --exact #No rounding packet/byte counters to K/M/G
+    --line-numbers #rule order displayed
+    --modprobe=command #use command to load any necessary modules
+
+  #Parameters:
+    #allows to put both IPv4 and IPv6 rules in a single file for both iptables-restore and ip6tables-restore
+      -4, --ipv4
+      -6, --ipv6=
+    ! #invert test
+    -p, --protocol protocol #tcp, udp, udplite, icmp, icmpv6,esp, ah, sctp, mh, all, 0 (all), or numeric
+    -s, --source address[/mask][,...] #network name, a hostname, a network IP address (with /mask), or a plain IP address
+    -d, --dst, --destination address[/mask][,...]
+    -m, --match match
+    -j, --jump target
+    -g, --goto chain
+    -i, --in-interface name
+    -o, --out-interface name
+    -f, --fragment
+    -c, --set-counters packets bytes #initialize the packet and byte counters of a rule (during INSERT, APPEND, REPLACE operations)
+
+  #Tables -t:
+    nat    #address translation
+    filter #packet filtering
+    mangle #special-purpose processing
+    raw
+    security
+
+  #filter table chains:
+    INPUT
+    OUTPUT
+    FORWARD
+  #policies:
+    ACCEPT
+    DROP
+
+  #EXAMPLES:
+    #Set default rules (everything open):
+      iptables -P INPUT ACCEPT
+      iptables -P OUTPUT ACCEPT
+      iptables -P FORWARD ACCEPT
+    #Allow ssh:
+      iptables -A INPUT -i eth0 -p tcp --dport 22 -j ACCEPT
+      iptables -A OUTPUT -o eth0 -p tcp --sport 22 -j ACCEPT
+
+    #DNS requests:
+      #If you have OUTPUT set to DROP by default, but allow dns:
+        iptables -P OUTPUT DROP
+        iptables -A OUTPUT -o eth0 -p udp --dport 53 -j ACCEPT
+      #But curl hangs on certain hosts:
+        curl -sD - -o /dev/null https://example.com/path/
+      #It could be because of DNS via UDP getting truncated, resulting in TCP:
+        systemctl stop iptables #systemd
+        service iptables stop #SysV
+        host example.com
+          ;; Truncated, retrying in TCP mode.
+          example.com has address 10.20.20.20
+      #So you will need to allow TCP too:
+        iptables -A OUTPUT -o eth0 -p tcp --dport 53 -j ACCEPT
+
+  #source: http://linux-training.be/networking/ch14.html
 
 #see server IP address:
   host google.com
