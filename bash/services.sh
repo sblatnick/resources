@@ -89,6 +89,12 @@ Run Level    Mode                               Action
     [Install]
     WantedBy=multi-user.target
 
+#install file:
+  install -m 644 -o root -g root service.service /usr/lib/systemd/system/service.service
+
+#after modifying:
+  systemctl daemon-reload
+
 #::::::::::::::::::::MYSQL::::::::::::::::::::
 
 #mysql:

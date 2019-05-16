@@ -73,6 +73,66 @@ autoexpect commands to run
 
 #All together:
 
+  #set up local script:
+  function tea() {
+    file="$1"
+    shift
+    line="$@"
+    cnt=$(grep -cF "${line}" "${file}" 2>/dev/null)
+    if [ "$?" -gt 1 ]; then
+      cnt=$(sudo grep -cF "$line" "${file}")
+    fi
+    if [ "$cnt" -eq 0 ];then
+      tee -a "${file}" <<< "${line}" 2>/dev/null
+      if [ "$?" -gt 0 ]; then
+        sudo tee -a "${file}" <<< $(printf "\n${line}") 2>/dev/null
+      fi
+    else
+      echo -e "\033[33mskipping\033[0m ${file}"
+    fi
+  }
+
+  function run_init() {
+    server="$1"
+    shift
+
+    mkdir ~/.ssh
+    touch ~/.ssh/authorized_keys
+    chmod 700 ~/.ssh ~/.ssh/authorized_keys
+
+    tea ~/.ssh/authorized_keys "$@"
+    if [[ "$(whoami)" == "root" ]];then
+      tea ~/.bashrc "PS1='[${server} \w]\[\033[31m\] #\[\033[0m\] '"
+    else
+      tea ~/.bashrc "PS1='[${server} \w]\[\033[35m\] \$\[\033[0m\] '"
+    fi
+    tea ~/.bashrc "PROMPT_COMMAND='printf \"\033]0; ${server}\007\"'"
+    tea ~/.bashrc "unset TMOUT"
+  }
+
+  cat <<- EOF > ${TMP}/commands
+    sed -i -e 's/PermitRootLogin no/PermitRootLogin yes/' /etc/ssh/sshd_config
+    service sshd restart
+    $(typeset -f tea run_init)
+    run_init name $(<~/.ssh/id_rsa.pub)
+    echo "DONE"
+EOF
+
+#Optionally pass a local script path or run interactive:
+#$1 should be ${TMP}/commands
+if [ -z "$1" ];then
+  todo="interact"
+else
+  todo="
+    set fh [open $1]
+    set contents [read \$fh]
+    close \$fh
+    send -- \$contents
+    expect \"DONE\"
+    exit 0
+  "
+fi
+
 pw="rootpassword"
 cat << EOF > ${TMP}/to_root
 #!/usr/bin/expect -f
@@ -93,9 +153,25 @@ expect {
   "*\$ " {
     send "su -\r"
     expect "Password:"
-    send "${pw}\r"
-    expect "*# "
-    interact
+    expect {
+      "Password:" {
+        send "${pw}\r"
+        exp_continue
+      }
+      "su: incorrect password" {
+        send "sudo su\r"
+        expect "password for admin:"
+        send "${pw}\r"
+        exp_continue
+      }
+      "*#* " {
+        ${todo}
+      }
+      timeout {
+        send_error "time out\n"
+        exit 1
+      }
+    }
   }
   timeout {
     send_error "time out\n"
