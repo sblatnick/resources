@@ -410,7 +410,7 @@ ${current}"
         echo -e "\033[33musing\033[0m \033[32m${current}\033[0m"
       ;;
     @(${repo})) #[repo]#cd to this repo
-        repo=$(grep -Em 1 "${action}$" <<< "${repos}")
+        repo=$(grep -Em 1 "/${action}$" <<< "${repos}")
         echo -e "\033[33mentering\033[0m \033[32m${action}\033[0m"
         cd ${repo//\~/$HOME}
         return

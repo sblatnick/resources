@@ -129,6 +129,14 @@
     echo $i
   done
 
+#SEQUENCE of numbers:
+  for i in {1..20}
+  do
+    echo $i
+    #padded:
+    printf "%02g\n" $i
+  done
+
 #for loop with index and value (untested):
   for i in "${!foo[@]}"; do 
     printf "%s\t%s\n" "$i" "${foo[$i]}"
