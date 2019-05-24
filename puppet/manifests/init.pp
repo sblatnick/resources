@@ -11,6 +11,26 @@ class profile_example {
   ensure_packages(hiera_hash('preinstall::packages', {}), {'ensure' => 'present'})
   create_resources('profile_example::cron', resource_restructure(hiera_hash('example::cron', {}), "content"))
 
+  #alternatively, use cron built in puppet >=3.8:
+  cron {
+    name-of-job:
+      command => "/usr/bin/bash",
+      user => root,
+      minute => "0",
+      hour => "1",
+      weekday => "Monday",
+      ensure  => present;
+    name-of-job2:
+      command => "/usr/bin/bash",
+      user => root,
+      minute => "0",
+      hour => "1",
+      weekday => "Monday",
+      ensure  => present;
+  }
+  #placed in /var/spool/cron/$USER
+  #crontab -l -u user
+
   file { '/usr/libexec/example':
     ensure => 'directory',
     owner  => 'root',
