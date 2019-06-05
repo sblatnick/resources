@@ -133,6 +133,8 @@ cut -d: -f1 /etc/passwd
 #list users currently logged in:
 users
 who
+#list groups current user is part of:
+groups
 #add user:
 sudo adduser name
 sudo useradd name

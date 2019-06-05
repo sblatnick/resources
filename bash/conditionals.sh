@@ -19,12 +19,20 @@
   case $f in
     hello)
         echo English
+        #final:
       ;;
     "guten tag")
         echo German
-      ;;
+        #bash 4.0: continue with additional tests (non-POSIX)
+      ;;&
+    "blah")
+        echo Jibberish
+        #bash 4.0: fall-through next case (non-POSIX)
+      ;&
+      #source: https://unix.stackexchange.com/questions/75354/can-bash-case-statements-cascade
     this|that)
         echo Rambling
+      ;;
     *)
         echo Unknown Language: $f
       ;;
