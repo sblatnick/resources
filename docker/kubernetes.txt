@@ -351,3 +351,33 @@ Example arguments:
 
     #get minicube IP:
     minikube ip
+
+#NFS for bare metal:
+  #Simple steps:
+  #1. install openebs chart
+  #2. install nfs-utils on each *node*
+  #3. install nfs-server-provisioner chart using values:
+    persistence:
+      enabled: true
+      storageClass: "openebs-standard"
+      size: 110Gi
+
+    storageClass:
+      name: openebs-nfs
+  #4. Create a PVC:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: netapp
+      annotations:
+        volume.beta.kubernetes.io/storage-class: "openebs-nfs"
+    spec:
+      accessModes:
+        - ReadWriteMany
+      volumeMode: Filesystem
+      resources:
+        requests:
+          storage: 100Gi
+      storageClassName: openebs-nfs
+  #Note: 10% gap in space for some overhead
+  #5. Use pvc for your persistentVolumeClaims.

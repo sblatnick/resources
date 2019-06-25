@@ -1,15 +1,28 @@
 #::::::::::::::::::::OPENSSL::::::::::::::::::::
 
+#create passwordless cert for a ruby thin server:
+  #create private key:
+  openssl genrsa -out /etc/service/id.key 4096
+  #self sign and generate CA.crt:
+  openssl req -subj "/C=US/ST=Utah/L=Salt Lake City/CN=$(hostname)" -x509 -new -nodes -key /etc/service/id.key -sha256 -days 1024 -out /etc/service/CA.crt
+  #as root start the server:
+  thin start --ssl --ssl-key-file /etc/id.key --ssl-cert-file /etc/service/CA.crt -C /etc/service/service.yml
+  #test CA:
+  curl --cacert CA.crt https://127.0.0.1/
+
 #create cert request from ssh key:
 openssl req -new -key ~/.ssh/id_rsa -out id.csr
 #self-sign cert:
-openssl x509 -req -days 3650 -in id.csr -signkey ~/.ssh/id_rsa -out id.crt
+openssl x509 -req -days 3650 -in id.csr -signkey ~/.ssh/id_rsa -out id.pem
 
 #Convert formats:
   #der to pem:
     openssl x509 -inform der -in bin.crt -out bin.pem
   #pem to pkcs12:
     openssl pkcs12 -export -in id.crt -inkey id_rsa -out signature.p12 -name "Your Name"
+
+  #crt to pem:
+    openssl x509 -in id.crt -out id.pem -outform PEM
 
   #pem to crt:
     openssl x509 -outform der -in your-cert.pem -out your-cert.crt

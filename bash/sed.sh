@@ -161,6 +161,8 @@
 
     #Print from line 45 to line 50:
     sed -n '45,50 p' file.sql
+    #Print from line 45 to line 50, 55 to 60:
+    sed -n '45,50 p;55,60' file.sql
 
     #Delete lines matching the pattern:
     sed -i '/PS1/d' ~/.bashrc

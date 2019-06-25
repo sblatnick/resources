@@ -76,6 +76,7 @@
   yum history list #list is default, same as list history
   yum history list package #list package changes
   yum history info package #details of package history
+  rpm -qa --last | head #last packages installed and when
 
   #download rpm (requires yum-utils):
   yum install --downloadonly --downloaddir=/home/$USER/ package
@@ -213,6 +214,10 @@
   port install package
   #update:
   port upgrade package
+
+#DMG failing to install:
+  #System Preferences -> Security & Privacy -> General
+  #Then click on “Allow” next to the app warned about
 
 #::::::::::::::::::::RPM CREATION::::::::::::::::::::
 

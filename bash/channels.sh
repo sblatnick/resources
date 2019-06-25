@@ -65,7 +65,9 @@ scp $src $dst 2>&1 | sed "s/^/:: ${BASH_COMMAND} :: args: $src, $dst :: /"
 #redirect stdout/stderr of current script to log:
   exec 1>log.out 2>&1
 #same as before, but output to CLI too:
-  exec 1> >(tee log.out) 2>&
+  exec 1> >(tee log.out) 2>&1
+#prepend date to log, but not stdout:
+  exec 1> >(while read line;do echo "[$(date +'%Y%m%d%H%M%S')] ${line}" >> log.out;echo "${line}";done) 2>&1
 #roll logs and log to two files and stdout:
   exec 1> >(tee /var/log/cron.wrapper /var/log/cron.wrapper.$(date +%F-%H)) 2>&1
   echo "Cleanup old logs"

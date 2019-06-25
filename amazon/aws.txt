@@ -1,6 +1,19 @@
 #upload cert:
 aws iam upload-server-certificate --server-certificate-name MyCert --certificate-body cert.pem --private-key key.pem
 
+#grow root drive after resizing EBS:
+  lsblk
+    NAME    MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+    xvda    202:0    0  50G  0 disk
+    └─xvda1 202:1    0   8G  0 part /
+  sudo growpart /dev/xvda 1
+    CHANGED: partition=1 start=2048 old: size=16775168 end=16777216 new: size=104855519,end=104857567
+  lsblk
+    NAME    MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+    xvda    202:0    0  50G  0 disk
+    └─xvda1 202:1    0  50G  0 part /
+  reboot #for df to see the change
+  #source: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/recognize-expanded-volume-linux.html
 
 #---------------------------------Helper script--------------------------------#
 #!/bin/bash

@@ -47,6 +47,8 @@ length=${#array[@]}
 #You can set the delimiter just to create an array and have it revert back in one line:
 IFS=',' read -ra VARIABLE <<< "$IN" #make sure $IN is wrapped in double quotes, or the array length is off
 IFS=$'\n' read -rd '' -a VARIABLE <<< "$(pgrep -f "--test $VAR")" #or "$(commands)" with no escaping necessary
+#named variables one-liner:
+IFS=$'\n' read -rd '' username password <<< "$(jq -r '.username, .password' auth.json)"
 
 #Get variables in a CSV line:
 IFS=',' read first second third <<< "one,two,three"

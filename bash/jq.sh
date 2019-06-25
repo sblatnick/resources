@@ -12,3 +12,10 @@ jq -r '.[] | select(.os != null and .os != "") | [.name,.os] | @csv'
 # .os            = json property for object.image
 # [.name,.os]    = creates an array using those properties
 
+auth.json:
+  {
+    "username": "user",
+    "password": "secret"
+  }
+
+IFS=$'\n' read -rd '' username password <<< "$(jq -r '.username, .password' auth.json)"

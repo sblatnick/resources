@@ -69,6 +69,9 @@
 #show system info like ram/memory bios, etc
   sudo dmidecode
 
+#cpu
+  nproc
+  lscpu #human readable /proc/cpuinfo
 #cpu speeds:
   cat /proc/cpuinfo
 #cpu set to performance:
