@@ -23,6 +23,9 @@ echo $auxwe | sed 's/^/  /'
 echo -e "\033[32mpstree:\033[0m"
 echo $tree | sed 's/^/  /'
 
+#get information about a quick process you can start:
+script.sh & pstree -a $!
+
 #take an MAC xray of the process:
 scl=/var/log/mcafee/solidcore/solidcore.log
 inotifywait -e modify $scl;sadmin xray
