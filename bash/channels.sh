@@ -69,6 +69,8 @@ scp $src $dst 2>&1 | sed "s/^/:: ${BASH_COMMAND} :: args: $src, $dst :: /"
 #prepend date to log, but not stdout:
   exec 1> >(while read line;do echo "[$(date +'%Y%m%d%H%M%S')] ${line}" >> log.out;echo "${line}";done) 2>&1
 #roll logs and log to two files and stdout:
+  umask 037 #lock down permissions of logs
+
   exec 1> >(tee /var/log/cron.wrapper /var/log/cron.wrapper.$(date +%F-%H)) 2>&1
   echo "Cleanup old logs"
   cutoff=$(date -d "2 weeks ago" +%s)

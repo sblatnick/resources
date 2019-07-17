@@ -18,6 +18,12 @@ PROMPT_COMMAND='echo -ne "\033]0;YOUR TITLE GOES HERE\007"'
 tput cols  #columns
 tput lines #rows
 
+#Wrap output you want trimmed to width:
+  tput rmam  #trim to terminal width
+  tput smam  #disable trim
+  #handles coloring width too
+  #source: https://unix.stackexchange.com/questions/109211/preserving-color-output-with-cut
+
 #::::::::::::::::::::TERMINAL PROMPT::::::::::::::::::::
 
 

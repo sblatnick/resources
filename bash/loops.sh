@@ -120,6 +120,34 @@
   #You can also set the delimiter just to create an array and have it revert back in one line:
   IFS=';' read -ra VARIABLE <<< "$IN"
 
+#NESTED LOOPS with different delimeters:
+
+  IFS=$'\n' read -rd '' -a LINES <<< "$(cat file.txt)"
+
+  #for each line, for each string: converts any file paths from symbolic links to full path:
+  for i in "${!LINES[@]}" #each line
+  do
+    original="${LINES[$i]}"
+    IFS=' ' read -ra args <<< "${original}"
+    line=''
+    for arg in ${args[@]} #each word
+    do
+      if [[ "${arg}" == *"/"* ]];then
+        arg=$(readlink -f ${arg})
+      fi
+      line+=" ${arg}"
+    done
+    line="${line:1}"
+    if [[ "${line}" != "${original}" && "${line}" != "" ]];then
+      echo "  ${original} => ${line}"
+      LINES[$i]="${line}"
+    fi
+  done
+
+  #join array into lines again:
+  CONTENTS=$(printf "\n%s" "${LINES[@]}")
+  CONTENTS=${CONTENTS:1}
+
 #MAKE A BUNCH OF DIRECTORIES:
   mkdir rc{0,1,2,3,4,5,6,S}.d
 

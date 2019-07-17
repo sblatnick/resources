@@ -23,6 +23,9 @@
   #Create a new LV:
     lvcreate -L 5G -n lv_name vgName
 
+  #Delete LV:
+    lvremove -f /dev/vol0/$vm
+
   #Restore deleted LV:
     head /etc/lvm/archive/*.vg #look for the one you want to restore
     vgcfgrestore vgName -f /etc/lvm/archive/vgName_00003-file.vg
@@ -48,7 +51,7 @@
     dmsetup remove /dev/dm-13
     dmsetup remove /dev/dm-14
     #remove volume:
-    lvremove -f /dev/vol0/m0405116
+    lvremove -f /dev/vol0/$vm
 
   #Create loopback device:
     dd if=/dev/zero of=HDD.img bs=1G count=10
@@ -58,3 +61,17 @@
     losetup -d /dev/loop0
     #list block devices:
     lsblk
+
+  #Snapshot of kvm virsh lv:
+    virsh shutdown $vm
+    lvs | grep $vm #get $vol_group and $size
+    lvcreate -L ${size}G -s -n ${vm}.$(date +%F) /dev/${vol_group}/${vm}
+    #revert:
+    lvconvert --merge /dev/${vol_group}/${vm}.${date}
+
+    #recreate the snapshot! (merging disposed of it)
+    lvcreate -L ${size}G -s -n ${vm}.$(date +%F) /dev/${vol_group}/${vm}
+
+    #start vm
+    virsh start $vm
+

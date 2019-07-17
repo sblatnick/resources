@@ -3,13 +3,37 @@
 #::::::::::::::::::::KVM::::::::::::::::::::
 
 #Modification:
-  virsh dumpxml hostname #print host definition xml
-  virsh edit hostname    #edit host definition xml
+  virsh dumpxml $vm #print host definition xml
+  virsh edit $vm    #edit host definition xml
 
 #Management:
-  virsh reboot hostname  #reboot host
-  virsh net-list --all   #networks
   virsh list             #list hosts
+  virsh net-list --all   #networks
+
+  virsh reboot $vm       #reboot host
+  virsh shutdown $vm     #power off
+
+  virsh reset $vm        #hard reboot
+  virsh destroy $vm      #hard power off
+
+  virsh undefine $vm     #delete vm
+  lvremove -f /dev/vol0/$vm #delete volume
+
+  virsh start $vm
+  virsh suspend $vm
+  virsh resume $vm
+
+#Snapshots:
+  virsh snapshot-create-as $vm $snapshot "$description"
+  virsh snapshot-list $vm
+  virsh snapshot-revert $vm $snapshot
+  virsh snapshot-delete $vm $snapshot
+
+  virsh snapshot-info $vm $snapshot
+
+  qemu-img info /var/lib/libvirt/images/snapshot.img
+
+  #source: https://www.linuxtechi.com/create-revert-delete-kvm-virtual-machine-snapshot-virsh-command/
 
 #::::::::::::::::::::VirtualBox::::::::::::::::::::
 #source: https://www.virtualbox.org/manual/ch08.html

@@ -14,14 +14,16 @@ less_search() {
 
 #keep ag coloring in piped output, highlighting match groups if applicable
 agg() {
+  tput rmam #trim lines to terminal width
   local IFS=$'\n'
   local groups=$(echo "$@" | grep -Eo '\([^)]*\)')
   if [ -z "${groups}" ];then
-    ag --color -W $(tput cols) -H $@
+    ag --color -H $@ # -W $(tput cols) doesn't work on mac
   else
     pattern=$(echo -n "${groups}" | tr $'\n' '|')
-    ag --color -W $(tput cols) -H --color-match '0' $@ | ag --color --passthrough "${pattern}"
+    ag --color -H --color-match '0' $@ | ag --color --passthrough "${pattern}"
   fi
+  tput smam #undo trim setting
 }
 
 #ag coloring and pipe to less

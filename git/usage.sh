@@ -143,7 +143,8 @@
 
     #restore a deleted file:
     git log --diff-filter=D --summary #find the deleted changeset
-    git checkout $commit~1 filename #check it out
+    git log -- deletedFile.txt        #view changes on a file deleted
+    git checkout $commit~1 filename   #check it out
 
   #Abandon all my changes in Master branch and make it identical to the upstream's master branch?
     #(source: http://stackoverflow.com/questions/8134960/git-how-to-revert-master-branch-to-upstream)
