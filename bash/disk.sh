@@ -9,6 +9,8 @@
     vg = volume group
     lv = logical volume
 
+    dm = device mapper
+
   #Example: ls volumes:
     pvs #list physical volumes
     vgs #list volume groups
@@ -25,6 +27,9 @@
 
   #Delete LV:
     lvremove -f /dev/vol0/$vm
+
+  #Delete Device Mapper:
+    dmsetup remove /dev/dm-16
 
   #Restore deleted LV:
     head /etc/lvm/archive/*.vg #look for the one you want to restore

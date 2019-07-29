@@ -141,6 +141,9 @@
     #checkout a version of an individual file:
     git checkout <sha> path/to/file
 
+    #show version of an individual file:
+    git show eff3f4865248bd29fdeb46b3ed3f7632ab3ad64e:src/path/ObjectExample.java #notice the colon, use a space for the changeset
+
     #restore a deleted file:
     git log --diff-filter=D --summary #find the deleted changeset
     git log -- deletedFile.txt        #view changes on a file deleted

@@ -129,31 +129,6 @@
       e       environment
       j       BSD job control format
 
-
-#::::::::::::::::::::USERS::::::::::::::::::::
-#list distinct users:
-cut -d: -f1 /etc/passwd
-#list users currently logged in:
-users
-who
-#list groups current user is part of:
-groups
-#add user:
-sudo adduser name
-sudo useradd name
-#delete user:
-sudo userdel name
-#then clear the users home if applicable:
-sudo rm -Rf /home/name
-#modify user name:
-usermod -l new_username old_username
-#update user password:
-sudo passwd username
-#change shell for user:
-sudo chsh username
-#change user details:
-sudo chfn username
-
 #::::::::::::::::::::INIT::::::::::::::::::::
 #old way is via init scripts:
 /etc/init.d/tomcat start
