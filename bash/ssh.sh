@@ -174,3 +174,48 @@ Host jumphost
 #unmount:
   fusermount -u /user_bak/
 
+#::::::::::::::::::::RESTRICT COMMANDS::::::::::::::::::::
+#source: http://larstobi.blogspot.com/2011/01/restrict-ssh-access-to-one-command-but.html
+
+#~/.ssh/authorized_keys:
+  no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty,command="/home/user/.ssh/wrapper.sh" ssh-rsa xxx user@domain.com
+
+#~/.ssh/wrapper.sh:
+  #!/bin/bash
+  LOG=~/ssh.log
+  echo "$(date +%F-%R): ${SSH_ORIGINAL_COMMAND}" >> $LOG
+
+  case "${SSH_ORIGINAL_COMMAND}" in
+    *'..'*) #protect against relative directories
+        echo "ERROR"
+        echo "$(date +%F-%R) Permission denied (relative directory) ${SSH_CONNECTION}: ${SSH_ORIGINAL_COMMAND}" >> $LOG
+        exit 1
+      ;;
+    "find /opt/example/"*" -name .log -print")
+      ;& #fallthrough
+    "Any valid command")
+        $SSH_ORIGINAL_COMMAND
+      ;;
+    *)
+        echo "ERROR"
+        echo "$(date +%F-%R) Permission denied ${SSH_CONNECTION}: ${SSH_ORIGINAL_COMMAND}" >> $LOG
+        exit 1
+      ;;
+  esac
+
+#::::::::::::::::::::ENVIRONMENT VARIABLES::::::::::::::::::::
+
+  HOME                  home directory
+  USER | LOGNAME        user name loggin in
+  PATH                  default PATH
+
+  DISPLAY               X11 server "hostname:n" where n is the display number
+  SSH_ASKPASS           program to read passphrase from
+
+  SSH_CONNECTION        "${client_IP} ${client_port} ${server_IP} ${server_port}"
+  SSH_ORIGINAL_COMMAND  original command line with arguments
+  SSH_TTY               /dev/pts/0 (or device path to tty) or unset if no tty
+
+  MAIL                  path to user mailbox
+  SSH_AUTH_SOCK         path of a UNIX-domain socket used to communicate with the agent
+  TZ                    time zone if passed from sshd to new connections
