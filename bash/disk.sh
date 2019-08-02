@@ -16,6 +16,12 @@
     vgs #list volume groups
     lvs #list logical volumes
 
+  #Find volume:
+    lvs -S "lv_name=~${vm}" #match name
+
+  #Output Columns:
+    lvs --noheadings -o lv_name,lv_size
+
   #Reduce LV size:
     echo y | lvreduce --resizefs -L -30G /dev/mapper/vgName-lv_name
 

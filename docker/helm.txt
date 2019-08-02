@@ -233,6 +233,10 @@
       ext
       isAbs
       clean
+    #Define (golang, untested, not recommended, use templates instead):
+      func example(x int, s string) string {
+        return fmt.Sprintf("%d%s", x, s)
+      }
 
   #Boolean:
     false: false, zero, "", nil, null, empty collection

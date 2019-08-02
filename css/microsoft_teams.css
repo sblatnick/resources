@@ -58,6 +58,14 @@ pre {
 	height: 2.8rem !important;
 }
 
+buddy-groups .left-rail-profile {
+	left: 0.5rem !important;
+}
+
+buddy-groups.ts-channel-list a {
+	padding: 0 2rem 0 4rem !important;
+}
+
 .channel-list-team-header a, .pin-channel-list-header a {
 	padding: 0 0 0 0 !important;
 }
@@ -121,10 +129,10 @@ buddy-groups .group-list-item {
 	left: 0.1rem !important;
 }
 
-.ts-left-rail-tree .ts-tree-header {
-	display: none !important;
-}
-
 .popover-left-rail .ts-left-rail-wrapper {
 	left: 2.8rem !important;
+}
+
+.chat-list .cle-avatar .ts-skype-status {
+	right: -18px !important;
 }
