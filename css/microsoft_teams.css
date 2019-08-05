@@ -10,7 +10,7 @@
  */
 
 .ts-message-list-container, virtual-repeat>.list-wrap>.item-wrap, .ts-add-message .ts-new-message {
-  max-width: 1000.0rem !important;	
+	max-width: 1000.0rem !important;	
 }
 
 pre {
@@ -101,12 +101,6 @@ buddy-groups.ts-channel-list a {
 	left: 10px;
 }
 
-/*.chat-list .profile-img-parent {
-	margin-top: 10px;
-	width: 1em !important;
-	height: 1em !important;
-}*/
-
 .ts-channel-list .ts-tree-header {
 	margin: 0px !important;
 }
@@ -135,4 +129,12 @@ buddy-groups .group-list-item {
 
 .chat-list .cle-avatar .ts-skype-status {
 	right: -18px !important;
+}
+
+.cle-preview {
+	display: none !important;
+}
+
+.ts-channel-list a.ts-unread-channel {
+	background-color: #aaaaff !important;
 }
