@@ -26,8 +26,8 @@ function search
 {
   pattern=$1
   shift
-  find . -type d | sed 's/$/\//' | ag ${pattern}
-  find . -type f | ag ${pattern}
+  find -L . -type d | sed 's/$/\//' | ag ${pattern}
+  find -L . -type f | ag ${pattern}
 }
 
 function jag()

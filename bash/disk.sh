@@ -42,7 +42,7 @@
     vgcfgrestore vgName -f /etc/lvm/archive/vgName_00003-file.vg
     lvscan
     lvchange -a y /dev/vgName/lv_name
-
+  
   #Remove volume that has a phantom mapping: "Logical volume vg/lv-old is used by another device."
     #find mappings:
     dmsetup info -c | grep old
@@ -79,6 +79,16 @@
     lvcreate -L ${size}G -s -n ${vm}.$(date +%F) /dev/${vol_group}/${vm}
     #revert:
     lvconvert --merge /dev/${vol_group}/${vm}.${date}
+
+    #Restore volume that you forgot to unmount (or virsh shutdown the vm):
+    #  Can't merge over open origin volume
+    #  Merging of snapshot vm.2019-08-06 will start next activation.
+      virsh shutdown $vm #or if not on a vm: umount /dev/vol0/volume
+      lvchange -an /dev/vol0/volume
+      lvchange -ay /dev/vol0/volume #takes a while for merging
+      lvs #see the volumes, look for the O attribute:
+      #  LV       VG   Attr       LSize   Pool Origin Data%  Move Log Cpy%Sync Convert
+      #  volume   vol0 Owi-a-s--- 150.00g
 
     #recreate the snapshot! (merging disposed of it)
     lvcreate -L ${size}G -s -n ${vm}.$(date +%F) /dev/${vol_group}/${vm}

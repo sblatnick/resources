@@ -135,6 +135,14 @@ buddy-groups .group-list-item {
 	display: none !important;
 }
 
-.ts-channel-list a.ts-unread-channel {
+.ts-channel-list a.ts-unread-channel, div.unread-msg {
 	background-color: #aaaaff !important;
+}
+
+.btn-wrapper {
+	padding: 0 !important;
+}
+
+buddy-groups.ts-channel-list.match-parent>.simple-scrollbar {
+	height: calc(100vh - 9rem) !important;
 }
