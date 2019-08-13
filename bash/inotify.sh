@@ -59,6 +59,15 @@ inotifywait -e $event $file
 #look at whole process tree:
   inotifywait -e modify /var/log/mcafee/solidcore/solidcore.log;ps axwwejf | less
 
+#faster via monitor mode instead of re-attaching:
+  # -m monitor
+  inotifywait -m -e modify $log |
+    while read line
+    do
+      echo "File Modified: $line"
+    done
+
+
 #::::::::::::::::::::TAIL::::::::::::::::::::
 inotail
 

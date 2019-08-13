@@ -107,6 +107,7 @@
   ps -o etime= -p $(pgrep java) #how long java process has been running in days,hrs,etc
   ps -o etimes= -p $(pgrep java) #how long java process has been running in sec
   ps auxwe | grep $pid #full command in process
+  ps uwwe $PPID #unlimited width full process calling this script
   ps axjf #like pstree
   pstree
   top
@@ -128,6 +129,48 @@
       ww      unlimited wide
       e       environment
       j       BSD job control format
+
+#::::::::::::::::::::OPEN FILES::::::::::::::::::::
+
+lsof
+  -p $pid
+  -f $file           #-f not needed
+
+#Columns:
+  COMMAND
+  PID
+  USER
+  FD                 #file descriptor:
+    ${number}r       #read access
+    ${number}w       #write access
+    ${number}u       #read and write access
+    ${number}-${l}   #lock character
+    cwd              #current working directory
+    Lnn              #library references (AIX)
+    err              #FD information error (see NAME column)
+    jld              #jail directory (FreeBSD)
+    ltx              #shared library text (code and data)
+    Mxx              #hex memory-mapped type number xx.
+    m86              #DOS Merge mapped file
+    mem              #memory-mapped file
+    mmap             #memory-mapped device
+    pd               #parent directory
+    rtd              #root directory
+    tr               #kernel trace file (OpenBSD)
+    txt              #program text (code and data)
+    v86              #VP/ix mapped file
+  TYPE
+  DEVICE
+  SIZE/OFF
+  NODE NAME
+#Optional columns:
+  PPID    -R         #Parent PID
+  PGID    -g         #Process Groug ID
+
+#Examples:
+  lsof -p $PPID      #useful to get what is running a script
+
+
 
 #::::::::::::::::::::INIT::::::::::::::::::::
 #old way is via init scripts:

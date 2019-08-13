@@ -57,6 +57,56 @@ lsattr /path/to/file.txt
 #create empty file with ownership and permissions:
 install -m 640 -o user -g group /dev/null /var/log/example
 
+#::::::::::::::::::::ACCESS CONTROL LISTS::::::::::::::::::::
+
+getfacl
+  #Traversal:
+  -R        #recursive
+  -s        #skip files with chmod permissions only (ugo)
+
+  -P        #physical (no links)
+  -L        #logical, follow links (default)
+
+  #Output:
+  -a        #file access control list
+  -d        #default access control list
+
+  -e        #effective rights
+  -E        #no effective rights
+
+  -c        #skip file header
+  -t        #tab output
+  -p        #full path with leading / (default: ^/ stripped)
+  -n        #numberic ids for users/groups
+
+  #Misc:
+  -v        #version
+  -h        #help
+  --        #end options
+  -         #read from stdin
+
+setfacl
+  #Traversal:
+  -R        #recursive
+
+  -P        #physical (no links)
+  -L        #logical, follow links (default)
+
+  #Modification:
+  -b        #remove all
+  -k        #remove default ACL
+  -d        #default: applied to default chmod ACL
+  --restore #restore from output of `getfacl -R`
+  --mask    #recalculate effective rights using masking
+  -n        #no mask used
+  --test    #dry run
+
+  #Misc:
+  -v        #version
+  -h        #help
+  --        #end options
+  -         #read from stdin
+
 #::::::::::::::::::::DIRECTORY DEFAULT PERMISSIONS::::::::::::::::::::
 #ACL=Access Control Lists
 
