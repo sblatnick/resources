@@ -13,7 +13,7 @@
   fi
   
   if [[ $a -eq 24 && $b -eq 24 ]]; then
-  if [ "$a" -eq 98 ] || [ "$b" -eq 47 ]; then
+  if [[ "${a}" == "txt1" ]] || [ "$a" = "txt2" ] || [ "$b" -eq 47 ] || [ -n "$c" ]; then
 
 #CASE
   case $f in

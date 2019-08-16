@@ -193,6 +193,28 @@ function gitex() {
           $wgit --no-pager show --color ${sha} $@ | sed 's/^/  /'
         done | less -x2 -S #eval $($wgit config --get core.pager)
       ;;
+    versions|ver) #[file] [filter]#show whole file revisions in order, optionally filtered
+        shift
+        if [ -n "$1" ];then
+          file=$1
+          shift
+          filter=$1
+          local IFS=$'\n'
+          for line in $($wgit --no-pager log --oneline ${file})
+          do
+            sha=${line%% *}
+            echo -e "\033[33m${sha}\033[0m ${line#* }"
+            if [ -n "${filter}" ];then
+              $wgit --no-pager show --color ${sha}:$file | grep -E "${filter}" | sed 's/^/  /'
+            else
+              $wgit --no-pager show --color ${sha}:$file | sed 's/^/  /'
+            fi
+          done | less -x2 -S #eval $($wgit config --get core.pager)
+        else
+          echo -e "\033[31mNo file specified\033[0m"
+          return 1
+        fi
+      ;;
     glog) ##grep the log commit messages
         shift
         if [ -z "$@" ];then

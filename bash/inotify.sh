@@ -32,6 +32,13 @@ inotifywait -e $event $file
 
 #make service: https://www.server-world.info/en/note?os=CentOS_6&p=inotify
 
+#::::::::::::::::::::PROCESSES::::::::::::::::::::
+#This works with tail and doesn't require inotify-tools
+
+#You can tail by process id, use /dev/null if you don't want any logs:
+tail --pid=$pid -f /dev/null
+#this will return once the process id has gone away
+
 #::::::::::::::::::::EXAMPLES::::::::::::::::::::
 
 #get information about a short-lived pid in McAfee Application Control (MAC)
@@ -66,6 +73,108 @@ inotifywait -e $event $file
     do
       echo "File Modified: $line"
     done
+
+#watch services (make sure they aren't running as updaters in McAfee Application Control):
+
+  #!/bin/bash
+
+  LOCK=/var/run/service.lock
+  PID=/var/service.pid
+  LOG=/var/log/service.log
+
+  exec 1> >(tee $LOG) 2>&1
+
+  umask 177
+  echo $$ > $PID
+
+  function log
+  {
+    local service="$1:"
+    local text="$2"
+
+    printf '%s %-8s %b\n' "$(date +%F_%H:%M)" "${service}" "${text}"
+  }
+
+  function cleanup
+  {
+    log "main" "\033[33mEND\033[0m - closing service"
+    rm -f $LOCK $PID
+    kill -- -$$ 2>/dev/null
+    exit
+  }
+  trap cleanup SIGHUP SIGINT SIGTERM EXIT
+
+  function watcher
+  {
+    local service=$1
+    shift
+    local process=${1-$service}
+
+    log "${service}" "\033[33mWATCH\033[0m - watcher added to service"
+    local pid="dummy"
+    local retry=0
+
+    while [ 1 ];
+    do
+      while [ 1 ];
+      do
+        log "${service}" "Inspecting..."
+        local npid=$(pgrep -f "${process}")
+        if [[ "${pid}" == "${npid}" ]] || [ -z "${npid}" ];then
+          log "${service}" "  waiting for new pid..."
+          if [ $retry -eq 30 ];then
+            log "${service}" "\033[31mERROR\033[0m - service not started, starting..."
+            /sbin/service ${service} start
+          elif [ $retry -gt 60 ];then
+            log "${service}" "\033[31mCRITICAL\033[0m - service won't start, ABANDONED"
+            return 1
+          fi
+          sleep 1
+          let retry++
+        else
+          pid="$npid"
+          break
+        fi
+      done
+
+      #Can't use $? in background because of race conditions:
+      local updater=$(sadmin xray | sed -n "/^[^[:space:]].*${service}/,/^$/ p" | grep -cm 1 'Updater')
+      if [ $updater -eq 1 ];then
+        log "${service}" "\033[31mERROR\033[0m - service running as an updater"
+        log "${service}" "Restarting..."
+        /sbin/service ${service} restart
+        if [[ "${service}" == "sshd" ]];then
+          log "${service}" "\033[33mWARN\033[0m - terminating ssh sessions that are updaters"
+          for pid in $(pgrep -f 'sshd:')
+          do
+            local updater=$(sadmin xray | sed -n "/^[^[:space:]].*sshd $pid/,/^$/ p" | grep -cm 1 'Updater')
+            if [ $updater -eq 1 ];then
+              log "${service}" "  \033[33mWARN\033[0m killing pid: ${pid}"
+              kill -9 ${pid}
+            else
+              log "${service}" "  safe pid: ${pid}"
+            fi
+          done
+        fi
+      else
+        log "${service}" "\033[32mOK\033[0m - not an updater"
+      fi
+
+      log "${service}" "\033[33mWAIT\033[0m - listening for changes to the service process..."
+      tail --pid=$pid -f /dev/null
+    done
+  }
+
+  #Examples:
+  watcher 'ntpd' 'ntpd -u' &
+  watcher 'sshd' '/usr/sbin/sshd' &
+  watcher 'crond' &
+
+  for job in $(jobs -p)
+  do
+    wait $job
+  done
+  log "main" "\033[33mEND\033[0m - service main process exiting"
 
 
 #::::::::::::::::::::TAIL::::::::::::::::::::

@@ -130,6 +130,13 @@
       e       environment
       j       BSD job control format
 
+  #tail follow log until pid exits:
+    tail --pid=$(pgrep -f /usr/sbin/sshd) -f /var/log/mcafee/solidcore/solidcore.log
+
+  #process information available from the temporary filesystem /proc
+  /proc/$PID/
+    cmdline    #command run
+
 #::::::::::::::::::::OPEN FILES::::::::::::::::::::
 
 lsof

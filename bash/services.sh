@@ -60,6 +60,82 @@ Run Level    Mode                               Action
 
 #source: https://unix.stackexchange.com/questions/20357/how-can-i-make-a-script-in-etc-init-d-start-at-boot
 
+
+#Utilizing functions:
+
+  #/etc/init.d/${service}:
+    #!/bin/bash
+    # chkconfig: 2345 20 80
+    # description: Description...
+
+    service=${0##*/}
+    . /etc/init.d/functions
+
+    LOCK=/var/run/${service}.lock
+    PID=/var/run/${service}.pid
+    LOG=/var/log/${service}.log
+    SERVICE=/bin/${service}.sh
+
+    start() {
+      echo -n "Starting ${service} server: "
+      if [ -f $LOCK ];then
+        failure $"${service} already running (lock file present)"
+        echo
+        return 1
+      fi
+      $SERVICE >/dev/null 2>&1 &
+      touch $LOCK
+      success "${service} server startup"
+      echo
+    }
+
+    stop() {
+      echo -n "Stopping ${service} server: "
+      killproc ${service}.sh
+      rm -f $LOCK
+      echo
+    }
+
+    case "$1" in 
+      start|stop)
+          $1
+        ;;
+      restart)
+          $0 stop
+          $0 start
+        ;;
+      status)
+          status -p ${PID} ${service}
+          tail ${LOG}
+        ;;
+      *)
+          echo "Usage: $0 {start|stop|status|restart}"
+        ;;
+    esac
+
+  #service.sh:
+
+    #!/bin/bash
+
+    LOCK=/var/run/${service}.lock
+    PID=/var/run/${service}.pid
+    LOG=/var/log/${service}.log
+
+    exec 1> >(tee $LOG) 2>&1
+
+    echo $$ > $PID
+
+    function cleanup
+    {
+      echo "closing service"
+      rm -f $LOCK $PID
+      kill -- -$$
+      exit
+    }
+    trap cleanup SIGHUP SIGINT SIGTERM EXIT
+
+#source: https://www.cyberciti.biz/tips/linux-write-sys-v-init-script-to-start-stop-service.html
+
 #::::::::::::::::::::SYSTEMD STARTUP::::::::::::::::::::
 
 

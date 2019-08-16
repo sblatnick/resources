@@ -34,6 +34,14 @@ echo -n "text" #skips newline at end
     1,000,000,000
 
   #coloring (see COLORED OUTPUT):
+
+    #%s prints raw escape sequences:
+    printf '%s' "\033[31mCRITICAL\033[0m "
+      \033[31mCRITICAL\033[0m
+    #%b prints with colors:
+    printf '%b' "\033[31mCRITICAL\033[0m "
+      CRITICAL
+
     #be sure to separate color tags from strings if you don't want
     #the escape sequences to effect the string length for creating columns:
     FORMAT="%b%-4.4s%b\n"

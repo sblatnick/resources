@@ -135,7 +135,8 @@ buddy-groups .group-list-item {
 	display: none !important;
 }
 
-.ts-channel-list a.ts-unread-channel, div.unread-msg {
+/*highlight unread*/
+.ts-channel-list a.ts-unread-channel, div.unread-msg, .channel-list-team-header a.unread, .pin-channel-list-header a.unread {
 	background-color: #aaaaff !important;
 }
 
