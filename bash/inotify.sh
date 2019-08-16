@@ -78,9 +78,12 @@ tail --pid=$pid -f /dev/null
 
   #!/bin/bash
 
-  LOCK=/var/run/service.lock
-  PID=/var/service.pid
-  LOG=/var/log/service.log
+  SERVICE=${0##*/}
+  SERVICE=${SERVICE%%.*}
+
+  LOCK=/var/run/${SERVICE}.lock
+  PID=/var/run/${SERVICE}.pid
+  LOG=/var/log/${SERVICE}.log
 
   exec 1> >(tee $LOG) 2>&1
 
@@ -97,7 +100,7 @@ tail --pid=$pid -f /dev/null
 
   function cleanup
   {
-    log "main" "\033[33mEND\033[0m - closing service"
+    log "${SERVICE}" "\033[33mEND\033[0m - closing service"
     rm -f $LOCK $PID
     kill -- -$$ 2>/dev/null
     exit
@@ -111,17 +114,18 @@ tail --pid=$pid -f /dev/null
     local process=${1-$service}
 
     log "${service}" "\033[33mWATCH\033[0m - watcher added to service"
-    local pid="dummy"
+    local pid="first run"
     local retry=0
 
     while [ 1 ];
     do
       while [ 1 ];
       do
-        log "${service}" "Inspecting..."
-        local npid=$(pgrep -f "${process}")
+        log "${service}" "inspecting..."
+        #don't use pgrep because of transient pids
+        local npid=$(cat /var/run/${process}.pid 2>/dev/null)
         if [[ "${pid}" == "${npid}" ]] || [ -z "${npid}" ];then
-          log "${service}" "  waiting for new pid..."
+          log "${service}" "  waiting for new pid... (${pid})"
           if [ $retry -eq 30 ];then
             log "${service}" "\033[31mERROR\033[0m - service not started, starting..."
             /sbin/service ${service} start
@@ -129,12 +133,12 @@ tail --pid=$pid -f /dev/null
             log "${service}" "\033[31mCRITICAL\033[0m - service won't start, ABANDONED"
             return 1
           fi
-          sleep 1
-          let retry++
         else
           pid="$npid"
           break
         fi
+        sleep 1
+        let retry++
       done
 
       #Can't use $? in background because of race conditions:
@@ -144,37 +148,38 @@ tail --pid=$pid -f /dev/null
         log "${service}" "Restarting..."
         /sbin/service ${service} restart
         if [[ "${service}" == "sshd" ]];then
-          log "${service}" "\033[33mWARN\033[0m - terminating ssh sessions that are updaters"
-          for pid in $(pgrep -f 'sshd:')
+          log "${service}" "\033[33mWARN\033[0m - checking for ssh sessions that are updaters"
+          for session in $(pgrep -f 'sshd:')
           do
-            local updater=$(sadmin xray | sed -n "/^[^[:space:]].*sshd $pid/,/^$/ p" | grep -cm 1 'Updater')
+            local updater=$(sadmin xray | sed -n "/^[^[:space:]].*sshd $session/,/^$/ p" | grep -cm 1 'Updater')
             if [ $updater -eq 1 ];then
-              log "${service}" "  \033[33mWARN\033[0m killing pid: ${pid}"
-              kill -9 ${pid}
+              log "${service}" "  \033[33mWARN\033[0m killing ssh session in updater mode: ${session}"
+              kill -9 ${session}
             else
-              log "${service}" "  safe pid: ${pid}"
+              log "${service}" "  safe pid: ${session}"
             fi
           done
         fi
       else
-        log "${service}" "\033[32mOK\033[0m - not an updater"
+        log "${service}" "\033[32mOK\033[0m - not an updater (${pid})"
       fi
 
-      log "${service}" "\033[33mWAIT\033[0m - listening for changes to the service process..."
+      log "${service}" "\033[33mWAIT\033[0m - listening for changes to the service process... (${pid})"
       tail --pid=$pid -f /dev/null
     done
   }
 
-  #Examples:
-  watcher 'ntpd' 'ntpd -u' &
-  watcher 'sshd' '/usr/sbin/sshd' &
+  watcher 'ntpd' &
+  watcher 'sshd' &
+  watcher 'named' &
+  watcher 'rsyslog' 'syslogd' &
   watcher 'crond' &
 
   for job in $(jobs -p)
   do
     wait $job
   done
-  log "main" "\033[33mEND\033[0m - service main process exiting"
+  log "${SERVICE}" "\033[33mEND\033[0m - service main process exiting"
 
 
 #::::::::::::::::::::TAIL::::::::::::::::::::
