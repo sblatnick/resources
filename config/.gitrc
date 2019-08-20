@@ -204,7 +204,7 @@ function gitex() {
         local log=${tmp}/log
         local commits=${tmp}/commits
         local fork=${USER}_$(date +%F_%H-%M)
-        local diff=~/Desktop/${fork}.diff
+        local diff=~/Desktop/${repo}_${fork}.diff
 
         echo -e "\033[33mfinding commits...\033[0m"
         $wgit --no-pager log --author=$USER --no-merges --oneline $@ > ${log}
@@ -218,7 +218,6 @@ function gitex() {
         echo -e "\033[33mfork branch $fork from $start^\033[0m"
         $wgit checkout -b $fork $start^
 
-        return
         for commit in $(cat $commits)
         do
           echo -e "  \033[32m${commit}\033[0m"
