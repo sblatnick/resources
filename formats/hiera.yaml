@@ -53,3 +53,52 @@ hiera::configs:
 #puppet must be programmed to write these to files
 
 ...
+
+
+#Advanced:
+
+  #Block reuse:
+    #Define:
+      'directories': &DIRECTORY_SETTING
+      - 'path': '/web/www'
+        'custom_fragment': "%{hiera('apache::directory::custom_fragment')}"
+        'addhandlers':
+          - 'handler': 'perl-script'
+            'extensions': '.pl'
+          - 'handler': 'cgi-script'
+            'extensions': '.cgi'
+        'options':
+          - 'FollowSymLinks'
+          - 'ExecCGI'
+      - 'path': '\.pm$'
+        'provider': 'filesmatch'
+        'require': 'all denied'
+
+    #Use:
+      apache::vhost_hash:
+        '*:80':
+          'servername': 'intra.net'
+          'port': 80
+          'error_log_file': "error_log-%{fqdn}"
+          'access_log_file': "access_log-%{fqdn}"
+          'rewrites':
+            - 'comment': 'Attachments'
+              'rewrite_rule':
+                - '^(/.*)/attachments/([^/]+)/([^/]+)$ $1/attach.pl?$2'
+            - 'comment': 'Login'
+              'rewrite_cond':
+                - '%%{}{HTTP:X-Forwarded-Scheme} ^https$'
+          'docroot': '/web/www'
+          'directories': *DIRECTORY_SETTING
+        '*:443':
+          'servername': 'intra.net'
+          'port': 443
+          'error_log_file': "error_log-%{fqdn}"
+          'access_log_file': "access_log-%{fqdn}"
+          'rewrites':
+            - 'comment': 'Attachments'
+              'rewrite_rule':
+                - '^(/.*)/attachments/([^/]+)/([^/]+)$ $1/attach.pl?$2'
+          'docroot': '/web/www'
+          'directories': *DIRECTORY_SETTING
+

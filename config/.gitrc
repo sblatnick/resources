@@ -193,6 +193,46 @@ function gitex() {
           $wgit --no-pager show --color ${sha} $@ | sed 's/^/  /'
         done | less -x2 -S #eval $($wgit config --get core.pager)
       ;;
+    generate|gen) #[files]#generate a consolidated diff
+        shift
+        local branch=$($wgit rev-parse --abbrev-ref HEAD)
+        local repo=$(basename $($wgit rev-parse --show-toplevel 2>/dev/null) 2>/dev/null)
+        local tmp=/tmp/${repo}_${branch}
+        mkdir -p ${tmp} 2>/dev/null
+        trap "rm -rf ${tmp} 2>/dev/null" SIGHUP SIGINT SIGTERM RETURN
+
+        local log=${tmp}/log
+        local commits=${tmp}/commits
+        local fork=${USER}_$(date +%F_%H-%M)
+        local diff=~/Desktop/${fork}.diff
+
+        echo -e "\033[33mfinding commits...\033[0m"
+        $wgit --no-pager log --author=$USER --no-merges --oneline $@ > ${log}
+
+        echo -e "\033[33mdelete lines you don't want (dd)...\033[0m"
+        vi ${log}
+
+        tac ${log} | grep -Eo '^[^ ][^ ]*' > $commits
+        local start=$(head -n 1 $commits)
+
+        echo -e "\033[33mfork branch $fork from $start^\033[0m"
+        $wgit checkout -b $fork $start^
+
+        return
+        for commit in $(cat $commits)
+        do
+          echo -e "  \033[32m${commit}\033[0m"
+          $wgit cherry-pick -n $commit -Xtheirs $@
+        done
+
+        git --no-pager diff --cached > $diff
+        echo -e "\033[32mPatch output to: \033[0m ${diff}"
+
+        echo -e "\033[33mcleaning up\033[0m"
+        $wgit reset --hard HEAD
+        $wgit checkout $branch
+        $wgit branch -D $fork
+      ;;
     versions|ver) #[file] [filter]#show whole file revisions in order, optionally filtered
         shift
         if [ -n "$1" ];then
