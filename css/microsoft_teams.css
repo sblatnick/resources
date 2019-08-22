@@ -157,23 +157,17 @@
     height: 22px !important;
     padding: 0px !important;
   }
-  .ts-channel-list .open-channel-mgr ng-include {
-    display: none !important;
-  }
-  .cle-preview {
+  .ts-channel-list .open-channel-mgr ng-include, .cle-preview {
     display: none !important;
   }
 
 /*Messages*/
   /*width*/
-  .ts-message-list-container, virtual-repeat>.list-wrap>.item-wrap, .ts-add-message .ts-new-message {
+  .ts-message-list-container, virtual-repeat>.list-wrap>.item-wrap, .ts-add-message .ts-new-message, .message-list-common:not(.chat-style) *, .ts-add-message.is-not-chat .ts-new-message {
     max-width: 1000.0rem !important;	
   }
   .ts-add-message.is-not-chat .new-message-common {
     margin: 0 0.2rem !important;
-  }
-  .message-list-common:not(.chat-style) .button-row, .message-list-common:not(.chat-style) .large-max-stage, .message-list-common:not(.chat-style) .message-list-common .button-row, .message-list-common:not(.chat-style) .message-pane .new-typing-indicator, .message-list-common:not(.chat-style) .middle-messages-context-stripe .ts-message-list-container, .message-list-common:not(.chat-style) .ts-add-message .ts-new-message, .message-list-common:not(.chat-style) .ts-message-list-container, .message-list-common:not(.chat-style) .ts-new-meetup-animated, .message-list-common:not(.chat-style) prompt-to-talk, .message-list-common:not(.chat-style) smart-reply .smart-replies-alignment, .message-list-common:not(.chat-style) virtual-repeat>.list-wrap>.item-wrap, .ts-add-message.is-not-chat .ts-new-message {
-    max-width: 1000rem !important;
   }
 
   /*move self messages to the left*/
