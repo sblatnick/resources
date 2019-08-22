@@ -38,6 +38,10 @@
   #When used in [] must still include [] of the class:
   sed 's/^[[:space:]]*//' $file
 
+  #ignore coloring with anchors:
+  echo -e "\033[32mThis is green.\033[0m" | sed 's/^\([[:cntrl:]]\[[[:digit:]]*m\)*This/\1THAT/'
+    #source: https://stackoverflow.com/questions/17998978/removing-colors-from-output
+
 #Commands:
 
   # $replace $search only on $match lines:
@@ -51,7 +55,8 @@
     echo day | sed 's/day/night/' 
 
 
-    #escape parenthesis
+    #escape parenthesis and or |
+    sed 's/\(this\|that\)/else/'
     #+ not supported
     #perl's \d and character classes not supported by default
     #capture group:

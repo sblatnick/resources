@@ -27,6 +27,9 @@
   git show ${tag}:filename.txt
   git show ${sha}:filename.txt
 
+  #skip file(s):
+  git diff -- . ':(exclude)example.json' ':(exclude)example2.json'
+
 #branching:
 
   #create a new branch and switch to it:

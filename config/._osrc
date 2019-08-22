@@ -10,9 +10,48 @@ case "$(uname -s)" in
       }
       alias md5sum=md5
       alias tac="tail -r"
+      alias sed="gsed" #brew install gnu-sed
+      alias grep="ggrep" #brew install grep
       alias browser="open"
-      alias sedi="sed -i ''"
       alias resource="source ~/.bash_profile"
+
+      function service() {
+        local action=$1
+        shift
+        case "${action}" in
+          disable)
+              while [ -n "$1" ]; do
+                local match=''
+                for dir in /System/Library/LaunchDaemons /System/Library/LaunchAgents ~/Library/LaunchAgents /Library/LaunchAgents /Library/LaunchDaemons
+                do
+                  if [ -f $dir/$1 ];then
+                    match=$dir
+                    break
+                  fi
+                done
+                if [ -n "$match" ];then
+                  sudo launchctl unload -w $match/$1
+                else
+                  echo -e "$1 \033[31mMissing\033[0m"
+                fi
+                shift
+              done
+            ;;
+          list)
+              ls -1 /System/Library/LaunchDaemons /System/Library/LaunchAgents ~/Library/LaunchAgents /Library/LaunchAgents /Library/LaunchDaemons
+            ;;
+          active)
+              sudo launchctl list | cut -f3
+            ;;
+          '')
+              echo -e "\033[1mUsage:\033[0m \033[33;1mservice\033[0m [\033[36;1mlist|active|disable\033[0m]"
+            ;;
+          *)
+              echo -e "\033[31mInvalid action.\033[0m"
+              exit
+            ;;
+        esac
+      }
     ;;
   Linux)
       export LSCOLORS="di=1;34:ln=1;36:so=32:pi=33:ex=31:bd"

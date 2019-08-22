@@ -273,7 +273,16 @@ cqlsh --cqlversion 3.4.4 cassandra.intra.net 9042
 #::::::::::::::::::::MAC OSX::::::::::::::::::::
 sudo su #if you want root services
 launchctl list | less #show running services
-launchctl remove com.mcafee.agent.ma #remove service from startup
+launchctl unload -w /Library/LaunchDaemons/com.mcafee.agent.ma.plist #remove service from startup
+
+#plist locations:
+  /System/Library/LaunchDaemons/  #System-wide daemons provided by Mac OS X
+  /System/Library/LaunchAgents/   #Per-user agents provided by Mac OS X.
+  ~/Library/LaunchAgents/         #Per-user agents provided by the user.
+  /Library/LaunchAgents/          #Per-user agents provided by the administrator.
+  /Library/LaunchDaemons/         #System-wide daemons provided by the administrator.
+
+#source: https://www.cyberciti.biz/faq/disabling-unnecessary-mac-osx-services/
 
 #::::::::::::::::::::OTHER::::::::::::::::::::
 

@@ -44,10 +44,23 @@ function osx_complete() {
   esac
 }
 
+#----------------------------------osx services-----------------------------------#
+function osx_service() {
+  case "${COMP_CWORD}" in
+    1)
+        COMPREPLY=($(compgen -W "disable list active" -- "${COMP_WORDS[1]}"))
+      ;;
+    *)
+        COMPREPLY=($(compgen -W "$(ls -1p /System/Library/LaunchDaemons/ /System/Library/LaunchAgents/ ~/Library/LaunchAgents/ /Library/LaunchAgents/ /Library/LaunchDaemons/ | grep -Ev '^$|/:$')" -- "${COMP_WORDS[${COMP_CWORD}]}"))
+      ;;
+  esac
+}
+
 #Only set up OS specific completions:
 case "$(uname -s)" in
   Darwin) #Mac
       complete -o nospace -F osx_complete osx
+      complete -o nospace -F osx_service service
     ;;
   Linux)
     ;;

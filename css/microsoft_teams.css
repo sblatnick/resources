@@ -169,3 +169,9 @@ li[ng-if="team.overflowChannels && team.overflowChannels.length && !clc.filterIn
 .ts-channel-list .open-channel-mgr ng-include {
 	display: none !important;
 }
+
+/*move your messages to the left*/
+.chat-style .self .ts-message-thread-body, .chat-style tombstone .self {
+	justify-content: flex-start !important;
+	padding-left: 4.2rem !important;
+}
