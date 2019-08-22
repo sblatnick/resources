@@ -9,181 +9,185 @@
  * Chrome Plugin: "User JavaScript and CSS" https://chrome.google.com/webstore/detail/user-javascript-and-css/nbhcbdghjpllgmfilhnhkllmkecfmpld?hl=en
  */
 
-.ts-message-list-container, virtual-repeat>.list-wrap>.item-wrap, .ts-add-message .ts-new-message {
-	max-width: 1000.0rem !important;	
-}
+/*Left Navigation Bar*/
 
-pre {
-	white-space: pre-wrap !important;
-}
 
-.app-bar .app-bar-link .app-svg {
-	width: 2.2rem !important;
-}
-.app-bar-width {
-	width: 3rem !important;
-}
-.app-bar-text {
-	text-overflow: clip !important;
-	font-size: 0.7rem;
-}
+/*Buddy List Rail*/
+  /*width*/
+  /*
+  .ts-left-rail-wrapper {
+    width: 20rem !important;
+    resize: horizontal !important;
+  }
+  .app-rail-common>div {
+    width: 100% !important;
+  }
+  */
 
-.ts-waffle .waffle-header, app-header-bar {
-	height: 3.8rem !important;
-}
+  .popover-left-rail .ts-left-rail-wrapper {
+    left: 2.8rem !important;
+  }
 
-.app-top-power-bar .input-group {
-	height: 2.8rem !important;
-}
-.ts-left-rail {
-	padding-top: 0px !important;
-}
-.ts-left-rail-wrapper .left-rail-chat-tabs {
-	margin: 0rem 0rem 0 !important;
-}
-.ts-channel-list:not(.left-rail-overflow) .left-rail-item-hover:not(:hover):not(.menu-open):not(.more) a.cle-item {
-	padding-right: 0rem !important;
-}
-/*.chat-list .recipient-group-list-item a.cle-item {
-	padding: 0 1.8rem 0 0.2rem !important;
-}*/
-.ts-add-message.is-not-chat .new-message-common {
-	margin: 0 0.2rem !important;
-}
-.message-list-common:not(.chat-style) .button-row, .message-list-common:not(.chat-style) .large-max-stage, .message-list-common:not(.chat-style) .message-list-common .button-row, .message-list-common:not(.chat-style) .message-pane .new-typing-indicator, .message-list-common:not(.chat-style) .middle-messages-context-stripe .ts-message-list-container, .message-list-common:not(.chat-style) .ts-add-message .ts-new-message, .message-list-common:not(.chat-style) .ts-message-list-container, .message-list-common:not(.chat-style) .ts-new-meetup-animated, .message-list-common:not(.chat-style) prompt-to-talk, .message-list-common:not(.chat-style) smart-reply .smart-replies-alignment, .message-list-common:not(.chat-style) virtual-repeat>.list-wrap>.item-wrap, .ts-add-message.is-not-chat .ts-new-message {
-	max-width: 1000rem !important;
-}
+  /*padding*/
+  .ts-left-rail {
+    padding-top: 0px !important;
+  }
+  .ts-left-rail-wrapper .left-rail-chat-tabs {
+    margin: 0rem 0rem 0 !important;
+  }
+  .ts-channel-list:not(.left-rail-overflow) .left-rail-item-hover:not(:hover):not(.menu-open):not(.more) a.cle-item {
+    padding-right: 0rem !important;
+  }
 
-.chat-list .recipient-group-list-item, .ts-channel-list a {
-	height: 2.8rem !important;
-}
+  .ts-waffle .waffle-header, app-header-bar {
+    height: 3.8rem !important;
+  }
+  .app-top-power-bar .input-group {
+    height: 2.8rem !important;
+  }
+  .chat-list .recipient-group-list-item, .ts-channel-list a {
+    height: 2.8rem !important;
+  }
 
-buddy-groups .left-rail-profile {
-	left: 0.5rem !important;
-}
+  buddy-groups .left-rail-profile {
+    left: 0.5rem !important;
+  }
 
-buddy-groups.ts-channel-list a {
-	padding: 0 2rem 0 4rem !important;
-}
+  buddy-groups.ts-channel-list a {
+    padding: 0 2rem 0 4rem !important;
+  }
 
-.channel-list-team-header a, .pin-channel-list-header a {
-	padding: 0 0 0 0 !important;
-}
+  .channel-list-team-header a, .pin-channel-list-header a {
+    padding: 0 0 0 0 !important;
+  }
 
-.ts-channel-list .team.match-parent, .left-rail-item, .ts-tree-group {
-	margin-bottom: 0 !important;
-	border-bottom: 1px solid black !important;
-}
+  .ts-channel-list .team.match-parent, .left-rail-item, .ts-tree-group {
+    margin-bottom: 0 !important;
+    border-bottom: 1px solid black !important;
+  }
+  .ts-left-rail-tree .expand-collapse-icon {
+    display: none !important;
+  }
 
-.ts-left-rail-tree .expand-collapse-icon {
-	display: none !important;
-}
+  .chat-list .cle-timestamp, .chat-list .cle-title {
+    margin: 0px !important;
+  }
 
-.chat-list .cle-timestamp, .chat-list .cle-title {
-	margin: 0px !important;
-}
+  .chat-list .cle-action, .chat-list .cle-avatar {
+    width: 1em !important;
+    height: 1em !important;
+  }
 
-.chat-list .cle-action, .chat-list .cle-avatar {
-	width: 1em !important;
-	height: 1em !important;
-}
+  .chat-list .recipient-group-list-item a.cle-item {
+    grid-template-rows: 2.4rem 0.0rem;
+  }
 
-.chat-list .recipient-group-list-item a.cle-item {
-	grid-template-rows: 2.4rem 0.0rem;
-}
+  .chat-list .recipient-group-list-item a {
+    align-items: top !important;
+  }
 
-.chat-list .recipient-group-list-item a {
-	align-items: top !important;
-}
+  .btn-wrapper, .ts-channel-list .team-operations-container {
+    padding: 0 !important;
+  }
 
-.chat-list .cle-avatar {
-	position: absolute !important;
-	left: 10px;
-}
+  buddy-groups.ts-channel-list.match-parent>.simple-scrollbar {
+    height: calc(100vh - 9rem) !important;
+  }
 
-.ts-channel-list .ts-tree-header {
-	margin: 0px !important;
-}
+  .ts-channel-list:not(.popover)>.simple-scrollbar {
+    height: calc(100vh - 7rem) !important;
+  }
 
-buddy-groups .group-list-item {
-	height: 3rem !important;
-}
+  .ts-channel-list .ts-tree-header {
+    margin: 0px !important;
+  }
 
-.ts-left-rail-wrapper .left-rail-chat-tabs li a {
-	height: 2rem !important;
-	padding: 0 !important;
-}
+  buddy-groups .group-list-item {
+    height: 3rem !important;
+  }
 
-.feed-content .left-rail-item {
-	padding: 0 !important;
-	min-height: 4rem !important;
-}
+  .ts-left-rail-wrapper .left-rail-chat-tabs li a {
+    height: 2rem !important;
+    padding: 0 !important;
+  }
 
-.left-rail-avatar-column {
-	left: 0.1rem !important;
-}
+  .feed-content .left-rail-item {
+    padding: 0 !important;
+    min-height: 4rem !important;
+  }
 
-.popover-left-rail .ts-left-rail-wrapper {
-	left: 2.8rem !important;
-}
+  /*contacts*/
+  .app-bar .app-bar-link .app-svg {
+    width: 2.2rem !important;
+  }
+  .app-bar-width {
+    width: 3rem !important;
+  }
+  .app-bar-text {
+    text-overflow: clip !important;
+    font-size: 0.7rem;
+  }
+  .chat-list .cle-avatar {
+    position: absolute !important;
+    left: 10px;
+  }
+  .left-rail-avatar-column {
+    left: 0.1rem !important;
+  }
+  .chat-list .cle-avatar .ts-skype-status {
+    right: -18px !important;
+  }
 
-.chat-list .cle-avatar .ts-skype-status {
-	right: -18px !important;
-}
+  /*highlight unread*/
+  .ts-channel-list a.ts-unread-channel, div.unread-msg, .channel-list-team-header a.unread, .pin-channel-list-header a.unread {
+    background-color: #aaaaff !important;
+  }
 
-.cle-preview {
-	display: none !important;
-}
+  /* show/hide channels */
+  li[ng-if="team.overflowChannels && team.overflowChannels.length && !clc.filterInputOn"] {
+    width: 32px !important;
+    height: 22px !important;
+    position: absolute !important;
+    top: 0px !important;
+    right: 32px !important;
+    border: 1px solid blue !important;
+  }
+  .ts-channel-list .open-channel-mgr {
+    width: 32px !important;
+    height: 22px !important;
+    padding: 0px !important;
+  }
+  .ts-channel-list .open-channel-mgr ng-include {
+    display: none !important;
+  }
+  .cle-preview {
+    display: none !important;
+  }
 
-/*highlight unread*/
-.ts-channel-list a.ts-unread-channel, div.unread-msg, .channel-list-team-header a.unread, .pin-channel-list-header a.unread {
-	background-color: #aaaaff !important;
-}
+/*Messages*/
+  /*width*/
+  .ts-message-list-container, virtual-repeat>.list-wrap>.item-wrap, .ts-add-message .ts-new-message {
+    max-width: 1000.0rem !important;	
+  }
+  .ts-add-message.is-not-chat .new-message-common {
+    margin: 0 0.2rem !important;
+  }
+  .message-list-common:not(.chat-style) .button-row, .message-list-common:not(.chat-style) .large-max-stage, .message-list-common:not(.chat-style) .message-list-common .button-row, .message-list-common:not(.chat-style) .message-pane .new-typing-indicator, .message-list-common:not(.chat-style) .middle-messages-context-stripe .ts-message-list-container, .message-list-common:not(.chat-style) .ts-add-message .ts-new-message, .message-list-common:not(.chat-style) .ts-message-list-container, .message-list-common:not(.chat-style) .ts-new-meetup-animated, .message-list-common:not(.chat-style) prompt-to-talk, .message-list-common:not(.chat-style) smart-reply .smart-replies-alignment, .message-list-common:not(.chat-style) virtual-repeat>.list-wrap>.item-wrap, .ts-add-message.is-not-chat .ts-new-message {
+    max-width: 1000rem !important;
+  }
 
-.btn-wrapper, .ts-channel-list .team-operations-container {
-	padding: 0 !important;
-}
+  /*move self messages to the left*/
+  .chat-style .self .ts-message-thread-body, .chat-style tombstone .self {
+    justify-content: flex-start !important;
+    padding-left: 4.2rem !important;
+  }
+  .show-typing-indicator, .hide-typing-indicator {
+    padding-left: 4.2rem !important;
+  }
 
-buddy-groups.ts-channel-list.match-parent>.simple-scrollbar {
-	height: calc(100vh - 9rem) !important;
-}
+  /*code*/
+  pre {
+    white-space: pre-wrap !important;
+  }
 
-.ts-channel-list:not(.popover)>.simple-scrollbar {
-	height: calc(100vh - 7rem) !important;
-}
 
-/* show/hide channels */
-li[ng-if="team.overflowChannels && team.overflowChannels.length && !clc.filterInputOn"] {
-	width: 32px !important;
-	height: 22px !important;
-	position: absolute !important;
-	top: 0px !important;
-	right: 32px !important;
-	border: 1px solid blue !important;
-}
-.ts-channel-list .open-channel-mgr {
-	width: 32px !important;
-	height: 22px !important;
-	padding: 0px !important;
-}
-.ts-channel-list .open-channel-mgr ng-include {
-	display: none !important;
-}
-
-/*move your messages to the left*/
-.chat-style .self .ts-message-thread-body, .chat-style tombstone .self {
-	justify-content: flex-start !important;
-	padding-left: 4.2rem !important;
-}
-.show-typing-indicator, .hide-typing-indicator {
-	padding-left: 4.2rem !important;
-}
-
-.ts-left-rail-wrapper {
-	width: 20rem !important;
-	/*resize: horizontal !important;*/
-}
-
-.app-rail-common>div {
-	width: 100% !important;
-}
