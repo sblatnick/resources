@@ -14,15 +14,6 @@
 
 /*Buddy List Rail*/
   /*width*/
-  /*
-  .ts-left-rail-wrapper {
-    width: 20rem !important;
-    resize: horizontal !important;
-  }
-  .app-rail-common>div {
-    width: 100% !important;
-  }
-  */
   .app-rail-common>div, .fullscreen-layout .ts-left-rail-wrapper, .left-rail-item, .ts-left-rail-wrapper {
     width: 24rem !important;
     resize: horizontal !important;
