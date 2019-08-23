@@ -23,6 +23,13 @@
     width: 100% !important;
   }
   */
+  .app-rail-common>div, .fullscreen-layout .ts-left-rail-wrapper, .left-rail-item, .ts-left-rail-wrapper {
+    width: 24rem !important;
+    resize: horizontal !important;
+  }
+  .app-left-rail-width {
+    width: 100% !important;
+  }
 
   .popover-left-rail .ts-left-rail-wrapper {
     left: 2.8rem !important;
