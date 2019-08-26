@@ -134,11 +134,11 @@
   }
 
   buddy-groups.ts-channel-list.match-parent>.simple-scrollbar {
-    height: calc(100vh - 9rem) !important;
+    height: calc(100vh - 6rem) !important;
   }
 
   .ts-channel-list:not(.popover)>.simple-scrollbar {
-    height: calc(100vh - 7rem) !important;
+    height: calc(100vh - 4rem) !important;
   }
 
   .ts-channel-list .ts-tree-header {
@@ -157,6 +157,19 @@
   .feed-content .left-rail-item {
     padding: 0 !important;
     min-height: 4rem !important;
+  }
+  
+  .team-create-button-container {
+    width: 20rem !important;
+  }
+  .team-operations-button {
+    width: 20rem !important;
+  }
+  .power-bar-visible:not(.fullscreen) .ts-main {
+    height: 100% !important;
+  }
+  .app-full-viewport-height {
+    height: 100% !important;
   }
 
   /*contacts*/
