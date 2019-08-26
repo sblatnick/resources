@@ -9,8 +9,46 @@
  * Chrome Plugin: "User JavaScript and CSS" https://chrome.google.com/webstore/detail/user-javascript-and-css/nbhcbdghjpllgmfilhnhkllmkecfmpld?hl=en
  */
 
-/*Left Navigation Bar*/
+/*Header Bar*/
+  app-header-bar {
+    height: 5px !important;
+  }
+  app-header-bar:hover {
+    height: 3.8rem !important;
+  }
+  .ts-waffle .waffle-header {
+    height: 3.8rem !important;
+  }
+  .app-top-power-bar .input-group {
+    height: 2.8rem !important;
+  }
 
+/*Left Navigation Bar*/
+  .app-bar .app-bar-link .app-svg {
+    width: 2.2rem !important;
+  }
+  .app-bar-width {
+    width: 5px !important;
+  }
+  .app-bar-width:hover {
+    width: 3rem !important;
+  }
+  .app-bar-text {
+    text-overflow: clip !important;
+    font-size: 0.7rem;
+  }
+  .dot-activity-badge {
+    height: 100% !important;
+    left: -5px !important;
+  }
+  .activity-badge {
+    width: 5px !important;
+    min-width: 10px !important;
+    height: 100% !important;
+    border-radius: 0px !important;
+    padding: 0px !important;
+    top: 0px !important;
+  }
 
 /*Buddy List Rail*/
   /*width*/
@@ -50,12 +88,6 @@
     padding-right: 0rem !important;
   }
 
-  .ts-waffle .waffle-header, app-header-bar {
-    height: 3.8rem !important;
-  }
-  .app-top-power-bar .input-group {
-    height: 2.8rem !important;
-  }
   .chat-list .recipient-group-list-item, .ts-channel-list a {
     height: 2.8rem !important;
   }
@@ -128,16 +160,6 @@
   }
 
   /*contacts*/
-  .app-bar .app-bar-link .app-svg {
-    width: 2.2rem !important;
-  }
-  .app-bar-width {
-    width: 3rem !important;
-  }
-  .app-bar-text {
-    text-overflow: clip !important;
-    font-size: 0.7rem;
-  }
   .chat-list .cle-avatar {
     position: absolute !important;
     left: 10px;
@@ -173,9 +195,20 @@
   }
 
 /*Messages*/
+  /*header*/
+  .ts-title-bar {
+    padding: 0px !important;
+  }
+  .app-messages-header {
+    padding: 0px !important;
+  }
+  .ts-tab-bar-wrapper {
+    margin: 0px !important;
+  }
+
   /*width*/
   .ts-message-list-container, virtual-repeat>.list-wrap>.item-wrap, .ts-add-message .ts-new-message, .message-list-common:not(.chat-style) *, .ts-add-message.is-not-chat .ts-new-message {
-    max-width: 1000.0rem !important;	
+    max-width: 1000.0rem !important;  
   }
   .ts-add-message.is-not-chat .new-message-common {
     margin: 0 0.2rem !important;
