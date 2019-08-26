@@ -220,7 +220,7 @@
   }
 
   /*width*/
-  .ts-message-list-container, virtual-repeat>.list-wrap>.item-wrap, .ts-add-message .ts-new-message, .message-list-common:not(.chat-style) *, .ts-add-message.is-not-chat .ts-new-message {
+  .ts-message-list-container, virtual-repeat>.list-wrap>.item-wrap, .ts-add-message .ts-new-message, .message-list-common:not(.chat-style) *:not(img), .ts-add-message.is-not-chat .ts-new-message {
     max-width: 1000.0rem !important;  
   }
   .ts-add-message.is-not-chat .new-message-common {
