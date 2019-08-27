@@ -165,11 +165,14 @@
   .team-operations-button {
     width: 20rem !important;
   }
-  .power-bar-visible:not(.fullscreen) .ts-main {
+  .power-bar-visible:not(.fullscreen) .ts-main, .app-full-viewport-height, .chat-list, div[theme] {
     height: 100% !important;
   }
-  .app-full-viewport-height {
+   {
     height: 100% !important;
+  }
+  .chat-list-scrollbar {
+    max-height: 100% !important;
   }
 
   /*contacts*/

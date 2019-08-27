@@ -57,7 +57,26 @@ lsattr /path/to/file.txt
 #create empty file with ownership and permissions:
 install -m 640 -o user -g group /dev/null /var/log/example
 
-#::::::::::::::::::::ACCESS CONTROL LISTS::::::::::::::::::::
+#::::::::::::::::::::ACCESS CONTROL LISTS (ACL)::::::::::::::::::::
+#Additional users/groups and permissions
+ls -l $file
+  -rw-r--r-+ #+ means additional permissions through ACL
+getfacl $file
+  # file: $file   #
+  # owner: root
+  # group: root
+  user::rw-       #normal chmod permissions
+  user:john:rw-   #additional permissions for other user
+  user:sam:rwx
+  group::r--
+  mask::rwx       #permissions granted to additional user/groups
+  other:---
+setfacl -m u:john:rw,g:accounts:rwx $file
+
+#Defaults:
+setfacl -m default:u:john:rw,g:accounts:rwx $directory
+
+#source: https://www.thegeekdiary.com/unix-linux-access-control-lists-acls-basics/
 
 getfacl
   #Traversal:
@@ -93,6 +112,7 @@ setfacl
   -L        #logical, follow links (default)
 
   #Modification:
+  -x        #remove specified: -x u:steve
   -b        #remove all
   -k        #remove default ACL
   -d        #default: applied to default chmod ACL
@@ -107,8 +127,12 @@ setfacl
   --        #end options
   -         #read from stdin
 
+#Backup/restore:
+  getfacl -R * > acl.txt
+  setfacl --restore=acl.txt
+
+
 #::::::::::::::::::::DIRECTORY DEFAULT PERMISSIONS::::::::::::::::::::
-#ACL=Access Control Lists
 
 #Sets permissions for all current and future files in a directory:
 setfacl -Rdm u::rwx folder
@@ -155,22 +179,3 @@ umask 0077 #results in 600 permissions
   #(old way):
   chgrp <group> <directory>
   chmod g+s <directory>
-
-#::::::::::::::::::::SELINUX::::::::::::::::::::
-
-vi /etc/selinux/config
-  SELINUX=disabled
-$ semanage permissive -a mysqld_t
-$ getenforce
-Enforcing
-$ sudo setenforce 0
-$ sestatus
-SELinux status:                 enabled
-SELinuxfs mount:                /sys/fs/selinux
-SELinux root directory:         /etc/selinux
-Loaded policy name:             targeted
-Current mode:                   permissive
-Mode from config file:          enforcing
-Policy MLS status:              enabled
-Policy deny_unknown status:     allowed
-Max kernel policy version:      28
