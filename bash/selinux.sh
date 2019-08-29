@@ -12,6 +12,12 @@
 MCS #Multi-Category Security
 LSM #Linux Security Modules - kernel modules causing "Permission Denied"
 
+#Policies are stored in formats (/etc/selinux/targeted/policy/policy.$version):
+  #1. source      (versions 12-21)
+  #2. binary      (versions 15-21)
+  #3. modular     (list of packages where first is a base module)
+  #4. policy list (text file)
+
 #::::::::::::::::::::COMMANDS::::::::::::::::::::
 
 Access Control Levels:
@@ -125,11 +131,34 @@ Access Control Levels:
       ibpkey      #infiniband pkey type
       ibendport   #infiniband end port type definitions
 
-    sesearch
-      --allow
-      --source domain_t
-      --target type_t
-      --class file
+    sesearch      #search policies/rules
+      #types (must specify one):
+        -A        #--allow
+        --neverallow
+        --auditallow
+        --dontaudit
+        -T        #--type searches for type_(transition|member|change) rules
+        --role_allow
+        --role_trans
+        --range_trans
+        --all
+      #expressions
+        -s        #--source
+        -t        #--target
+        --role_source
+        --role_target
+        -c        #--class
+        -p        #--perm "permission1,permission2"
+        -b        #--bool
+      #options
+        -d        #--direct literal (no *, self)
+        -R        #--regex symbol names
+        -n        #--linenum if available, ignored with -S
+        -S        #--semantic vs syntactic
+        -C        #--show_cond print conditional expressions
+
+        -h        #--help
+        -V        #--version
 
     matchpathcon  #compares with selinux db
       -V          #verify and make suggestions
@@ -148,16 +177,49 @@ user => role => domain => type
 Classes:
   ls /sys/fs/selinux/class #systemd?
 
+#Syntax:
+  #Allow:
+    allow domain_t type_t:class { permissions };
 
-allow domain_t type_t:class { permissions };
+#Files:
 
-#Examples:
-  allow httpd_t httpd_sys_content_t : file { ioctl read getattr lock open } ;
-  allow httpd_t httpd_content_type : file { ioctl read getattr lock open } ;
-  allow httpd_t httpd_content_type : file { ioctl read getattr lock open } ;
-  allow httpd_t httpdcontent : file { ioctl read write create getattr setattr lock append unlink link rename execute open } ;
-  allow user_t bin_t:file { execute };
-  allow user_t user_bin_t:file { execute };
+  #Examples:
+    allow httpd_t httpd_sys_content_t : file { ioctl read getattr lock open } ;
+    allow httpd_t httpd_content_type : file { ioctl read getattr lock open } ;
+    allow httpd_t httpd_content_type : file { ioctl read getattr lock open } ;
+    allow httpd_t httpdcontent : file { ioctl read write create getattr setattr lock append unlink link rename execute open } ;
+    allow user_t bin_t:file { execute };
+    allow user_t user_bin_t:file { execute };
+
+#Processes/Services:
+  init (process) => exe (file) => target (process)
+
+  init   #originator domain of the process, short lived
+    class: process
+    type:  init_t
+  exe    #executable file used to start the process
+    class: file
+    type: exe_t
+  target #running process
+    class: process
+    type: target_t
+
+  #To allow process, all 3 paths must be permitted:
+    init ={execute}> exe ={entrypoint}> target
+        \=       {transition}         >/
+
+    #1. execute:    init => exe      (a to b)
+      sesearch -s init_t -t exe_t -c file -p execute -Ad
+        allow init_t exe_t : file { execute } ;
+    #2. entrypoint: exe => target    (b to c)
+      sesearch -s target_t -t exe_t -c file -p entrypoint -Ad
+        allow target_t exe_t : file { entrypoint } ;
+    #3. transition: init => target   (a to c)
+      sesearch -s init_t -t target_t -c process -p transition -Ad
+        allow init_t target_t : process transition ;
+
+  #Unconfined process domain:
+    unconfined_t
 
 #::::::::::::::::::::MODES::::::::::::::::::::
 
