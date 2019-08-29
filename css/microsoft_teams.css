@@ -168,8 +168,8 @@
   .power-bar-visible:not(.fullscreen) .ts-main, .app-full-viewport-height, .chat-list, div[theme] {
     height: 100% !important;
   }
-   {
-    height: 100% !important;
+  div.feed-content div.original-height {
+    height: calc(100vh) !important;
   }
   .chat-list-scrollbar {
     max-height: 100% !important;
@@ -240,8 +240,6 @@
   }
 
   /*code*/
-  pre {
+  pre, code {
     white-space: pre-wrap !important;
   }
-
-

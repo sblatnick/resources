@@ -2,34 +2,131 @@
 
 #::::::::::::::::::::SELINUX::::::::::::::::::::
 
-#Security Enhanced Linux
-
-#SELinux is a Mandatory Access Control (MAC) system developed by the NSA
-#as a replacement for Discretionary Access Control (DAC= rwx,chmod,acl,root/sudo)
-
-#sources:
-#  https://www.digitalocean.com/community/tutorials/an-introduction-to-selinux-on-centos-7-part-1-basic-concepts
-#  https://www.linode.com/docs/security/getting-started-with-selinux/
-#  https://opensource.com/business/13/11/selinux-policy-guide
-#  https://wiki.centos.org/HowTos/SELinux
-
-#Labelling system of policies
+#Security Enhanced Linux, created by the NSA
+#Used for creating policies that restrict processes to have minimal rights
 #Can apply to: files, directories, ports, devices, etc
 #Only applied AFTER chmod permissions
 
-#::::::::::::::::::::OVERVIEW::::::::::::::::::::
+#tutorial: https://www.digitalocean.com/community/tutorials/an-introduction-to-selinux-on-centos-7-part-1-basic-concepts
+
+#::::::::::::::::::::COMMANDS::::::::::::::::::::
 
 Access Control Levels:
-  Discretionary Access Control (DAC, normal)
+  Discretionary Access Control (DAC, normal chmod) - See chmod.sh
     chmod
     chown
     umask
-    su
-    sudo
-  Access Control List (ACL, extended)
+  Access Control List (ACL, extended) - See chmod.sh
     getfacl
     setfacl
   Mandatory Access Control (MAC, SELinux)
+    chcon         #change context
+      -u user_u   #--user
+      -r role_r   #--role
+      -t type_t   #--type
+      -l range    #--range
+      -v          #--verbose
+      -h          #--no-dereference or change link instead of target (--dereference default)
+      -R          #--recursive
+      --reference #use context of the file passed
+
+      #last used takes priority:
+      -H          #follow link if passed as an arg
+      -L          #follow links
+      -P          #don't follow links (default)
+
+      --help
+      --version
+
+      $ctx $file
+
+    restorecon    #restore file(s) default SELinux security contexts
+      -i          #ignore non-existing files
+      -f $file    #list of files, - for stdin
+      -e $dir     #exclude directory
+      -R, -r      #recursive
+      -n          #don't change any file labels
+      -o $file    #outfile for list of files with incorrect contexts
+      -p          #progress "*" per 1000 files
+      -v          #verbose, show changes
+      -F          #force reset
+      $path
+
+    semodule      #policy modules
+                    #bin in /etc/selinux/targeted/modules/active/modules/*.pp
+                    #combined bin at boot in /etc/selinux/targeted/policy/
+      -l          #list currently loaded
+
+      -i $pkg     #install
+      -u $pkg     #upgrade
+      -b $pkg     #install/replace base module
+
+      -R          #reload policy
+      -d $mod     #disable
+      -e $mod     #enable
+      -r $mod     #remove
+      -s $store   #act on store
+
+      -B          #rebuild & reload policy
+      -n          #don't reload
+      -Bn         #rebuild policy
+      -D          #temporarily disable dontaudits until next build
+
+      -h          #help
+      -v          #verbose
+
+    getsebool
+      $name       #get the named boolean
+      -a          #all
+
+    setsebool
+      $s $v       #single setting
+      -P          #persist through reboots
+      -V          #verbose
+      $s1=$v1 ..  #multiple
+
+    semanage
+      module      #policy modules
+      boolean     #selectively enable functionality
+        -l          #--list current booleans
+        -C          #list boolean local customizations
+        -n          #--noheading
+
+        -1, --on    #Enable the boolean
+        -0, --off   #Disable the boolean
+
+        -m          #--modify
+        -N          #--noreload
+        -S $store   #--store select an alternate SELinux Policy Store to manage
+
+        -E          #--extract customizable commands, for transactions
+        -D          #--deleteall
+
+        -h          #help
+
+      permissive  #process type enforcement mode
+
+      import
+      export
+
+      login       #login mappings between linux users and SELinux confined users
+      user
+
+      port
+      interface
+      node        #network node type
+
+
+      fcontext    #file context mapping
+      dontaudit   #Disable/Enable dontaudit rules in policy
+      ibpkey      #infiniband pkey type
+      ibendport   #infiniband end port type definitions
+
+    sesearch
+      --allow
+      --source domain_t
+      --target type_t
+      --class file
 
     Type Enforcement (access vector)
       allow user_t lib_t : file { execute };
@@ -38,17 +135,8 @@ Access Control Levels:
         ls /sys/fs/selinux/class
 
 
-    Role-based Access Control
-    User-based Access Control
-    MLS - Multi-Level Security
 
-    Labels/Contexts:
-      process: user_u:user_r:user_t
-        user_u - SELinux user
-        user_r - role
-        user_t - type
-        sensitivity (optional)
-      target:  system_u:object_r:lib_t
+
     Policies:
       allow user_t bin_t:file { execute };
       allow user_t user_bin_t:file { execute };
@@ -60,11 +148,29 @@ Access Control Levels:
 MCS #Multi-Category Security
 LSM #Linux Security Modules - kernel modules causing "Permission Denied"
 
+#::::::::::::::::::::VIEWING::::::::::::::::::::
+
+ls -Z   #files
+ps -Z   #processes
+
+
 #::::::::::::::::::::POLICIES::::::::::::::::::::
 
-#source: https://www.digitalocean.com/community/tutorials/an-introduction-to-selinux-on-centos-7-part-1-basic-concepts
 
-An SELinux policy defines user access to roles, role access to domains, and domain access to types.
+user => role => domain => type
+
+subject = process/daemon
+
+
+
+allow domain_t type_t:class { permissions };
+
+#Examples:
+  allow httpd_t httpd_sys_content_t : file { ioctl read getattr lock open } ;
+  allow httpd_t httpd_content_type : file { ioctl read getattr lock open } ;
+  allow httpd_t httpd_content_type : file { ioctl read getattr lock open } ;
+  allow httpd_t httpdcontent : file { ioctl read write create getattr setattr lock append unlink link rename execute open } ;
+
 
 
 #::::::::::::::::::::MODES::::::::::::::::::::
@@ -84,6 +190,14 @@ setenforce
   SELINUX=disabled #| enforcing | permissive
   SELINUXTYPE=targeted #| mls (multi-level security)
 
+SELINUX
+  disabled
+  enforcing
+  permissive
+SELINUXTYPE
+  targeted    #explicitly restricted processes (default)
+  mls         #Multi-Level Security (MLS) deny-by-default
+
 sestatus
   SELinux status:                 enabled
   SELinuxfs mount:                /sys/fs/selinux
@@ -95,51 +209,21 @@ sestatus
   Policy deny_unknown status:     allowed
   Max kernel policy version:      28
 
-#::::::::::::::::::::SECURITY CONTEXT::::::::::::::::::::
+kernel arguments from grub (/boot/grub/menu.lst):
+  selinux=1   #0: disabled,   1: enabled
+  enforcing=0 #0: permissive, 1: enforcing 
 
-user #system users
-role #group of users policies
-type #filetypes available to the user
+#::::::::::::::::::::SECURITY CONTEXT LABELS::::::::::::::::::::
 
-#::::::::::::::::::::BOOLEAN::::::::::::::::::::
+Format: user_u:role_r:type_t:s0
+  user_u #SELinux user
+  role_r
+  type_t #file type | process domain
+  s0     #sensitivity (for SELINUXTYPE=mls)
 
-getsebool
-  $name         #get the named boolean
-  -a            #all
-
-setsebool
-  $setting ON
-  $setting OFF
-  -P            #persist through reboots
-
-#::::::::::::::::::::SEMANAGE::::::::::::::::::::
-
-semanage permissive -a mysqld_t
-
-
-#::::::::::::::::::::VIEWING::::::::::::::::::::
-
-ls -Z #view security context
 
 
 #::::::::::::::::::::LOGS::::::::::::::::::::
 
 grep "SELinux" /var/log/messages
 
-
-#::::::::::::::::::::Multi Category Security (MCS)::::::::::::::::::::
-
-
-#::::::::::::::::::::SELINUXTYPE::::::::::::::::::::
-#....................MULTI-LEVEL SECURITY (MLS)....................
-
-#Setting:
-  /etc/selinux/config
-    SELINUXTYPE=mls
-
-
-#....................TARGETED....................
-
-#Setting:
-  /etc/selinux/config
-    SELINUXTYPE=targeted
