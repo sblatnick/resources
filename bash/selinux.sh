@@ -9,6 +9,9 @@
 
 #tutorial: https://www.digitalocean.com/community/tutorials/an-introduction-to-selinux-on-centos-7-part-1-basic-concepts
 
+MCS #Multi-Category Security
+LSM #Linux Security Modules - kernel modules causing "Permission Denied"
+
 #::::::::::::::::::::COMMANDS::::::::::::::::::::
 
 Access Control Levels:
@@ -20,7 +23,7 @@ Access Control Levels:
     getfacl
     setfacl
   Mandatory Access Control (MAC, SELinux)
-    chcon         #change context
+    chcon         #change context temporarily
       -u user_u   #--user
       -r role_r   #--role
       -t type_t   #--type
@@ -128,25 +131,8 @@ Access Control Levels:
       --target type_t
       --class file
 
-    Type Enforcement (access vector)
-      allow user_t lib_t : file { execute };
-
-      Classes:
-        ls /sys/fs/selinux/class
-
-
-
-
-    Policies:
-      allow user_t bin_t:file { execute };
-      allow user_t user_bin_t:file { execute };
-
-
-
-
-
-MCS #Multi-Category Security
-LSM #Linux Security Modules - kernel modules causing "Permission Denied"
+    matchpathcon  #compares with selinux db
+      -V          #verify and make suggestions
 
 #::::::::::::::::::::VIEWING::::::::::::::::::::
 
@@ -159,8 +145,8 @@ ps -Z   #processes
 
 user => role => domain => type
 
-subject = process/daemon
-
+Classes:
+  ls /sys/fs/selinux/class #systemd?
 
 
 allow domain_t type_t:class { permissions };
@@ -170,8 +156,8 @@ allow domain_t type_t:class { permissions };
   allow httpd_t httpd_content_type : file { ioctl read getattr lock open } ;
   allow httpd_t httpd_content_type : file { ioctl read getattr lock open } ;
   allow httpd_t httpdcontent : file { ioctl read write create getattr setattr lock append unlink link rename execute open } ;
-
-
+  allow user_t bin_t:file { execute };
+  allow user_t user_bin_t:file { execute };
 
 #::::::::::::::::::::MODES::::::::::::::::::::
 
@@ -221,6 +207,31 @@ Format: user_u:role_r:type_t:s0
   type_t #file type | process domain
   s0     #sensitivity (for SELINUXTYPE=mls)
 
+
+#::::::::::::::::::::CONTEXT INHERITANCE::::::::::::::::::::
+
+#Inherited from parent directory when:
+  cp
+
+#Retain original context when:
+  mv
+  cp --preserve=context
+  cp -c
+
+#::::::::::::::::::::CONTEXT MODIFICATION::::::::::::::::::::
+chcon #only changes temporarily, lost when file system relabel or by restorecon
+
+#Files
+  #existing contexts:
+    /etc/selinux/targeted/contexts/files/file_contexts
+  #pending contexts:
+    /etc/selinux/targeted/contexts/files/file_contexts.local
+
+
+#1. change context (file_contexts.local):
+  semanage fcontext --add --type httpd_sys_content_t "/www/html(/.*)?"
+#2. commit (file_contexts):
+  restorecon -Rv /www
 
 
 #::::::::::::::::::::LOGS::::::::::::::::::::
