@@ -95,41 +95,71 @@ Access Control Levels:
       $s1=$v1 ..  #multiple
 
     semanage
-      module      #policy modules
-      boolean     #selectively enable functionality
-        -l          #--list current booleans
-        -C          #list boolean local customizations
-        -n          #--noheading
-
-        -1, --on    #Enable the boolean
-        -0, --off   #Disable the boolean
-
-        -m          #--modify
-        -N          #--noreload
-        -S $store   #--store select an alternate SELinux Policy Store to manage
-
-        -E          #--extract customizable commands, for transactions
-        -D          #--deleteall
-
-        -h          #help
-
-      permissive  #process type enforcement mode
-
-      import
-      export
-
-      login       #login mappings between linux users and SELinux confined users
-      user
-
-      port
-      interface
-      node        #network node type
-
-
-      fcontext    #file context mapping
-      dontaudit   #Disable/Enable dontaudit rules in policy
-      ibpkey      #infiniband pkey type
-      ibendport   #infiniband end port type definitions
+      $topic      #common args for all topics
+        #List:
+        -l          #--list       List the OBJECTS
+        -C          #--locallist  List OBJECTS local customizations
+        -n          #--noheading  Do not print heading when listing OBJECTS
+        #CRUD:
+        -m          #--modify     Modify a OBJECT record NAME
+        -a          #--add        Add a OBJECT record NAME
+        -d          #--delete     Delete a OBJECT record NAME
+        -D          #--deleteall  Remove all OBJECTS local customizations
+        #Transactions:
+        -E          #--extract    extract customizable commands
+        -i          #--input      Input multiple semange commands in a transaction
+        -o          #--output     Output current customizations as semange commands
+        #Misc:
+        -N          #--noreload   Do not reload policy after commit
+        -S          #--store      Select and alternate SELinux store to manage
+        -h          #--help       Display this message
+      $object     #common args for all objects
+        #Enable:
+        --enable    #Enable a module
+        --disable   #Disable a module
+        #Selection:
+        -R          #--roles      SELinux Roles
+        -s          #--seuser     SELinux User Name
+        -t          #--type       SELinux Type for the object
+        -f          #--ftype      File Type of OBJECT
+          ""          #all files
+          --          #regular file
+          -d          #directory
+          -c          #character device
+          -b          #block device
+          -s          #socket
+          -l          #symbolic link
+          -p          #named pipe
+        -F $file    #--file       list of OBJECTS, - for stdin
+        #Network:
+        -p          #--proto      Port protocol (tcp or udp) or internet protocol version of node (ipv4 or ipv6)
+        -M          #--mask       Netmask
+        #Path:
+        -e          #--equal      Substitue source path for dest path when labeling
+        -P          #--prefix     Prefix for home directory labeling
+        #MLS/MCS Systems only:
+        -L          #--level      Default SELinux Level
+        -r          #--range      MLS/MCS Security Range
+      #Topics:
+        permissive  #process type enforcement mode
+        import
+        export
+      #Objects:
+        module      #policy modules
+        boolean     #selectively enable functionality
+          -1, --on    #Enable the boolean
+          -0, --off   #Disable the boolean
+        login       #login mappings between linux users and SELinux confined users
+        user
+        #Network:
+        port
+        interface
+        node        #network node type
+        #Misc:
+        fcontext    #file context mapping
+        dontaudit   #Disable/Enable dontaudit rules in policy
+        ibpkey      #infiniband pkey type
+        ibendport   #infiniband end port type definitions
 
     sesearch      #search policies/rules
       #types (must specify one):
