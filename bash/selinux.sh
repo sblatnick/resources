@@ -150,7 +150,21 @@ Access Control Levels:
           -1, --on    #Enable the boolean
           -0, --off   #Disable the boolean
         login       #login mappings between linux users and SELinux confined users
-        user
+          #Defaults -l:
+          users       se-user      #notes
+          ------------------------------------
+          __default__ unconfined_u #most users
+          root        unconfined_u #root user
+          system_u    system_u     #services
+        user        #selinux users
+          #Defaults -l:
+          se-user   xserver  networking su/sudo #notes
+          --------------------------------------------
+          guest_u   no       no         no
+          xguest_u  yes      yes        no
+          user_u    yes      config     no
+          staff_u   yes      config     yes
+          system_u                              #system services
         #Network:
         port
         interface
@@ -197,6 +211,7 @@ Access Control Levels:
 
 ls -Z   #files
 ps -Z   #processes
+id -Z   #users
 
 
 #::::::::::::::::::::POLICIES::::::::::::::::::::
@@ -326,7 +341,32 @@ chcon #only changes temporarily, lost when file system relabel or by restorecon
   restorecon -Rv /www
 
 
+#::::::::::::::::::::USER/ROLE MODIFICATION::::::::::::::::::::
+
+#Examples:
+  semanage login -a -s user_u user #add user to se-user, effectively removing su since user_u doesn't have su
+
+#::::::::::::::::::::BOOLEAN MODIFICATION::::::::::::::::::::
+
+#Examples:
+  getsebool allow_guest_exec_content      #check setting
+    guest_exec_content --> on
+  semanage login -a -s guest_u user       #make user a guest user
+  semanage login -l                       #check mapping
+  setsebool allow_guest_exec_content off  #disable guest from executing scripts in their home
+  [user@localhost ~]$ ~/myscript.sh
+    -bash: /home/user/myscript.sh: Permission denied
+
+#::::::::::::::::::::SERVICE ACCESS::::::::::::::::::::
+  #TODO: "SELinux in Action 3: Restricting Access to Services"
+
 #::::::::::::::::::::LOGS::::::::::::::::::::
 
 grep "SELinux" /var/log/messages
 
+#Examples:
+  grep "SELinux is preventing" /var/log/messages
+    Aug 23 12:59:42 localhost setroubleshoot: SELinux is preventing /usr/bin/bash from execute access on the file . For complete SELinux messages. run sealert -l 8343a9d2-ca9d-49db-9281-3bb03a76b71a
+    Aug 23 12:59:42 localhost python: SELinux is preventing /usr/bin/bash from execute access on the file .
+  #details:
+  sealert -l 8343a9d2-ca9d-49db-9281-3bb03a76b71a
