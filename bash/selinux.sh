@@ -9,7 +9,6 @@
 
 #tutorial: https://www.digitalocean.com/community/tutorials/an-introduction-to-selinux-on-centos-7-part-1-basic-concepts
 
-MCS #Multi-Category Security
 LSM #Linux Security Modules - kernel modules causing "Permission Denied"
 
 #Policies are stored in formats (/etc/selinux/targeted/policy/policy.$version):
@@ -204,15 +203,51 @@ Access Control Levels:
         -h        #--help
         -V        #--version
 
+    seinfo        #policy query tool
+      #expressions
+        #list of objects or ${name}, expanded via -x:
+          -${o}${name}
+          --${obj}=${name}
+        #objects:
+          -c      #--class
+          --sensitivity
+          --category
+          -t      #--type (not including aliases or attributes)
+          -a      #--attribute
+          -r      #--role
+          -u      #--user
+          -b      #--bool
+          --initialsid #initial SID(s)
+          #filesystem:
+          --fs_use
+          --genfscon
+          #network:
+          --netifcon  #netif context
+          --nodecon   #node context 
+          --portcon   #port context
+            --protocol=PROTO  #filter portcon statements for specified protocol
+          --constrain #list of constraints
+          --all       #all components
+      #options
+        -x          #--expand additional details
+        --stats     #type, version, and component/rule counts
+        -l          #line breaks in constraints
+        -h          #help
+        -V          #--version
+
     matchpathcon  #compares with selinux db
       -V          #verify and make suggestions
+    ausearch      #search auditd logs
+    sealert       #selinux details of error
+      -l $id        #UUID of error in /var/log/messages
 
 #::::::::::::::::::::VIEWING::::::::::::::::::::
 
 ls -Z   #files
 ps -Z   #processes
 id -Z   #users
-
+seinfo -uuser_u -x #se-user user_u
+seinfo -ruser_r -x #se-role user_r
 
 #::::::::::::::::::::POLICIES::::::::::::::::::::
 
@@ -362,6 +397,9 @@ chcon #only changes temporarily, lost when file system relabel or by restorecon
 
 #::::::::::::::::::::LOGS::::::::::::::::::::
 
+rsyslogd: /var/log/messages
+auditd:   /var/log/audit/audit.log
+
 grep "SELinux" /var/log/messages
 
 #Examples:
@@ -370,3 +408,30 @@ grep "SELinux" /var/log/messages
     Aug 23 12:59:42 localhost python: SELinux is preventing /usr/bin/bash from execute access on the file .
   #details:
   sealert -l 8343a9d2-ca9d-49db-9281-3bb03a76b71a
+
+#::::::::::::::::::::MULTI-LEVEL SECURITY::::::::::::::::::::
+SELINUXTYPE=mls
+
+MLS #Multi-Level Security (MLS) deny-by-default
+MCS #Multi-Category Security
+
+user_u:role_r:type_t:s0-s1:c0.c2  #>=4th optional field is sensitivity and categories
+                     -----------
+
+Sensitivity Levels:
+  min:      s0
+  max:      s15 #traditionally
+  range:    -
+  example:  s0-s12 #"current sensitivity"-"clearance sensitivity"
+
+Category:
+  min:      c0
+  max:      c1023
+  range:    .
+  example:  c0.c12
+
+Translation into meaningful output: /etc/selinux/targeted/setrans.conf
+  s0:c0=CompanyConfidential
+  s0:c3=TopSecret
+
+#The higher a process's sensitivity and category, the more access it has.
