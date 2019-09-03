@@ -55,6 +55,7 @@ SELINUX
 SELINUXTYPE
   targeted    #explicitly restricted processes (default)
   mls         #Multi-Level Security (MLS) deny-by-default
+  strict
 
 sestatus
   SELinux status:                 enabled
@@ -117,7 +118,19 @@ chcon #only changes temporarily, lost when file system relabel or by restorecon
 #::::::::::::::::::::USER/ROLE MODIFICATION::::::::::::::::::::
 
 #Examples:
-  semanage login -a -s user_u user #add user to se-user, effectively removing su since user_u doesn't have su
+  semanage login -a -s user_u $user #add user to se-user, effectively removing su since user_u doesn't have su
+
+  semanage login -a -s "staff_u" -r "s0-s0:c0.c1023" $user
+    login      #acting on linux login users
+    -a         #add to system user
+    -s staff_u #se-user staff_u
+    -r "$mls"  #set levels/categories (mls)
+    $user      #linux user
+  #allows user to sudo to other roles:
+    sudo -r sysadm_r -i
+  #change default role of user:
+    /etc/sudoers.d/
+      %wheel  ALL=(ALL)       TYPE=sysadm_t   ROLE=sysadm_r   ALL
 
 #::::::::::::::::::::BOOLEAN MODIFICATION::::::::::::::::::::
 
@@ -130,9 +143,29 @@ chcon #only changes temporarily, lost when file system relabel or by restorecon
   [user@localhost ~]$ ~/myscript.sh
     -bash: /home/user/myscript.sh: Permission denied
 
+#::::::::::::::::::::PORTS::::::::::::::::::::
+
+semanage port -l
+#add rule to allow port:
+semanage port -a -t http_port_t -p tcp 81 
+
+#::::::::::::::::::::PERMISSIVE TYPES::::::::::::::::::::
+
+#instead of system-wide permissive via setenforce 0,
+#just put what you are troubleshooting as permissive
+
+  #log:
+    type=AVC msg=audit(1218128130.653:334): avc:  denied  { connectto } for  pid=9111 comm="smtpd" path="/var/spool/postfix/postgrey/socket"
+scontext=system_u:system_r:postfix_smtpd_t:s0 tcontext=system_u:system_r:initrc_t:s0 tclass=unix_stream_socket
+  #setting:
+    semanage permissive -a postfix_smtpd_t
+  #unsetting (enforcing):
+    semanage permissive -d postfix_smtpd_t
+
+
 #::::::::::::::::::::COMMANDS::::::::::::::::::::
 
-  chcon         #change context temporarily
+  chcon         #change context temporarily (across reboots until filesystem relabeled
     -u user_u   #--user
     -r role_r   #--role
     -t type_t   #--type
@@ -361,12 +394,15 @@ Restrict access in this order:
   user => role => domain => type
 
 Classes:
+  seinfo -c #all classes currently used
   ls /sys/fs/selinux/class #systemd?
 
 Syntax:
   allow domain_t type_t:class { permissions };
 
 Types:
+  seinfo -t #all types currently used
+
   Files:
     Examples:
       allow httpd_t httpd_sys_content_t : file { ioctl read getattr lock open } ;
@@ -406,12 +442,93 @@ Types:
     #Unconfined process domain:
       unconfined_t
 
+  Search Examples:
+    sesearch -AC -s antivirus_t -t antivirus_t -c process -p execmem
+      DT allow antivirus_t antivirus_t : process execmem ; [ antivirus_use_jit ]
+        DT = disabled
+        antivirus_use_jit = boolean (false)
+    #find policies using boolean:
+    sesearch -AC -b antivirus_use_jit
+    #set boolean (enable policy)
+    setsebool -P antivirus_use_jit=1
+
+#::::::::::::::::::::CUSTOM POLICIES::::::::::::::::::::
+
+When booleans cannot solve a given situation
+audit2allow helps you generate allow policies from auditd logs
+
+  1. Permissive
+    setenforce 0 #permissive
+  2. Search auditd logs
+    ausearch -c "smtpd" -m AVC,USER_AVC -i
+      type=AVC msg=audit(1218128130.653:334): avc:  denied  { connectto } for  pid=9111 comm="smtpd" path="/var/spool/postfix/postgrey/socket"
+      scontext=system_u:system_r:postfix_smtpd_t:s0 tcontext=system_u:system_r:initrc_t:s0 tclass=unix_stream_socket
+      type=AVC msg=audit(1218128130.653:334): avc:  denied  { write } for  pid=9111 comm="smtpd" name="socket" dev=sda6 ino=39977017
+      scontext=system_u:system_r:postfix_smtpd_t:s0 tcontext=system_u:object_r:postfix_spool_t:s0 tclass=sock_file 
+  3. Analyze proposed policy
+    grep smtpd_t /var/log/audit/audit.log | audit2allow -m postgreylocal > postgreylocal.te #te = type enforcement
+      module postgreylocal 1.0;
+      require {
+              type postfix_smtpd_t;
+              type postfix_spool_t;
+              type initrc_t;
+              class sock_file write;
+              class unix_stream_socket connectto;
+      }
+      #============= postfix_smtpd_t ==============
+      allow postfix_smtpd_t initrc_t:unix_stream_socket connectto;
+      allow postfix_smtpd_t postfix_spool_t:sock_file write;
+  4. Modify as needed
+    -allow ...
+    +dontaudit ...
+  5. Compile policy module
+    No modifications? Just pipe in:
+      grep smtpd_t /var/log/audit/audit.log > errors.log
+      audit2allow -M postgreylocal < errors.log
+    Customized?
+      checkmodule -M -m -o postgreylocal.mod postgreylocal.te
+      semodule_package -o postgreylocal.pp -m postgreylocal.mod
+  6. Install policy module
+    semodule -i postgreylocal.pp
+      installed to: /etc/selinux/targeted/modules/active/modules/postgreylocal.pp
+  7. Verify Loaded
+    semodule -l
+
 #::::::::::::::::::::LOGS::::::::::::::::::::
 
-rsyslogd: /var/log/messages
-auditd:   /var/log/audit/audit.log
+grep "SELinux" /var/log/messages #rsyslog
+grep "AVC" /var/log/audit/audit.log #auditd
 
-grep "SELinux" /var/log/messages
+  #auditd log types:
+
+    AVC                   #granted/denied (auditallow/dontaudit policies)
+    USER_AVC              #user space: D-Bus, systemd
+
+    SELINUX_ERR           #systemd service has NoNewPrivileges=True and/or calls setcon
+    USER_SELINUX_ERR
+
+    MAC_POLICY_LOAD       #When a policy is loaded
+    USER_MAC_POLICY_LOAD 
+
+    MAC_CONFIG_CHANGE     #boolean updated via setsebool
+    MAC_STATUS            #enforcing/permissive change (setenforce)
+    USER_ROLE_CHANGE      #user switched roles via sudo/newrole/login
+    USER_LABEL_EXPORT     #user exports labeled object using CUPS
+
+    #Misc:
+    MAC_UNLBL_ALLOW, MAC_UNLBL_STCADD, MAC_UNLBL_STCDEL, MAC_MAP_ADD, MAC_MAP_DEL, MAC_IPSEC_EVENT, MAC_CIPSOV4_ADD, MAC_CIPSOV4_DEL.
+
+    #search examples:
+      ausearch -m AVC,USER_AVC,SELINUX_ERR,USER_SELINUX_ERR -i
+      ausearch --checkpoint="./audit-checkpoint" -m AVC,USER_AVC,SELINUX_ERR,USER_SELINUX_ERR -i
+      ausearch -c "httpd" -m AVC,USER_AVC,SELINUX_ERR,USER_SELINUX_ERR -i
+      ausearch -m MAC_STATUS -i
+      ausearch -m AVC,USER_AVC -i --success yes
+
+      semodule -DB #disable dontaudit module
+      ausearch -m AVC,USER_AVC -i
+      semodule -B #rebuild with dontaudit
+
 
 #Examples:
   grep "SELinux is preventing" /var/log/messages
@@ -419,6 +536,17 @@ grep "SELinux" /var/log/messages
     Aug 23 12:59:42 localhost python: SELinux is preventing /usr/bin/bash from execute access on the file .
   #details:
   sealert -l 8343a9d2-ca9d-49db-9281-3bb03a76b71a
+  sealert -b #gui
+  sealert -a /var/log/audit/audit.log
+
+  #service for email or desktop notifications:
+    setroubleshootd
+
+#::::::::::::::::::::RELABEL::::::::::::::::::::
+genhomedircon #OS upgraded
+touch /.autorelabel
+reboot
+
 
 #::::::::::::::::::::MULTI-LEVEL SECURITY::::::::::::::::::::
 SELINUXTYPE=mls
@@ -426,7 +554,7 @@ SELINUXTYPE=mls
 MLS #Multi-Level Security (MLS) deny-by-default
 MCS #Multi-Category Security
 
-user_u:role_r:type_t:s0-s1:c0.c2  #>=4th optional field is sensitivity and categories
+user_u:role_r:type_t:s0-s1:c3.c4  #4th optional field is sensitivity and categories
                      -----------
 
 Sensitivity Levels:
@@ -438,11 +566,51 @@ Sensitivity Levels:
 Category:
   min:      c0
   max:      c1023
-  range:    .
-  example:  c0.c12
+  range:    .     #example:  c0.c12
+  set:      ,     #example:  c0,c3,c5
+  
 
 Translation into meaningful output: /etc/selinux/targeted/setrans.conf
   s0:c0=CompanyConfidential
   s0:c3=TopSecret
 
 #The higher a process's sensitivity and category, the more access it has.
+#source "domainates" target if superset of categories
+
+
+#::::::::::::::::::::PACKAGES::::::::::::::::::::
+selinux-policy-doc #man pages for policies:
+  man httpd_selinux
+setools-console
+  sesearch
+policycoreutils
+  fixfiles
+  load_policy
+  restorecon
+  setfiles
+  secon
+  semodule_deps
+  semodule_expand
+  semodule_link
+  semodule_package
+  genhomedircon
+  load_policy
+  open_init_pty
+  restorecond
+  run_init
+  semodule
+  sestatus
+  setsebool
+policycoreutils-python
+  semanage
+  audit2allow
+  audit2why
+  chcat
+  sandbox
+  sepolgen
+  sepolgen-ifgen
+  sepolgen-ifgen-attr-helper
+
+
+
+
