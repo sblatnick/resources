@@ -84,6 +84,206 @@ tar -czvf archive.tar.gz ./directory
 #decompress:
 tar -zxvf filename.tgz
 
+#::::::::::::::::::::REGEX SEARCH/REPLACE::::::::::::::::::::
+
+Increase indent on inline comments:
+  Search:
+    ^(\s+.+\s+)#
+  Replace:
+    \1  #
+
+#::::::::::::::::::::FORMAT CODE::::::::::::::::::::
+  #Debian: sudo apt-get install astyle
+  #OSX:    brew install astyle
+
+  astyle
+    #Tabs ($number = 4 by default)
+      --indent=spaces=$number      | -s$number
+      --indent=tab=$number         | -t$number
+      --indent=force-tab=$number   | -T$number  #use tabs even where spaces are sometimes used
+      --indent=force-tab-x=$number | -xT$number #length in spaces, mix tabs/spaces
+    #Brace style
+      --style=
+        #Common:
+          allman              #-A1
+            while (x == y)
+            {
+              something();
+              somethingelse();
+            }
+          java                #-A2
+            class Example {
+              while (x == y) {
+                something();
+                somethingelse();
+              }
+            }
+          kr                  #-A3
+            int main(int argc, char *argv[])
+            {
+              while (x == y) {
+                something();
+                somethingelse();
+              }
+            }
+          stroustrup          #-A4 FAVORITE: k&r with "else" on newline
+            if (x < 0) {
+              puts("Negative");
+              negative(x);
+            }
+            else {
+              puts("Non-negative");
+              nonnegative(x);
+            }
+        #Other:
+          whitesmith          #-A5
+            while (x == y)
+              {
+              something();
+              }
+          vtk                 #-A15
+          ratliff | banner    #-A6
+            while (x == y) {
+              }
+          gnu                 #-A7
+            while (x == y)
+              {
+                something ();
+                somethingelse ();
+              }
+          linux | knf         #-A8
+            int power(int x, int y)
+            {
+              int result;
+
+              if (y < 0) {
+                result = 0;
+              } else {
+                result = 1;
+                while (y-- > 0)
+                  result *= x;
+
+              }
+              return result;
+            }
+          horstmann | run-in  #-A9
+            while (x == y)
+            {   something();
+                somethingelse();
+            }
+          1tbs | otbs         #-A10
+          google              #-A14
+          mozilla             #-A16
+          pico                #-A11
+            while (x == y)
+            {   something();
+                somethingelse(); }
+          lisp                #-A12
+            while (x == y)
+              { something();
+                somethingelse(); }
+    #Brace Modification
+      --attach-namespaces         | -xn
+      --attach-classes            | -xc
+      --attach-inlines            | -xl
+      --attach-extern-c           | -xk
+      --attach-closing-while      | -xV
+    #Indentation:
+      --indent-classes            | -C
+      --indent-modifiers          | -xG
+      --indent-switches           | -S
+      --indent-cases              | -K
+      --indent-namespaces         | -N
+      --indent-after-parens       | -xU
+      --indent-continuation=#     | -xt#
+      --indent-labels             | -L
+      --indent-preproc-block      | -xW
+      --indent-preproc-cond       | -xw
+      --indent-preproc-define     | -w
+      --indent-col1-comments      | -Y
+      --min-conditional-indent=#  | -m# # 0:none, 1:one additional, 2 (default): two additional, 3: one-half additional
+      --max-continuation-indent=# | -M# # spaces in a continuation line, 40 (default) - 120
+    #Padding:
+      --break-blocks              | -f
+      --break-blocks=all          | -F #around else/catch
+      --pad-oper                  | -p
+      --pad-comma                 | -xg
+      --pad-paren                 | -P
+      --pad-paren-out             | -d
+      --pad-first-paren-out       | -xd
+      --pad-paren-in              | -D
+      --pad-header                | -H
+      --unpad-paren               | -U
+      --delete-empty-lines        | -xd
+      --fill-empty-lines          | -E
+      --align-pointer=type        | -k1
+      --align-pointer=middle      | -k2
+      --align-pointer=name        | -k3
+      --align-reference=none      | -W0
+      --align-reference=type      | -W1
+      --align-reference=middle    | -W2
+      --align-reference=name      | -W3
+    #Formatting:
+      --break-closing-braces      | -y
+      --break-elseifs             | -e
+      --break-one-line-headers    | -xb
+      --add-braces                | -j
+      --add-one-line-braces       | -J
+      --remove-braces             | -xj
+      --break-return-type         | -xB
+      --break-return-type-decl    | -xD
+      --attach-return-type        | -xf
+      --attach-return-type-decl   | -xh
+      --keep-one-line-blocks      | -O
+      --keep-one-line-statements  | -o
+      --convert-tabs              | -c
+      --close-templates           | -xy
+      --remove-comment-prefix     | -xp
+      --max-code-length=#         | -xC#
+      --break-after-logical       | -xL
+      --style=linux | 1tbs.
+      --mode=c | java | cs
+
+    #Objective-C:
+      --pad-method-prefix         | -xQ
+      --unpad-method-prefix       | -xR
+      --pad-return-type           | -xq
+      --unpad-return-type         | -xr
+      --pad-param-type            | -xS
+      --unpad-param-type          | -xs
+      --align-method-colon        | -xM
+      --pad-method-colon=none     | -xP
+      --pad-method-colon=all      | -xP1
+      --pad-method-colon=after    | -xP2
+      --pad-method-colon=before   | -xP3
+
+    #Misc:
+      --suffix                          #Append suffix instead of '.orig' to original filename.
+      --suffix=none               | -n  #Do not retain a backup of the original file.
+      --recursive                 | -r | -R
+      --dry-run
+      --exclude
+      --ignore-exclude-errors     | -i
+      --ignore-exclude-errors-x   | -xi #don't display unmatched --exclude
+      --errors-to-stdout          | -X
+      --preserve-date             | -Z
+      --verbose                   | -v
+      --formatted                 | -Q
+      --quiet                     | -q
+      --lineend=windows           | -z1
+      --lineend=linux             | -z2
+      --lineend=macold            | -z3
+
+    #Command line:
+      --options=$path
+      --project=.astylerc
+      --ascii                     | -I
+      --version                   | -V
+      --help                      | -h | -?
+      --html                      | -! #HTML help
+      --stdin=$path
+      --stdout=$path
+
 #::::::::::::::::::::YOUTUBE DOWNLOAD::::::::::::::::::::
 
 #download a whole playlist and convert the audio into mp3:

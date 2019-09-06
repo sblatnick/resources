@@ -77,55 +77,71 @@ setfacl -m u:john:rw,g:accounts:rwx $file
 setfacl -m default:u:john:rw,g:accounts:rwx $directory
 
 #source: https://www.thegeekdiary.com/unix-linux-access-control-lists-acls-basics/
+#Formats:
+  [d[efault]:] [u[ser]:]uid [:perms]
+    Permissions of a named user. Permissions of the file owner if uid is empty.
+  [d[efault]:] g[roup]:gid [:perms]
+    Permissions of a named group. Permissions of the owning group if gid is empty.
+  [d[efault]:] m[ask][:] [:perms]
+    Effective rights mask
+  [d[efault]:] o[ther][:] [:perms]
+    Permissions of others.
 
 getfacl
   #Traversal:
-  -R        #recursive
-  -s        #skip files with chmod permissions only (ugo)
+  -R          #recursive
+  -s          #skip files with chmod permissions only (ugo)
 
-  -P        #physical (no links)
-  -L        #logical, follow links (default)
+  -P          #physical (no links)
+  -L          #logical, follow links (default)
 
   #Output:
-  -a        #file access control list
-  -d        #default access control list
+  -a          #file access control list
+  -d          #default access control list
 
-  -e        #effective rights
-  -E        #no effective rights
+  -e          #effective rights
+  -E          #no effective rights
 
-  -c        #skip file header
-  -t        #tab output
-  -p        #full path with leading / (default: ^/ stripped)
-  -n        #numberic ids for users/groups
+  -c          #skip file header
+  -t          #tab output
+  -p          #full path with leading / (default: ^/ stripped)
+  -n          #numberic ids for users/groups
 
   #Misc:
-  -v        #version
-  -h        #help
-  --        #end options
-  -         #read from stdin
+  -v          #version
+  -h          #help
+  --          #end options
+  -           #read from stdin
 
 setfacl
   #Traversal:
-  -R        #recursive
+  -R          #recursive
 
-  -P        #physical (no links)
-  -L        #logical, follow links (default)
+  -P          #physical (no links)
+  -L          #logical, follow links (default)
 
   #Modification:
-  -x        #remove specified: -x u:steve
-  -b        #remove all
-  -k        #remove default ACL
-  -d        #default: applied to default chmod ACL
-  --restore #restore from output of `getfacl -R`
-  --mask    #recalculate effective rights using masking
-  -n        #no mask used
-  --test    #dry run
+  -m          #--modify
+  -x          #--remove specified: -x u:steve
+  --set       #replace
+
+  -M          #modify from file
+  -X          #remove from file
+  --set-file  #replace by file
+
+  -b          #remove all
+  -k          #remove default ACL
+  -d          #default: applied to default chmod ACL
+  --restore   #restore from output of `getfacl -R`
+  --mask      #recalculate effective rights using masking
+  -n          #no mask used
+  --test      #dry run
 
   #Misc:
-  -v        #version
-  -h        #help
-  --        #end options
-  -         #read from stdin
+  -v          #version
+  -h          #help
+  --          #end options
+  -           #read from stdin
 
 #Backup/restore:
   getfacl -R * > acl.txt
@@ -148,9 +164,9 @@ getfacl folder
 #(https://www.computerhope.com/unix/usetfacl.htm)
 #(https://serverfault.com/questions/444867/linux-setfacl-set-all-current-future-files-directories-in-parent-directory-to)
 #(http://unix.stackexchange.com/questions/1314/how-to-set-default-file-permissions-for-all-folders-files-in-a-directory)
-chmod g+s <directory>  //set gid 
-setfacl -d -m g::rwx /<directory>  //set group to rwx default 
-setfacl -d -m o::rx /<directory>   //set other
+chmod g+s <directory>              #set gid 
+setfacl -d -m g::rwx /<directory>  #set group to rwx default 
+setfacl -d -m o::rx /<directory>   #set other
 
 #Fix mounted flash drive permissions:
 sudo chmod g+s /media/<user>

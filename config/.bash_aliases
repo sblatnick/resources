@@ -8,7 +8,7 @@ alias less='less -SRi'
 
 #set search in less:
 less_search() {
-  sedi "s/^\.shell\$/\"$1/" ${HOME}/.lesshst
+  sed -i "s/^\.shell\$/\"$1/" ${HOME}/.lesshst
   echo '.shell' >> ${HOME}/.lesshst
 }
 
