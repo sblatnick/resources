@@ -212,6 +212,17 @@ function gitex() {
         echo -e "\033[33mdelete lines you don't want (dd)...\033[0m"
         vi ${log}
 
+        read -p "Are you sure you want this patch? (y/n) [y]" answer
+        case "${answer}" in
+          yes|y|'')
+              echo -e "yes: generating diff"
+            ;;
+          no|n|*)
+              echo -e "no: exiting"
+              return
+            ;;
+        esac
+
         tac ${log} | grep -Eo '^[^ ][^ ]*' > $commits
         local start=$(head -n 1 $commits)
 
@@ -344,8 +355,8 @@ function gitex_action() {
         ;;
       with) ##eval on repos in the current context replacing REPO
           echo -e "${output}"
-          local ARGS=${ARGS//REPO/$repo}
-          eval "$ARGS"
+          local LARGS=${ARGS//REPO/$repo}
+          eval "$LARGS"
         ;;
       *)
         echo -e "\033[31mInvalid action:\033[0m ${ACTION}"

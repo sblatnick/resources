@@ -15,6 +15,9 @@
   if [[ $a -eq 24 && $b -eq 24 ]]; then
   if [[ "${a}" == "txt1" ]] || [ "$a" = "txt2" ] || [ "$b" -eq 47 ] || [ -n "$c" ]; then
 
+  #check file exists in each directory:
+  if ls {$RPM_DIR,$SRPM_DIR}/* >/dev/null 2>&1;then echo yes; else echo no; fi
+
 #CASE
   case $f in
     hello)

@@ -57,6 +57,7 @@ Run Level    Mode                               Action
 #chkconfig line:
   # chkconfig: 2345 20 80
   # chkconfig: [runlevels] [start priority] [stop priority]
+  # chkconfig: - 20 80 #default off
 
 #source: https://unix.stackexchange.com/questions/20357/how-can-i-make-a-script-in-etc-init-d-start-at-boot
 
@@ -78,8 +79,8 @@ Run Level    Mode                               Action
 
     start() {
       echo -n "Starting ${service} server: "
-      if [ -f $LOCK ];then
-        failure $"${service} already running (lock file present)"
+      if [ -f $PID ] && [ $(checkpid $(<$PID);echo $?) ];then
+        failure $"${service} already running"
         echo
         return 1
       fi

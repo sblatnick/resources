@@ -138,7 +138,7 @@
   }
 
   .ts-channel-list:not(.popover)>.simple-scrollbar {
-    height: calc(100vh - 4rem) !important;
+    height: calc(100vh - 10rem) !important;
   }
 
   .ts-channel-list .ts-tree-header {

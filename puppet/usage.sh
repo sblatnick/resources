@@ -11,3 +11,7 @@
   #get facts:
   facter -p #all
   facter -p variable_name
+
+  #test facts or ruby logic:
+  irb #interactive ruby
+  require 'facter'
