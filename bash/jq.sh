@@ -19,3 +19,14 @@ auth.json:
   }
 
 IFS=$'\n' read -rd '' username password <<< "$(jq -r '.username, .password' auth.json)"
+
+
+#jo - JSON output from a shell
+  #jo helps with object creation:
+  jo -p example=$(jo path=/tmp)
+    {
+       "example": {
+          "path": "/tmp"
+       }
+    }
+

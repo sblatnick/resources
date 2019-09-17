@@ -1,0 +1,285 @@
+#!/bin/bash
+
+export DOC_CONFIG=~/.dockerrc
+shopt -s extglob
+
+#----------------------------------FUNCTIONS-----------------------------------#
+function doc_set() {
+  key=$1
+  value=$2
+  jq --arg value "$value" ". + {$key: \$value}" ${DOC_CONFIG} > ${DOC_CONFIG}.tmp && mv -f ${DOC_CONFIG}.tmp ${DOC_CONFIG}
+}
+function doc_get() {
+  key=$1
+  default=$2
+  result=$(jq -r ".$key" ${DOC_CONFIG})
+  if [ "$result" == "null" ];then
+    echo $default
+  else
+    echo $result
+  fi
+}
+function doc_ctx() {
+  doc_set 'current' "${1}"
+  path=$(jq -r '.current as $context | .contexts | .[$context] | .path' ${DOC_CONFIG})
+  echo -e "\033[33musing & entering\033[0m \033[32m${context}\033[0m (${path})"
+  if [ "${path}" != "null" ];then
+    cd ${path}
+  fi
+}
+
+#----------------------------------COMPLETIONS-----------------------------------#
+function doc_complete() {
+  case "${COMP_CWORD}" in
+    1) #actions
+        COMPREPLY=()
+        local IFS=$'\n'
+        for section in $(grep -Eom 2 '^##.*$' $BASH_SOURCE)
+        do
+          for cmd in $(sed -n "/^${section}\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/))* .*$//')
+          do
+            COMPREPLY+=($(compgen -W "$(echo "${cmd}" | tr '|' ' ')" -- "${COMP_WORDS[1]}"))
+          done
+        done
+      ;;
+    *) #targets
+        #add files/directories:
+        COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d {} ];then echo {}/;else echo {}; fi'))
+        case "${COMP_WORDS[1]}" in
+          context|ctx|go)
+              COMPREPLY=()
+              section="##Context Actions (context|ctx|go):"
+              if [ -f ${DOC_CONFIG} ];then
+                #add contexts:
+                COMPREPLY+=($(compgen -W "$(jq -r '.contexts | keys[]' ${DOC_CONFIG} | tr $'\n' ' ')" -- "${COMP_WORDS[${COMP_CWORD}]}"))
+              fi
+            ;;
+          img|build|run|push|pull|edit|new|list)
+              #add image names:
+              path=$(jq -r '.current as $context | .contexts | .[$context] | .path' ${DOC_CONFIG})
+              COMPREPLY+=($(compgen -W "$(ls -1 $path | sed 's/\.df//' | tr $'\n' ' ')" -- "${COMP_WORDS[${COMP_CWORD}]}"))
+            ;;
+        esac
+
+        if [ -n "${section}" ];then
+          for cmd in $(sed -n "/^${section}\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/) .*$//' | grep -Ev '[\$\*]')
+          do
+            COMPREPLY+=($(compgen -W "$(echo "${cmd}" | tr '|' ' ')" -- "${COMP_WORDS[${COMP_CWORD}]}"))
+          done
+        fi
+      ;;
+  esac
+}
+complete -o nospace -F doc_complete doc
+
+##Main:
+function docker_extentions() {
+  #------------------------------------SETUP-------------------------------------#
+
+  if [ -f ${DOC_CONFIG} ];then
+    #load defaults
+    context=$(doc_get 'current')
+    repo=$(doc_get 'repo')
+    user=$(doc_get 'user' 'root')
+    path=$(jq -r '.current as $context | .contexts | .[$context] | .path' ${DOC_CONFIG})
+  else
+    echo -e "\033[33mdoc first run...\033[0m"
+    touch ${DOC_CONFIG}
+    echo -e "\033[32mDONE\033[0m"
+  fi
+
+  #------------------------------------MAIN--------------------------------------#
+  action=$1
+  shift
+
+  while
+    target=$1
+
+    if [ -f ${path}/${target} ];then
+      df=${path}/${target}
+    elif [ -f ${path}/${target}.df ];then
+      df=${path}/${target}.df
+    elif [ -f ${path}/${target}/Dockerfile ];then
+      df=${path}/${target}/Dockerfile
+    else
+      df=${path}/${target}.df
+    fi
+
+    #TODO: add local rc version, volumes
+
+    case "$action" in
+      help|'') ##print this usage information
+          echo -e "\033[1mDocker Extentions:\033[0m doc [\033[34;1mactions\033[0m]"
+
+          grep -Eo '^##.*$' $BASH_SOURCE |
+          while read section
+          do
+            echo ""
+            echo -e "  \033[1m${section#\#\#}\033[0m"
+            sed -n "/^${section}\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | \
+            while read help
+            do
+              params=${help#*#}
+              params=${params%%#*}
+              if [ -z "${params}" ];then
+                params="$(grep -A 1 -F "${help}" $BASH_SOURCE | tail -n 1 | grep 'trap' | grep -Eo '\[[^]]*\]' | tr $'\n' ' ')"
+              fi
+              col=$(printf "\033[34;1m%s\033[0m %s" "${help%%)*#*}" "${params}")
+              printf "    %-60s %s\n" "${col}" "${help##*#}"
+            done
+          done
+          echo ""
+        ;;
+      set) #[key] [value]#Set rc defaults such as: repo, user
+          key=$target
+          shift
+          value=$1
+          doc_set $key $value
+        ;;
+      edit|new) #[name]#open Dockerfile in current context, create new one if not present
+          if [ -f ${df} ];then
+            $EDITOR ${path}/${target}
+          else
+            cat > ${df} << EOF
+FROM ${repo}centos:6
+USER ${user-root}
+
+RUN \
+  yum install -y yum-utils && \
+  yum install -y \
+    gcc \
+    autoconf \
+    automake \
+    libtool \
+    make && \
+  yum clean all
+
+ENTRYPOINT /bin/bash
+EOF
+            $EDITOR ${df}
+          fi
+        ;;
+      list) ##list Dockerfiles in current context
+          ls -1 $path | sed 's/\.df//'
+        ;;
+      img|build) #[name]#Create docker image
+          if [ -f ${df} ];then
+            docker build -t ${repo}${target}:${version-0.1} -f ${df} ${path}/
+          else
+            echo -e "\033[33mERROR\033[0m: no such target: ${target}"
+            return 1
+          fi
+        ;;
+      run) ##run a temporary container locally
+          if [ -f ${df} ];then
+            docker run -it --rm \
+              -h ${target} \
+              --name ${target} \
+              -P \
+              ${repo}${target}:${version-0.1} /bin/bash
+          else
+            echo -e "\033[33mERROR\033[0m: no such target: ${target}"
+            return 1
+          fi
+        ;;
+      pull|push)
+          if [ -f ${df} ];then
+            docker ${action} ${repo}${target}:${version}
+          else
+            echo -e "\033[33mERROR\033[0m: no such target: ${target}"
+            return 1
+          fi
+        ;;
+      clean)
+          docker rm -v $(docker ps -a -q -f status=exited)
+          docker rmi $(docker images -q -f dangling=true)
+          #docker volume rm $(docker volume ls -q -f dangling=true)
+        ;;
+      context|ctx|go) #[$context|$dockerfile|$action]#context handling
+          doc_context $@
+          return
+        ;;
+      *)
+          echo -e "\033[33mERROR\033[0m: invalid action ${action}"
+          return 1
+        ;;
+    esac
+    shift
+    [ -n "$1" ]
+  do
+    continue
+  done
+}
+
+##Context Actions (context|ctx|go):
+function doc_context()
+{
+  if [ $# -lt 1 ]; then
+    local action='list'
+  else
+    local action=$1
+    shift
+  fi
+
+  contexts="$(jq -r '.contexts | keys[]' ${DOC_CONFIG})"
+  ctxs=$(echo $contexts | tr ' ' '|')
+
+  case "$action" in
+    list|get) ##list contexts (default)
+        for ctx in $contexts
+        do
+          if [ "$ctx" == "$context" ];then
+            echo -e "\033[32m${ctx}\033[36m*\033[0m"
+          else
+            echo -e "\033[32m${ctx}\033[0m"
+          fi
+        done
+      ;;
+    new|add) #[name] [path]#create and use new context
+        context="$1"
+        shift
+        path=$1
+        if [ -n "${path}" ];then
+          local OWD=$OLDPWD
+          cd ${path} 2>/dev/null
+          if [ "$?" -eq 0 ];then
+            path=$(pwd)
+          else
+            echo -e "\033[31minvalid path:\033[0m ${path}"
+            return 1
+          fi
+          cd - >/dev/null
+          OLDPWD=$OWD
+        else
+          path=$(pwd)
+        fi
+        jq ". + {contexts: {$context: {path: \"$path\"}}}" ${DOC_CONFIG} > ${DOC_CONFIG}.tmp && mv -f ${DOC_CONFIG}.tmp ${DOC_CONFIG}
+        doc_set 'current' "${context}"
+        echo -e "\033[33mcreated and using\033[0m \033[32m${context}\033[0m(${path})"
+      ;;
+    set|use) #[context]#switch to context
+        context="$1"
+        shift
+        doc_ctx "${context}"
+      ;;
+    @(${ctxs})) #[context]#switch to context
+        context="${action}"
+        doc_ctx "${context}"
+      ;;
+    remove|rm) #[directory]#delete current context
+        jq '.current as $context | del(.contexts[$context])' ${DOC_CONFIG} > ${DOC_CONFIG}.tmp && mv -f ${DOC_CONFIG}.tmp ${DOC_CONFIG}
+        doc_set 'current' ""
+      ;;
+    *)
+        echo -e "\033[31mInvalid context action:\033[0m $1"
+        return 1
+      ;;
+  esac
+}
+
+function doc() {
+  if tty -s <&1; then
+    source $BASH_SOURCE #keep gitex sourced for fast dev
+  fi
+  docker_extentions "$@"
+}
