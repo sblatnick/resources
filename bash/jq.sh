@@ -20,6 +20,20 @@ auth.json:
 
 IFS=$'\n' read -rd '' username password <<< "$(jq -r '.username, .password' auth.json)"
 
+#output array or string on lines:
+jq -r ".contexts.\"path\" | if type==\"string\" then [.] else . end | .[]" $file
+
+#put hash in env, using the value of another key as a key:
+jq -r '.current as $context | .contexts | .[$context] | .path' $rc
+for var in $(jq -r ".contexts | .[\"$target\"] | to_entries | map(\"\(.key)=\(.value|tostring)\") | .[]" $rc); do
+  export $var
+done
+
+#add to array:
+jq ".contexts.wl |= {volumes: [\"test\"]}" example.json
+jq ".contexts.wl.volumes |= [\"test\"]" example.json
+#handle if string, override:
+jq ".contexts.wl.volumes |= if type==\"string\" then \"test\" else [\"test\"] end" example.json
 
 #jo - JSON output from a shell
   #jo helps with object creation:

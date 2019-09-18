@@ -27,6 +27,42 @@ function doc_ctx() {
     cd ${path}
   fi
 }
+function docrc() {
+  if [ "$#" -lt 1 ];then
+    echo -e "Usage: docrc [name] [key] [value]"
+    return
+  fi
+
+  target=$1
+  shift
+  key=$1
+  shift
+  value=$1
+
+  rc=$(jq -r '.current as $context | .contexts | .[$context] | .path' ${DOC_CONFIG})/.dockerrc
+
+  if [ -z "$value" ];then
+    #get
+    if [ -f "$rc" ];then
+      jq -r ".contexts.\"$target\".\"$key\" | if type==\"string\" then [.] else . end | .[]" $rc 2>/dev/null
+    else
+      echo ""
+      return 1
+    fi
+  else
+    #set
+    if [ -f "$rc" ];then
+      jq ".contexts.\"$target\".\"$key\" |= if type==\"string\" then \"$value\" else [\"$value\"] end" $rc > ${rc}.tmp && mv -f ${rc}.tmp ${rc}
+    else
+      if [[ "${key}" == "volumes" ]];then
+        jo -p contexts=$(jo $target=$(jo $key=[\"$value\"])) > $rc
+      else
+        echo -e "\033[33mERROR\033[0m: no such rc file: ${rc}"
+        return 1
+      fi
+    fi
+  fi
+}
 
 #----------------------------------COMPLETIONS-----------------------------------#
 function doc_complete() {
@@ -105,8 +141,6 @@ function docker_extentions() {
       df=${path}/${target}.df
     fi
 
-    #TODO: add local rc version, volumes
-
     case "$action" in
       help|'') ##print this usage information
           echo -e "\033[1mDocker Extentions:\033[0m doc [\033[34;1mactions\033[0m]"
@@ -170,11 +204,20 @@ EOF
             return 1
           fi
         ;;
-      run) ##run a temporary container locally
+      run|dry) ##run a temporary container locally, or display the command
           if [ -f ${df} ];then
-            docker run -it --rm \
+            volumes=$(docrc ${target} 'volumes' | sed "s/~/${HOME//\//\\/}/" | sed '/^$/d;s/^/-v /;s/$/ \\/;$ s/\\$//')
+            cwd=$(docrc ${target} 'cwd')
+            cwd=${cwd:-/root}
+            if [[ "${action}" == "dry" ]];then
+              dry="echo"
+            else
+              dry=''
+            fi
+            $dry docker run -it --rm ${volumes} \
               -h ${target} \
               --name ${target} \
+              -w ${cwd} \
               -P \
               ${repo}${target}:${version-0.1} /bin/bash
           else
