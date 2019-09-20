@@ -1,0 +1,118 @@
+#!/bin/bash
+#SIT = Settings In Terminal
+#  store settings locally/globally in json
+#  for command line program usage
+
+export SIT_GLOBAL=~/.sitrc
+shopt -s extglob
+
+#------------------------------PRIVATE FUNCTIONS-------------------------------#
+
+function sit_get_json() {
+  file=$1
+  shift
+  key=$@
+  #TODO
+}
+
+function sit_set_json() {
+  file=$1
+  shift
+  key=$1
+  shift
+  value=$@
+  #TODO
+}
+
+function sit_current() {
+  if [ -z "${SIT_CURRENT}" ];then
+    export SIT_CURRENT=$(sit_gget "current")
+  fi
+  echo "${SIT_CURRENT}"
+}
+
+#--------------------------------API FUNCTIONS---------------------------------#
+
+#not used?
+function coalesce() {
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      'null'|'false'|*( ))
+        ;;
+      *)
+          echo $1
+          return
+        ;;
+    esac
+    shift
+  done
+  echo ''
+}
+
+function use() {
+  if [ -z "$1" ];then
+    echo -e "Setting Config - Usage: use [config file]"
+    return
+  fi
+  local config=$(readlink -f $1)
+  if [ ! -f "${config}" ];then
+    if [ -d "${config}" ];then
+      use ${config}/config.json
+      return
+    fi
+    touch "${config}" 2>/dev/null
+    if [ $? -gt 0 ];then
+      echo -e "invalid path/permissions: ${config}"
+      return 1
+    fi
+  fi
+  export SIT_CURRENT="${config}"
+  gsit "current" "${SIT_CURRENT}"
+}
+
+function sit() {
+  local level='global'
+  if [ -z "${SIT_TMP}" ];then
+    local level='local'
+    sit_current >/dev/null
+  fi
+  local conf=${SIT_TMP-$SIT_CURRENT}
+
+  if [ -z "$1" ];then
+    echo -e "SET/GET ${level} setting
+Usage: sit [key] [value...]"
+    return
+  fi
+  if [ $# -gt 1 ];then #set
+    sit_set_json "${conf}" $@
+  else #get
+    sit_get_json "${conf}" $@
+  fi
+}
+
+function gsit() {
+  SIT_TMP=${SIT_GLOBAL} sit $@
+}
+
+function hsit() {
+  if [ -z "$1" ];then
+    echo -e "GET highest setting: COALESCE(local, global, default, '')
+Usage: hsit [key] [default]"
+    return
+  fi
+  local key=$1
+  local default=$2
+
+  for func in "sit gsit"
+  do
+    local value=$(${func} "${key}")
+    if [ -n "${value}" ];then
+      echo "${value}"
+      return
+    fi
+  done
+  echo "${default}"
+}
+
+
+
