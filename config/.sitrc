@@ -17,7 +17,6 @@ function sit_get_json() {
   local file=$1
   shift
   local key=$(sit_key_escape $@)
-  #TODO
   plain $file | jq -r ".${key} | if type==\"array\" then values[] else keys[] end"
 }
 
