@@ -159,6 +159,10 @@
     #then push ignoring it won't be a fast forward:
     git push origin +master
 
+  #Get forced update to history (pull fails with "fatal: refusing to merge unrelated histories":
+    git fetch
+    git reset origin/master --hard
+
   #Stashing:
     git stash #saves with generic name
     git stash save "<message here>"

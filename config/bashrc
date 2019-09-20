@@ -6,3 +6,6 @@ for bash in ~/projects/resources/config/.[!.]*
 do
   source $bash
 done
+
+#remove duplicates: https://superuser.com/questions/449636/path-is-filled-with-duplicates (calling 'resource' re-adds paths)
+PATH="$(perl -e 'print join(":", grep { not $seen{$_}++ } split(/:/, $ENV{PATH}))')"
