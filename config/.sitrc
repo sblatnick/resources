@@ -9,20 +9,33 @@ shopt -s extglob
 #------------------------------PRIVATE FUNCTIONS-------------------------------#
 
 function sit_get_json() {
-  file=$1
+  local file=$1
   shift
-  key=$@
+  local key=$@
   #TODO
 }
 
 function sit_set_json() {
-  file=$1
+  local file=$1
   shift
-  key=$1
+  local key=$1
   shift
-  value=$@
-  #TODO
+
+  if [ "$#" -gt 1 ];then
+    local array=$(printf ',"%s"' $@)
+    local array=${array:1}
+    local value="[${array}]"
+  else
+    local value="\"$1\""
+  fi
+
+  read -r -d '' filter <<- EOF
+    .${key} |= ${value}
+EOF
+  cat $file | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | jq -C "${filter}" > ${file}.tmp && mv -f ${file}.tmp ${file} && cat ${file}
 }
+
+#.contexts.\"$target\".\"$key\" |= if type==\"string\" then \"$value\" else [\"$value\"] end
 
 function sit_current() {
   if [ -z "${SIT_CURRENT}" ];then
@@ -57,10 +70,10 @@ function use() {
   local config=$(readlink -f $1)
   if [ ! -f "${config}" ];then
     if [ -d "${config}" ];then
-      use ${config}/config.json
+      use ${config}/config.json #reasonable default for directory: use .
       return
     fi
-    touch "${config}" 2>/dev/null
+    echo '{ }' > ${config} 2>/dev/null
     if [ $? -gt 0 ];then
       echo -e "invalid path/permissions: ${config}"
       return 1
