@@ -18,6 +18,7 @@ function sit_get_json() {
   shift
   local key=$(sit_key_escape $@)
   #TODO
+  plain $file | jq -r ".${key} | if type==\"array\" then values[] else keys[] end"
 }
 
 function sit_set_json() {
@@ -39,10 +40,7 @@ function sit_set_json() {
   # 2. change string into array or vice versa?
   # 3. null {} [] empty?
 
-  read -r -d '' filter <<- EOF
-    .${key} |= ${value}
-EOF
-  plain $file | jq -C "${filter}" > ${file}.tmp && mv -f ${file}.tmp ${file} && cat ${file}
+  plain $file | jq -C ".${key} |= ${value}" > ${file}.tmp && mv -f ${file}.tmp ${file} && cat ${file}
 }
 
 #.contexts.\"$target\".\"$key\" |= if type==\"string\" then \"$value\" else [\"$value\"] end
