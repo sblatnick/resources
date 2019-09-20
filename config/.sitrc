@@ -34,6 +34,11 @@ function sit_set_json() {
     local value="\"$1\""
   fi
 
+  #TODO:
+  # 1. reset |= add += remove -= del()
+  # 2. change string into array or vice versa?
+  # 3. null {} [] empty?
+
   read -r -d '' filter <<- EOF
     .${key} |= ${value}
 EOF
