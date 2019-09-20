@@ -5,6 +5,7 @@
 
 export SIT_GLOBAL=~/.sitrc
 shopt -s extglob
+alias plain='sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"'
 
 #------------------------------PRIVATE FUNCTIONS-------------------------------#
 
@@ -32,10 +33,11 @@ function sit_set_json() {
   read -r -d '' filter <<- EOF
     .${key} |= ${value}
 EOF
-  cat $file | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" | jq -C "${filter}" > ${file}.tmp && mv -f ${file}.tmp ${file} && cat ${file}
+  plain $file | jq -C "${filter}" > ${file}.tmp && mv -f ${file}.tmp ${file} && cat ${file}
 }
 
 #.contexts.\"$target\".\"$key\" |= if type==\"string\" then \"$value\" else [\"$value\"] end
+#jq '.current as $context | del(.contexts[$context])'
 
 function sit_current() {
   if [ -z "${SIT_CURRENT}" ];then
