@@ -10,7 +10,7 @@ alias plain='sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"'
 #------------------------------PRIVATE FUNCTIONS-------------------------------#
 
 function sit_key_escape() {
-  echo $@ | sed 's/\([^.]*[-/][^.]*\)/"\1"/g'
+  echo $@ | sed 's/\([[:alnum:]_]*[-/][^.]*\)/"\1"/g;s/\[\([^\.]\)/[.\1/g'
 }
 
 function sit_get_json() {
@@ -86,6 +86,9 @@ function use() {
       echo -e "invalid path/permissions: ${config}"
       return 1
     fi
+  fi
+  if [ ! -f "${SIT_GLOBAL}" ];then
+    echo '{ }' > ${SIT_GLOBAL} 2>/dev/null
   fi
   export SIT_CURRENT="${config}"
   gsit "current" "${SIT_CURRENT}"
