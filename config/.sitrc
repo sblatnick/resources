@@ -17,7 +17,12 @@ function sit_get_json() {
   local file=$1
   shift
   local key=$(sit_key_escape $@)
-  plain $file | jq -r ".${key} | if type==\"array\" then values[] else keys[] end"
+  result=$(plain $file | jq -r "try (.${key} | if type==\"array\" then values[] elif type==\"object\" then keys[] else . end) catch \"sit_error\"")
+  if [ "${result}" == "sit_error" ];then
+    plain $file | jq -r ".${key%.*} | index(\"${key##*.}\") | type==\"number\""
+  else
+    echo "${result}"
+  fi
 }
 
 function sit_set_json() {
@@ -26,24 +31,55 @@ function sit_set_json() {
   local key=$(sit_key_escape $1)
   shift
 
-  if [ "$#" -gt 1 ];then
-    local array=$(printf ',"%s"' $@)
-    local array=${array:1}
-    local value="[${array}]"
-  else
-    local value="\"$1\""
+  local settings=()
+  local additions=()
+  local removals=()
+  local operator='|='
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      'null'|'delete'|'del') #delete
+          plain $file | jq -C ". | del(.${key})" > ${file}.tmp && mv -f ${file}.tmp ${file} && cat ${file}
+          return #deletion not compatible with other actions
+        ;;
+      '+'*) #add to list
+          additions+=(${1:1})
+        ;;
+      '-'*) #remove from list
+          removals+=(${1:1})
+        ;;
+      *) #set
+          settings+=(${1})
+        ;;
+    esac
+    shift
+  done
+
+  if [ ${#settings[@]} -gt 0 ];then
+    if [ ${#settings[@]} -gt 1 ];then
+      local array=$(printf ',"%s"' ${settings[@]})
+      local array=${array:1}
+      local value="[${array}]"
+    else
+      local value="\"${settings[0]}\""
+    fi
+    plain $file | jq -C ".${key} |= ${value}" > ${file}.tmp && mv -f ${file}.tmp ${file} && cat ${file}
+    return #setter ignores additions/removals
   fi
 
-  #TODO:
-  # 1. reset |= add += remove -= del()
-  # 2. change string into array or vice versa?
-  # 3. null {} [] empty?
+  if [ ${#additions[@]} -gt 0 ];then
+    local array=$(printf ',"%s"' ${additions[@]})
+    local array=${array:1}
+    local value="[${array}]"
+    plain $file | jq -C ".${key} += ${value}" > ${file}.tmp && mv -f ${file}.tmp ${file} && cat ${file}
+  fi
 
-  plain $file | jq -C ".${key} |= ${value}" > ${file}.tmp && mv -f ${file}.tmp ${file} && cat ${file}
+  if [ ${#removals[@]} -gt 0 ];then
+    local array=$(printf ',"%s"' ${removals[@]})
+    local array=${array:1}
+    local value="[${array}]"
+    plain $file | jq -C ".${key} -= ${value}" > ${file}.tmp && mv -f ${file}.tmp ${file} && cat ${file}
+  fi
 }
-
-#.contexts.\"$target\".\"$key\" |= if type==\"string\" then \"$value\" else [\"$value\"] end
-#jq '.current as $context | del(.contexts[$context])'
 
 function sit_current() {
   if [ -z "${SIT_CURRENT}" ];then
