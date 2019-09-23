@@ -70,7 +70,11 @@ function sit_set_json() {
     local array=$(printf ',"%s"' ${additions[@]})
     local array=${array:1}
     local value="[${array}]"
-    plain $file | jq -C ".${key} += ${value}" > ${file}.tmp && mv -f ${file}.tmp ${file} && cat ${file}
+    local result=$(plain $file | jq -C "try (.${key} += ${value}) catch \"sit_error\"")
+    if [ "$(echo ${result} | plain)" == "\"sit_error\"" ];then
+      local result=$(plain $file | jq -C ".${key} as \$old | .${key} |= [\$old,${array}]")
+    fi
+    echo "${result}" > ${file}.tmp && mv -f ${file}.tmp ${file} && cat ${file}
   fi
 
   if [ ${#removals[@]} -gt 0 ];then
