@@ -109,7 +109,11 @@ function coalesce() {
 
 function use() {
   if [ -z "$1" ];then
-    echo -e "using: $(gsit 'current')"
+    if [ -z "${SIT_CURRENT}" ];then
+      echo -e "Usage: use [file]"
+    else
+      echo -e "using: ${SIT_CURRENT}"
+    fi
     return
   fi
   local config=$(readlink -f $1)
@@ -117,10 +121,13 @@ function use() {
     if [ -d "${config}" ];then
       local config=${config}/config.json #reasonable default for directory: use .
     fi
-    echo '{ }' > ${config} 2>/dev/null
-    if [ $? -gt 0 ];then
-      echo -e "invalid path/permissions: ${config}"
-      return 1
+    #recheck for file after updating $config
+    if [ ! -f "${config}" ];then
+      echo '{ }' > ${config} 2>/dev/null
+      if [ $? -gt 0 ];then
+        echo -e "invalid path/permissions: ${config}"
+        return 1
+      fi
     fi
   fi
   if [ ! -f "${SIT_GLOBAL}" ];then
@@ -128,25 +135,26 @@ function use() {
   fi
   if [ "${SIT_CURRENT}" != "${config}" ];then
     export SIT_CURRENT="${config}"
-    gsit "current" "${SIT_CURRENT}" >/dev/null
   fi
 }
 
 function sit() {
-  local level='global'
-  if [ -z "${SIT_TMP}" ];then
-    local level='local'
-    if [ -z "${SIT_CURRENT}" ];then
-      export SIT_CURRENT=$(gsit 'current')
-    fi
-  fi
-  local conf=${SIT_TMP-$SIT_CURRENT}
-
   if [ -z "$1" ];then
     echo -e "SET/GET ${level} setting
 Usage: sit [key] [value...]"
     return
   fi
+
+  local level='global'
+  if [ -z "${SIT_TMP}" ];then
+    local level='local'
+    if [ -z "${SIT_CURRENT}" ];then
+      echo -e "config not set, must call 'use' first"
+      return 1
+    fi
+  fi
+  local conf=${SIT_TMP-$SIT_CURRENT}
+
   if [ $# -gt 1 ];then #set
     sit_set_json "${conf}" $@
   else #get
