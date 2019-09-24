@@ -126,8 +126,10 @@ function use() {
   if [ ! -f "${SIT_GLOBAL}" ];then
     echo '{ }' > ${SIT_GLOBAL} 2>/dev/null
   fi
-  export SIT_CURRENT="${config}"
-  gsit "current" "${SIT_CURRENT}" >/dev/null
+  if [ "${SIT_CURRENT}" != "${config}" ];then
+    export SIT_CURRENT="${config}"
+    gsit "current" "${SIT_CURRENT}" >/dev/null
+  fi
 }
 
 function sit() {
