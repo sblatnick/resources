@@ -89,13 +89,6 @@ function sit_set_json() {
   fi
 }
 
-function sit_current() {
-  if [ -z "${SIT_CURRENT}" ];then
-    export SIT_CURRENT=$(sit_gget "current")
-  fi
-  echo "${SIT_CURRENT}"
-}
-
 #--------------------------------API FUNCTIONS---------------------------------#
 
 #not used?
@@ -141,7 +134,9 @@ function sit() {
   local level='global'
   if [ -z "${SIT_TMP}" ];then
     local level='local'
-    sit_current >/dev/null
+    if [ -z "${SIT_CURRENT}" ];then
+      export SIT_CURRENT=$(gsit 'current')
+    fi
   fi
   local conf=${SIT_TMP-$SIT_CURRENT}
 
