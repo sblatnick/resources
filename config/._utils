@@ -1,0 +1,24 @@
+#!/bin/bash
+#Utility functions
+
+shopt -s extglob
+
+#------------------------------------UTILS-------------------------------------#
+
+function coalesce() {
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      'null'|'false'|*( ))
+        ;;
+      *)
+          echo $1
+          return
+        ;;
+    esac
+    shift
+  done
+  echo ''
+}
+
+
+
