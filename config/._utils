@@ -20,5 +20,37 @@ function coalesce() {
   echo ''
 }
 
+function pipe() {
+  if [ -t 0 ];then
+    if [ "$#" -lt 1 ];then
+      echo -e "Usage: stdin | pipe [lines|file]"
+      return
+    else
+      while [ -n "$1" ]; do
+        if [ -f $1 ];then
+          cat $1 |
+          while read pipe
+          do
+            echo "$pipe"
+          done
+        else
+          echo "$1"
+        fi
+        shift
+      done
+    fi
+  else
+    while IFS= read pipe
+    do
+      echo "$pipe"
+    done
+  fi
+}
 
+function min() {
+  pipe $@ | sort -n | head -n 1
+}
 
+function max() {
+  pipe $@ | sort -n | tail -n 1
+}
