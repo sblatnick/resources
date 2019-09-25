@@ -1,27 +1,14 @@
 #!/bin/bash
 
 export DOC_CONFIG=~/.dockerrc
+use ${DOC_CONFIG}
 shopt -s extglob
 
 #----------------------------------FUNCTIONS-----------------------------------#
-function doc_set() {
-  key=$1
-  value=$2
-  jq --arg value "$value" ". + {$key: \$value}" ${DOC_CONFIG} > ${DOC_CONFIG}.tmp && mv -f ${DOC_CONFIG}.tmp ${DOC_CONFIG}
-}
-function doc_get() {
-  key=$1
-  default=$2
-  result=$(jq -r ".$key" ${DOC_CONFIG})
-  if [ "$result" == "null" ];then
-    echo $default
-  else
-    echo $result
-  fi
-}
+
 function doc_ctx() {
-  doc_set 'current' "${1}"
-  path=$(jq -r '.current as $context | .contexts | .[$context] | .path' ${DOC_CONFIG})
+  sit 'current' "${1}"
+  path=$(sit contexts[current].path)
   echo -e "\033[33musing & entering\033[0m \033[32m${context}\033[0m (${path})"
   if [ "${path}" != "null" ];then
     cd ${path}
@@ -39,29 +26,11 @@ function docrc() {
   shift
   value=$1
 
-  rc=$(jq -r '.current as $context | .contexts | .[$context] | .path' ${DOC_CONFIG})/.dockerrc
+  rc=$(sit contexts[current].path)/.dockerrc
 
-  if [ -z "$value" ];then
-    #get
-    if [ -f "$rc" ];then
-      jq -r ".contexts.\"$target\".\"$key\" | if type==\"string\" then [.] else . end | .[]" $rc 2>/dev/null
-    else
-      echo ""
-      return 1
-    fi
-  else
-    #set
-    if [ -f "$rc" ];then
-      jq ".contexts.\"$target\".\"$key\" |= if type==\"string\" then \"$value\" else [\"$value\"] end" $rc > ${rc}.tmp && mv -f ${rc}.tmp ${rc}
-    else
-      if [[ "${key}" == "volumes" ]];then
-        jo -p contexts=$(jo $target=$(jo $key=[\"$value\"])) > $rc
-      else
-        echo -e "\033[33mERROR\033[0m: no such rc file: ${rc}"
-        return 1
-      fi
-    fi
-  fi
+  use $rc
+  coalesce $(sit contexts[${target}].${key} ${value}) ''
+  use ${DOC_CONFIG}
 }
 
 #----------------------------------COMPLETIONS-----------------------------------#
@@ -85,14 +54,12 @@ function doc_complete() {
           context|ctx|go)
               COMPREPLY=()
               section="##Context Actions (context|ctx|go):"
-              if [ -f ${DOC_CONFIG} ];then
-                #add contexts:
-                COMPREPLY+=($(compgen -W "$(jq -r '.contexts | keys[]' ${DOC_CONFIG} | tr $'\n' ' ')" -- "${COMP_WORDS[${COMP_CWORD}]}"))
-              fi
+              #add contexts:
+              COMPREPLY+=($(compgen -W "$(sit contexts)" -- "${COMP_WORDS[${COMP_CWORD}]}"))
             ;;
           img|build|run|push|pull|edit|new|list)
               #add image names:
-              path=$(jq -r '.current as $context | .contexts | .[$context] | .path' ${DOC_CONFIG})
+              path=$(sit contexts[current].path)
               COMPREPLY+=($(compgen -W "$(ls -1 $path | sed 's/\.df//' | tr $'\n' ' ')" -- "${COMP_WORDS[${COMP_CWORD}]}"))
             ;;
         esac
@@ -112,17 +79,11 @@ complete -o nospace -F doc_complete doc
 function docker_extentions() {
   #------------------------------------SETUP-------------------------------------#
 
-  if [ -f ${DOC_CONFIG} ];then
-    #load defaults
-    context=$(doc_get 'current')
-    repo=$(doc_get 'repo')
-    user=$(doc_get 'user' 'root')
-    path=$(jq -r '.current as $context | .contexts | .[$context] | .path' ${DOC_CONFIG})
-  else
-    echo -e "\033[33mdoc first run...\033[0m"
-    touch ${DOC_CONFIG}
-    echo -e "\033[32mDONE\033[0m"
-  fi
+  #load defaults
+  context=$(sit 'current')
+  repo=$(sit 'repo')
+  user=$(coalesce "$(sit 'user')" 'root')
+  path=$(sit contexts[current].path)
 
   #------------------------------------MAIN--------------------------------------#
   action=$1
@@ -168,7 +129,7 @@ function docker_extentions() {
           key=$target
           shift
           value=$1
-          doc_set $key $value
+          sit $key $value
         ;;
       edit|new) #[name]#open Dockerfile in current context, create new one if not present
           if [ -f ${df} ];then
@@ -264,7 +225,7 @@ function doc_context()
     shift
   fi
 
-  contexts="$(jq -r '.contexts | keys[]' ${DOC_CONFIG})"
+  contexts="$(sit contexts)"
   ctxs=$(echo $contexts | tr ' ' '|')
 
   case "$action" in
@@ -296,8 +257,8 @@ function doc_context()
         else
           path=$(pwd)
         fi
-        jq ". + {contexts: {$context: {path: \"$path\"}}}" ${DOC_CONFIG} > ${DOC_CONFIG}.tmp && mv -f ${DOC_CONFIG}.tmp ${DOC_CONFIG}
-        doc_set 'current' "${context}"
+        sit contexts.$context.path $path
+        sit 'current' "${context}"
         echo -e "\033[33mcreated and using\033[0m \033[32m${context}\033[0m(${path})"
       ;;
     set|use) #[context]#switch to context
@@ -310,8 +271,8 @@ function doc_context()
         doc_ctx "${context}"
       ;;
     remove|rm) #[directory]#delete current context
-        jq '.current as $context | del(.contexts[$context])' ${DOC_CONFIG} > ${DOC_CONFIG}.tmp && mv -f ${DOC_CONFIG}.tmp ${DOC_CONFIG}
-        doc_set 'current' ""
+        sit contexts[current] delete
+        sit 'current' ""
       ;;
     *)
         echo -e "\033[31mInvalid context action:\033[0m $1"

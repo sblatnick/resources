@@ -10,7 +10,7 @@ alias plain='sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"'
 #------------------------------PRIVATE FUNCTIONS-------------------------------#
 
 function sit_key_escape() {
-  echo $@ | sed 's/\([[:alnum:]_]*[-/][^.]*\)/"\1"/g;s/\[\([^\.]\)/[.\1/g'
+  echo $@ | sed 's/\([[:alnum:]_]*[-/][[:alnum:]_/-]*\)/"\1"/g;s/\[\([^\."]\)/[.\1/g'
 }
 
 function sit_get_json() {
@@ -19,10 +19,16 @@ function sit_get_json() {
   local key=$(sit_key_escape $@)
   result=$(plain $file | jq -r "try (.${key} | if type==\"array\" then values[] elif type==\"object\" then keys[] else . end) catch \"sit_error\"")
   if [ "${result}" == "sit_error" ];then
-    plain $file | jq -r ".${key%.*} | index(\"${key##*.}\") | type==\"number\""
-  else
-    echo "${result}"
+    result=$(plain $file | jq -r ".${key%.*} | index(\"${key##*.}\") | type==\"number\"")
   fi
+  ret=0
+  case "$result" in
+    'null'|'false')
+        ret=1
+      ;;
+  esac
+  echo "${result}"
+  return ${ret}
 }
 
 function sit_set_json() {
@@ -91,7 +97,6 @@ function sit_set_json() {
 
 #--------------------------------API FUNCTIONS---------------------------------#
 
-#not used?
 function coalesce() {
   while [ $# -gt 0 ]; do
     case "$1" in
@@ -108,11 +113,12 @@ function coalesce() {
 }
 
 function use() {
+  SIT_CURRENT="$(echo $(caller) | cut -d' ' -f2 | sed 's/[[:punct:]]//g')"
   if [ -z "$1" ];then
-    if [ -z "${SIT_CURRENT}" ];then
+    if [ -z "${!SIT_CURRENT}" ];then
       echo -e "Usage: use [file]"
     else
-      echo -e "using: ${SIT_CURRENT}"
+      echo -e "using: ${!SIT_CURRENT}"
     fi
     return
   fi
@@ -133,8 +139,8 @@ function use() {
   if [ ! -f "${SIT_GLOBAL}" ];then
     echo '{ }' > ${SIT_GLOBAL} 2>/dev/null
   fi
-  if [ "${SIT_CURRENT}" != "${config}" ];then
-    export SIT_CURRENT="${config}"
+  if [ "${!SIT_CURRENT}" != "${config}" ];then
+    export ${SIT_CURRENT}="${config}"
   fi
 }
 
@@ -148,12 +154,12 @@ Usage: sit [key] [value...]"
   local level='global'
   if [ -z "${SIT_TMP}" ];then
     local level='local'
-    if [ -z "${SIT_CURRENT}" ];then
+    if [ -z "${!SIT_CURRENT}" ];then
       echo -e "config not set, must call 'use' first"
       return 1
     fi
   fi
-  local conf=${SIT_TMP-$SIT_CURRENT}
+  local conf=${SIT_TMP-${!SIT_CURRENT}}
 
   if [ $# -gt 1 ];then #set
     sit_set_json "${conf}" $@
