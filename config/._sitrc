@@ -84,7 +84,7 @@ function sit_set_json() {
     if [ "$(echo ${result} | plain)" == "\"sit_error\"" ];then
       local result=$(plain $file | jq -C ".${key} as \$old | .${key} |= [\$old,${array}]")
     fi
-    echo "${result}" > ${file}.tmp && mv -f ${file}.tmp ${file} && cat ${file}
+    echo "${result}" > ${file}.tmp && mv -f ${file}.tmp ${file} && test ${#removals[@]} -eq 0 && cat ${file}
   fi
 
   if [ ${#removals[@]} -gt 0 ];then
