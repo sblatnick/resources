@@ -23,7 +23,7 @@ function coalesce() {
 function pipe() {
   if [ -t 0 ];then
     if [ "$#" -lt 1 ];then
-      echo -e "Usage: stdin | pipe [lines|file]"
+      echo -e "Usage: stdin | ${BIN-pipe} [lines|file]"
       return
     else
       while [ -n "$1" ]; do
@@ -48,9 +48,9 @@ function pipe() {
 }
 
 function min() {
-  pipe $@ | sort -n | head -n 1
+  BIN='min' pipe $@ | sort -n | head -n 1
 }
 
 function max() {
-  pipe $@ | sort -n | tail -n 1
+  BIN='max' pipe $@ | sort -n | tail -n 1
 }
