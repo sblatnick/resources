@@ -15,3 +15,7 @@
   #test facts or ruby logic:
   irb #interactive ruby
   require 'facter'
+
+  #run facts:
+  grep -h 'Facter.add' /var/lib/puppet/lib/facter/*.rb | grep -Po ':[^\)]*' | sed 's/^://' | xargs facter -p
+  grep -Po 'Facter\.add\("[^"]*"\) do' /var/lib/puppet/lib/facter/*.rb | grep -Po '"[^"]*"' | xargs facter -p

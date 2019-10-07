@@ -13,6 +13,7 @@ case "$(uname -s)" in
       alias sed="gsed" #brew install gnu-sed
       alias grep="ggrep" #brew install grep
       alias readlink="greadlink" #brew install coreutils
+      alias expr="gexpr" #brew install coreutils
       alias browser="open"
       alias resource="source ~/.bash_profile"
 

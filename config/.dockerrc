@@ -55,11 +55,11 @@ function doc_complete() {
               COMPREPLY=()
               section="##Context Actions (context|ctx|go):"
               #add contexts:
-              COMPREPLY+=($(compgen -W "$(sit contexts)" -- "${COMP_WORDS[${COMP_CWORD}]}"))
+              COMPREPLY+=($(compgen -W "$(SIT_TMP=${DOC_CONFIG} sit contexts)" -- "${COMP_WORDS[${COMP_CWORD}]}"))
             ;;
           img|build|run|push|pull|edit|new|list)
               #add image names:
-              path=$(sit contexts[current].path)
+              path=$(SIT_TMP=${DOC_CONFIG} sit contexts[current].path)
               COMPREPLY+=($(compgen -W "$(ls -1 $path | sed 's/\.df//' | tr $'\n' ' ')" -- "${COMP_WORDS[${COMP_CWORD}]}"))
             ;;
         esac
@@ -232,10 +232,14 @@ function doc_context()
     list|get) ##list contexts (default)
         for ctx in $contexts
         do
+          path=$(sit contexts.$ctx.path)
+          home=${HOME//\//\\/}
+          path=${path//$home/\~}
           if [ "$ctx" == "$context" ];then
-            echo -e "\033[32m${ctx}\033[36m*\033[0m"
+            printf "\033[32m%-10s\033[0m%s\n" "${ctx}" "${path}"
           else
-            echo -e "\033[32m${ctx}\033[0m"
+            pad=$(expr length ${ctx})
+            printf "\033[32m%s\033[36m*\033[0m%*s%s\n" "${ctx}" $((9 - pad)) " " "${path}"
           fi
         done
       ;;
@@ -257,8 +261,8 @@ function doc_context()
         else
           path=$(pwd)
         fi
-        sit contexts.$context.path $path
-        sit 'current' "${context}"
+        sit contexts.$context.path $path >/dev/null 2>&1
+        sit 'current' "${context}" >/dev/null 2>&1
         echo -e "\033[33mcreated and using\033[0m \033[32m${context}\033[0m(${path})"
       ;;
     set|use) #[context]#switch to context

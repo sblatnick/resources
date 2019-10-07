@@ -35,6 +35,20 @@
 
   #source: https://www.linuxtechi.com/create-revert-delete-kvm-virtual-machine-snapshot-virsh-command/
 
+#VirtIO devices:
+  lspci | grep -i virt
+    00:03.0 Ethernet controller: Red Hat, Inc Virtio network device
+    00:04.0 SCSI storage controller: Red Hat, Inc Virtio block device
+    00:05.0 Unclassified device [00ff]: Red Hat, Inc Virtio memory balloon
+
+  readlink -f /sys/bus/pci/devices/0000:00:03.0
+    /sys/devices/pci0000:00/0000:00:03.0
+  cd /sys/devices/pci0000:00/0000:00:03.0
+  cat vendor #Always the same for virtio
+    0x1af4
+  cat device #between 0x1000 and 0x103F
+  cat class
+
 #::::::::::::::::::::VirtualBox::::::::::::::::::::
 #source: https://www.virtualbox.org/manual/ch08.html
 

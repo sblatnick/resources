@@ -31,8 +31,13 @@
   rpm -Uvh --oldpackage packagename.rpm
   #install group:
   yum groupinstall "Development Tools"
+  #uninstall group:
+  yum groupremove "Development Tools"
   #install dependencies:
   yum-builddep kernel-devel
+  #uninstall/remove:
+  yum remove package
+  rpm -e package
   
   #see changes since install from the package/rpm (https://www.novell.com/coolsolutions/feature/16238.html)
   rpm -V package

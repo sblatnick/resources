@@ -10,6 +10,7 @@
   git --no-pager #don't use less
   git --no-pager log --oneline --grep 'test' #search for the short sha with 'test' in the commit message
   git --no-pager log --oneline --author $USER #get all of your own commits on the branch
+  git whatchanged --invert-grep --author=$USER directory #get everyone else's whatchanged logs for the specified directory
   git -C /path #run as if in the git directory
 
 #diff
