@@ -27,10 +27,7 @@ function docrc() {
   value=$1
 
   rc=$(sit contexts[current].path)/.dockerrc
-
-  use $rc
-  coalesce $(sit contexts[${target}].${key} ${value}) ''
-  use ${DOC_CONFIG}
+  coalesce $(SIT_TMP=${rc} sit contexts[${target}].${key} ${value}) ''
 }
 
 #----------------------------------COMPLETIONS-----------------------------------#
