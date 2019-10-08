@@ -7,6 +7,7 @@ shopt -s extglob
 #----------------------------------FUNCTIONS-----------------------------------#
 
 function doc_ctx() {
+  private
   sit 'current' "${1}"
   path=$(sit contexts[current].path)
   echo -e "\033[33musing & entering\033[0m \033[32m${context}\033[0m (${path})"
@@ -27,11 +28,12 @@ function docrc() {
   value=$1
 
   rc=$(sit contexts[current].path)/.dockerrc
-  coalesce $(SIT_TMP=${rc} sit contexts[${target}].${key} ${value}) ''
+  coalesce $(SIT_TMP=${rc} sit contexts.${target}.${key} ${value}) ''
 }
 
 #----------------------------------COMPLETIONS-----------------------------------#
 function doc_complete() {
+  private
   case "${COMP_CWORD}" in
     1) #actions
         COMPREPLY=()
@@ -52,11 +54,11 @@ function doc_complete() {
               COMPREPLY=()
               section="##Context Actions (context|ctx|go):"
               #add contexts:
-              COMPREPLY+=($(compgen -W "$(SIT_TMP=${DOC_CONFIG} sit contexts)" -- "${COMP_WORDS[${COMP_CWORD}]}"))
+              COMPREPLY+=($(compgen -W "$(sit contexts)" -- "${COMP_WORDS[${COMP_CWORD}]}"))
             ;;
           img|build|run|push|pull|edit|new|list)
               #add image names:
-              path=$(SIT_TMP=${DOC_CONFIG} sit contexts[current].path)
+              path=$(sit contexts[current].path)
               COMPREPLY+=($(compgen -W "$(ls -1 $path | sed 's/\.df//' | tr $'\n' ' ')" -- "${COMP_WORDS[${COMP_CWORD}]}"))
             ;;
         esac
@@ -74,6 +76,7 @@ complete -o nospace -F doc_complete doc
 
 ##Main:
 function docker_extentions() {
+  private
   #------------------------------------SETUP-------------------------------------#
 
   #load defaults
@@ -215,6 +218,7 @@ EOF
 ##Context Actions (context|ctx|go):
 function doc_context()
 {
+  private
   if [ $# -lt 1 ]; then
     local action='list'
   else
@@ -284,7 +288,7 @@ function doc_context()
 
 function doc() {
   if tty -s <&1; then
-    source $BASH_SOURCE #keep gitex sourced for fast dev
+    source $BASH_SOURCE #keep dockerrc sourced for fast dev
   fi
   docker_extentions "$@"
 }

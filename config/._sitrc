@@ -6,14 +6,17 @@
 export SIT_GLOBAL=~/.sitrc
 shopt -s extglob
 alias plain='sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"'
+alias private='if [ "$(caller 2>/dev/null | cut -d" " -f2)" != "${BASH_SOURCE}" ];then echo "err: private function"; return 1; fi'
 
 #------------------------------PRIVATE FUNCTIONS-------------------------------#
 
 function sit_key_escape() {
+  private
   echo $@ | sed 's/\([[:alnum:]_]*[-/][[:alnum:]_/-]*\)/"\1"/g;s/\[\([^\."]\)/[.\1/g'
 }
 
 function sit_get_json() {
+  private
   local file=$1
   shift
   local key=$(sit_key_escape $@)
@@ -32,6 +35,7 @@ function sit_get_json() {
 }
 
 function sit_set_json() {
+  private
   local file=$1
   shift
   local key=$(sit_key_escape $1)
@@ -130,6 +134,7 @@ function use() {
 }
 
 function sit() {
+  SIT_CURRENT="$(echo $(caller) | cut -d' ' -f2 | sed 's/[[:punct:]]//g')"
   if [ -z "$1" ];then
     echo -e "SET/GET ${level} setting
 Usage: sit [key] [value...]"
@@ -146,6 +151,9 @@ Usage: sit [key] [value...]"
   fi
   local conf=${SIT_TMP-${!SIT_CURRENT}}
 
+  #>&2 echo "SIT_CURRENT: '${SIT_CURRENT}'"
+  #>&2 echo "val:         '${!SIT_CURRENT}'"
+  #>&2 echo "conf:        '${conf}'"
   if [ $# -gt 1 ];then #set
     sit_set_json "${conf}" $@
   else #get
