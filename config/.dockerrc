@@ -8,7 +8,7 @@ shopt -s extglob
 
 function doc_ctx() {
   private
-  sit 'current' "${1}"
+  sit 'current' "${1}" >/dev/null 2>&1
   path=$(sit contexts[current].path)
   echo -e "\033[33musing & entering\033[0m \033[32m${context}\033[0m (${path})"
   if [ "${path}" != "null" ];then
@@ -93,7 +93,10 @@ function docker_extentions() {
   shift
 
   while
-    target=$1
+    target=${1%%:*}
+    version=${1/$target/}
+    version=${version#:}
+    version=${version:=0.1}
 
     if [ -f ${path}/${target} ];then
       df=${path}/${target}
@@ -127,6 +130,7 @@ function docker_extentions() {
             done
           done
           echo ""
+          return
         ;;
       set) #[key] [value]#Set rc defaults such as: repo, user
           key=$target
@@ -156,15 +160,18 @@ ENTRYPOINT /bin/bash
 EOF
             $EDITOR ${df}
           fi
+          return
         ;;
       list) ##list Dockerfiles in current context
           ls -1 $path | sed 's/\.df//'
+          return
         ;;
       img|build) #[name]#Create docker image
           if [ -f ${df} ];then
-            docker build -t ${repo}${target}:${version-0.1} -f ${df} ${path}/
+            echo -e "\033[33mbuilding ${target}\033[0m"
+            docker build -t ${repo}${target}:${version} -f ${df} ${path}/ 2>&1 | sed 's/^/  /'
           else
-            echo -e "\033[33mERROR\033[0m: no such target: ${target}"
+            echo -e "\033[33mERROR\033[0m: no such target: ${target}:${version}"
             return 1
           fi
         ;;
@@ -174,18 +181,23 @@ EOF
             cwd=$(docrc ${target} 'cwd')
             cwd=${cwd:-/root}
             if [[ "${action}" == "dry" ]];then
+              echo -e "\033[33mentering ${target}:${version}\033[0m (dry)"
               dry="echo"
+              after=''
             else
+              echo -e "\033[33mentering ${target}:${version}\033[0m"
               dry=''
+              after='return'
             fi
             $dry docker run -it --rm ${volumes} \
               -h ${target} \
               --name ${target} \
               -w ${cwd} \
               -P \
-              ${repo}${target}:${version-0.1} /bin/bash
+              ${repo}${target}:${version} /bin/bash
+            $after
           else
-            echo -e "\033[33mERROR\033[0m: no such target: ${target}"
+            echo -e "\033[33mERROR\033[0m: no dockerfile: ${df} (${target}:${version})"
             return 1
           fi
         ;;
@@ -193,7 +205,7 @@ EOF
           if [ -f ${df} ];then
             docker ${action} ${repo}${target}:${version}
           else
-            echo -e "\033[33mERROR\033[0m: no such target: ${target}"
+            echo -e "\033[33mERROR\033[0m: no such target: ${target}:${version}"
             return 1
           fi
         ;;
