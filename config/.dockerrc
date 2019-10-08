@@ -28,12 +28,15 @@ function docrc() {
   value=$1
 
   rc=$(sit contexts[current].path)/.dockerrc
-  coalesce $(SIT_TMP=${rc} sit contexts.${target}.${key} ${value}) ''
+  result=$(SIT_TMP=${rc} sit contexts.${target}.${key} ${value})
+  if [ $? -gt 0 ];then
+    return 1
+  fi
+  echo "${result}"
 }
 
 #----------------------------------COMPLETIONS-----------------------------------#
 function doc_complete() {
-  private
   case "${COMP_CWORD}" in
     1) #actions
         COMPREPLY=()
@@ -167,7 +170,7 @@ EOF
         ;;
       run|dry) ##run a temporary container locally, or display the command
           if [ -f ${df} ];then
-            volumes=$(docrc ${target} 'volumes' | sed "s/~/${HOME//\//\\/}/" | sed '/^$/d;s/^/-v /;s/$/ \\/;$ s/\\$//')
+            volumes=$(docrc ${target} 'volumes' | sed "s/~/${HOME//\//\\/}/" | sed '/^$/d;s/^/-v /')
             cwd=$(docrc ${target} 'cwd')
             cwd=${cwd:-/root}
             if [[ "${action}" == "dry" ]];then
