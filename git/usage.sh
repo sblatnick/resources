@@ -31,6 +31,9 @@
   #skip file(s):
   git diff -- . ':(exclude)example.json' ':(exclude)example2.json'
 
+  #create patch named after the current directory on desktop for upload to crucible, etc:
+  git show --unified=1000 $sha > ~/Desktop/${PWD##*/}.patch
+
 #branching:
 
   #create a new branch and switch to it:
