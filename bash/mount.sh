@@ -4,6 +4,9 @@
   /etc/fstab
   #printf "%-23s %-23s %-7s %-15s 0 0" /dev/sda1 "${location}" ext4 "${options}"
 
+#mount an iso:
+  mount -o loop name.iso /mnt/iso
+
 #mount ssh:
   sshfs -o cache=no,allow_other,uid=0,gid=0,nonempty steve@vmhost:/home/steve/work /root/work/
   #nonempty = ignore if the directory has contents on the local filesystem

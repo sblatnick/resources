@@ -1,8 +1,10 @@
 #!/bin/bash
-#::::::::::::::::::::SYSV STARTUP::::::::::::::::::::
+#::::::::::::::::::::SYSV::::::::::::::::::::
 
 #list services and their current status:
 service --status-all
+chkconfig | sed 's/\s\s*/ /g' | cut -d' ' -f1
+
 #add a service (debian):
 update-rc.d apache2 defaults
 #Redhat/CentOS:
@@ -137,8 +139,11 @@ Run Level    Mode                               Action
 
 #source: https://www.cyberciti.biz/tips/linux-write-sys-v-init-script-to-start-stop-service.html
 
-#::::::::::::::::::::SYSTEMD STARTUP::::::::::::::::::::
+#::::::::::::::::::::SYSTEMD::::::::::::::::::::
 
+#List services:
+systemctl status #verbose showing of each
+systemctl status | grep '.service$' | sed 's/^ *[├│└─ ]*//' | sort -u
 
 #systemd startup script as a setup service:
   /usr/lib/systemd/system/setup.service:
@@ -171,6 +176,121 @@ Run Level    Mode                               Action
 
 #after modifying:
   systemctl daemon-reload
+
+#actions:
+  systemctl enable service
+
+  systemctl
+    #Unit Commands
+      #State:
+      start PATTERN...                  #Start (activate) one or more units specified on the command line.
+      stop PATTERN...                   #Stop (deactivate) one or more units specified on the command line.
+
+      reload PATTERN...                 #Reload service-specific configuration, not the unit configuration file of systemd.
+      restart PATTERN...                #Restart/start units.
+
+      try-restart PATTERN...            #Only restart running units.
+      reload-or-restart PATTERN...      #Reload units if supported, else restart/start instead
+      reload-or-try-restart PATTERN...  #Reload units if supported, else restart running units instead
+
+      isolate NAME                      #Start unit and dependencies and stop all others
+      kill PATTERN...                   #Send a signal to one or more processes of the unit
+        --kill-who=PROCESS
+        --signal=SIGNAL
+
+      #Enablement Settings:
+      enable NAME...                    #Enable, creating symlinks
+      disable NAME...                   #Disables, removing symlinks
+
+      reenable NAME...                  #Reenable, disable then enable, or reset the symlinks
+      preset NAME...                    #Reset default enabled/disabled configured in the preset policy files.
+      preset-all                        #Resets all enabled/disabled configured in the preset policy files.
+
+      mask NAME...                      #/dev/null link service unit files, hard disable, can be used with --runtime until next boot, --now to stop service
+      unmask NAME...                    #undo the effect of mask
+
+      #Edit:
+      link FILEPATH...                  #Link absolute path of unit file that into unit file search path
+      add-wants TARGET NAME...          #Adds "Wants=" dependency to the specified TARGET for one or more units.
+      add-requires TARGET NAME...       #Adds "Requires=" dependency to the specified TARGET for one or more units.
+      edit NAME...                      #Edit a drop-in snippet or a whole replacement file if --full is specified, to extend or override the specified unit.
+
+      reset-failed [PATTERN...]         #Reset the "failed" state of units, or all units.
+      set-property NAME ASSIGNMENT...   #Set the specified unit properties at runtime where this is supported.
+
+      get-default                       #Return the default target to boot into. This returns the target unit name default.target is aliased (symlinked) to.
+      set-default NAME                  #Set the default target to boot into. This sets (symlinks) the default.target alias to the given target unit.
+
+    #Snapshot of running services:
+      snapshot [NAME]                   #If no snapshot name, an automatic snapshot name is generated.
+      delete PATTERN...                 #Remove a snapshot previously created with snapshot.
+    #Unit Information:
+      status [PATTERN...|PID...]]       #status and recent logs
+      is-active PATTERN...              #running? return 0 exit code if any one is running (unless --quiet)
+      is-failed PATTERN...              #failed? exit code 0 if any one failed (unless --quiet)
+      is-enabled NAME...                #enabled? exit code 0 if enabled (unless --quiet)
+        String              Return
+        "enabled"           0
+        "enabled-runtime"   0
+        "linked"            1             #available via symlink
+        "linked-runtime"    1
+        "masked"            1             #/dev/null link
+        "masked-runtime"    1
+        "static"            0             #not enableable (no [Install] section)
+        "indirect"          0             #not enabled, but [Install] has Also= of other units
+        "disabled"          1
+        "bad"               >0            #invalid unit file or error
+      show [PATTERN...|JOB...]          #Show properties of one or more units, jobs, or the manager.
+      cat PATTERN...                    #Show backing files with "fragment" and "drop-ins" (source files) preceded by a comment which includes the file name.
+      help PATTERN...|PID...            #Show manual pages for one or more units, if available.
+
+      list-units [PATTERN...]           #List known units
+      list-unit-files [PATTERN...]      #List installed unit files and is-enabled
+      list-dependencies [NAME]          #Recursively shows units required and wanted by the unit
+    #Environment Commands
+      show-environment                  #Dump environment suitable for sourcing in a shell script
+      set-environment VARIABLE=VALUE... #Set environment variables
+      unset-environment VARIABLE...     #Unset environment variables. If a value is specified, only unset if the variable has that value.
+      import-environment [VARIABLE...]  #Import environment variables. If no arguments are passed, import all
+    #Manager Lifecycle Commands
+      daemon-reload                     #Reload systemd manager configuration: rerun all generators, reload all unit files, and recreate the entire dependency tree
+      daemon-reexec                     #Reexecute the systemd manager: serialize the manager state, reexecute the process and deserialize the state again (for debugging)
+    #System Commands
+      is-system-running
+        Stages:
+          "initializing"                  #Early boot
+          "starting"                      #Late boot, before job queue first idle
+          "running"                       #exit code: 0
+          "degraded"                      #>0 units failed
+          "maintenance"                   #rescue/emergency target active
+          "stopping"                      #shutting down
+      suspend                           #Suspend the system.
+      hibernate                         #Hibernate the system.
+      hybrid-sleep                      #Hibernate and suspend the system.
+
+      default                           #Enter default mode
+        isolate default.target
+      #with wall messages to all users:
+      rescue                            #Enter rescue mode
+        isolate rescue.target
+      emergency                         #Enter emergency mode
+        isolate emergency.target
+      halt                              #Shut down and halt the system.
+        start halt.target --irreversible
+      poweroff                          #Shut down and power-off the system.
+        start poweroff.target --irreversible
+      reboot [arg]                      #Shut down and reboot the system.
+        start reboot.target --irreversible
+      kexec                             #Shut down and reboot the system via kexec.
+        start kexec.target --irreversible
+    #Jobs:
+      list-jobs [PATTERN...]            #List jobs that are in progress.
+      cancel JOB...                     #Cancel one or more jobs specified on the command line by their numeric job IDs. If no job ID is specified, cancel all pending jobs.
+    #Misc:
+      switch-root ROOT [INIT]           #Switches to a different root directory and executes a new system manager process below it. This is intended for usage in initial RAM disks ("initrd")
+      list-sockets [PATTERN...]         #List socket units ordered by listening address
+      list-timers [PATTERN...]          #List timer units ordered by the time they elapse next
+      list-machines [PATTERN...]        #List the host and all running local containers with their state.
 
 #::::::::::::::::::::MYSQL::::::::::::::::::::
 

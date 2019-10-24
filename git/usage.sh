@@ -34,6 +34,9 @@
   #create patch named after the current directory on desktop for upload to crucible, etc:
   git show --unified=1000 $sha > ~/Desktop/${PWD##*/}.patch
 
+  #diff even showing contents of deleted files:
+  git diff HEAD
+
 #branching:
 
   #create a new branch and switch to it:

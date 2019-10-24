@@ -135,6 +135,14 @@ Example arguments:
   #Default taint NoSchedule on master node(s):
   kubectl taint node mymasternode node-role.kubernetes.io/master:NoSchedule-
 
+  #Drain node of pods:
+  kubectl drain node02
+    #same as:
+    # 1. kubectl cordon pods
+    # 2. kubectl delete pods (or k8s >=1.7 evict)
+
+  #Makes the node schedulable for pods again:
+  kubectl uncordon node02
 
 #===================================COMMANDS===================================#
 

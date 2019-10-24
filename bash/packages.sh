@@ -145,6 +145,15 @@
   rpm --import http://example.repo.com/yum/centos/7_latest/os/x86_64/RPM-GPG-KEY-CentOS-7
   yum clean all
 
+  #remove repo:
+  rm -f /etc/yum.repos.d/name.repo
+
+  #list repos:
+  yum repolist #just enabled
+  yum repolist enabled
+  yum repolist disabled
+  yum repolist all #enabled and disabled
+
 #debian:
   apt-get install package
   apt-cache search package
@@ -287,6 +296,9 @@ fi
 - Initial build
 EOF
 rpmbuild -ba ~/.rpm/SPECS/${package}.spec
+
+#Test how the macros are expanded:
+rpm --eval "$(cat service.spec)"
 
 #::::::::::::::::::::RPM CREATION from CPAN::::::::::::::::::::
 

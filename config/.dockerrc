@@ -179,27 +179,27 @@ EOF
           if [ -f ${df} ];then
             volumes=$(docrc ${target} 'volumes' | sed "s/~/${HOME//\//\\/}/" | sed '/^$/d;s/^/-v /')
             cwd=$(docrc ${target} 'cwd')
-            cwd=${cwd:-/root}
-            if [[ "${action}" == "dry" ]];then
-              echo -e "\033[33mentering ${target}:${version}\033[0m (dry)"
-              dry="echo"
-              after=''
-            else
-              echo -e "\033[33mentering ${target}:${version}\033[0m"
-              dry=''
-              after='return'
-            fi
-            $dry docker run -it --rm ${volumes} \
-              -h ${target} \
-              --name ${target} \
-              -w ${cwd} \
-              -P \
-              ${repo}${target}:${version} /bin/bash
-            $after
           else
-            echo -e "\033[33mERROR\033[0m: no dockerfile: ${df} (${target}:${version})"
-            return 1
+            volumes=""
+            echo -e "\033[34mWARN\033[0m: no dockerfile: ${df} (${target}:${version}), attempting to continue anyway"
           fi
+          cwd=${cwd:-/root}
+          if [[ "${action}" == "dry" ]];then
+            echo -e "\033[33mentering ${target}:${version}\033[0m (dry)"
+            dry="echo"
+            after=''
+          else
+            echo -e "\033[33mentering ${target}:${version}\033[0m"
+            dry=''
+            after='return'
+          fi
+          $dry docker run -it --rm ${volumes} \
+            -h ${target} \
+            --name ${target} \
+            -w ${cwd} \
+            -P \
+            ${repo}${target}:${version} /bin/bash
+          $after
         ;;
       pull|push)
           if [ -f ${df} ];then
