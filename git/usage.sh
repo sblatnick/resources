@@ -323,6 +323,69 @@
       git branch opera origin/opera
       git checkout opera
 
+  #Migate svn branch and sub-directory to git retaining history:
+    #Convert svn branch and sub-directory into git:
+      #get oldest revision for the subdirectory:
+      revision=$(svn log --stop-on-copy svn://svn.site.com/repo/branches/branch1/subpath/directory | egrep "r[0-9]+" | tail -1 | cut -d' ' -f1)
+      #clone repo from that revision with the subdirectory:
+      git svn clone -r ${revision#r} svn://svn.site.com/repo/branches/branch1/subpath/directory
+      #enter new repo:
+      cd directory
+      #pull other revisions:
+      git svn fetch
+      #rebase to latest fetched locally:
+      git svn rebase -l
+
+      #get earliest commit sha:
+      sha=$(git rev-list --max-parents=0 HEAD)
+      #create/use a branch to retain moved history:
+      git checkout -b move $sha
+
+      #move files into same relative location you want them in the new repo:
+      mkdir -p subpath/directory/
+      git mv dir subpath/directory/
+      git commit -a -m "Moved files for using in new git repo"
+
+      #rebase changes on moved file:
+      git rebase move master
+
+      #problems rebasing?
+        git status
+        #move all "new file" yourself:
+        git mv old subpath/directory/
+        #ignore "modified"
+        #add all "added by us":
+        git add file
+        #remove all "both deleted":
+        git rm file
+        #add then move "added by them":
+        git add file
+        git mv old subpath/directory/
+        #continue the rebase:
+        git rebase --continue
+
+      #directories missed? repeat above on later commits by file
+
+    #Merge history into existing git repo:
+      cd oldrepo
+      #add other repo as a remote and fetch (-f):
+      git remote add -f NAME ../directory/
+
+      #merge/read the other history in:
+      git pull --allow-unrelated-histories SPECS master
+
+      #remove other repo:
+      git remote rm NAME
+
+      #similar commands that lose history:
+        git merge -s ours --no-commit --allow-unrelated-histories NAME/master
+        git read-tree --prefix=subpath/directory/ -u NAME/master
+        git commit -a -m "Merged other repo in from svn"
+
+      #if anything goes wrong, revert:
+        git reset --hard origin/master
+
+
   #switch branches/tags and merge:
     #get other branch:
     git svn clone -r 400000:HEAD -s svn://svn.site.com/repo

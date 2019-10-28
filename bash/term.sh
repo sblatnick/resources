@@ -90,6 +90,9 @@ Ctrl+r   #search history, ESC to paste the currently found entry
 #`man kill` says to see signals(7), so do this:
 man 7 signals
 
+#Dump manual page to stdout:
+man -P cat program
+
 #::::::::::::::::::::OPEN TERMINALS::::::::::::::::::::
 
 #terminal with multiple tabs from command line, hold (-H) open even when commands are complete:
