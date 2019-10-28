@@ -278,6 +278,47 @@ function gitex() {
         shift
         gitex_subtree $@
       ;;
+    tmm) #[dest]#time machine move
+        shift
+
+        path=$1
+        shift
+        #sanitize directory path:
+        path=${path%/}
+        path=${path#./}
+        local branch=$($wgit rev-parse --abbrev-ref HEAD)
+
+        if [ -n "${path}" ];then
+          set -e
+          trap "echo -e '\033[31mERROR:\033[0m something went wrong, returning early.';return 1" ERR
+          if [ ! -d ${path} ];then
+            mkdir -p ${path}
+          fi
+
+          local IFS=$'\n'
+          for file in $(find . -not -path '*/\.git/*' -not -path "./${path}/*" -type f)
+          do
+            file=${file#./}
+            sha=$($wgit --no-pager log --format=%h $file | tail -1)
+            echo "  $file: $sha"
+            $wgit checkout -b move $sha >/dev/null 2>&1
+            if [ ! -d "${path}/${file%/*}" ];then
+              mkdir -p ${path}/${file%/*}
+            fi
+            $wgit mv $file $path/$file >/dev/null
+            $wgit commit -a -m "Moved file \"$file\" before modification" >/dev/null
+            $wgit rebase move $branch >/dev/null 2>&1
+            $wgit branch -d move >/dev/null
+          done
+          set +e
+          echo -e "cleanup old directories"
+          find . -not -path '*/\.git/*' -not -path "./${path}/*" -type d -empty -delete
+          echo -e "\033[32mDONE\033[0m"
+        else
+          echo -e "\033[31mNo path specified\033[0m"
+          return 1
+        fi
+      ;;
     @(${actions}))
         export GITEX_BRANCH=$(set +e;$wgit rev-parse --abbrev-ref HEAD 2>/dev/null;set -e)
         gitex_action $@

@@ -372,7 +372,7 @@
       git remote add -f NAME ../directory/
 
       #merge/read the other history in:
-      git pull --allow-unrelated-histories SPECS master
+      git pull --allow-unrelated-histories NAME master
 
       #remove other repo:
       git remote rm NAME
