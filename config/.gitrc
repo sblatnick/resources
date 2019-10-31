@@ -314,6 +314,7 @@ function gitex() {
           echo -e "cleanup old directories"
           find . -not -path '*/\.git/*' -not -path "./${path}/*" -type d -empty -delete
           echo -e "\033[32mDONE\033[0m"
+          trap - ERR
         else
           echo -e "\033[31mNo path specified\033[0m"
           return 1
