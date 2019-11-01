@@ -299,6 +299,9 @@ EOF
 127.0.0.0/8  == 127.0.0.0 - 127.255.255.255
 127.0.0.0/16 == 127.0.0.0 - 127.0.255.255
 
+#ss: socket statistics - is similar to netstat
+  ss -tlpn
+
 #::::::::::::::::::::COMMON PORTS::::::::::::::::::::
 
 #SERVICE  CLEARTEXT   SSL
