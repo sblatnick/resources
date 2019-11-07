@@ -1,0 +1,37 @@
+FROM centos:7
+USER root
+
+RUN \
+  yum --setopt=tsflags='' install -y \
+    man-db \
+    yum-utils \
+    rpmdevtools \
+    gcc \
+    autoconf \
+    automake \
+    libtool \
+    make \
+    epel-release \
+    telnet \
+    openssl \
+    net-tools \
+    wget \
+    less \
+    vim-enhanced \
+    which \
+    bzip2 \
+    genisoimage \
+    createrepo \
+    squashfs-tools
+
+#packages that require epel-release
+RUN \
+  yum --setopt=tsflags='' install -y \
+    jq \
+    p7zip \
+    p7zip-plugins \
+    the_silver_searcher \
+      && \
+  yum clean all
+
+ENTRYPOINT /bin/bash

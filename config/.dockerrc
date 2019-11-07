@@ -193,12 +193,13 @@ EOF
             dry=''
             after='return'
           fi
-          $dry docker run -it --rm ${volumes} \
+          $dry docker run --privileged=true -it --rm ${volumes} \
             -h ${target} \
             --name ${target} \
             -w ${cwd} \
             -P \
             ${repo}${target}:${version} /bin/bash
+          #"--privileged=true" for loop devices and mounting an iso
           $after
         ;;
       pull|push) ##pull/push image to repo
