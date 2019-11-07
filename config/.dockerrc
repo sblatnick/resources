@@ -201,7 +201,7 @@ EOF
             ${repo}${target}:${version} /bin/bash
           $after
         ;;
-      pull|push)
+      pull|push) ##pull/push image to repo
           if [ -f ${df} ];then
             docker ${action} ${repo}${target}:${version}
           else
@@ -209,10 +209,12 @@ EOF
             return 1
           fi
         ;;
-      clean)
+      clean) ##remove exited containers and dangling images
           docker rm -v $(docker ps -a -q -f status=exited)
           docker rmi $(docker images -q -f dangling=true)
-          #docker volume rm $(docker volume ls -q -f dangling=true)
+        ;;
+      cleanvol) ##remove dangling volumes (dangerous)
+          docker volume rm $(docker volume ls -q -f dangling=true)
         ;;
       context|ctx|go) #[$context|$dockerfile|$action]#context handling
           doc_context $@
