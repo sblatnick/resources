@@ -1,0 +1,26 @@
+/*
+ * Vivaldi Custom UI CSS
+ *
+ * Setup:
+ *   1. vivaldi://experiments
+ *   2. Enable "Allow for using CSS modifications"
+ *   3. Settings => Appearance => Choose this folder
+ *   4. Restart browser
+ * Inspect UI:
+ *   Linux/Windows: vivaldi --flag-switches-begin --debug-packed-apps --silent-debugger-extension-api --flag-switches-end
+ *   Mac:           open /Applications/Vivaldi.app --args --debug-packed-apps --silent-debugger-extension-api
+ * 
+ */
+
+/*Hide Folder Icons*/
+.bookmark-bar button img.folder-icon, .bookmark-bar button svg.folder-icon {
+  display: none;
+}
+
+.bookmark-bar button img + span, .bookmark-bar button svg + span, .bookmark-bar button img + input, .bookmark-bar button svg + input {
+  margin-left: 0px;
+}
+
+#vivaldi-tooltip .tooltip img {
+  width: 150%;
+}

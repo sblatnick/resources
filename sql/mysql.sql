@@ -19,6 +19,13 @@
 -- SELECTS --
   SELECT col FROM db.tbl;
 
+  -- IMPLICIT (COMMA) CROSS JOIN - NEVER USE THIS --
+    -- Never, ever cross join two tables.  This occures implicitly when you use a comma
+    SELECT * FROM table1, tables2;
+    -- cross join is never efficient
+  -- Always make your joins explicit (LEFT or INNER, others are less useful)
+  -- Always explicitly join columns (ON t1.col1=t2.col2)
+  -- COALESCE() is a good way to ensure default values where you aren't sure there will be one
 
 -- WRITES --
   INSERT INTO db.tbl (col1, col2) VALUES (1, 2);
@@ -48,3 +55,5 @@
 
 -- AGGREGATE COMPARISION --
   GROUP BY ... HAVING COUNT(id) > 10
+
+
