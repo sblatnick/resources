@@ -1,0 +1,85 @@
+#!/bin/bash
+echo "FIXME"
+exit
+
+case "$(uname -s)" in
+  Darwin) #Mac
+      echo -e "\033[31munsupported OS for this script\033[0m"
+      exit 1
+    ;;
+  Linux)
+    ;;
+esac
+
+shopt -s expand_aliases nocasematch
+dry='echo' #dry run only
+OUT=~/organized
+
+$dry mkdir -p $OUT
+
+IFS=$'\n'
+while read -r line
+do
+  #defaults:
+  color="32" #green
+
+  line=${line##./} #remove "./" from path
+
+  path=${line%/*}
+  file=${line##*/}
+  file=${file##[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9][_:][0-9][0-9][_:][0-9][0-9] } #remove datetime if present
+  extension=${file##*.}
+  file=${file%.*}
+  old="${line}"
+  #md5=$(md5sum ${old} | cut -d' ' -f1)
+
+  when=$(exif -mt DateTimeOriginal ${line} 2>/dev/null)
+  if [ "$?" -ne 0 ];then
+    status="timestamp"
+    when=$(stat "${line}" -c '%y' | cut -d'.' -f1)
+  else
+    status="exif"
+    when=${when/:/-}
+    when=${when/:/-}
+    #exif -mt Model 
+  fi
+  
+  new="${path-.}/${when} ${file}"
+  #date: 2012-08-29 14:02:04
+
+  #2019/rebecca's iphone/08 - Aug/2019-08-19 11_33_47 IMG_1287.JPG
+
+  case "${extension}" in
+    flv|mp4|mov|mpg|mot|mts) #Video
+      ;;
+    png|jpg|jpeg|tif|tiff|img|gif|psd|xcf) #Image
+      ;;
+    mp3|wma|ogg|aup) #Audio
+      ;;
+    odt|doc|docx|pdf|txt|txt~|rtf) #Document
+      ;;
+    zip|tar|gz|rpm|deb) #Package
+      ;;
+    *) #Unknown
+        color="33" #yellow
+        status="SKIP"
+        new=""
+      ;;
+  esac
+
+  n=0
+  dst="${new}"
+  while [ -f "${dst}" ]; do
+    ((n++))
+    dst=$(printf "%s-%02d.%s" "${new%.*}" "${n}" "${new##*.}")
+  done
+  new="${dst}"
+
+  printf "\033[32m%-30s\033[0m %-15s \033[${color}m%s\033[0m\n" "${old}" "${new}" "${status}"
+  if [[ "${new}" == "" ]];then
+    continue
+  fi
+  #$dry mv -n "${old}" "${OUT}/${new}"
+done < <(find . -type f)
+
+
