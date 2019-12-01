@@ -2,8 +2,9 @@
 #INCLUDE from ~/.bashrc: source ~/projects/resources/config/bashrc
 
 #includes .bashrc, .bash_aliases, and any other hidden scripts in this directory:
-for bash in ~/projects/resources/config/.[!.]*
+for bash in ~/projects/resources/config/.{_,}[!_.]*
 do
+  #echo "source $bash"
   source $bash
 done
 

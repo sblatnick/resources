@@ -1,6 +1,8 @@
 #!/bin/bash
-echo "FIXME"
-exit
+
+function pass() {
+  echo $@ >/dev/null
+}
 
 case "$(uname -s)" in
   Darwin) #Mac
@@ -12,7 +14,7 @@ case "$(uname -s)" in
 esac
 
 shopt -s expand_aliases nocasematch
-dry='echo' #dry run only
+dry='pass' #dry run only
 OUT=~/organized
 
 $dry mkdir -p $OUT
@@ -23,63 +25,90 @@ do
   #defaults:
   color="32" #green
 
-  line=${line##./} #remove "./" from path
+  old=${line##./} #remove "./" from path
 
-  path=${line%/*}
-  file=${line##*/}
-  file=${file##[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9][_:][0-9][0-9][_:][0-9][0-9] } #remove datetime if present
-  extension=${file##*.}
-  file=${file%.*}
-  old="${line}"
+  path=${old%/*}
+  filename=${old##*/}
+  path=${path%%$filename}
+  filename=${filename##[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9][_:][0-9][0-9][_:][0-9][0-9] } #remove datetime if present
+  extension=${filename##*.}
+  filename=${filename%.*}
+  whose=$(echo $old | sed 's~^/home/[^/]*/~~' | grep -Poi '(steve|rebecca|camera shy|fotofly)[^/]*' | tail -n1)
+  size=$(stat ${old} -c '%s')
   #md5=$(md5sum ${old} | cut -d' ' -f1)
 
-  when=$(exif -mt DateTimeOriginal ${line} 2>/dev/null)
-  if [ "$?" -ne 0 ];then
-    status="timestamp"
-    when=$(stat "${line}" -c '%y' | cut -d'.' -f1)
+  if [ $size -gt 0 ];then
+
+    when=$(exif -mt DateTimeOriginal ${line} 2>/dev/null)
+    if [ "$?" -ne 0 ];then
+      status="timestamp"
+      when=$(stat "${old}" -c '%y' | cut -d'.' -f1)
+    else
+      status="exif"
+      when=${when/:/-}
+      when=${when/:/-}
+      #model=$(exif -mt Model $old)
+    fi
+
+    year=${when%%-*}
+    month=$(echo ${when} | cut -d'-' -f2)
+    month="${month} - $(date +%B -d "${month}/01")"
+
+    case "${whose}" in
+      "steve"*|"rebecca"*) #ours
+          destination="personal/${year}/${month}/${whose}"
+        ;;
+      "camera shy"*|"fotofly"*) #studio
+          destination="personal/${year}/${whose}"
+        ;;
+    esac
+
+    case "${extension}" in
+      mp4|mov|mpg|mot|mts|jpg|jpeg|tif|tiff|img|gif|psd|xcf) #video/picture
+          status="personal by ${status}"
+          new="${destination}/${when} - ${filename}.${extension}"
+        ;;
+      mp3|wma|ogg|aup|wav) #Audio
+          status="music"
+          destination="music/${path##*/Music/}"
+          new="${destination}/${filename}.${extension}"
+        ;;
+      odt|doc|docx|pdf|txt|txt~|rtf|png) #Document
+          status="documents"
+          destination="documents/${path##$HOME}"
+          new="${destination}/${filename}.${extension}"
+        ;;
+      *) #Misc/Unknown
+          color="33" #yellow
+          status="misc"
+          destination="misc/${path##$HOME}"
+          new="${destination}/${filename}.${extension}"
+        ;;
+    esac
+
+    if [ ! -f "${destination}" ];then
+      ${dry} mkdir -p "${OUT}/${destination}"
+    fi
+
+    n=0
+    dst="${new}"
+    while [ -f "${dst}" ]; do
+      ((n++))
+      dst=$(printf "%s-%02d.%s" "${new%.*}" "${n}" "${new##*.}")
+    done
+    new="${dst}"
   else
-    status="exif"
-    when=${when/:/-}
-    when=${when/:/-}
-    #exif -mt Model 
+    color="31" #red
+    new=""
+    status="deleting empty file"
   fi
-  
-  new="${path-.}/${when} ${file}"
-  #date: 2012-08-29 14:02:04
+  new="${new//\/\//\/}"
 
-  #2019/rebecca's iphone/08 - Aug/2019-08-19 11_33_47 IMG_1287.JPG
-
-  case "${extension}" in
-    flv|mp4|mov|mpg|mot|mts) #Video
-      ;;
-    png|jpg|jpeg|tif|tiff|img|gif|psd|xcf) #Image
-      ;;
-    mp3|wma|ogg|aup) #Audio
-      ;;
-    odt|doc|docx|pdf|txt|txt~|rtf) #Document
-      ;;
-    zip|tar|gz|rpm|deb) #Package
-      ;;
-    *) #Unknown
-        color="33" #yellow
-        status="SKIP"
-        new=""
-      ;;
-  esac
-
-  n=0
-  dst="${new}"
-  while [ -f "${dst}" ]; do
-    ((n++))
-    dst=$(printf "%s-%02d.%s" "${new%.*}" "${n}" "${new##*.}")
-  done
-  new="${dst}"
-
-  printf "\033[32m%-30s\033[0m %-15s \033[${color}m%s\033[0m\n" "${old}" "${new}" "${status}"
+  printf "\033[32m%-45s\033[0m %-45s \033[${color}m%s\033[0m\n" "${old}" "${new}" "${status}"
   if [[ "${new}" == "" ]];then
+    #$dry rm -f ${old}
     continue
   fi
-  #$dry mv -n "${old}" "${OUT}/${new}"
+  $dry mv -n "${old}" "${OUT}/${new}"
 done < <(find . -type f)
-
 
