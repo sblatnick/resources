@@ -1,0 +1,6 @@
+###MANAGED BY PUPPET###
+
+#Specified in hiera:
+<% @settings_config.each do |key, value| -%>
+<%= key -%>=<%= value %>
+<% end %>

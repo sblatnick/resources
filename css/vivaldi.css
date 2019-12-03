@@ -21,6 +21,18 @@
   margin-left: 0px;
 }
 
+/*
 #vivaldi-tooltip .tooltip img {
-  width: 150%;
+  width: 400%;
+}
+*/
+
+.tabs-right ~ #vivaldi-tooltip .tooltip .tab-group {
+  box-shadow: 5px 5px;
+}
+#vivaldi-tooltip .tooltip .tab-group .tooltip-item:hover {
+  border: 3px solid orange !important;
+}
+#vivaldi-tooltip .tooltip .tab-group .tooltip-item:active, #vivaldi-tooltip .tooltip .tab-group .tooltip-item.active, #vivaldi-tooltip .last-active {
+  border: 3px solid red !important;
 }

@@ -183,4 +183,20 @@ class profile_example {
     }
   }
 
+  #Allow for local customization
+  # Use cases:
+  #  1. if file doesn't exist, create it using the template and hiera
+  #  2. if file does exist AND contains "MANAGED BY PUPPET",
+  #     then update to the template using current hiera
+  #  3. if file does exist AND does not contain "MANAGED BY PUPPET",
+  #     then leave the version on disk as a customized local one
+  $settings_config = hiera_hash('settings::config', {})
+  notify { "settings.cfg managed by puppet: ${::settings_cfg_managed}": }
+  file {'settings.cfg':
+    path     => "/etc/settings.cfg",
+    ensure   => present,
+    mode     => "660",
+    content  => template("profile_example/settings.cfg.erb"),
+    replace  => "${::settings_cfg_managed}", #see facts.rb for custom fact which greps for "MANAGED BY PUPPET"
+  }
 }
