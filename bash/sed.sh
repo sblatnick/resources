@@ -1,4 +1,123 @@
 
+sed
+  #Options:
+  -n, --quiet, --silent
+  -e script, --expression=script      #add the script to the commands to be executed
+  -f script-file, --file=script-file  #add the contents of script-file to the commands to be executed
+  --follow-symlinks                   #follow symlinks when processing in place; hard links will still be broken.
+  -i[SUFFIX], --in-place[=SUFFIX]     #edit  files in place (makes backup if extension supplied)
+                                      #The default operation mode is to break symbolic and hard links.  This can be changed with --follow-sym-
+                                      #links and --copy.
+  -c, --copy                          #use copy instead of rename when shuffling files in -i mode.  While this will avoid breaking links (symbolic or  hard),  the  resulting  editing  operation  is  not
+                                      #atomic.  This is rarely the desired mode; --follow-symlinks is usually enough, and it is both faster and more secure.
+  -l N, --line-length=N               #specify the desired line-wrap length for the ‘l’ command
+  --posix                             #disable all GNU extensions.
+  -r, --regexp-extended
+  -s, --separate                      #consider files as separate rather than as a single continuous long stream.
+  -u, --unbuffered
+  --help
+  --version
+  #Commands:
+   Zero-address ‘‘commands’’
+       : label
+              Label for b and t commands.
+
+       #comment
+              The comment extends until the next newline (or the end of a -e script fragment).
+
+       }      The closing bracket of a { } block.
+
+   Zero- or One- address commands
+       =      Print the current line number.
+
+       a \
+
+       text   Append text, which has each embedded newline preceded by a backslash.
+
+       i \
+
+       text   Insert text, which has each embedded newline preceded by a backslash.
+
+       q [exit-code]
+              Immediately quit the sed script without processing any more input, except that if auto-print is not disabled the current pattern space will be printed.   The  exit
+              code argument is a GNU extension.
+
+       Q [exit-code]
+              Immediately quit the sed script without processing any more input.  This is a GNU extension.
+
+       r filename
+              Append text read from filename.
+
+       R filename
+              Append a line read from filename.  Each invocation of the command reads a line from the file.  This is a GNU extension.
+
+   Commands which accept address ranges
+       {      Begin a block of commands (end with a }).
+
+       b label
+              Branch to label; if label is omitted, branch to end of script.
+
+       t label
+              If  a  s///  has  done  a  successful substitution since the last input line was read and since the last t or T command, then branch to label; if label is omitted,
+              branch to end of script.
+
+       T label
+              If no s/// has done a successful substitution since the last input line was read and since the last t or T command, then branch to  label;  if  label  is  omitted,
+              branch to end of script.  This is a GNU extension.
+
+       c \
+
+       text   Replace the selected lines with text, which has each embedded newline preceded by a backslash.
+
+       d      Delete pattern space.  Start next cycle.
+
+       D      Delete up to the first embedded newline in the pattern space.  Start next cycle, but skip reading from the input if there is still data in the pattern space.
+
+       h H    Copy/append pattern space to hold space.
+
+       g G    Copy/append hold space to pattern space.
+
+       x      Exchange the contents of the hold and pattern spaces.
+
+       l      List out the current line in a ‘‘visually unambiguous’’ form.
+
+       l width
+              List out the current line in a ‘‘visually unambiguous’’ form, breaking it at width characters.  This is a GNU extension.
+
+       n N    Read/append the next line of input into the pattern space.
+
+       p      Print the current pattern space.
+
+       P      Print up to the first embedded newline of the current pattern space.
+
+       s/regexp/replacement/
+              Attempt  to match regexp against the pattern space.  If successful, replace that portion matched with replacement.  The replacement may contain the special charac-
+              ter & to refer to that portion of the pattern space which matched, and the special escapes \1 through \9 to refer to the corresponding matching sub-expressions  in
+              the regexp.
+
+       w filename
+              Write the current pattern space to filename.
+
+       W filename
+              Write the first line of the current pattern space to filename.  This is a GNU extension.
+
+       y/source/dest/
+              Transliterate the characters in the pattern space which appear in source to the corresponding character in dest.
+
+  #Addresses
+    start,end   #line range
+    number      #specified line number.
+    !           #not match
+    first~step  #every step'th line starting with line first (example: `sed -n 1~2p` will print all the odd-numbered lines)
+    $           #last line.
+    /regex/     #all lines that match regex
+    \cregexc    #Match lines matching the regular expression regexp.  The "c" may be any character.
+
+    0,end       #first line to end, even if first line
+    1,end       #first line to end, ignoring first line
+
+    start,+N    #N-lines after start
+    start,~N    #lines until multiple of N (example: 22,~5 would match lines 22 through 25)
 
 #SUMMARY:
 
@@ -228,3 +347,9 @@ sed -e :a -e '$d;N;2,10ba' -e 'P;D'
 
 #mac OSX:
   brew install gsed #gnu sed
+
+#replace range with new contents using c\:
+  sed '/from/,/to/c\
+New Content'
+
+

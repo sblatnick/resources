@@ -21,7 +21,7 @@
 /etc/udev/rules.d/60-net.rules
 
 #check routes to see connectivity of interfaces:
-  /sbin/route -n
+  /sbin/route -n #gives default gateway
   ip route
 
 #traceroute:
