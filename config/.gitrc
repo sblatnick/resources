@@ -302,8 +302,12 @@ function gitex() {
             sha=$($wgit --no-pager log --format=%h $file | tail -1)
             echo "  $file: $sha"
             $wgit checkout -b move $sha >/dev/null 2>&1
-            if [ ! -d "${path}/${file%/*}" ];then
-              mkdir -p ${path}/${file%/*}
+            local file_path=${file%/*}
+            if [[ "${file_path}" == "${file}" ]];then #no sub-path on original
+              local file_path=''
+            fi
+            if [ ! -d "${path}/${file_path}" ];then
+              mkdir -p ${path}/${file_path}
             fi
             $wgit mv $file $path/$file >/dev/null
             $wgit commit -a -m "Moved file \"$file\" before modification" >/dev/null
