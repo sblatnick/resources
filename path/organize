@@ -56,32 +56,37 @@ do
 
     case "${whose}" in
       "steve"*|"rebecca"*) #ours
-          destination="personal/${year}/${month}/${whose}"
+          destination="pictures/${year}/${month}/${whose}"
         ;;
       "camera shy"*|"fotofly"*) #studio
-          destination="personal/${year}/${whose}"
+          destination="pictures/${year}/${whose}"
         ;;
     esac
 
     case "${extension}" in
       mp4|mov|mpg|mot|mts|jpg|jpeg|tif|tiff|img|gif|psd|xcf) #video/picture
-          status="personal by ${status}"
-          new="${destination}/${when} - ${filename}.${extension}"
+          status="pictures by ${status}"
+          new="${destination}/${when} ${filename}.${extension}"
         ;;
       mp3|wma|ogg|aup|wav) #Audio
           status="music"
           destination="music/${path##*/Music/}"
           new="${destination}/${filename}.${extension}"
         ;;
-      odt|doc|docx|pdf|txt|txt~|rtf|png) #Document
+      png) #Screenshots
           status="documents"
-          destination="documents/${path##$HOME}"
+          destination="documents"
+          new="${destination}/${filename}.${extension}"
+        ;;
+      odt|doc|docx|pdf|txt|txt~|rtf) #Document
+          status="documents"
+          destination="documents/${path##*/}"
           new="${destination}/${filename}.${extension}"
         ;;
       *) #Misc/Unknown
           color="33" #yellow
           status="misc"
-          destination="misc/${path##$HOME}"
+          destination="misc/${path##*/}"
           new="${destination}/${filename}.${extension}"
         ;;
     esac
@@ -106,9 +111,12 @@ do
 
   printf "\033[32m%-45s\033[0m %-45s \033[${color}m%s\033[0m\n" "${old}" "${new}" "${status}"
   if [[ "${new}" == "" ]];then
-    #$dry rm -f ${old}
+    ${dry} rm -f ${old}
     continue
   fi
-  $dry mv -n "${old}" "${OUT}/${new}"
+  ${dry} mv -n "${old}" "${OUT}/${new}"
 done < <(find . -type f)
 
+echo "Deleting Empty folders:"
+${dry} find . -type d -empty -delete | sed 's/^/  /'
+echo "DONE"
