@@ -14,7 +14,7 @@ case "$(uname -s)" in
 esac
 
 shopt -s expand_aliases nocasematch
-dry='pass' #dry run only
+dry='' dry='pass' #dry run only
 OUT=~/organized
 
 $dry mkdir -p $OUT
@@ -80,7 +80,7 @@ do
           new="${destination}/${filename}.${extension}"
         ;;
       png) #Screenshots
-          status="documents"
+          status="documents (screenshot)"
           destination="documents"
           new="${destination}/${when} ${filename}.${extension}"
         ;;
@@ -103,10 +103,13 @@ do
 
     n=0
     dst="${new}"
-    while [ -f "${dst}" ]; do
+    while [ -f "${OUT}/${dst}" ]; do
       ((n++))
       dst=$(printf "%s-%02d.%s" "${new%.*}" "${n}" "${new##*.}")
     done
+    if [[ "${new}" != "${dst}" ]];then
+      status="${status} renamed"
+    fi
     new="${dst}"
   else
     color="31" #red
