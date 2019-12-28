@@ -30,24 +30,30 @@ do
   path=${old%/*}
   filename=${old##*/}
   path=${path%%$filename}
-  filename=${filename##[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9][_:][0-9][0-9][_:][0-9][0-9] } #remove datetime if present
   extension=${filename##*.}
   filename=${filename%.*}
+  origin=${filename}
+  filename=${filename##[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9][_:][0-9][0-9][_:][0-9][0-9] } #remove datetime if present
   whose=$(echo $old | sed 's~^/home/[^/]*/~~' | grep -Poi '(steve|rebecca|camera shy|fotofly)[^/]*' | tail -n1)
   size=$(stat ${old} -c '%s')
   #md5=$(md5sum ${old} | cut -d' ' -f1)
 
   if [ $size -gt 0 ];then
 
-    when=$(exif -mt DateTimeOriginal ${line} 2>/dev/null)
-    if [ "$?" -ne 0 ];then
-      status="timestamp"
-      when=$(stat "${old}" -c '%y' | cut -d'.' -f1)
+    if [[ "${origin}" == "${filename}" ]];then
+      when=$(exif -mt DateTimeOriginal ${line} 2>/dev/null)
+      if [ "$?" -ne 0 ];then
+        status="timestamp"
+        when=$(stat "${old}" -c '%y' | cut -d'.' -f1)
+      else
+        status="exif"
+        when=${when/:/-}
+        when=${when/:/-}
+        #model=$(exif -mt Model $old)
+      fi
     else
-      status="exif"
-      when=${when/:/-}
-      when=${when/:/-}
-      #model=$(exif -mt Model $old)
+      status="already timestamped"
+      when=${origin%% $filename}
     fi
 
     year=${when%%-*}
@@ -76,7 +82,7 @@ do
       png) #Screenshots
           status="documents"
           destination="documents"
-          new="${destination}/${filename}.${extension}"
+          new="${destination}/${when} ${filename}.${extension}"
         ;;
       odt|doc|docx|pdf|txt|txt~|rtf) #Document
           status="documents"
@@ -109,7 +115,7 @@ do
   fi
   new="${new//\/\//\/}"
 
-  printf "\033[32m%-45s\033[0m %-45s \033[${color}m%s\033[0m\n" "${old}" "${new}" "${status}"
+  printf "\033[32m%-75s\033[0m %-75s \033[${color}m%s\033[0m\n" "${old}" "${new}" "${status}"
   if [[ "${new}" == "" ]];then
     ${dry} rm -f ${old}
     continue
