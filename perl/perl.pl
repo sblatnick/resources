@@ -74,3 +74,9 @@ if(exists($hash{$file})) { ... }
 
 #print from one line to another (from shell):
 perl -ne 'print if /^ *<Directory *\//i .. /<\/Directory/i' $file
+
+#multi-line string:
+my $string = q~
+  hello
+  world
+~;

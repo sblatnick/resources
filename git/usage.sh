@@ -372,7 +372,7 @@
       git remote add -f NAME ../directory/
 
       #merge/read the other history in:
-      git pull --allow-unrelated-histories NAME master
+      git pull --allow-unrelated-histories -Xtheirs NAME master
 
       #remove other repo:
       git remote rm NAME
@@ -385,6 +385,17 @@
       #if anything goes wrong, revert:
         git reset --hard origin/master
 
+    #Create a new repo from svn subdirectory:
+      revision=$(svn log --stop-on-copy svn://svn.intranet.com/repo/branches/0.1 | egrep "r[0-9]+" | tail -1 | cut -d' ' -f1)
+      git svn clone -r ${revision#r} svn://svn.intranet.com/repo/branches/0.1 git-repo-name
+      cd git-repo-name
+      git svn fetch
+      git svn rebase -l
+
+      #push to a new repo server:
+      git remote add origin ssh://git@git.intranet.com/repo.git
+      git push -u origin --all
+      git push origin --tags
 
   #switch branches/tags and merge:
     #get other branch:

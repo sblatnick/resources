@@ -120,6 +120,8 @@
   #You can also set the delimiter just to create an array and have it revert back in one line:
   IFS=';' read -ra VARIABLE <<< "$IN"
 
+  #If you put a & after the done, it will run the loop in the background:
+  done &
 #NESTED LOOPS with different delimeters:
 
   IFS=$'\n' read -rd '' -a LINES <<< "$(cat file.txt)"

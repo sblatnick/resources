@@ -68,3 +68,7 @@ pools:
     hostname: 'example.intra.net'
   - name: 'EXAMPLE2'
     hostname: 'example2.intra.net'
+
+settings::config:
+  'key': 'value'
+  'key2': 'value2'

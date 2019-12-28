@@ -10,7 +10,7 @@ end
 
 #override core fact:
 redhat = File.read("/etc/redhat-release") #CentOS release 6.10 (Final)
-distro = redhat.split('release')[0].strip
+distro = redhat.split('release')[0].sub(' Linux','').strip
 version = redhat[/(\d+\.\d+)/, 1]
 major = version.split('.')[0]
 minor = version.split('.')[1]
@@ -26,3 +26,22 @@ Facter['os'].instance_eval("@value['release']['major'] = '#{major}'")
 Facter['os'].instance_eval("@value['release']['minor'] = '#{minor}'")
 Facter['os'].instance_eval("@value['release']['full'] = '#{version}'")
 Facter['os'].instance_eval("@value['family'] = 'RedHat'")
+
+#hiera doesn't support %{facts.os.name} yet:
+Facter.add(:osname) do
+  setcode do
+    "#{distro}"
+  end
+end
+Facter.add(:osrelease) do
+  setcode do
+    "#{version}"
+  end
+end
+
+#Custom fact to determine if locally customized:
+Facter.add(:settings_cfg_managed) do
+  setcode do
+    Facter::Core::Execution.exec("grep -q 'MANAGED BY PUPPET' /etc/settings.cfg && echo 'true' || echo 'false'")
+  end
+end

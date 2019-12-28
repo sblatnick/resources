@@ -45,3 +45,14 @@ $arg =~ s[(?x)                    # free spacing mode, ignore whitespace and all
   )
   )
 ][ $1.($2 // '\\{') ]eg;            # if so, then insert a backslash
+
+
+
+  #match words:
+    (?:one|two|3)
+
+  #metacharacter classes:
+    \d #digit
+    \s #space or tab
+    \w #word or number or _ [a-zA-Z0-9_]
+
