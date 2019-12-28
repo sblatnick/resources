@@ -46,10 +46,16 @@ do
         status="timestamp"
         when=$(stat "${old}" -c '%y' | cut -d'.' -f1)
       else
-        status="exif"
-        when=${when/:/-}
-        when=${when/:/-}
-        #model=$(exif -mt Model $old)
+        if [[ "${when}" == "0000"* ]];then
+          #invalid date, use timestamp
+          status="timestamp (invalid exif)"
+          when=$(stat "${old}" -c '%y' | cut -d'.' -f1)
+        else
+          status="exif"
+          when=${when/:/-}
+          when=${when/:/-}
+          #model=$(exif -mt Model $old)
+        fi
       fi
     else
       status="already timestamped"
@@ -67,10 +73,13 @@ do
       "camera shy"*|"fotofly"*) #studio
           destination="pictures/${year}/${whose}"
         ;;
+      *) #everything else
+          destination="pictures/${year}/${month}"
+        ;;
     esac
 
     case "${extension}" in
-      mp4|mov|mpg|mot|mts|jpg|jpeg|tif|tiff|img|gif|psd|xcf) #video/picture
+      mp4|mov|mpg|mot|mts|jpg|jpeg|tif|tiff|img|gif|psd|xcf|avi|3gp|MOD) #video/picture
           status="pictures by ${status}"
           new="${destination}/${when} ${filename}.${extension}"
         ;;
