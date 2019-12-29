@@ -14,8 +14,17 @@ case "$(uname -s)" in
 esac
 
 shopt -s expand_aliases nocasematch
-dry='' dry='pass' #dry run only
+dry='pass' #dry run only
 OUT=~/organized
+
+case "$1" in
+  exe)
+      dry=''
+    ;;
+  *)
+      echo "dry run"
+    ;;
+esac
 
 $dry mkdir -p $OUT
 
