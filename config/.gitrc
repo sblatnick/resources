@@ -164,24 +164,51 @@ function gitex() {
           $EDITOR $dir/${file##* }
         done
       ;;
-    wash) ##pull and push
+    push) ##reasonable default push
+        #passthrough:
+        if [ $# -gt 1 ];then
+          $wgit $@
+          return $?
+        fi
+        url=$($wgit config --get svn-remote.svn.url)
+        #git-svn repo?
+        if [ -z "${url}" ];then
+          branch=$($wgit rev-parse --abbrev-ref HEAD)
+          $wgit push origin $branch
+          return $?
+        else
+          $wgit svn dcommit
+          return $?
+        fi
+      ;;
+    pull) ##reasonable default pull
+        #passthrough:
+        if [ $# -gt 1 ];then
+          $wgit $@
+          return $?
+        fi
         url=$($wgit config --get svn-remote.svn.url)
         #git-svn repo?
         if [ -z "${url}" ];then
           branch=$($wgit rev-parse --abbrev-ref HEAD)
           $wgit pull origin $branch
-          if [ -n "$($wgit status --porcelain)" ];then
-            echo -e "\033[33munmerged changes\033[0m"
-          else
-            $wgit push origin $branch
-          fi
+          return $?
         else
           $wgit svn rebase
-          if [ -n "$($wgit status --porcelain)" ];then
-            echo -e "\033[33munmerged changes\033[0m"
-          else
-            $wgit svn dcommit
-          fi
+          return $?
+        fi
+      ;;
+    wash) ##pull and push
+        git pull
+        if [[ "$?" -gt 0 ]];then
+          echo -e "\033[33merror pulling\033[0m"
+          return 1
+        elif [[ -n "$($wgit status --porcelain)" ]];then
+          echo -e "\033[33munmerged changes\033[0m"
+          return 1
+        else
+          git push
+          return $?
         fi
       ;;
     giff) ##show differences in order
@@ -389,13 +416,13 @@ function gitex_action() {
           fi
         ;;
       mod) ##exec git on dirty repos in the current context
-          if [ -n "$(git status --porcelain)" ]; then
+          if [ -n "$($wgit status --porcelain)" ]; then
             echo -e "${output}"
             eval "git $ARGS 2>&1"
           fi
         ;;
       mob) ##exec git on dirty repos in the current context of the same branch as the CWD
-          if [[ "$GITEX_BRANCH" == "$branch" && -n "$(git status --porcelain)" ]]; then
+          if [[ "$GITEX_BRANCH" == "$branch" && -n "$($wgit status --porcelain)" ]]; then
             echo -e "${output}"
             eval "git $ARGS 2>&1"
           fi

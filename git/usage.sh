@@ -391,6 +391,8 @@
       cd git-repo-name
       git svn fetch
       git svn rebase -l
+      #remove the svn repo so you don't accidentally try to push to it:
+      git config --unset svn-remote.svn.url
 
       #push to a new repo server:
       git remote add origin ssh://git@git.intranet.com/repo.git
