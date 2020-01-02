@@ -17,6 +17,15 @@ shopt -s expand_aliases nocasematch
 dry='pass' #dry run only
 OUT=~/organized
 
+case "$1" in
+  exe)
+      dry=''
+    ;;
+  *)
+      echo "dry run"
+    ;;
+esac
+
 $dry mkdir -p $OUT
 
 IFS=$'\n'
@@ -30,24 +39,36 @@ do
   path=${old%/*}
   filename=${old##*/}
   path=${path%%$filename}
-  filename=${filename##[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9][_:][0-9][0-9][_:][0-9][0-9] } #remove datetime if present
   extension=${filename##*.}
   filename=${filename%.*}
+  origin=${filename}
+  filename=${filename##[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9][_:][0-9][0-9][_:][0-9][0-9] } #remove datetime if present
   whose=$(echo $old | sed 's~^/home/[^/]*/~~' | grep -Poi '(steve|rebecca|camera shy|fotofly)[^/]*' | tail -n1)
   size=$(stat ${old} -c '%s')
   #md5=$(md5sum ${old} | cut -d' ' -f1)
 
   if [ $size -gt 0 ];then
 
-    when=$(exif -mt DateTimeOriginal ${line} 2>/dev/null)
-    if [ "$?" -ne 0 ];then
-      status="timestamp"
-      when=$(stat "${old}" -c '%y' | cut -d'.' -f1)
+    if [[ "${origin}" == "${filename}" ]];then
+      when=$(exif -mt DateTimeOriginal ${line} 2>/dev/null)
+      if [ "$?" -ne 0 ];then
+        status="timestamp"
+        when=$(stat "${old}" -c '%y' | cut -d'.' -f1)
+      else
+        if [[ "${when}" == "0000"* ]];then
+          #invalid date, use timestamp
+          status="timestamp (invalid exif)"
+          when=$(stat "${old}" -c '%y' | cut -d'.' -f1)
+        else
+          status="exif"
+          when=${when/:/-}
+          when=${when/:/-}
+          #model=$(exif -mt Model $old)
+        fi
+      fi
     else
-      status="exif"
-      when=${when/:/-}
-      when=${when/:/-}
-      #model=$(exif -mt Model $old)
+      status="already timestamped"
+      when=${origin%% $filename}
     fi
 
     year=${when%%-*}
@@ -56,32 +77,40 @@ do
 
     case "${whose}" in
       "steve"*|"rebecca"*) #ours
-          destination="personal/${year}/${month}/${whose}"
+          destination="pictures/${year}/${month}/${whose}"
         ;;
       "camera shy"*|"fotofly"*) #studio
-          destination="personal/${year}/${whose}"
+          destination="pictures/${year}/${whose}"
+        ;;
+      *) #everything else
+          destination="pictures/${year}/${month}"
         ;;
     esac
 
     case "${extension}" in
-      mp4|mov|mpg|mot|mts|jpg|jpeg|tif|tiff|img|gif|psd|xcf) #video/picture
-          status="personal by ${status}"
-          new="${destination}/${when} - ${filename}.${extension}"
+      mp4|mov|mpg|mot|mts|jpg|jpeg|tif|tiff|img|gif|psd|xcf|avi|3gp|MOD) #video/picture
+          status="pictures by ${status}"
+          new="${destination}/${when} ${filename}.${extension}"
         ;;
       mp3|wma|ogg|aup|wav) #Audio
           status="music"
           destination="music/${path##*/Music/}"
           new="${destination}/${filename}.${extension}"
         ;;
-      odt|doc|docx|pdf|txt|txt~|rtf|png) #Document
+      png) #Screenshots
+          status="documents (screenshot)"
+          destination="documents"
+          new="${destination}/${when} ${filename}.${extension}"
+        ;;
+      odt|doc|docx|pdf|txt|txt~|rtf) #Document
           status="documents"
-          destination="documents/${path##$HOME}"
+          destination="documents/${path##*/}"
           new="${destination}/${filename}.${extension}"
         ;;
       *) #Misc/Unknown
           color="33" #yellow
           status="misc"
-          destination="misc/${path##$HOME}"
+          destination="misc/${path##*/}"
           new="${destination}/${filename}.${extension}"
         ;;
     esac
@@ -92,10 +121,13 @@ do
 
     n=0
     dst="${new}"
-    while [ -f "${dst}" ]; do
+    while [ -f "${OUT}/${dst}" ]; do
       ((n++))
       dst=$(printf "%s-%02d.%s" "${new%.*}" "${n}" "${new##*.}")
     done
+    if [[ "${new}" != "${dst}" ]];then
+      status="${status} renamed"
+    fi
     new="${dst}"
   else
     color="31" #red
@@ -104,11 +136,14 @@ do
   fi
   new="${new//\/\//\/}"
 
-  printf "\033[32m%-45s\033[0m %-45s \033[${color}m%s\033[0m\n" "${old}" "${new}" "${status}"
+  printf "\033[32m%-75s\033[0m %-75s \033[${color}m%s\033[0m\n" "${old}" "${new}" "${status}"
   if [[ "${new}" == "" ]];then
-    #$dry rm -f ${old}
+    ${dry} rm -f ${old}
     continue
   fi
-  $dry mv -n "${old}" "${OUT}/${new}"
+  ${dry} mv -n "${old}" "${OUT}/${new}"
 done < <(find . -type f)
 
+echo "Deleting Empty folders:"
+${dry} find . -type d -empty -delete | sed 's/^/  /'
+echo "DONE"

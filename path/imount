@@ -1,0 +1,17 @@
+#!/bin/bash
+#https://www.dedoimedo.com/computers/linux-iphone-6s-ios-11.html
+#sudo apt-get install ideviceinstaller python-imobiledevice libimobiledevice-utils libimobiledevice6 libplist3 python-plist ifuse usbmuxd
+
+case "${1}" in
+  on)
+      #sudo -i /usr/sbin/usbmuxd -U usbmux
+      ifuse /media/iphone
+      caja /media/iphone
+    ;;
+  off)
+      fusermount -u /media/iphone
+    ;;
+  *)
+      echo "${0%%*/} [on|off]"
+    ;;
+esac
