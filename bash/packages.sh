@@ -411,3 +411,16 @@ pip install package
 
 pip install cqlsh #Cassandra Query Language Shell
 pip install 'cqlsh>=5.0.1' --force-reinstall
+
+
+#::::::::::::::::::::MOCK::::::::::::::::::::
+
+#Creates a chroot for building
+  #Eample for CentOS7:
+  #chroot:
+    /var/lib/mock/epel-7-x86_64/root/
+  #config:
+    /etc/mock/epel-7-x86_64.cfg
+
+  #prevent from %clean in spec:
+  mock -r epel-7-x86_64 --no-clean --no-cleanup-after --resultdir result result/example.src.rpm

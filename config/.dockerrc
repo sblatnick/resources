@@ -254,12 +254,12 @@ function doc_context()
           path=$(sit contexts.$ctx.path)
           home=${HOME//\//\\/}
           path=${path//$home/\~}
+          pad=$((12 - $(expr length ${ctx})))
+          mark=' '
           if [ "$ctx" == "$context" ];then
-            printf "\033[32m%-10s\033[0m%s\n" "${ctx}" "${path}"
-          else
-            pad=$(expr length ${ctx})
-            printf "\033[32m%s\033[36m*\033[0m%*s%s\n" "${ctx}" $((9 - pad)) " " "${path}"
+            mark='*'
           fi
+          printf "\033[32m%s\033[36m%*s\033[0m%s\n" "${ctx}" "-${pad}" "${mark}" "${path}"
         done
       ;;
     new|add) #[name] [path]#create and use new context
