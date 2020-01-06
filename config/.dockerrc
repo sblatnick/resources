@@ -249,12 +249,13 @@ function doc_context()
 
   case "$action" in
     list|get) ##list contexts (default)
+        longest=$(maxlen $contexts)
         for ctx in $contexts
         do
           path=$(sit contexts.$ctx.path)
           home=${HOME//\//\\/}
           path=${path//$home/\~}
-          pad=$((12 - $(expr length ${ctx})))
+          pad=$((2 + longest - $(expr length ${ctx})))
           mark=' '
           if [ "$ctx" == "$context" ];then
             mark='*'

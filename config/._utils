@@ -59,6 +59,10 @@ function len() {
   expr length $@
 }
 
+function minlen() {
+  BIN='max' ACTION='len' pipe $@ | sort -n | head -n 1
+}
+
 function maxlen() {
   BIN='max' ACTION='len' pipe $@ | sort -n | tail -n 1
 }
