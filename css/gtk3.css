@@ -1,0 +1,15 @@
+/*
+ * Example How-To Change app's CSS
+ *
+ *   1. Copy theme to a new name:
+ *     cp -r /usr/share/themes/TraditionalOk ~/.themes/Custom
+ *   2. edit theme files like : ~/.themes/Custom/gtk-3.0/gtk.css
+ *   3. Use theme when opening app:
+ *     GTK_THEME=Custom tilix
+ */
+
+
+/* tilix CSS */
+label {
+  background-color: #FF0000;
+}

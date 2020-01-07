@@ -48,27 +48,22 @@ do
   #md5=$(md5sum ${old} | cut -d' ' -f1)
 
   if [ $size -gt 0 ];then
-
-    if [[ "${origin}" == "${filename}" ]];then
-      when=$(exif -mt DateTimeOriginal ${line} 2>/dev/null)
-      if [ "$?" -ne 0 ];then
+    when=$(exif -mt DateTimeOriginal ${line} 2>/dev/null)
+    if [ "$?" -ne 0 ] || [[ "${when}" == "0000"* ]];then
+      #ignore timestamp if already timestamped
+      if [[ "${origin}" == "${filename}" ]];then
         status="timestamp"
         when=$(stat "${old}" -c '%y' | cut -d'.' -f1)
       else
-        if [[ "${when}" == "0000"* ]];then
-          #invalid date, use timestamp
-          status="timestamp (invalid exif)"
-          when=$(stat "${old}" -c '%y' | cut -d'.' -f1)
-        else
-          status="exif"
-          when=${when/:/-}
-          when=${when/:/-}
-          #model=$(exif -mt Model $old)
-        fi
+        status="already timestamped"
+        when=${origin%% $filename}
       fi
+
     else
-      status="already timestamped"
-      when=${origin%% $filename}
+      status="exif"
+      when=${when/:/-}
+      when=${when/:/-}
+      #model=$(exif -mt Model $old)
     fi
 
     year=${when%%-*}
