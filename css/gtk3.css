@@ -6,10 +6,22 @@
  *   2. edit theme files like : ~/.themes/Custom/gtk-3.0/gtk.css
  *   3. Use theme when opening app:
  *     GTK_THEME=Custom tilix
+ *
+ * Inspect CSS:
+ *
+ *   1. sudo apt-get install libgtk-3-dev
+ *   2. #enable Ctrl-Shift-D:
+ *      gsettings set org.gtk.Settings.Debug enable-inspector-keybinding true
+ *      #or via command line:
+ *      GTK_DEBUG=interactive tilix
+ *
+ * Resources:
+ *   https://developer.gnome.org/gtk3/stable/chap-css-properties.html
+ *   https://lazka.github.io/pgi-docs/Gtk-3.0/classes/Notebook.html
  */
 
 
 /* tilix CSS */
-label {
+notebook header.right tabs tab label {
   background-color: #FF0000;
 }
