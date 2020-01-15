@@ -299,6 +299,7 @@ rpmbuild -ba ~/.rpm/SPECS/${package}.spec
 
 #Test how the macros are expanded:
 rpm --eval "$(cat service.spec)"
+rpmspec -P service.spec
 
 #::::::::::::::::::::RPM CREATION from CPAN::::::::::::::::::::
 

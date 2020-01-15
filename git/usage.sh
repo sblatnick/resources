@@ -99,6 +99,9 @@
     #push tags:
     git push origin --tags
     git push origin [tagname]
+
+    #pull tags:
+    git fetch --tags
     
     #checkout a new branch at a tagged point:
     git checkout -b [branchname] [tagname]

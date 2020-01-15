@@ -62,7 +62,7 @@ complete -o nospace -F gitex_complete git
 function bash_prompt()
 {
   export SIT_CURRENT='NULL' #ensure the terminal has a separate sit context
-  export BRANCH=$($wgit rev-parse --abbrev-ref HEAD 2>/dev/null)
+  export BRANCH=$($wgit rev-parse --abbrev-ref HEAD 2>/dev/null | sed 's~^\(heads\|tags\|remotes\)/~~')
   dirty=''
   if [ -n "$($wgit status --porcelain 2>/dev/null)" ]; then
     dirty='*'
