@@ -2,7 +2,7 @@
 
 ls --color >/dev/null 2>&1 && alias ls='ls --color=auto' || alias ls='ls -G'
 alias ll='ls -l'
-alias grep='grep --color=auto'
+which ggrep >/dev/null 2>&1 && alias grep='ggrep --color=auto' || alias grep='grep --color=auto'
 #alias diff='diff -u' #use +- instead of <>
 alias less='less -SRi'
 
@@ -42,6 +42,14 @@ passed() {
   end=$(date --date="$2" +%s)
   passed=$((end - start))
   echo "$((passed / 60)) min $(( passed % 60 )) sec"
+}
+
+name() {
+  if [ -z "$1" ]; then
+    tty -s <&1 && echo -en "\033]0;${PWD##*/}\a"
+  else
+    tty -s <&1 && echo -en "\033]0;${1}\a"
+  fi
 }
 
 tea() {

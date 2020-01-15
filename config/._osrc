@@ -10,12 +10,18 @@ case "$(uname -s)" in
       }
       alias md5sum=md5
       alias tac="tail -r"
-      alias sed="gsed" #brew install gnu-sed
-      alias grep="ggrep" #brew install grep
-      alias readlink="greadlink" #brew install coreutils
-      alias expr="gexpr" #brew install coreutils
       alias browser="open"
       alias resource="source ~/.bash_profile"
+
+      function galias()
+      {
+        while [ -n "$1" ]; do
+          which g$1 >/dev/null 2>&1 && alias $1=g$1
+          shift
+        done
+      }
+
+      galias sed readlink expr #brew install gnu-sed grep coreutils
 
       function service() {
         local action=$1
