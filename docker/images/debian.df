@@ -1,0 +1,23 @@
+FROM debian:10
+USER root
+
+RUN \
+  apt-get update \
+    && \
+  apt-get install -y \
+    software-properties-common \
+    geany \
+    geany-plugins \
+    caja
+#    && \
+#  apt-get build-dep geany geany-plugins
+
+ENTRYPOINT /bin/bash
+
+#Run Linux GUI app on Mac OSX:
+# 1. brew cask install xquartz
+# 2. open -a XQuartz
+# 3. Select icon to bring the menu to focus
+# 4. Menu XQartz => Preferences
+# 5. X11 Preferences => Security => check both
+# 6. doc gui debian $application

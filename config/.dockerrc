@@ -135,8 +135,14 @@ function docker_extentions() {
       set) #[key] [value]#Set rc defaults such as: repo, user
           key=$target
           shift
-          value=$1
+          value=$@
           sit $key $value
+        ;;
+      sit) #[key] [values]#Set/Get rc for the current context (alias to docrc)
+          key=$target
+          shift
+          value=$@
+          docrc ${target} $key $value
         ;;
       edit|new) #[name]#open Dockerfile in current context, create new one if not present
           if [ -f ${df} ];then
@@ -175,7 +181,7 @@ EOF
             return 1
           fi
         ;;
-      run|dry) ##run a temporary container locally, or display the command
+      run|dry|gui) #[application]#run a temporary container locally, running gui app, or display the command
           if [ -f ${df} ];then
             volumes=$(docrc ${target} 'volumes' | sed "s/~/${HOME//\//\\/}/" | sed '/^$/d;s/^/-v /')
             cwd=$(docrc ${target} 'cwd')
@@ -184,10 +190,22 @@ EOF
             echo -e "\033[34mWARN\033[0m: no dockerfile: ${df} (${target}:${version}), attempting to continue anyway"
           fi
           cwd=${cwd:-/root}
+          exe=/bin/bash
           if [[ "${action}" == "dry" ]];then
             echo -e "\033[33mentering ${target}:${version}\033[0m (dry)"
             dry="echo"
             after=''
+          elif [[ "${action}" == "gui" ]];then
+            shift
+            app=$1
+            local osx_ip=$(ifconfig | grep 'inet ' | grep 'broadcast' | head -n 1 | awk '$1=="inet" {print $2}')
+            echo -e "\033[33mexecuting app \"$1\" in ${target}:${version}\033[0m"
+            dry=''
+            after='return'
+            display="-e DISPLAY=${osx_ip}:0"
+            exe=/usr/bin/${app}
+            volumes="${volumes} -v /tmp/.X11-unix:/tmp/.X11-unix "
+            #FIXME: /usr/X11/bin/xhost + ${osx_ip}
           else
             echo -e "\033[33mentering ${target}:${version}\033[0m"
             dry=''
@@ -198,7 +216,8 @@ EOF
             --name ${target} \
             -w ${cwd} \
             -P \
-            ${repo}${target}:${version} /bin/bash
+            ${display} \
+            ${repo}${target}:${version} ${exe}
           #"--privileged=true" for loop devices and mounting an iso
           $after
         ;;

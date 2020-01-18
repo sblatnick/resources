@@ -1,0 +1,37 @@
+/*
+ * Atlassian Jira Custom CSS
+ *
+ * Chrome Plugin: "User JavaScript and CSS" https://chrome.google.com/webstore/detail/user-javascript-and-css/nbhcbdghjpllgmfilhnhkllmkecfmpld?hl=en
+ */
+
+/*Right Details Column*/
+
+#viewissuesidebar {
+  width: 300px !important;
+  padding-left: 0px !important;
+}
+
+.item-details dl>dt {
+  display: table-cell !important;
+  width: 80px !important;
+}
+
+.item-details dl>dd {
+  display: table-cell !important;
+}
+
+/*Left Side Bar */
+/*
+.aui-sidebar[aria-expanded="false"] .aui-sidebar-wrapper {
+  width: 32px !important;
+}
+
+.aui-icon, .aui-icon-large {
+  width: 16px !important;
+  background-size: contain !important;
+}
+
+.project-shortcuts-group .aui-iconfont-link {
+  width: 16px !important;
+}
+*/

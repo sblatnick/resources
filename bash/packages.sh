@@ -158,6 +158,11 @@
   apt-get install package
   apt-cache search package
 
+  #add repo:
+    apt-get update
+    apt-get install -y software-properties-common
+    add-apt-repository 'deb http://site.example.com/debian distribution component1 component2 component3'
+
   #install custom java:
   sudo update-alternatives --install /usr/bin/java java /opt/jre1.7.0_40/bin/java 1
   #choose version of java to use:
