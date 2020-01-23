@@ -190,26 +190,24 @@ EOF
             echo -e "\033[34mWARN\033[0m: no dockerfile: ${df} (${target}:${version}), attempting to continue anyway"
           fi
           cwd=${cwd:-/root}
-          exe=/bin/bash
+          display=''
+          dry=''
+          after='return'
           if [[ "${action}" == "dry" ]];then
             echo -e "\033[33mentering ${target}:${version}\033[0m (dry)"
             dry="echo"
             after=''
-          elif [[ "${action}" == "gui" ]];then
-            shift
-            app=$1
-            local osx_ip=$(ifconfig | grep 'inet ' | grep 'broadcast' | head -n 1 | awk '$1=="inet" {print $2}')
-            echo -e "\033[33mexecuting app \"$1\" in ${target}:${version}\033[0m"
-            dry=''
-            after='return'
-            display="-e DISPLAY=${osx_ip}:0"
-            exe=/usr/bin/${app}
-            volumes="${volumes} -v /tmp/.X11-unix:/tmp/.X11-unix "
-            #FIXME: /usr/X11/bin/xhost + ${osx_ip}
           else
+            if [[ "${action}" == "gui" ]];then
+              echo -e "\033[33mexecuting app \"$1\" in ${target}:${version}\033[0m"
+              display="-e DISPLAY=host.docker.internal:0"
+              xhost + 127.0.0.1
+              open -a XQuartz
+              socat TCP-LISTEN:6000,reuseaddr,fork UNIX-CLIENT:\"$DISPLAY\" &
+              pid=$!
+              after="kill $pid"
+            fi
             echo -e "\033[33mentering ${target}:${version}\033[0m"
-            dry=''
-            after='return'
           fi
           $dry docker run --privileged=true -it --rm ${volumes} \
             -h ${target} \
@@ -217,7 +215,7 @@ EOF
             -w ${cwd} \
             -P \
             ${display} \
-            ${repo}${target}:${version} ${exe}
+            ${repo}${target}:${version} /bin/bash
           #"--privileged=true" for loop devices and mounting an iso
           $after
         ;;
