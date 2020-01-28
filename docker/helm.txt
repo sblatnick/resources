@@ -29,13 +29,23 @@
     helm install stable/mysql incubator/cassandra
     #incubator: experimental
 
+    #helm v2: https://v2-14-0.helm.sh/docs/helm/#helm-install
+      helm install release repo/chart --namespace my-namespace         #release named
+      helm install repo/chart --namespace my-namespace                 #random release name
+    #helm v3:
+      #no longer creates namespace for you: https://github.com/helm/helm/issues/5753#issuecomment-502163585
+      kubectl create namespace my-namespace
+      helm install -n release repo/chart --namespace my-namespace      #release named
+      helm install repo/chart --generate-name --namespace my-namespace #random release name
+
+
     #Install using different releases and namespaces with the same charts:
     helm install -f "values.yaml,cassandra.yaml" --namespace cassandra -n cassandra-storage ./local-storage
     #Install using local settings:
     helm install -f "values.yaml,cassandra.yaml" --namespace cassandra -n cassandra incubator/cassandra
 
     #Uninstall:
-    helm delete --purge cassandra-storage cassandra
+    helm delete --purge cassandra-storage cassandra #--purge helm.v2
     #Cleanup local volumes:
     kubectl -n cassandra delete $(kubectl -n cassandra get pvc -o=name)
 
@@ -103,12 +113,12 @@
   helm inspect stable/mysql
 
   #List deployed releases:
-  helm list
+  helm list #--all-namespaces helm.v3
   helm ls --all
 
   #Remove release:
   helm delete wintering-rodent
-  helm del --purge honorary-crab
+  helm del --purge honorary-crab #--purge helm.v2
 
   #Status (works after deletion):
   helm status wintering-rodent
@@ -341,3 +351,26 @@
     example: "" #addressable in subchart as Values.example and in parent chart as Values.mysubchart.example
   global:
     example: "" #addressable from any template as Values.global.example
+
+#Helm 2 to 3 migration: https://helm.sh/blog/migrate-from-helm-v2-to-helm-v3/ https://helm.sh/docs/faq/
+
+  #install plugin:
+  helm plugin install https://github.com/helm/helm-2to3
+
+  #migrate repos to new configs (instead of re-adding `helm repo add name url`):
+  helm 2to3 move config --dry-run
+  helm 2to3 move config
+
+  #convert releases from v2 to v3:
+  helm 2to3 convert --dry-run release
+  helm 2to3 convert release
+
+  #check it exists, now with a namespace:
+  helm list -n namespace
+  helm list --all-namespaces
+
+  #clean up v2 and tiller:
+  helm 2to3 cleanup --dry-run
+  helm 2to3 cleanup
+
+
