@@ -50,6 +50,16 @@ else
         kubetail $2 -z 1,2,3,4,16,17,18 -n ${namespace}
         exit
       ;;
+    rm) #Alias to delete
+        shift
+        kubectl -n ${namespace} delete $@
+        exit
+      ;;
+    kill) #Alias to delete --grace-period 0 --force
+        shift
+        kubectl -n ${namespace} delete $@ --grace-period 0 --force
+        exit
+      ;;
   esac
 
   #contexts
