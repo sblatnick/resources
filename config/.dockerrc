@@ -135,8 +135,14 @@ function docker_extentions() {
       set) #[key] [value]#Set rc defaults such as: repo, user
           key=$target
           shift
-          value=$1
+          value=$@
           sit $key $value
+        ;;
+      sit) #[key] [values]#Set/Get rc for the current context (alias to docrc)
+          key=$target
+          shift
+          value=$@
+          docrc ${target} $key $value
         ;;
       edit|new) #[name]#open Dockerfile in current context, create new one if not present
           if [ -f ${df} ];then
@@ -175,7 +181,7 @@ EOF
             return 1
           fi
         ;;
-      run|dry) ##run a temporary container locally, or display the command
+      run|dry|gui) #[application]#run a temporary container locally, running gui app, or display the command
           if [ -f ${df} ];then
             volumes=$(docrc ${target} 'volumes' | sed "s/~/${HOME//\//\\/}/" | sed '/^$/d;s/^/-v /')
             cwd=$(docrc ${target} 'cwd')
@@ -184,20 +190,31 @@ EOF
             echo -e "\033[34mWARN\033[0m: no dockerfile: ${df} (${target}:${version}), attempting to continue anyway"
           fi
           cwd=${cwd:-/root}
+          display=''
+          dry=''
+          after='return'
           if [[ "${action}" == "dry" ]];then
             echo -e "\033[33mentering ${target}:${version}\033[0m (dry)"
             dry="echo"
             after=''
           else
+            if [[ "${action}" == "gui" ]];then
+              echo -e "\033[33mexecuting app \"$1\" in ${target}:${version}\033[0m"
+              display="-e DISPLAY=host.docker.internal:0"
+              xhost + 127.0.0.1
+              open -a XQuartz
+              socat TCP-LISTEN:6000,reuseaddr,fork UNIX-CLIENT:\"$DISPLAY\" &
+              pid=$!
+              after="kill $pid"
+            fi
             echo -e "\033[33mentering ${target}:${version}\033[0m"
-            dry=''
-            after='return'
           fi
           $dry docker run --privileged=true -it --rm ${volumes} \
             -h ${target} \
             --name ${target} \
             -w ${cwd} \
             -P \
+            ${display} \
             ${repo}${target}:${version} /bin/bash
           #"--privileged=true" for loop devices and mounting an iso
           $after

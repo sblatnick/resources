@@ -12,6 +12,7 @@ case "$(uname -s)" in
       alias tac="tail -r"
       alias browser="open"
       alias resource="source ~/.bash_profile"
+      which csshx >/dev/null 2>&1 && alias cssh='csshx'
 
       function galias()
       {

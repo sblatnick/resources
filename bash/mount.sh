@@ -15,6 +15,11 @@
   #install (yum):
   yum install fuse-sshfs
 
+#force unmount hanging nfs:
+  umount -f -l /share/nfs
+    -f #force
+    -l #lazy
+
 #simulate a full device:
   ln -s /dev/full /users_clone/connected-qaenv03
 #"mount" directory

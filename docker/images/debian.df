@@ -1,0 +1,34 @@
+FROM debian:10
+USER root
+
+RUN \
+  apt-get update \
+    && \
+  apt-get install -y \
+    software-properties-common \
+    geany \
+    geany-plugins \
+    caja
+#    && \
+#  apt-get build-dep geany geany-plugins
+
+ENTRYPOINT /bin/bash
+
+#Setup Running Linux GUI app on Mac OSX:
+# 1. brew cask install xquartz
+# 2. brew install socat
+# 3. open -a XQuartz
+# 4. Select icon to bring the menu to focus
+# 5. Menu XQuartz => Preferences
+# 6. X11 Preferences => Security => check both
+# 7. exit XQuartz (to get changes)
+# 8. doc img debian (build this image)
+#
+# Run:
+#   doc gui debian
+#     Which essentially runs:
+#       xhost + 127.0.0.1
+#       open -a XQuartz
+#       socat TCP-LISTEN:6000,reuseaddr,fork UNIX-CLIENT:\"$DISPLAY\"
+#       docker run --privileged=true -it --rm -v $volumes -h debian --name debian -w /root -P -e DISPLAY=host.docker.internal:0 debian:0.1 /bin/bash
+#   $application

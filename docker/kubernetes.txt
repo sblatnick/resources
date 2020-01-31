@@ -192,6 +192,9 @@ Example arguments:
     kubectl delete $(kubectl get sc -o=name)
     kubectl delete $(kubectl get pv -o jsonpath='{range.items[?(@.status.phase=="Released")]}{"pv/"}{.metadata.name}{"\n"}{end}') #delete released persistent volumes
 
+    #force delete:
+    kubectl delete pod my-pod --grace-period=0 --force --namespace my-namespace
+
     #set: update deployment image version:
     kubectl set image deployment/my-deployment my-pod=repo.intra.net/dev/my-pod:0.1
 
