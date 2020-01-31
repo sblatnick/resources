@@ -47,7 +47,7 @@
 
     #iptables should be considered:
       /etc/sysconfig/iptables:
-        -A INPUT -p tcp -m tcp --dport 3260 -j ACCEPT 
+        -A INPUT -p tcp -m tcp --dport 3260 -j ACCEPT
       iptables -I INPUT -p tcp -m tcp --dport 3260 -j ACCEPT
       iptables -L| grep 3260
       iptables-save | grep 3260
