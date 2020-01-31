@@ -60,6 +60,11 @@ else
         kubectl -n ${namespace} delete $@ --grace-period 0 --force
         exit
       ;;
+    killall) #Alias to force delete all of object type
+        shift
+        kubectl -n ${namespace} delete $(kubectl -n ${namespace} get $@ -o=name) --grace-period 0 --force
+        exit
+      ;;
   esac
 
   #contexts

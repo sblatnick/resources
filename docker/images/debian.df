@@ -8,7 +8,8 @@ RUN \
     software-properties-common \
     geany \
     geany-plugins \
-    caja
+    caja \
+    tilix
 #    && \
 #  apt-get build-dep geany geany-plugins
 

@@ -1,0 +1,109 @@
+#-----------------------------------OpenESB-------------------------------------
+
+#On each node:
+  #Setup iSCSI:
+  yum -y install iscsi-initiator-utils
+  systemctl start iscsid
+  systemctl enable iscsid
+
+#Install:
+  kubectl create -f openesb-operator.yaml
+  kubectl create -f openesb-storageclass.yaml
+
+#Uninstall:
+  kubectl delete -f openesb-operator.yaml
+  kubectl delete -f openesb-storageclass.yaml
+
+  #Cleanup:
+    kubectl delete $(kubectl get pod -o=name)
+    kubectl delete $(kubectl get job.batch -o=name)
+
+#Troubleshooting:
+
+  #Can't connect to iscsiadm ERROR:
+    kubectl -n my-namespace describe pod my-pod
+      Events:
+        Type     Reason                  Age                    From                     Message
+        ----     ------                  ----                   ----                     -------
+        Warning  FailedScheduling        6m54s (x6 over 6m54s)  default-scheduler        pod has unbound immediate PersistentVolumeClaims (repeated 2 times)
+        Normal   Scheduled               6m54s                  default-scheduler        Successfully assigned namespace/my-pod to node01
+        Normal   SuccessfulAttachVolume  6m54s                  attachdetach-controller  AttachVolume.Attach succeeded for volume "pvc-c31a111d-42b8-11ea-b210-b8ca3a6c26b4"
+        Warning  FailedMount             22s (x4 over 5m11s)    kubelet, node01          MountVolume.WaitForAttach failed for volume "pvc-c31a111d-42b8-11ea-b210-b8ca3a6c26b4" : failed to get any path for iscsi disk, last err seen:
+      iscsi: failed to sendtargets to portal 10.111.11.001:3260 output: iscsiadm: connect to 10.111.11.001 timed out
+      iscsiadm: connect to 10.111.11.001 timed out
+      iscsiadm: connect to 10.111.11.001 timed out
+      iscsiadm: connect to 10.111.11.001 timed out
+      iscsiadm: connect to 10.111.11.001 timed out
+      iscsiadm: connect to 10.111.11.001 timed out
+
+
+    systemctl status iscsi
+      iscsid[15504]: connect to 10.111.11.001:3306 failed (Connection refused)
+
+    dmesg | grep -Po '[\d\.:]+ - no destination available' | sort | uniq -c | sort -nr
+      13005 10.111.11.001:3306 - no destination available
+
+    #3260 is the port iscsi uses for openebs
+
+    #iptables should be considered:
+      /etc/sysconfig/iptables:
+        -A INPUT -p tcp -m tcp --dport 3260 -j ACCEPT 
+      iptables -I INPUT -p tcp -m tcp --dport 3260 -j ACCEPT
+      iptables -L| grep 3260
+      iptables-save | grep 3260
+
+    #However, there is an incompatibility between docker and the kernel:
+      # https://github.com/moby/moby/issues/35446
+    #Fix via getting compatible versions like:
+      docker version #docker 18.09
+      uname -a       #kernel 3.10.0-957
+    #Look at changes:
+      yum history list kernel
+      yum history list docker
+      rpm -qa --last | head #last packages installed and when
+
+    #reboot as a last resort
+
+  #Reclaim Volume - Fix Multi-Attach/Unable to mount ERROR
+    kubectl -n my-namespace describe pod my-pod
+      Events:
+        Type     Reason              Age    From                     Message
+        ----     ------              ----   ----                     -------
+        Normal   Scheduled           2m25s  default-scheduler        Successfully assigned my-namespace/my-pod-data-1 to node02
+        Warning  FailedAttachVolume  2m25s  attachdetach-controller  Multi-Attach error for volume "pvc-c31a111d-42b8-11ea-b210-b8ca3a6c26b4" Volume is already exclusively attached to one node and can't be attached to another
+        Warning  FailedMount         22s    kubelet, podinabox02     Unable to mount volumes for pod "my-pod-data(33118bea-42ec-11ea-b210-b8ca3a6c26b4)": timeout expired waiting for volumes to attach or mount for pod "my-namespace"/"my-pod". list of unmounted volumes=[data]. list of unattached volumes=[data config my-pod-data-token-hcv3r]
+      '
+
+    #look for it mounted on the node:
+    df -h | grep pvc-c31a111d-42b8-11ea-b210-b8ca3a6c26b4
+      /dev/sde 30G   47M   30G   1% /var/lib/kubelet/plugins/kubernetes.io/iscsi/iface-default/10.233.14.236:3260-iqn.2016-09.com.openebs.jiva:pvc-c31a111d-42b8-11ea-b210-b8ca3a6c26b4-lun-0
+
+    #unmount it from the node:
+      umount /var/lib/kubelet/plugins/kubernetes.io/iscsi/iface-default/10.233.14.236:3260-iqn.2016-09.com.openebs.jiva:pvc-c31a111d-42b8-11ea-b210-b8ca3a6c26b4-lun-0
+    #delete the pvc controller pod:
+      kubectl -n my-namespace delete pvc-c31a111d-42b8-11ea-b210-b8ca3a6c26b4-ctrl-66ff677b5d-xpq56
+
+    #the pod should pick it up again
+      Normal   SuccessfulAttachVolume  14m  attachdetach-controller  AttachVolume.Attach succeeded for volume "pvc-c31a111d-42b8-11ea-b210-b8ca3a6c26b4"
+
+#------------------------------------ROOK---------------------------------------
+#(Not working for me)
+#Requires physical block devices (loopback devices won't work without hackery)
+
+#Helm Install
+  #Add rook repo-stable:
+  helm repo add rook-stable https://charts.rook.io/stable
+  helm install -n rook-ceph-system --namespace rook-ceph-system rook-stable/rook-ceph
+
+#Manual Install from examples
+  cd ~/github/rook/cluster/examples/kubernetes/ceph
+  kubectl create -f operator.yaml
+  kubectl create -f cluster.yaml
+  kubectl create -f storageclass.yaml
+
+#Diagnosis:
+  kubectl -n rook-ceph get all
+  kubectl -n rook-ceph-system get all
+  kubectl -n rook-ceph-system describe pod rook-ceph-operator-67f4b8a67d-qcl44
+  kubectl -n rook-ceph-system logs rook-ceph-operator-67f4b8a67d-qcl44
+  kubectl -n rook-ceph describe CephCluster rook-ceph
