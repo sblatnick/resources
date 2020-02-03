@@ -77,6 +77,7 @@
   #revert install:
   yum history #find the id
   yum history undo 56 #undo the install by id
+  yum history info 56
 
   yum history list #list is default, same as list history
   yum history list package #list package changes
