@@ -7,17 +7,27 @@
 /*Right Details Column*/
 
 #viewissuesidebar {
-  width: 300px !important;
+  width: 230px !important;
   padding-left: 0px !important;
+  font-size: 9px;
 }
 
 .item-details dl>dt {
   display: table-cell !important;
   width: 80px !important;
+  line-height: 10px !important;
 }
 
 .item-details dl>dd {
   display: table-cell !important;
+  line-height: 10px !important;
+}
+
+a#watching-toggle {
+  white-space: nowrap;
+  overflow-x: hidden;
+  width: 63px;
+  display: inline-block;
 }
 
 /*Left Side Bar */

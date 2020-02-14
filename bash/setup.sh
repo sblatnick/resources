@@ -31,3 +31,64 @@
     xrandr --setprovideroutputsource 1 0
 
 
+#Debian Quick Setup:
+
+  #Add your user to sudoers:
+  su root
+  /usr/sbin/usermod -aG sudo username
+
+  #Reboot:
+  sudo reboot
+
+  #Install packages:
+  sudo apt-get install -y
+    apt-xapian-index                        #quick filter in synaptic
+    compiz compiz-mate emerald fusion-icon  #desktop effects
+    git
+    net-tools                               #ifconfig
+    vim
+    package-update-indicator
+    lightdm-settings
+    slick-greeter
+    caja-admin caja-extensions-common caja-image-converter caja-open-terminal
+    ifuse                                   #iphone mounting
+    vlc                                     #media player
+    rename
+    dconf-editor
+    audacious
+    silversearcher-ag
+    gdebi                                   #GUI to install deb files
+
+
+  System => Preferences => Personal => Startup Applications
+    Add
+      fusion-icon
+      package-update-indicator
+
+  #Grub boot without waiting:
+  sudo vi /etc/default/grub
+    GRUB_TIMEOUT=0
+  sudo update-grub
+
+  #Use these resources:
+  mkdir ~/projects
+  cd ~/projects
+  git clone https://github.com/sblatnick/resources.git
+  vi ~/.bashrc
+    source ~/projects/resources/config/bashrc
+
+  #Compiz:
+    fusion-icon right click
+      Emerald Theme Manager => Import...
+        ~/projects/resources/compiz/compiz.emerald
+      Settings Manager => Preferences => Import As...
+        ~/projects/resources/compiz/compiz.profile
+        Enter name
+      Reload Window Manager
+
+  #Disable desktop icons:
+    dconf-editor
+    org -> mate -> caja -> desktop
+      home-icon-visible
+      volumes-visible
+

@@ -163,6 +163,8 @@
     apt-get update
     apt-get install -y software-properties-common
     add-apt-repository 'deb http://site.example.com/debian distribution component1 component2 component3'
+    #find the keys you need for Debian on: https://ftp-master.debian.org/keys.html
+    wget -qO - https://ftp-master.debian.org/keys/release-10.asc | sudo apt-key add -
 
   #install custom java:
   sudo update-alternatives --install /usr/bin/java java /opt/jre1.7.0_40/bin/java 1
