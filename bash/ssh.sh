@@ -143,6 +143,12 @@ Host bastion
 Host jumphost
   ProxyCommand ssh -q tc@tinycore nc -w0 internal 22
 
+#nc == netcat, which is no longer needed: https://www.cyberciti.biz/faq/linux-unix-ssh-proxycommand-passing-through-one-host-gateway-server/
+Host jumphost
+  Hostname intranet.domain.com
+  HostKeyAlias intranet.domain.com
+  ProxyCommand ssh -q tc@tinycore -W %h:%p
+
 #vi /etc/ssh/sshd_config
   #Allow more connections on the ssh server:
   MaxStartups 1000
