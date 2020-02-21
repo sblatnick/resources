@@ -201,6 +201,10 @@ set -Eeuxo pipefail
   echo $(($RANDOM % 100)) #random int from 0 to 99
   echo $(expr $RANDOM % 1000)
 
+  #terminal width/height:
+    $LINES
+    $COLUMNS
+
   #Bash Variables: https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html
   #script.sh:
     #!/bin/bash

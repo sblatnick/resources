@@ -151,9 +151,48 @@ function gitex() {
           return 1
         fi
       ;;
-    co) ##alias to checkout
+    co) ##reasonable default checkout branch
         shift
-        $wgit checkout $@
+        branch=$1
+
+        #local branch?
+        $wgit rev-parse --abbrev-ref /${branch##*/} >/dev/null 2>&1
+        if [ $? -eq 0 ];then
+          echo -e "\033[33mcheckout local branch ${branch##*/}\033[0m"
+          $wgit checkout ${branch##*/}
+          return $?
+        fi
+
+        #svn branch?
+        url=$($wgit config --get svn-remote.svn.url)
+        if [ -n "${url}" ];then
+          echo -e "\033[33mcheckout svn branch ${branch##*/}\033[0m"
+          git svn co ${branch##*/}
+          return $?
+        fi
+
+        #specific remote branch?
+        if [ "${branch}" != "${branch##*/}" ];then
+          echo -e "\033[33mtrack specific remote branch ${branch}\033[0m"
+          $wgit checkout --track ${branch}
+          return $?
+        fi
+
+        #find remote branch
+        for remote in $($wgit remote)
+        do
+          git rev-parse --abbrev-ref ${remote}/${branch} >/dev/null 2>&1
+          if [ $? -eq 0 ];then
+            echo -e "\033[33mtrack remote branch ${remote}/${branch}\033[0m"
+            $wgit checkout --track ${remote}/${branch}
+            return $?
+          fi
+        done
+
+        #no existing branch found, so create one:
+        echo -e "\033[33mcheckout/create local branch\033[0m"
+        $wgit checkout -b ${branch}
+        return $?
       ;;
     modified) ##open dirty files in $EDITOR
         dir=$(pwd)
