@@ -333,7 +333,14 @@ sed -i '/^start$/,/^end$/ s/search/replace/' test.txt
 sed -i '/^start$/,/^end$/ {s/search/replace/;s/one/two/}' test.txt
 
 #print values of a variable without the variable name:
-sed -n 's/^hosts=//p' test.conf
+  sed -n 's/^hosts=//p' test.conf
+  #lower case:
+    s/[A-Z]/\L&/g
+  #upper case:
+    s/[a-z]/\U&/g
+  #hiera value in lower case:
+    REGION=$(sed -n '/^region: / {s/^region: //;s/[A-Z]*$/\L&/gp}')
+
 
 #print array trimming out localhost:
 sed -n '/^hosts=/{s/^hosts=//;s/,*127\.0\.0\.1,*//;s/,/\n/;p};' test.cfg

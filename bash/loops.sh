@@ -122,6 +122,44 @@
 
   #If you put a & after the done, it will run the loop in the background:
   done &
+
+#UNTIL LOOP: https://linuxize.com/post/bash-until-loop/
+
+  until [CONDITION]
+  do
+    [COMMANDS]
+  done
+
+  #retry:
+    function retry() {
+      i=2
+      until restart_service
+      do
+        ret=$?
+        if [ $i -gt 3 ];then
+          return $ret
+        fi
+        sleep 10
+        echo "retry $((i++))/3"
+      done
+      return 0
+    }
+
+
+    until git pull &> /dev/null
+    do
+      echo "Waiting for the git host ..."
+      sleep 1
+    done
+
+  #counter:
+    counter=0
+    until [ $counter -gt 5 ]
+    do
+      echo Counter: $counter
+      ((counter++))
+    done
+
 #NESTED LOOPS with different delimeters:
 
   IFS=$'\n' read -rd '' -a LINES <<< "$(cat file.txt)"

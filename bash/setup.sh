@@ -58,7 +58,8 @@
     audacious
     silversearcher-ag
     gdebi                                   #GUI to install deb files
-
+    system-config-printer                   #Printer administration
+    mozo                                    #MATE menu editor
 
   System => Preferences => Personal => Startup Applications
     Add

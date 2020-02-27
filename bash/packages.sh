@@ -413,17 +413,6 @@ mock -r epel-6-x86_64 --resultdir ./ rebuild kernel-2.6.32-696.30.1.el6.src.rpm
 # -r config
 # --resultdir = change output rpm directory
 
-
-#::::::::::::::::::::PYTHON PIP::::::::::::::::::::
-
-pip install package
-
-pip install cqlsh #Cassandra Query Language Shell
-pip install 'cqlsh>=5.0.1' --force-reinstall
-
-
-#::::::::::::::::::::MOCK::::::::::::::::::::
-
 #Creates a chroot for building
   #Eample for CentOS7:
   #chroot:
@@ -433,3 +422,11 @@ pip install 'cqlsh>=5.0.1' --force-reinstall
 
   #prevent from %clean in spec:
   mock -r epel-7-x86_64 --no-clean --no-cleanup-after --resultdir result result/example.src.rpm
+
+#::::::::::::::::::::PYTHON PIP::::::::::::::::::::
+
+pip install package
+
+pip install cqlsh #Cassandra Query Language Shell
+pip install 'cqlsh>=5.0.1' --force-reinstall
+
