@@ -66,6 +66,9 @@ echo -n "text" #skips newline at end
 #args with whitespace trimmed to one:
   echo "args:  $(xargs <<< "$@")"
 
+#repeat string variable number of times (indentation):
+  printf '  %.0s' $(seq ${count}))
+
 #::::::::::::::::::::COMBINE COLUMNS::::::::::::::::::::
 
 #merge lines of a file:

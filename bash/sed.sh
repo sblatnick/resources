@@ -15,6 +15,10 @@ sed
   -r, --regexp-extended
   -s, --separate                      #consider files as separate rather than as a single continuous long stream.
   -u, --unbuffered
+    #Interactive buffers like rsync can be changed from reusing the same line to a newline using tr -u:
+      rsync -P ... | tr -u '\r' '\n' | sed -u 's/^/  /'
+      #stdbuf for when tr doesn't support unbuffered (-oL line, -o0):
+      rsync -P ... | stdbuf -oL tr '\r' '\n' | sed -u 's/^/  /'
   --help
   --version
   #Commands:
@@ -360,3 +364,10 @@ sed -e :a -e '$d;N;2,10ba' -e 'P;D'
 New Content'
 
 
+#replace only if line 2 doesn't match:
+sed '2{/pattern/! c\replace
+}' test.cfg
+
+#insert only if line 2 doesn't match:
+sed '2{/pattern/! i\insert
+}' test.cfg

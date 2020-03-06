@@ -151,6 +151,20 @@ function gitex() {
           return 1
         fi
       ;;
+    bcc) #[message]#Use your last commit message's prefix before first colon
+        shift
+        local last=$($wgit --no-pager log --format=%s --author=${USER} | head -n 1)
+        local prefix=${last%%:*}
+        if [ -z "$@" ];then
+          echo -e "\033[31mNo commit message specified\033[0m"
+          return 1
+        elif [ -z "${prefix}" ];then
+          echo -e "\033[31mNo prefix in last commit\033[0m"
+          return 1
+        else
+          $wgit commit -a -m "${prefix}: $@"
+        fi
+      ;;
     co) ##reasonable default checkout branch
         shift
         branch=$1
@@ -253,11 +267,11 @@ function gitex() {
     giff) ##show differences in order
         shift
         local IFS=$'\n'
-        for line in $($wgit --no-pager log --oneline $@)
+        for line in $($wgit --no-pager log --oneline --all -- $@)
         do
           sha=${line%% *}
           echo -e "\033[33m${sha}\033[0m ${line#* }"
-          $wgit --no-pager show --color ${sha} $@ | sed 's/^/  /'
+          $wgit --no-pager show --color ${sha} -- $@ | sed 's/^/  /'
         done | less -x2 -S #eval $($wgit config --get core.pager)
       ;;
     generate|gen) #[files]#generate a consolidated diff

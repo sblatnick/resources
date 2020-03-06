@@ -30,7 +30,7 @@ tput lines #rows
 #PS1 == default interactive prompt
 #PS2 == continuation on next line (default: '> ')
 #PS3 == select prompt (displayed by "select" command, see below)
-#PS4 == `set -x` prefix shell output trace (default: '++', I suggest: '${0##*/}.${LINENO}: ')
+#PS4 == `set -x` prefix shell output trace (default: '++', I suggest: '+${BASH_SOURCE}:${LINENO}: ')
 #PROMPT_COMMAND == executes just before PS1, and can modify PS1 (Example: use it for showing current git branch/state)
 
 #source: https://www.thegeekstuff.com/2008/09/bash-shell-take-control-of-ps1-ps2-ps3-ps4-and-prompt_command

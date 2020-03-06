@@ -66,3 +66,22 @@ function minlen() {
 function maxlen() {
   BIN='max' ACTION='len' pipe $@ | sort -n | tail -n 1
 }
+
+function big() {
+  du -sx * 2>/dev/null | sort -r -n | head
+}
+
+function insert() {
+  if [ "$#" -lt 3 ];then
+    echo -e "Usage: insert [line number] [text] [file]"
+    return
+  fi
+  local line=$1
+  shift
+  local text=$1
+  shift
+  local file=$1
+  shift
+  sed -i ${line}'{/'${text:0:3}'/! i\'${text}'
+}' ${file}
+}

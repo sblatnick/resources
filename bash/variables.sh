@@ -48,6 +48,9 @@
   #question mark matches any character:
   ${variable%?}          #Trim the last character no matter what it is
 
+  #get substring range:
+  ${variable:0:3} #first 3 characters
+
   #array expressions work in bash 4.2 and above:
   ${variable::-1}        #Trim last character
   #pre-4.2 use spaces:

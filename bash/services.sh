@@ -174,6 +174,13 @@ systemctl status | grep '.service$' | sed 's/^ *[├│└─ ]*//' | sort -u
 #install file:
   install -m 644 -o root -g root service.service /usr/lib/systemd/system/service.service
 
+#vender preset (start at boot or enabled by default)
+vi /usr/lib/systemd/system-preset/98-service_name.preset
+  #Enable by default:
+  enable service_name.service
+systemctl reenable queue
+systemctl status queue
+
 #after modifying:
   systemctl daemon-reload
 
