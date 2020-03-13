@@ -35,6 +35,30 @@ expect << EOF | grep -vF 'Password:'
   }
 EOF
 
+#Print expect to stdout for post processing:
+expect << EOF | sed 's/^/EDIT: /'
+  set timeout -1
+  log_user 0
+  spawn update-script.pl
+  expect -re {
+    "^Would you like to run update right now *" {
+      send "Y\r"
+      exp_continue
+    }
+    "\r" {
+      set line \$expect_out(buffer)
+      if {[string trim \$line] ne ""} {
+        puts \$line
+      }
+      exp_continue
+    }
+    eof {
+      puts \$expect_out(buffer)
+      exit 0
+    }
+  }
+EOF
+
 #generate script for you:
 autoexpect commands to run
 

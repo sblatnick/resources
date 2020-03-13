@@ -1,0 +1,96 @@
+
+#===================================HOSTNAME===================================#
+#DNS: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/
+
+Services:
+  myservice.mynamespace.svc.cluster.local
+Pods: #Headless Services need to address the pods:
+  mypod-0.myservice.mynamespace.svc.cluster.local
+
+#===================================INGRESS====================================#
+#Install the nginx ingress controller with a load balancer service:
+helm install nginx-ingress metallb
+#MetalLB can be used as a load balancer for bare-metal k8s
+#An IP range is reserved by MetalLB's values.yaml:
+configInline:
+  address-pools:
+  - name: my-network
+    protocol: layer2
+    addresses:
+    - 10.24.250.1-10.24.250.255
+#One of those IPs is used as a load balancer, allowing us to access any service via subdomains.
+NAME                                       TYPE           CLUSTER-IP      EXTERNAL-IP     PORT(S)                      AGE
+service/nginx-ingress-controller           LoadBalancer   10.24.249.150   10.24.250.101   80:30415/TCP,443:30382/TCP   1d
+
+#Use /etc/hosts to get the browser to pass the right header of the subdomain to the load balancer:
+10.24.250.101 cluster.net service.cluster.net #etc
+
+#Then, you can reach HTTPS with header HTTP header:
+Host: service.cluster.net
+#via the ingress controller forwarding to the service.
+
+#===============================TLS TERMINATION================================#
+#Example:
+
+  #Create certs with CN set to the domain of the ingress:
+
+  openssl genrsa -out tls.key 4096
+  openssl req -subj "/C=US/ST=My State/L=My City/CN=service.cluster.net" -x509 -new -nodes -key tls.key -sha256 -days 1024 -out tls.crt
+
+  #Put the certs in secrets for the chart:
+    #charts/mychart/templates/secrets.yaml:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: my-tls-cert-name
+      type: Opaque
+      stringData:
+        tls.crt: |
+          -----BEGIN CERTIFICATE-----
+          ...
+          -----END CERTIFICATE-----
+        tls.key: |
+          -----BEGIN RSA PRIVATE KEY-----
+          ...
+          -----END RSA PRIVATE KEY----
+  #values.yaml:
+    ingress:
+      fqdn: service.cluster.net
+      class: nginx #make sure this is consistent with your ingress controller
+      certSecretName: my-tls-cert-name
+      affinity: ''
+  #ingress.yaml:
+    apiVersion: extensions/v1beta1
+    kind: Ingress
+    metadata:
+      name: {{ .Values.name }}
+      labels:
+        app: {{ .Values.app }}
+        heritage: {{ .Release.Service | quote }}
+        release: {{ .Release.Name | quote }}
+        chart: {{ replace "+" "_" .Chart.Version | printf "%s-%s" .Chart.Name }}
+      annotations:
+        kubernetes.io/ingress.class: {{ .Values.ingress.class | quote }}
+        nginx.ingress.kubernetes.io/secure-backends: "false"
+        {{- if eq .Values.ingress.affinity "cookie" }}
+        nginx.ingress.kubernetes.io/affinity: "cookie"
+        nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
+        {{- else if eq .Values.ingress.affinity "client-ip"}}
+        nginx.ingress.kubernetes.io/upstream-hash-by: "$the_real_ip"
+        {{- else if ne .Values.ingress.affinity ""}}
+        {{ required "invalid value for .Values.ingress.affinity" "" }}
+        {{- end }}
+    spec:
+      tls:
+      - hosts:
+        - {{ required ".Values.ingress.fqdn is required if .Values.ingress.class is non-empty" .Values.ingress.fqdn | quote}}
+        {{- if .Values.ingress.certSecretName }}
+        secretName: {{ .Values.ingress.certSecretName | quote}}
+        {{- end }}
+      rules:
+      - host: {{ required ".Values.ingress.fqdn is required if .Values.ingress.class is non-empty" .Values.ingress.fqdn | quote}}
+        http:
+          paths:
+          - backend:
+              serviceName: myservice
+              servicePort: 80
