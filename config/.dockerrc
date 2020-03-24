@@ -59,7 +59,7 @@ function doc_complete() {
               #add contexts:
               COMPREPLY+=($(compgen -W "$(sit contexts)" -- "${COMP_WORDS[${COMP_CWORD}]}"))
             ;;
-          img|build|run|push|pull|edit|new|list)
+          img|build|make|run|push|pull|edit|new|list)
               #add image names:
               path=$(sit contexts[current].path)
               COMPREPLY+=($(compgen -W "$(ls -1 $path | sed 's/\.df//' | tr $'\n' ' ')" -- "${COMP_WORDS[${COMP_CWORD}]}"))
@@ -94,6 +94,7 @@ function docker_extentions() {
 
   while
     target=${1%%:*}
+    start=$2
     version=${1/$target/}
     version=${version#:}
     version=${version:=0.1}
@@ -107,6 +108,10 @@ function docker_extentions() {
     else
       df=${path}/${target}.df
     fi
+
+    img=${target}
+    stages=$(grep -E 'FROM .* AS .*' ${df} 2>/dev/null | sed -n 's/^.* AS //p')
+    starget=''
 
     case "$action" in
       help|'') ##print this usage information
@@ -172,10 +177,31 @@ EOF
           ls -1 $path | sed 's/\.df//'
           return
         ;;
-      img|build) #[name]#Create docker image
+      img|build|make) #[name]#Create docker image
           if [ -f ${df} ];then
-            echo -e "\033[33mbuilding ${target}\033[0m"
-            docker build -t ${repo}${target}:${version} -f ${df} ${path}/ 2>&1 | sed 's/^/  /'
+            while read stage
+            do
+              if [ -n "${stage}" ];then
+                if [[ -n "${start}" && "${stage}" != "${start}" ]];then
+                  continue
+                fi
+                echo -en "\033[32;1mSTAGE: ${stage}\033[0m "
+                starget="--target ${stage}"
+                target="${img}/${stage}"
+                include=$(cd ${path}/;sed -n "/FROM .* AS ${stage}\$/,/FROM .* AS / {s/ [^ ]*\$//;s~/[^/]*\$~~;s/ *\(COPY\|ADD\) //p}" ${df} | tr $'\n' '|')
+                $(cd ${path}/;ls -1d * | grep -Ev "^(${include}Dockerfile)\$" > .dockerignore)
+              fi
+
+              echo -e "\033[32mbuilding ${target}:${version} image\033[0m"
+              eval docker build \
+                ${starget} -t ${repo}${target}:${version} \
+                -f ${df} \
+                ${path}/
+              rm ${path}/.dockerignore
+              echo -e "\033[32mpush ${target}:${version} image\033[0m"
+              docker push ${repo}${target}:${version}
+                 
+            done < <(echo "${stages}")
           else
             echo -e "\033[33mERROR\033[0m: no such target: ${target}:${version}"
             return 1
@@ -185,6 +211,9 @@ EOF
           if [ -f ${df} ];then
             volumes=$(docrc ${target} 'volumes' | sed "s/~/${HOME//\//\\/}/" | sed '/^$/d;s/^/-v /')
             cwd=$(docrc ${target} 'cwd')
+            if [ -n ${stages} ];then
+              target=${img}/$(echo "${stages}" | tail -n 1)
+            fi
           else
             volumes=""
             echo -e "\033[34mWARN\033[0m: no dockerfile: ${df} (${target}:${version}), attempting to continue anyway"

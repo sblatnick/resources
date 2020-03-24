@@ -23,6 +23,10 @@
   awk 'END {print NR,"coins"}' coins.txt
 
   awk '{sum+=$1} END {print sum}' coins.txt
+  #alternatively, use paste and bc:
+  command | paste -s -d+ - | bc
+  #example, total cores of all kvm vms:
+    virsh list --all --name | xargs -n 1 virsh vcpucount --config --maximum | sed '/^$/d' | paste -s -d+ - | bc
 
   #like tail -n +1, printing the whole file with everything except the first line:
   awk 'NR > 1' file #print is implied, or: awk 'NR > 2 { print }' file

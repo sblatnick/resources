@@ -105,3 +105,46 @@
     #get contents, no bash needed:
     docker cp ${SRC} ${DST}
     docker cp ${NAME}:/ root/
+
+#====================================STAGES====================================#
+#source: https://pythonspeed.com/articles/faster-multi-stage-builds/
+
+#Build in stages within a single Dockerfile
+
+  FROM centos:7 AS prebuild
+    USER root
+
+    RUN yum install -y \
+      net-tools sysstat unzip
+    RUN yum install -y \
+      epel-release telnet openssl nmap \
+      wget less vim-enhanced which patch expect
+    RUN yum install -y \
+      inotify-tools the_silver_searcher jq
+
+  FROM prebuild AS build
+    USER root
+
+    COPY inc/ /tmp/bld/
+
+    RUN /script.sh
+
+  ENTRYPOINT /bin/bash
+
+#Faster builds by caching earlier images:
+
+  docker build --target prebuild
+    #need this? --cache=from=prebuild:latest
+  docker push prebuild
+  docker build --target build
+  docker push build
+
+  docker run build
+
+#Still taking time?  Perhaps you are including large files in the build directory that aren't needed for the build:
+#source: https://rollout.io/blog/3-different-ways-to-provide-docker-build-context/
+  docker build
+    Sending build context to Docker daemon  1.887GB
+  .dockerignore
+    CentOS7.iso
+
