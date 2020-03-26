@@ -1,5 +1,6 @@
 #!/bin/bash
 #Kubernetes (k8s) helper scripts
+return 0
 CONFIG=~/.kate
 shopt -s extglob
 

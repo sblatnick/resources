@@ -47,6 +47,7 @@
     rm ${NAME} #or container id, cleanup, don't use "device mapper", /var/lib/docker is where everything is stored, latest is "overlay"
     --rm #utilities clean up on exit
     images #lists images you have
+    docker container ls -a #list all containers
     volume ls #lists volumes
     run ${ENTRYPOINT} ${PARAMETERS} #run an image
     exec

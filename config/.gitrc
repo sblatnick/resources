@@ -121,25 +121,7 @@ function gitex() {
       ;;
     ex) ##print this usage information
         echo -e "\033[1mExtended Git Usage:\033[0m git [\033[34;1mactions\033[0m]"
-
-        grep -Eo '^##.*$' $BASH_SOURCE |
-        while read section
-        do
-          echo ""
-          echo -e "  \033[1m${section#\#\#}\033[0m"
-          sed -n "/^${section}\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | \
-          while read help
-          do
-            params=${help#*#}
-            params=${params%%#*}
-            if [ -z "${params}" ];then
-              params="$(grep -A 1 -F "${help}" $BASH_SOURCE | tail -n 1 | grep 'trap' | grep -Eo '\[[^]]*\]' | tr $'\n' ' ')"
-            fi
-            col=$(printf "\033[34;1m%s\033[0m %s" "${help%%)*#*}" "${params}")
-            printf "    %-60s %s\n" "${col}" "${help##*#}"
-            #printf "    \033[34;1m%-15s\033[0m %s\n" "${help%%)*#*}" "${help#*#}"
-          done
-        done
+        document ${BASH_SOURCE}
         echo ""
       ;;
     com|cam|cc) #[message]#alias to commit -a -m
