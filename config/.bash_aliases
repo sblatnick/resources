@@ -63,12 +63,3 @@ tea() {
     echo -e "\033[33mskipping\033[0m ${file}"
   fi
 }
-
-#KUBERNETES
-  #kubectl/kate less = KL
-  kl() {
-    kate $@ | less
-  }
-  #kube control = KC
-  alias k='kate'
-  alias k8='kate'

@@ -41,13 +41,7 @@ function doc_complete() {
     1) #actions
         COMPREPLY=()
         local IFS=$'\n'
-        for section in $(grep -Eom 2 '^##.*$' $BASH_SOURCE)
-        do
-          for cmd in $(sed -n "/^${section}\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/))* .*$//')
-          do
-            COMPREPLY+=($(compgen -W "$(echo "${cmd}" | tr '|' ' ')" -- "${COMP_WORDS[1]}"))
-          done
-        done
+        complete_1 ${BASH_SOURCE}
       ;;
     *) #targets
         #add files/directories:
@@ -66,12 +60,7 @@ function doc_complete() {
             ;;
         esac
 
-        if [ -n "${section}" ];then
-          for cmd in $(sed -n "/^${section}\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/) .*$//' | grep -Ev '[\$\*]')
-          do
-            COMPREPLY+=($(compgen -W "$(echo "${cmd}" | tr '|' ' ')" -- "${COMP_WORDS[${COMP_CWORD}]}"))
-          done
-        fi
+        complete_2 "${section}" ${BASH_SOURCE}
       ;;
   esac
 }

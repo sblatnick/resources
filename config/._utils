@@ -106,3 +106,25 @@ function document() {
     done
   done
 }
+
+function complete_1() {
+  for section in $(grep -Eom 2 '^##.*$' $1)
+  do
+    for cmd in $(sed -n "/^${section}\$/,/^\}\$/ p" $1 | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/))* .*$//')
+    do
+      COMPREPLY+=($(compgen -W "$(echo "${cmd}" | tr '|' ' ')" -- "${COMP_WORDS[1]}"))
+    done
+  done
+}
+
+function complete_2() {
+  section=$1
+  shift
+
+  if [ -n "${section}" ];then
+    for cmd in $(sed -n "/^${section}\$/,/^\}\$/ p" $1 | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/) .*$//' | grep -Ev '[\$\*]')
+    do
+      COMPREPLY+=($(compgen -W "$(echo "${cmd}" | tr '|' ' ')" -- "${COMP_WORDS[${COMP_CWORD}]}"))
+    done
+  fi
+}

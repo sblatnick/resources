@@ -1,125 +1,182 @@
 #!/bin/bash
 #Kubernetes (k8s) helper scripts
-return 0
-CONFIG=~/.kate
+
+export K8_CONFIG=~/.kate
 shopt -s extglob
 
-context=$(kubectl config current-context)
-source $CONFIG 2>/dev/null #get current namespace
+#----------------------------------FUNCTIONS-----------------------------------#
 
-function set_namespace() {
-  echo "namespace=\"${1}\"" > ${CONFIG}
+function kate_set_namespace() {
+  private
+
+  echo "namespace=\"${1}\"" > ${K8_CONFIG}
   echo -e "namespace \033[34;1m${1}\033[0m";
 }
 
-if [ -z ${1} ]; then
-  IFS='|'
-  for ctx in $(kubectl config get-contexts -o=name | tr $'\n' '|')
-  do
-    if [ "$ctx" == "$context" ];then
-      echo -e "\033[33;1m${ctx}\033[0m"
-      kubectl get namespace -o name | sed 's/namespace\///' |
-      while read ns
-      do
-        if [ "$ns" == "$namespace" ];then
-          echo -e "  \033[36;1m${ns}\033[0m"
-        else
-          echo -e "  \033[34;1m${ns}\033[0m"
-        fi
-      done
-    else
-      echo -e "\033[32;1m${ctx}\033[0m"
-    fi
-  done
-else
-  case "${1}" in
-    -*) #options passthrough
-        kubectl -n ${namespace} $@
-        exit
+#----------------------------------COMPLETIONS-----------------------------------#
+function kate_complete() {
+  case "${COMP_CWORD}" in
+    1)
+        #kubectl:
+        COMPREPLY=($(compgen -W "$(kubectl -h | grep -o "^  [a-z][a-z]*")" -- "${COMP_WORDS[1]}"))
+        #contexts:
+        COMPREPLY+=($(compgen -W "$(kubectl config get-contexts -o=name)" -- "${COMP_WORDS[1]}"))
+        #namespaces:
+        COMPREPLY+=($(compgen -W "$(kubectl get namespace -o name | sed 's/namespace\///')" -- "${COMP_WORDS[1]}"))
+
+        #local IFS=$'\n'
+        #complete_1 ${BASH_SOURCE}
       ;;
-    @($(kubectl help | sed -n '/^  [^ ]*/ p' | cut -d' ' -f3 | tr $'\n' '|'))) #command passthrough
-        kubectl -n ${namespace} $@
-        exit
+    2)
+        #namespaces:
+        COMPREPLY=($(compgen -W "$(kubectl get namespace -o name | sed 's/namespace\///')" -- "${COMP_WORDS[1]}"))
+
+        #complete_2 "${section}" ${BASH_SOURCE}
       ;;
-    #Custom commands:
-    tail)
-        which kubetail >/dev/null 2>&1
-        if [ "$?" -ne "0" ]; then
-          echo -e "\033[31mkubetail not installed in path\033[0m git clone git@github.com:johanhaleby/kubetail.git"
-          exit
-        fi
-        kubetail $2 -z 1,2,3,4,16,17,18 -n ${namespace}
-        exit
-      ;;
-    rm) #Alias to delete
-        shift
-        kubectl -n ${namespace} delete $@
-        exit
-      ;;
-    kill) #Alias to delete --grace-period 0 --force
-        shift
-        kubectl -n ${namespace} delete $@ --grace-period 0 --force
-        exit
-      ;;
-    killall) #Alias to force delete all of object type
-        shift
-        kubectl -n ${namespace} delete $(kubectl -n ${namespace} get $@ -o=name) --grace-period 0 --force
-        exit
-      ;;
-    go) #Alias to attaching to a container
-        shift
-        if [ $# -lt 1 ]; then
-          for pod in $(kubectl -n ${namespace} get pod -o=name | sed 's~^pod/~~')
-          do
-            echo -e "\033[32;1m${pod}\033[0m"
-            for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.initContainers[*].name}")
-            do
-              echo -e "  \033[36;1m${container}\033[0m"
-            done
-            for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.containers[*].name}")
-            do
-              echo -e "  \033[34;1m${container}\033[0m"
-            done
-          done
-        else
-          pod=$1
-          shift
-          container=$1
-          shell=$2
-          kubectl -n ${namespace} exec -it -c ${container} ${pod} -- /bin/${shell:-bash}
-        fi
-        exit
+    *)
+        COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d {} ];then echo {}/;else echo {}; fi'))
       ;;
   esac
+}
 
-  #contexts
-  kubectl config get-contexts $1 >/dev/null 2>&1
-  if [ "$?" -ne "0" ]; then
-    #namespaces
-    kubectl get namespace $1 >/dev/null 2>&1
+complete -o nospace -F kate_complete kate k8 kl kc k
+
+
+##Main:
+function kate_extentions() {
+  private
+
+  context=$(kubectl config current-context)
+  source ${K8_CONFIG} 2>/dev/null #get current namespace
+
+  if [ -z ${1} ]; then
+    IFS='|'
+    for ctx in $(kubectl config get-contexts -o=name | tr $'\n' '|')
+    do
+      if [ "$ctx" == "$context" ];then
+        echo -e "\033[33;1m${ctx}\033[0m"
+        kubectl get namespace -o name | sed 's/namespace\///' |
+        while read ns
+        do
+          if [ "$ns" == "$namespace" ];then
+            echo -e "  \033[36;1m${ns}\033[0m"
+          else
+            echo -e "  \033[34;1m${ns}\033[0m"
+          fi
+        done
+      else
+        echo -e "\033[32;1m${ctx}\033[0m"
+      fi
+    done
+  else
+    case "${1}" in
+      -*) #options passthrough
+          kubectl -n ${namespace} $@
+          exit
+        ;;
+      @($(kubectl help | sed -n '/^  [^ ]*/ p' | cut -d' ' -f3 | tr $'\n' '|'))) #command passthrough
+          kubectl -n ${namespace} $@
+          exit
+        ;;
+      #Custom commands:
+      tail)
+          which kubetail >/dev/null 2>&1
+          if [ "$?" -ne "0" ]; then
+            echo -e "\033[31mkubetail not installed in path\033[0m git clone git@github.com:johanhaleby/kubetail.git"
+            exit
+          fi
+          kubetail $2 -z 1,2,3,4,16,17,18 -n ${namespace}
+          exit
+        ;;
+      rm) ##Alias to delete
+          shift
+          kubectl -n ${namespace} delete $@
+          exit
+        ;;
+      kill) ##Alias to delete --grace-period 0 --force
+          shift
+          kubectl -n ${namespace} delete $@ --grace-period 0 --force
+          exit
+        ;;
+      killall) ##Alias to force delete all of object type
+          shift
+          kubectl -n ${namespace} delete $(kubectl -n ${namespace} get $@ -o=name) --grace-period 0 --force
+          exit
+        ;;
+      go) ##Alias to attaching to a container
+          shift
+          if [ $# -lt 1 ]; then
+            for pod in $(kubectl -n ${namespace} get pod -o=name | sed 's~^pod/~~')
+            do
+              echo -e "\033[32;1m${pod}\033[0m"
+              for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.initContainers[*].name}")
+              do
+                echo -e "  \033[36;1m${container}\033[0m"
+              done
+              for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.containers[*].name}")
+              do
+                echo -e "  \033[34;1m${container}\033[0m"
+              done
+            done
+          else
+            pod=$1
+            shift
+            container=$1
+            shell=$2
+            kubectl -n ${namespace} exec -it -c ${container} ${pod} -- /bin/${shell:-bash}
+          fi
+          exit
+        ;;
+    esac
+
+    #contexts
+    kubectl config get-contexts $1 >/dev/null 2>&1
     if [ "$?" -ne "0" ]; then
-      #passthrough (probably an error)
-      kubectl -n ${namespace} $@
-    else
-      set_namespace $1
-    fi
-  else #set context
-    kubectl config use-context $1 >/dev/null 2>&1
-    echo -en "Switching to context \033[32;1m${1}\033[0m ";
-    if [ -z ${2} ]; then
-      set_namespace default
-    else
-      shift
       #namespaces
       kubectl get namespace $1 >/dev/null 2>&1
       if [ "$?" -ne "0" ]; then
         #passthrough (probably an error)
         kubectl -n ${namespace} $@
       else
-        set_namespace $1
+        kate_set_namespace $1
+      fi
+    else #set context
+      kubectl config use-context $1 >/dev/null 2>&1
+      echo -en "Switching to context \033[32;1m${1}\033[0m ";
+      if [ -z ${2} ]; then
+        kate_set_namespace default
+      else
+        shift
+        #namespaces
+        kubectl get namespace $1 >/dev/null 2>&1
+        if [ "$?" -ne "0" ]; then
+          #passthrough (probably an error)
+          kubectl -n ${namespace} $@
+        else
+          kate_set_namespace $1
+        fi
       fi
     fi
   fi
-fi
+}
+
+function kate() {
+  if tty -s <&1; then
+    source $BASH_SOURCE #keep dockerrc sourced for fast dev
+  fi
+  kate_extentions "$@"
+}
+
+#kubectl/kate less = KL
+function kl() {
+  kate $@ | less
+}
+#kube control = KC
+alias k='kate'
+alias k8='kate'
+alias kc='kate'
+
+
+
 
 

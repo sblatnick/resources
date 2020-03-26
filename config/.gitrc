@@ -13,13 +13,7 @@ function gitex_complete() {
         COMPREPLY=($(compgen -W "$(git help -a | grep "^  [a-z]")" -- "${COMP_WORDS[1]}"))
 
         local IFS=$'\n'
-        for section in $(grep -Eom 2 '^##.*$' $BASH_SOURCE)
-        do
-          for cmd in $(sed -n "/^${section}\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/) .*$//')
-          do
-            COMPREPLY+=($(compgen -W "$(echo "${cmd}" | tr '|' ' ')" -- "${COMP_WORDS[1]}"))
-          done
-        done
+        complete_1 ${BASH_SOURCE}
       ;;
     2)
         COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d {} ];then echo {}/;else echo {}; fi'))
@@ -44,12 +38,7 @@ function gitex_complete() {
             ;;
         esac
 
-        if [ -n "${section}" ];then
-          for cmd in $(sed -n "/^${section}\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/) .*$//' | grep -Ev '[\$\*]')
-          do
-            COMPREPLY+=($(compgen -W "$(echo "${cmd}" | tr '|' ' ')" -- "${COMP_WORDS[2]}"))
-          done
-        fi
+        complete_2 "${section}" ${BASH_SOURCE}
       ;;
     *)
         COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d {} ];then echo {}/;else echo {}; fi'))
