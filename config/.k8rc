@@ -15,6 +15,7 @@ function kate_set_namespace() {
 
 #----------------------------------COMPLETIONS-----------------------------------#
 function kate_complete() {
+  COMPREPLY=()
   case "${COMP_CWORD}" in
     1)
         #kubectl:
@@ -24,13 +25,15 @@ function kate_complete() {
         #namespaces:
         COMPREPLY+=($(compgen -W "$(kubectl get namespace -o name | sed 's/namespace\///')" -- "${COMP_WORDS[1]}"))
 
-        #local IFS=$'\n'
-        #complete_1 ${BASH_SOURCE}
+        complete_sections ${BASH_SOURCE}
       ;;
     2)
-        #namespaces:
-        COMPREPLY=($(compgen -W "$(kubectl get namespace -o name | sed 's/namespace\///')" -- "${COMP_WORDS[1]}"))
-
+        context=$(kubectl config current-context)
+        #if current context:
+        if [[ "${context}" == "${COMP_WORDS[1]}" ]];then
+          #namespaces:
+          COMPREPLY=($(compgen -W "$(kubectl get namespace -o name | sed 's/namespace\///')" -- "${COMP_WORDS[1]}"))
+        fi
         #complete_2 "${section}" ${BASH_SOURCE}
       ;;
     *)
@@ -38,7 +41,7 @@ function kate_complete() {
       ;;
   esac
 }
-#complete -o nospace -F kate_complete kate k8 kl kc k
+complete -o nospace -F kate_complete kate k8 kl kc k
 
 
 ##Main:
@@ -71,36 +74,36 @@ function kate_extentions() {
     case "${1}" in
       -*) #options passthrough
           kubectl -n ${namespace} $@
-          exit
+          return
         ;;
       @($(kubectl help | sed -n '/^  [^ ]*/ p' | cut -d' ' -f3 | tr $'\n' '|'))) #command passthrough
           kubectl -n ${namespace} $@
-          exit
+          return
         ;;
       #Custom commands:
       tail)
           which kubetail >/dev/null 2>&1
           if [ "$?" -ne "0" ]; then
             echo -e "\033[31mkubetail not installed in path\033[0m git clone git@github.com:johanhaleby/kubetail.git"
-            exit
+            return
           fi
           kubetail $2 -z 1,2,3,4,16,17,18 -n ${namespace}
-          exit
+          return
         ;;
       rm) ##Alias to delete
           shift
           kubectl -n ${namespace} delete $@
-          exit
+          return
         ;;
       kill) ##Alias to delete --grace-period 0 --force
           shift
           kubectl -n ${namespace} delete $@ --grace-period 0 --force
-          exit
+          return
         ;;
       killall) ##Alias to force delete all of object type
           shift
           kubectl -n ${namespace} delete $(kubectl -n ${namespace} get $@ -o=name) --grace-period 0 --force
-          exit
+          return
         ;;
       go) ##Alias to attaching to a container
           shift
@@ -124,7 +127,7 @@ function kate_extentions() {
             shell=$2
             kubectl -n ${namespace} exec -it -c ${container} ${pod} -- /bin/${shell:-bash}
           fi
-          exit
+          return
         ;;
     esac
 

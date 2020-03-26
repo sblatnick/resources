@@ -37,18 +37,15 @@ function docrc() {
 
 #----------------------------------COMPLETIONS-----------------------------------#
 function doc_complete() {
+  COMPREPLY=()
   case "${COMP_CWORD}" in
     1) #actions
-        COMPREPLY=()
-        local IFS=$'\n'
         complete_sections ${BASH_SOURCE}
       ;;
-    *) #targets
-        #add files/directories:
-        COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d {} ];then echo {}/;else echo {}; fi'))
+    2) #targets
+        section=''
         case "${COMP_WORDS[1]}" in
           context|ctx|go)
-              COMPREPLY=()
               section="##Context Actions (context|ctx|go):"
               #add contexts:
               COMPREPLY+=($(compgen -W "$(sit contexts)" -- "${COMP_WORDS[${COMP_CWORD}]}"))
@@ -58,13 +55,38 @@ function doc_complete() {
               path=$(sit contexts[current].path)
               COMPREPLY+=($(compgen -W "$(ls -1 $path | sed 's/\.df//' | tr $'\n' ' ')" -- "${COMP_WORDS[${COMP_CWORD}]}"))
             ;;
+          *)
+              #add files/directories:
+              complete_pwd
+            ;;
         esac
 
         complete_section "${section}" ${BASH_SOURCE}
       ;;
+    3)
+        case "${COMP_WORDS[1]}" in
+          context|ctx|go)
+              case "${COMP_WORDS[2]}" in
+                set|use)
+                    #add contexts:
+                    COMPREPLY+=($(compgen -W "$(sit contexts)" -- "${COMP_WORDS[${COMP_CWORD}]}"))
+                  ;;
+              esac
+            ;;
+          *)
+              #add files/directories:
+              complete_pwd
+            ;;
+        esac
+
+      ;;
+    *)
+        #add files/directories:
+        complete_pwd
+      ;;
   esac
 }
-#complete -o nospace -F doc_complete doc
+complete -o nospace -F doc_complete doc
 
 ##Main:
 function docker_extentions() {

@@ -123,3 +123,7 @@ function complete_sections() {
   done
 }
 
+function complete_pwd() {
+  COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d {} ];then echo {}/;else echo {}; fi'))
+}
+
