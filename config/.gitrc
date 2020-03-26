@@ -10,10 +10,10 @@ function gitex_complete() {
   case "${COMP_CWORD}" in
     1)
         #core commands:
-        COMPREPLY=($(compgen -W "$(git help -a | grep "^  [a-z]")" -- "${COMP_WORDS[1]}"))
+        COMPREPLY=($(compgen -W "$(git help -a | grep -o "^   [^ ]* ")" -- "${COMP_WORDS[1]}"))
 
         local IFS=$'\n'
-        complete_1 ${BASH_SOURCE}
+        complete_sections ${BASH_SOURCE}
       ;;
     2)
         COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d {} ];then echo {}/;else echo {}; fi'))
@@ -38,7 +38,7 @@ function gitex_complete() {
             ;;
         esac
 
-        complete_2 "${section}" ${BASH_SOURCE}
+        complete_section "${section}" ${BASH_SOURCE}
       ;;
     *)
         COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d {} ];then echo {}/;else echo {}; fi'))
@@ -473,6 +473,9 @@ function gitex_add_repo_to_context() {
   local repo=$1
   local OWD=$OLDPWD
   cd ${repo}
+  if [[ "$?" -ne 0 ]];then
+    return
+  fi
   repo=$(basename $($wgit rev-parse --show-toplevel 2>/dev/null) 2>/dev/null)
   if [[ "$?" -eq 0 ]];then
     if grep -q "/${repo}\$" <<< "${repos}";then

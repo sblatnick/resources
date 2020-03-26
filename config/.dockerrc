@@ -41,7 +41,7 @@ function doc_complete() {
     1) #actions
         COMPREPLY=()
         local IFS=$'\n'
-        complete_1 ${BASH_SOURCE}
+        complete_sections ${BASH_SOURCE}
       ;;
     *) #targets
         #add files/directories:
@@ -60,11 +60,11 @@ function doc_complete() {
             ;;
         esac
 
-        complete_2 "${section}" ${BASH_SOURCE}
+        complete_section "${section}" ${BASH_SOURCE}
       ;;
   esac
 }
-complete -o nospace -F doc_complete doc
+#complete -o nospace -F doc_complete doc
 
 ##Main:
 function docker_extentions() {
