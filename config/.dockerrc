@@ -188,8 +188,9 @@ EOF
                 echo -en "\033[32;1mSTAGE: ${stage}\033[0m "
                 starget="--target ${stage}"
                 target="${img}/${stage}"
-                include=$(cd ${path}/;sed -n "/FROM .* AS ${stage}\$/,/FROM .* AS / {s/ [^ ]*\$//;s~/[^/]*\$~~;s/ *\(COPY\|ADD\) //p}" ${df} | tr $'\n' '|')
-                $(cd ${path}/;ls -1d * | grep -Ev "^(${include}Dockerfile)\$" > .dockerignore)
+                #FIXME: .dockerignore can't exclude files from other stages :-(
+                #include=$(cd ${path}/;sed -n "/FROM .* AS ${stage}\$/,/FROM .* AS / {s/ [^ ]*\$//;s~/[^/]*\$~~;s/ *\(COPY\|ADD\) //p}" ${df} | tr $'\n' '|')
+                #$(cd ${path}/;ls -1d * | grep -Ev "^(${include}Dockerfile)\$" > .dockerignore)
               fi
 
               echo -e "\033[32mbuilding ${target}:${version} image\033[0m"
@@ -197,9 +198,9 @@ EOF
                 ${starget} -t ${repo}${target}:${version} \
                 -f ${df} \
                 ${path}/
-              rm ${path}/.dockerignore
-              echo -e "\033[32mpush ${target}:${version} image\033[0m"
-              docker push ${repo}${target}:${version}
+              #rm ${path}/.dockerignore
+              #echo -e "\033[32mpush ${target}:${version} image\033[0m"
+              #docker push ${repo}${target}:${version}
                  
             done < <(echo "${stages}")
           else

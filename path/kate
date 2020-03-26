@@ -65,6 +65,30 @@ else
         kubectl -n ${namespace} delete $(kubectl -n ${namespace} get $@ -o=name) --grace-period 0 --force
         exit
       ;;
+    go) #Alias to attaching to a container
+        shift
+        if [ $# -lt 1 ]; then
+          for pod in $(kubectl -n ${namespace} get pod -o=name | sed 's~^pod/~~')
+          do
+            echo -e "\033[32;1m${pod}\033[0m"
+            for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.initContainers[*].name}")
+            do
+              echo -e "  \033[36;1m${container}\033[0m"
+            done
+            for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.containers[*].name}")
+            do
+              echo -e "  \033[34;1m${container}\033[0m"
+            done
+          done
+        else
+          pod=$1
+          shift
+          container=$1
+          shell=$2
+          kubectl -n ${namespace} exec -it -c ${container} ${pod} -- /bin/${shell:-bash}
+        fi
+        exit
+      ;;
   esac
 
   #contexts
