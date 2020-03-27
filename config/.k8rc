@@ -47,6 +47,9 @@ function kate_complete() {
           "${context}")
               COMPREPLY+=($(compgen -W "$(kubectl get namespace -o name | sed 's/namespace\///')" -- "${COMP_WORDS[2]}"))
             ;;
+          go)
+              COMPREPLY+=($(compgen -W "$(kubectl -n ${namespace} get pod -o=name | sed 's~^pod/~~')" -- "${COMP_WORDS[2]}"))
+            ;;
           *)
               complete_pwd
             ;;
