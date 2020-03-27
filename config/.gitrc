@@ -578,6 +578,12 @@ ${current}"
           gitex_remove_repo_from_context $(pwd)
         fi
       ;;
+    bak|backup) ##backup the current context configs in ~/.git-extend
+        local dest=${GITEX_CONFIG}-$(date +"%F")
+        cp -f ${GITEX_CONFIG} ${dest}
+        echo -e "\033[32mBacked up:\033[0m ~/${GITEX_CONFIG##*${USER}/} ~/${dest##*${USER}/}"
+        return
+      ;;
     @(${context})) #[context]#switch to using this context
         current="$action"
         echo -e "\033[33musing\033[0m \033[32m${current}\033[0m"
