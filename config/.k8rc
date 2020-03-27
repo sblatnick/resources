@@ -13,13 +13,26 @@ function kate_set_namespace() {
   echo -e "namespace \033[34;1m${1}\033[0m";
 }
 
+function kate_containers() {
+  namespace=$1
+  pod=$2
+  for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.initContainers[*].name}" 2>/dev/null)
+  do
+    echo -e "  \033[36;1m${container}\033[0m"
+  done
+  for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.containers[*].name}")
+  do
+    echo -e "  \033[34;1m${container}\033[0m"
+  done
+}
+
 #----------------------------------COMPLETIONS-----------------------------------#
 function kate_complete() {
   COMPREPLY=()
   case "${COMP_CWORD}" in
     1)
         #kubectl:
-        COMPREPLY=($(compgen -W "$(kubectl -h | grep -o "^  [a-z][a-z]*")" -- "${COMP_WORDS[1]}"))
+        COMPREPLY+=($(compgen -W "$(kubectl -h | grep -o "^  [a-z][a-z]*")" -- "${COMP_WORDS[1]}"))
         #contexts:
         COMPREPLY+=($(compgen -W "$(kubectl config get-contexts -o=name)" -- "${COMP_WORDS[1]}"))
         #namespaces:
@@ -29,15 +42,20 @@ function kate_complete() {
       ;;
     2)
         context=$(kubectl config current-context)
-        #if current context:
-        if [[ "${context}" == "${COMP_WORDS[1]}" ]];then
-          #namespaces:
-          COMPREPLY=($(compgen -W "$(kubectl get namespace -o name | sed 's/namespace\///')" -- "${COMP_WORDS[1]}"))
-        fi
-        #complete_2 "${section}" ${BASH_SOURCE}
+
+        case "${COMP_WORDS[1]}" in
+          "${context}")
+              COMPREPLY+=($(compgen -W "$(kubectl get namespace -o name | sed 's/namespace\///')" -- "${COMP_WORDS[2]}"))
+            ;;
+          *)
+              complete_pwd
+            ;;
+        esac
+
+        #complete_section "${section}" ${BASH_SOURCE}
       ;;
     *)
-        COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d {} ];then echo {}/;else echo {}; fi'))
+        complete_pwd
       ;;
   esac
 }
@@ -51,115 +69,113 @@ function kate_extentions() {
   context=$(kubectl config current-context)
   source ${K8_CONFIG} 2>/dev/null #get current namespace
 
-  if [ -z ${1} ]; then
-    IFS='|'
-    for ctx in $(kubectl config get-contexts -o=name | tr $'\n' '|')
-    do
-      if [ "$ctx" == "$context" ];then
-        echo -e "\033[33;1m${ctx}\033[0m"
-        kubectl get namespace -o name | sed 's/namespace\///' |
-        while read ns
+  case "${1}" in
+    '')
+        IFS='|'
+        for ctx in $(kubectl config get-contexts -o=name | tr $'\n' '|')
         do
-          if [ "$ns" == "$namespace" ];then
-            echo -e "  \033[36;1m${ns}\033[0m"
-          else
-            echo -e "  \033[34;1m${ns}\033[0m"
-          fi
-        done
-      else
-        echo -e "\033[32;1m${ctx}\033[0m"
-      fi
-    done
-  else
-    case "${1}" in
-      -*) #options passthrough
-          kubectl -n ${namespace} $@
-          return
-        ;;
-      @($(kubectl help | sed -n '/^  [^ ]*/ p' | cut -d' ' -f3 | tr $'\n' '|'))) #command passthrough
-          kubectl -n ${namespace} $@
-          return
-        ;;
-      #Custom commands:
-      tail)
-          which kubetail >/dev/null 2>&1
-          if [ "$?" -ne "0" ]; then
-            echo -e "\033[31mkubetail not installed in path\033[0m git clone git@github.com:johanhaleby/kubetail.git"
-            return
-          fi
-          kubetail $2 -z 1,2,3,4,16,17,18 -n ${namespace}
-          return
-        ;;
-      rm) ##Alias to delete
-          shift
-          kubectl -n ${namespace} delete $@
-          return
-        ;;
-      kill) ##Alias to delete --grace-period 0 --force
-          shift
-          kubectl -n ${namespace} delete $@ --grace-period 0 --force
-          return
-        ;;
-      killall) ##Alias to force delete all of object type
-          shift
-          kubectl -n ${namespace} delete $(kubectl -n ${namespace} get $@ -o=name) --grace-period 0 --force
-          return
-        ;;
-      go) ##Alias to attaching to a container
-          shift
-          if [ $# -lt 1 ]; then
-            for pod in $(kubectl -n ${namespace} get pod -o=name | sed 's~^pod/~~')
+          if [ "$ctx" == "$context" ];then
+            echo -e "\033[33;1m${ctx}\033[0m"
+            kubectl get namespace -o name | sed 's/namespace\///' |
+            while read ns
             do
-              echo -e "\033[32;1m${pod}\033[0m"
-              for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.initContainers[*].name}")
-              do
-                echo -e "  \033[36;1m${container}\033[0m"
-              done
-              for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.containers[*].name}")
-              do
-                echo -e "  \033[34;1m${container}\033[0m"
-              done
+              if [ "$ns" == "$namespace" ];then
+                echo -e "  \033[36;1m${ns}\033[0m"
+              else
+                echo -e "  \033[34;1m${ns}\033[0m"
+              fi
             done
           else
-            pod=$1
-            shift
-            container=$1
-            shell=$2
-            kubectl -n ${namespace} exec -it -c ${container} ${pod} -- /bin/${shell:-bash}
+            echo -e "\033[32;1m${ctx}\033[0m"
           fi
-          return
-        ;;
-    esac
-
-    #contexts
-    kubectl config get-contexts $1 >/dev/null 2>&1
-    if [ "$?" -ne "0" ]; then
-      #namespaces
-      kubectl get namespace $1 >/dev/null 2>&1
-      if [ "$?" -ne "0" ]; then
-        #passthrough (probably an error)
+        done
+      ;;
+    -*)
         kubectl -n ${namespace} $@
-      else
-        kate_set_namespace $1
-      fi
-    else #set context
-      kubectl config use-context $1 >/dev/null 2>&1
-      echo -en "Switching to context \033[32;1m${1}\033[0m ";
-      if [ -z ${2} ]; then
-        kate_set_namespace default
-      else
-        shift
-        #namespaces
-        kubectl get namespace $1 >/dev/null 2>&1
+      ;;
+    @($(kubectl help | sed -n '/^  [^ ]*/ p' | cut -d' ' -f3 | tr $'\n' '|')))
+        #command passthrough
+        kubectl -n ${namespace} $@
+      ;;
+    #Custom commands:
+    tail)
+        which kubetail >/dev/null 2>&1
         if [ "$?" -ne "0" ]; then
-          #passthrough (probably an error)
-          kubectl -n ${namespace} $@
-        else
-          kate_set_namespace $1
+          echo -e "\033[31mkubetail not installed in path\033[0m git clone git@github.com:johanhaleby/kubetail.git"
+          return
         fi
-      fi
-    fi
-  fi
+        kubetail $2 -z 1,2,3,4,16,17,18 -n ${namespace}
+      ;;
+    rm) ##Alias to delete
+        shift
+        kubectl -n ${namespace} delete $@
+      ;;
+    kill) ##Alias to delete --grace-period 0 --force
+        shift
+        kubectl -n ${namespace} delete $@ --grace-period 0 --force
+      ;;
+    killall) ##Alias to force delete all of object type
+        shift
+        kubectl -n ${namespace} delete $(kubectl -n ${namespace} get $@ -o=name) --grace-period 0 --force
+      ;;
+    go) #[pod] [container]#List containers or attach to a specified container
+        shift
+        if [ $# -lt 1 ]; then
+          for pod in $(kubectl -n ${namespace} get pod -o=name | sed 's~^pod/~~')
+          do
+            echo -e "\033[32;1m${pod}\033[0m"
+            kate_containers "${namespace}" "${pod}"
+          done
+        elif [ $# -lt 2 ]; then
+          kate_containers "${namespace}" "${1}"
+        else
+          pod=$1
+          shift
+          container=$1
+          shell=$2
+          kubectl -n ${namespace} exec -it -c ${container} ${pod} -- /bin/${shell:-bash}
+        fi
+      ;;
+    ex) ##Print usage information
+        document ${BASH_SOURCE}
+        echo ""
+      ;;
+    help) ##Print usage information + help
+        document ${BASH_SOURCE}
+        echo ""
+        kubectl help
+      ;;
+    *)
+        #contexts
+        kubectl config get-contexts $1 >/dev/null 2>&1
+        if [ "$?" -ne "0" ]; then
+          #namespaces
+          kubectl get namespace $1 >/dev/null 2>&1
+          if [ "$?" -ne "0" ]; then
+            #passthrough (probably an error)
+            kubectl -n ${namespace} $@
+          else
+            kate_set_namespace $1
+          fi
+        else #set context
+          kubectl config use-context $1 >/dev/null 2>&1
+          echo -en "Switching to context \033[32;1m${1}\033[0m ";
+          if [ -z ${2} ]; then
+            kate_set_namespace default
+          else
+            shift
+            #namespaces
+            kubectl get namespace $1 >/dev/null 2>&1
+            if [ "$?" -ne "0" ]; then
+              #passthrough (probably an error)
+              kubectl -n ${namespace} $@
+            else
+              kate_set_namespace $1
+            fi
+          fi
+        fi
+      ;;
+  esac
 }
 
 function kate() {
