@@ -172,6 +172,7 @@ Example arguments:
     #logs from stdout:
     kubectl logs my-deployment-8474cdbc55-kc78n
     kubectl logs my-pod -c my-container
+    kubectl logs my-pod -c my-container --follow
 
     #Large logs:
       # Display only the most recent 20 lines of output in pod nginx
