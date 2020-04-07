@@ -1,10 +1,33 @@
 #!/bin/bash
 
-export RESOURCES=${BASH_SOURCE%/path/*}
-source ${RESOURCES}/config/._osrc
-source ${RESOURCES}/config/._utils
+RESOURCES=${BASH_SOURCE%/path/*}
+if echo ${RESOURCES} | grep -q ${HOME};then
+  RESOURCES="~${RESOURCES##$HOME}"
+fi
 
-#check bashrc
+echo "Found resources directory: ${RESOURCES}"
+
+case "$(uname -s)" in
+  Darwin) #Mac
+      export BASHRC=~/.bash_profile
+    ;;
+  Linux)
+      export BASHRC=~/.bashrc
+    ;;
+esac
+
+
+if grep -q "source ${RESOURCES}/config/bashrc" ${BASHRC};then
+  echo "  present in ${BASHRC}"
+else
+  tee -a ${BASHRC} <<< "source ${RESOURCES}/config/bashrc"
+  echo "  added to ${BASHRC}"
+fi
+
+echo "source resources..."
+source ${BASH_SOURCE%/path/*}/config/bashrc
+
+log "Installing packages..."
 
 case "$(uname -s)" in
   Darwin) #Mac
