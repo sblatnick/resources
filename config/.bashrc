@@ -1,5 +1,5 @@
 #!/bin/bash
-export PATH="${PATH}:${RESOURCES}/path/"
+export PATH="${PATH}:${RESOURCES}/path:${HOME}/.krew/bin"
 export LESS="${LESS}R"
 
 function extract()

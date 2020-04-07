@@ -71,6 +71,30 @@ ensure \
   watch \
   wget
 
+log "Check for krew..."
+if [ -d ~/.krew/bin ];then
+  log "  already installed"
+else
+  (
+    set -x; cd "$(mktemp -d)" &&
+    curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.{tar.gz,yaml}" &&
+    tar zxvf krew.tar.gz &&
+    KREW=./krew-"$(uname | tr '[:upper:]' '[:lower:]')_amd64" &&
+    "$KREW" install --manifest=krew.yaml --archive=krew.tar.gz &&
+    "$KREW" update
+  )
+  log "krew installed"
+fi
+
+log "Check for kubectl exec-as plugin..."
+if kubectl krew list | grep -q exec-as;then
+  log "  already installed"
+else
+  log "  installing..."
+  run kubectl krew install exec-as
+fi
+
+log "DONE"
 
 <<COMMENT1
 OPTIONAL:
