@@ -1,5 +1,5 @@
 #!/bin/bash
-export PATH="$PATH:$HOME/projects/resources/path/"
+export PATH="${PATH}:${RESOURCES}/path/"
 export LESS="${LESS}R"
 
 function extract()
@@ -56,7 +56,7 @@ function jag()
   #~ for file in $(ag -l ${match})
   #~ do
     #~ echo -e "\033[33mupdating: (s)\033[0m ${file}"
-    #~ sedi '/${match//\//\\/}/ s/${search//\//\\/}/${replace//\//\\/}/' ${file}
+    #~ sed -i '/${match//\//\\/}/ s/${search//\//\\/}/${replace//\//\\/}/' ${file}
   #~ done
 #~ }
 
@@ -70,6 +70,6 @@ function jag()
   #~ for file in $(ag -l ${match})
   #~ do
     #~ echo -e "\033[33mremoving lines: (s)\033[0m ${file}"
-    #~ sedi '/${match//\//\\/}/d' ${file}
+    #~ sed -i '/${match//\//\\/}/d' ${file}
   #~ done
 #~ }

@@ -3,7 +3,7 @@
 export GIT_MERGE_AUTOEDIT=no
 export GITEX_CONFIG=~/.git-extend
 export wgit=$(which git) #wrapped git
-shopt -s extglob
+shopt -s expand_aliases extglob
 
 #----------------------------------COMPLETIONS-----------------------------------#
 function gitex_complete() {
@@ -384,7 +384,7 @@ function gitex() {
         gitex_context $@
       ;;
     tut) ##open tutorial in $EDITOR
-        $EDITOR ~/projects/resources/git/usage.sh
+        $EDITOR ${RESOURCES}/git/usage.sh
       ;;
     rev) #[path|file]#revert file(s) to HEAD
         shift
@@ -649,7 +649,7 @@ function gitex_subtree()
         echo "${path}=${url},${branch}" >> ${GITEX_SUBTREE}
       ;;
     remove) #[repo]#remove subtree repo
-        sedi "/$1=/d" ${GITEX_SUBTREE} #requires ._osrc
+        sed -i "/$1=/d" ${GITEX_SUBTREE}
       ;;
     pull|update) #[repo|all]#update the named subtree, or all (default)
         case "${1}" in

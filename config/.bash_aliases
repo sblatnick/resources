@@ -5,6 +5,7 @@ alias ll='ls -l'
 which ggrep >/dev/null 2>&1 && alias grep='ggrep --color=auto' || alias grep='grep --color=auto'
 #alias diff='diff -u' #use +- instead of <>
 alias less='less -SRi'
+alias resource="source ${BASHRC}"
 
 #set search in less:
 less_search() {

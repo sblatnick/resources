@@ -121,7 +121,8 @@ function kate_extentions() {
         shift
         kubectl -n ${namespace} delete $(kubectl -n ${namespace} get $@ -o=name) --grace-period 0 --force
       ;;
-    go) #[pod] [container]#List containers or attach to a specified container
+    go|su|sugo) #[pod] [container]#List containers or attach to a specified container
+        action=$1
         shift
         if [ $# -lt 1 ]; then
           for pod in $(kubectl -n ${namespace} get pod -o=name | sed 's~^pod/~~')
@@ -136,7 +137,15 @@ function kate_extentions() {
           shift
           container=$1
           shell=$2
-          kubectl -n ${namespace} exec -it -c ${container} ${pod} -- /bin/${shell:-bash}
+          case "${COMP_CWORD}" in
+            su|sugo)
+                #TODO: krew exec-as
+                kubectl -n ${namespace} exec -it --as=root -c ${container} ${pod} -- /bin/${shell:-bash}
+              ;;
+            go|*)
+                kubectl -n ${namespace} exec -it -c ${container} ${pod} -- /bin/${shell:-bash}
+              ;;
+          esac
         fi
       ;;
     ex) ##Print usage information
@@ -144,9 +153,10 @@ function kate_extentions() {
         echo ""
       ;;
     help) ##Print usage information + help
+        shift
         document ${BASH_SOURCE}
         echo ""
-        kubectl help
+        kubectl help $@
       ;;
     *)
         #contexts

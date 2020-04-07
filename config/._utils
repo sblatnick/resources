@@ -2,6 +2,25 @@
 #Utility functions
 
 shopt -s expand_aliases extglob
+set -o pipefail
+
+#-----------------------------------LOGGING------------------------------------#
+
+function error() {
+  >&2 echo -e "$(date +'%F %T') \033[31mERROR\033[0m: $@"
+  exit 1
+}
+function log() {
+  echo -e "$(date +'%F %T')   \033[0;1mLOG\033[0m: $@"
+}
+function warn() {
+  echo -e "$(date +'%F %T')  \033[33;1mWARN\033[0m: $@"
+}
+function run() {
+  echo -e "$(date +'%F %T')   \033[0;1m$@\033[0m"
+  $@ 2>&1 | tr '\r' '\n' | sed -u 's/^/  /'
+  return $?
+}
 
 #------------------------------------UTILS-------------------------------------#
 
@@ -86,6 +105,8 @@ function insert() {
 }' ${file}
 }
 
+#--------------------------------DOCUMENTATION---------------------------------#
+
 function document() {
   grep -Eo '^##.*$' $1 |
   while read section
@@ -107,6 +128,8 @@ function document() {
   done
 }
 
+#---------------------------------COMPLETION-----------------------------------#
+
 function complete_section() {
   section=$1
   shift
@@ -127,3 +150,30 @@ function complete_pwd() {
   COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d {} ];then echo {}/;else echo {}; fi'))
 }
 
+#--------------------------------CONFIGURATION---------------------------------#
+
+function ensure() {
+  local bins=()
+  while [ -n "$1" ]; do
+    case $1 in
+      --pkg|--package|-p)
+          local package=$2
+          shift
+        ;;
+      *)
+          bins+=($1)
+        ;;
+    esac
+    shift
+  done
+
+  for bin in ${bins[@]}
+  do
+    local pkg=${package-$bin}
+    which ${bin} >/dev/null 2>&1 \
+      || check_package ${pkg} \
+      && log "${bin} already installed" \
+      || run ${INSTALLER} install ${pkg} \
+      || warn "${pkg} failed to install"
+  done
+}

@@ -1,0 +1,75 @@
+#!/bin/bash
+
+export RESOURCES=${BASH_SOURCE%/path/*}
+source ${RESOURCES}/config/._osrc
+source ${RESOURCES}/config/._utils
+
+#check bashrc
+
+case "$(uname -s)" in
+  Darwin) #Mac
+      ensure -p coreutils greadlink gexpr
+      ensure -p gnu-sed gsed
+      ensure -p grep ggrep
+      ensure csshx dos2unix colordiff bash-completion
+    ;;
+  Linux)
+      ensure \
+        cssh \
+        python \
+        geany
+      case "${PACKAGER}" in
+        rpm)
+            ensure \
+              subversion-perl
+          ;;
+        deb)
+            ensure \
+              libsvn-perl
+          ;;
+      esac
+    ;;
+esac
+
+#TODO: check on linux platforms
+ensure \
+  ansible \
+  helm \
+  jq \
+  jo \
+  kops \
+  kubernetes-cli \
+  kubernetes-helm \
+  nmap \
+  socat \
+  tee \
+  telnet \
+  the_silver_searcher \
+  watch \
+  wget
+
+
+<<COMMENT1
+OPTIONAL:
+  autoconf
+  du
+  hicolor-icon-theme
+  mariadb
+  sqlite
+  sendemail
+
+TODO:
+  Mac:
+    geany
+    macports:
+      gawk
+      tidy
+      vnc
+  All:
+    kubetail
+    krew
+    docker
+    minikube
+    yq
+
+COMMENT1

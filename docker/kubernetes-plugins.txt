@@ -1,0 +1,33 @@
+#====================================USAGE=====================================#
+
+kubectl plugin list
+
+
+
+#====================================KREW======================================#
+#Krew is a kubectl plugin package management tool
+#named similar to "brew" for for Mac's Homebrew
+
+#about: https://github.com/kubernetes-sigs/krew/
+#-----------------------------------INSTALL------------------------------------#
+#source: https://krew.sigs.k8s.io/docs/user-guide/setup/install/
+
+(
+  set -x; cd "$(mktemp -d)" &&
+  curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.{tar.gz,yaml}" &&
+  tar zxvf krew.tar.gz &&
+  KREW=./krew-"$(uname | tr '[:upper:]' '[:lower:]')_amd64" &&
+  "$KREW" install --manifest=krew.yaml --archive=krew.tar.gz &&
+  "$KREW" update
+)
+
+#------------------------------------USAGE-------------------------------------#
+
+
+
+
+#-------------------------------EXEC-AS PLUGIN---------------------------------#
+
+#Good replacement kubectl-exec-user after kubectl v1.12.0:
+# https://github.com/mikelorant/kubectl-exec-user/issues/4
+

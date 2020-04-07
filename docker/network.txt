@@ -26,8 +26,13 @@ service/nginx-ingress-controller           LoadBalancer   10.24.249.150   10.24.
 10.24.250.101 cluster.net service.cluster.net #etc
 
 #Then, you can reach HTTPS with header HTTP header:
+openssl s_client -connect service.cluster.net:443
+GET / HTTP/1.1
 Host: service.cluster.net
 #via the ingress controller forwarding to the service.
+
+#Logs:
+kubectl -n nginx-ingress logs --tail 100 --follow $(kubectl -n nginx-ingress get pod -o=name | grep controller)
 
 #===============================TLS TERMINATION================================#
 #Example:
