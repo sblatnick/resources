@@ -23,7 +23,8 @@ kubectl plugin list
 
 #------------------------------------USAGE-------------------------------------#
 
-
+kubectl krew install exec_as
+kubectl krew list
 
 
 #-------------------------------EXEC-AS PLUGIN---------------------------------#
@@ -31,3 +32,4 @@ kubectl plugin list
 #Good replacement kubectl-exec-user after kubectl v1.12.0:
 # https://github.com/mikelorant/kubectl-exec-user/issues/4
 
+kubectl exec_as -n ${namespace} -u root -c ${container} ${pod} -- /bin/${shell:-bash}

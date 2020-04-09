@@ -3,18 +3,26 @@
 ls --color >/dev/null 2>&1 && alias ls='ls --color=auto' || alias ls='ls -G'
 alias ll='ls -l'
 which ggrep >/dev/null 2>&1 && alias grep='ggrep --color=auto' || alias grep='grep --color=auto'
-#alias diff='diff -u' #use +- instead of <>
 alias less='less -SRi'
 alias resource="source ${BASHRC}"
 
+#alias diff='colordiff -u' #use +- instead of <>
+function diff() {
+  if tty -s <&1; then
+    colordiff -u $@ | less -SRi
+  else
+    /usr/bin/diff $@
+  fi
+}
+
 #set search in less:
-less_search() {
+function less_search() {
   sed -i "s/^\.shell\$/\"$1/" ${HOME}/.lesshst
   echo '.shell' >> ${HOME}/.lesshst
 }
 
 #keep ag coloring in piped output, highlighting match groups if applicable
-agg() {
+function agg() {
   tput rmam #trim lines to terminal width
   local IFS=$'\n'
   local groups=$(echo "$@" | grep -Eo '\([^)]*\)')
@@ -28,24 +36,24 @@ agg() {
 }
 
 #ag coloring and pipe to less
-lag() {
+function lag() {
   less_search "$@"
   agg $@ | less
 }
 
 #remove comment lines and blank lines
-nocomment() {
+function nocomment() {
   cat $@ | sed -e '/^[ ]*#/d' -e '/^[ ]*\/\//d' -e '/^[ ]*$/d'
 }
 
-passed() {
+function passed() {
   start=$(date --date="$1" +%s)
   end=$(date --date="$2" +%s)
   passed=$((end - start))
   echo "$((passed / 60)) min $(( passed % 60 )) sec"
 }
 
-name() {
+function name() {
   if [ -z "$1" ]; then
     tty -s <&1 && echo -en "\033]0;${PWD##*/}\a"
   else
@@ -53,7 +61,7 @@ name() {
   fi
 }
 
-tea() {
+function tea() {
   file="$1"
   shift
   line="$@"
