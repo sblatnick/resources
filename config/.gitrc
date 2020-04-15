@@ -2,7 +2,11 @@
 
 export GIT_MERGE_AUTOEDIT=no
 export GITEX_CONFIG=~/.git-extend
+
+#redundant wrappers from .bash_aliases:
 export wgit=$(which git) #wrapped git
+export wless=$(which less) #wrapped less
+
 shopt -s expand_aliases extglob
 
 #----------------------------------COMPLETIONS-----------------------------------#
@@ -243,7 +247,7 @@ function gitex() {
           sha=${line%% *}
           echo -e "\033[33m${sha}\033[0m ${line#* }"
           $wgit --no-pager show --color ${sha} -- $@ | sed 's/^/  /'
-        done | less -x2 -S #eval $($wgit config --get core.pager)
+        done | $wless -x2 -S #eval $($wgit config --get core.pager)
       ;;
     generate|gen) #[files]#generate a consolidated diff
         shift
@@ -311,7 +315,7 @@ function gitex() {
             else
               $wgit --no-pager show --color ${sha}:$file | sed 's/^/  /'
             fi
-          done | less -x2 -S #eval $($wgit config --get core.pager)
+          done | $wless -x2 -S #eval $($wgit config --get core.pager)
         else
           echo -e "\033[31mNo file specified\033[0m"
           return 1

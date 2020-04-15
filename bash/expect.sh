@@ -45,6 +45,16 @@ expect << EOF | sed 's/^/EDIT: /'
       send "Y\r"
       exp_continue
     }
+    "update.log" {
+      send "q"
+      puts "Exiting from less"
+      exp_continue
+    }
+    "(END)" {
+      send "q"
+      puts "Exiting from less in a pipe, like in a git call"
+      exp_continue
+    }
     "\r" {
       set line \$expect_out(buffer)
       if {[string trim \$line] ne ""} {

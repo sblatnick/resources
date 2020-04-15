@@ -8,7 +8,7 @@
  *
  * Chrome Plugin: "User JavaScript and CSS" https://chrome.google.com/webstore/detail/user-javascript-and-css/nbhcbdghjpllgmfilhnhkllmkecfmpld?hl=en
  * Open as a bookmark in a window (Firefox) by setting the location:
- *   javascript:(function(){window.open("https://teams.microsoft.com/",%20"_blank","height=400,width=600,menubar=no,location=no,toolbar=no,left=100,top=100");})();
+ *   javascript:(function(){window.open("https://teams.microsoft.com/",%20"_blank","height=1060,width=1300,menubar=no,location=no,toolbar=no,left=0,top=0");})();
  * To hide the url bar in Firefox, set this key in about:config to false:
  *   dom.disable_window_open_feature.location
  */
