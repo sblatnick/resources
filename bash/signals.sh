@@ -30,3 +30,12 @@
 
   #example with exit:
     trap 'if [ "$?" -eq "0" ]; then exit; fi; echo -e "\033[31mERROR:\033[0m in script $BASH_SOURCE on line $BASH_LINENO running command: \"$BASH_COMMAND\"";exit 1' ERR EXIT
+
+#exit from child process:
+  set -E
+  trap '[ "$?" -ne 77 ] || exit 77' ERR
+
+  val="$(exit 77)"
+  echo "val: ${val}" #never gets here
+
+  #source: https://unix.stackexchange.com/questions/48533/exit-shell-script-from-a-subshell
