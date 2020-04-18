@@ -206,7 +206,7 @@ EOF
           if [ -f ${df} ];then
             volumes=$(docrc ${target} 'volumes' | sed "s/~/${HOME//\//\\/}/" | sed '/^$/d;s/^/-v /')
             cwd=$(docrc ${target} 'cwd')
-            if [ -n ${stages} ];then
+            if [ -n "${stages}" ];then
               target=${img}/$(echo "${stages}" | tail -n 1)
             fi
           else
@@ -223,15 +223,21 @@ EOF
             after=''
           else
             if [[ "${action}" == "gui" ]];then
-              echo -e "\033[33mexecuting app \"$1\" in ${target}:${version}\033[0m"
+              if [ -n "${start}" ];then
+                echo -e "\033[33mexecuting app \"${start}\" in ${target}:${version}\033[0m"
+                start="-c \"${start}\"" #FIXME
+              else
+                echo -e "\033[33mentering ${target}:${version} with X11 forwarded\033[0m"
+              fi
               display="-e DISPLAY=host.docker.internal:0"
               xhost + 127.0.0.1
-              open -a XQuartz
+              open -a XQuartz #Mac OSX only
               socat TCP-LISTEN:6000,reuseaddr,fork UNIX-CLIENT:\"$DISPLAY\" &
               pid=$!
               after="kill $pid"
+            else
+              echo -e "\033[33mentering ${target}:${version}\033[0m"
             fi
-            echo -e "\033[33mentering ${target}:${version}\033[0m"
           fi
           $dry docker run --privileged=true -it --rm ${volumes} \
             -h ${target} \
@@ -239,9 +245,10 @@ EOF
             -w ${cwd} \
             -P \
             ${display} \
-            ${repo}${target}:${version} /bin/bash
+            ${repo}${target}:${version} /bin/bash ${start}
           #"--privileged=true" for loop devices and mounting an iso
           $after
+          return
         ;;
       pull|push) ##pull/push image to repo
           if [ -f ${df} ];then
