@@ -42,6 +42,6 @@
   position: absolute;
   left: 6px;
 }
-.close {
+.close, .close:hover {
   background-color: rgba(0, 0, 0, 1.0);
 }
