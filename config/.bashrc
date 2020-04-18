@@ -1,6 +1,5 @@
 #!/bin/bash
 export PATH="${PATH}:${RESOURCES}/path:${HOME}/.krew/bin"
-export LESS="${LESS}R"
 
 function extract()
 {
@@ -22,7 +21,7 @@ function extract()
   fi
 }
 
-function search
+function search()
 {
   pattern=$1
   shift
