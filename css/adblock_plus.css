@@ -1,0 +1,30 @@
+/*
+ * Supplemental CSS for Adblock Plus and some good custom rules
+ *
+ * Chrome Plugin: "User JavaScript and CSS" https://chrome.google.com/webstore/detail/user-javascript-and-css/nbhcbdghjpllgmfilhnhkllmkecfmpld?hl=en
+ */
+
+/* sltrib.com */
+  .tp-modal-open {
+    overflow: scroll !important;
+  }
+
+  /* Rules:
+   *   sltrib.com##.tp-modal
+   *   sltrib.com##.tp-backdrop.tp-active
+   */
+
+
+/* dailymail.co.uk */
+
+  body.mol-fe-ab-dialog {
+    overflow-y: scroll !important;
+  }
+
+  .jwplayer_body_1, #outerWrapper, #chromelessPlayer {
+    display: none !important;
+  }
+
+  /* Rules:
+   *   dailymail.co.uk##.wrapper-*
+   */
