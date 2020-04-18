@@ -5,7 +5,7 @@
  */
 
 /* sltrib.com */
-  .tp-modal-open {
+  body.tp-modal-open {
     overflow: scroll !important;
   }
 
