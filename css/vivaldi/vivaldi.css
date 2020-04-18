@@ -12,7 +12,7 @@
  * 
  */
 
-/*Hide Folder Icons*/
+/* Hide Folder Icons */
 .bookmark-bar button img.folder-icon, .bookmark-bar button svg.folder-icon {
   display: none;
 }
@@ -35,4 +35,13 @@
 }
 #vivaldi-tooltip .tooltip .tab-group .tooltip-item:active, #vivaldi-tooltip .tooltip .tab-group .tooltip-item.active, #vivaldi-tooltip .last-active {
   border: 3px solid red !important;
+}
+
+/* Move close button over favicon */
+.linux:not(.alt) #tabs-container .close {
+  position: absolute;
+  left: 6px;
+}
+.close {
+  background-color: rgba(0, 0, 0, 1.0);
 }
