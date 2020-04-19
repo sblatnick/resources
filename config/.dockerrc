@@ -28,7 +28,7 @@ function docrc() {
   value=$1
 
   rc=$(sit contexts[current].path)/.dockerrc
-  result=$(SIT_TMP=${rc} sit contexts.${target}.${key} ${value})
+  result=$(SIT_TMP=${rc} sit images.${target}.${key} ${value})
   if [ $? -gt 0 ];then
     return 1
   fi
@@ -92,6 +92,14 @@ complete -o nospace -F doc_complete doc
 function docker_extentions() {
   private
   #------------------------------------SETUP-------------------------------------#
+
+  if [[ "$(cat ${DOC_CONFIG})" == '{ }' ]];then
+    context='me'
+    echo -e "\033[33minitilize for first run...\033[0m"
+    sit contexts.$context.path ${RESOURCES}/docker/images >/dev/null 2>&1
+    sit 'current' "${context}" >/dev/null 2>&1
+    echo -e "\033[32mDONE\033[0m"
+  fi
 
   #load defaults
   context=$(sit 'current')

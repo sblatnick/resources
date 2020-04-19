@@ -388,7 +388,7 @@ function gitex() {
         gitex_context $@
       ;;
     tut) ##open tutorial in $EDITOR
-        $EDITOR ${RESOURCES}/git/usage.sh
+        ${EDITOR-geany} ${RESOURCES}/git/usage.sh
       ;;
     rev) #[path|file]#revert file(s) to HEAD
         shift
