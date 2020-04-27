@@ -11,10 +11,22 @@
   #Modify charts:
   git clone git@github.com:helm/charts.git
 
-  #Initialize:
+  #Initialize (helm 2):
   helm init
   helm init --upgrade #update tiller to latest
   #TODO: check using TLS and securing
+
+  #Fix 'no matches for kind "ServiceMonitor"': https://github.com/helm/charts/issues/9941#issuecomment-447844259
+  git clone git@github.com:coreos/prometheus-operator.git
+  cd prometheus-operator/example/prometheus-operator-crd/
+  for file in *.yaml;do kubectl apply -f $file;done
+
+  #Fix missing daemonsets/deployments/replicasets ('no matches for kind "DaemonSet"'): https://github.com/kubernetes/kubernetes/issues/84782#issuecomment-549791247
+  # daemonsets, deployments, replicasets = extensions/v1beta1 => apps/v1
+    #Change:
+      apiVersion: extensions/v1beta1
+    #To:
+      apiVersion: apps/v1
 
   #Fix "Error: no available release name found"
   kubectl create serviceaccount --namespace kube-system tiller

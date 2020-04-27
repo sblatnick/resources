@@ -55,3 +55,7 @@ openssl x509 -req -days 3650 -in id.csr -signkey ~/.ssh/id_rsa -out id.pem
 
 keytool -list -keystore cacerts -storepass changeme
 #https://connect2id.com/blog/importing-ca-root-cert-into-jvm-trust-store
+
+#Read yaml stored cert (like from kubernetes like in /etc/kubernetes/bootstrap-kubelet.conf)
+  echo "$CERT" | base64 --decode > tmp.crt
+  openssl x509 -in tmp.crt -text -noout
