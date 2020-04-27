@@ -2,7 +2,7 @@
 
 export DOC_CONFIG=~/.dockerrc
 use ${DOC_CONFIG}
-shopt -s extglob
+shopt -s expand_aliases extglob
 
 #----------------------------------FUNCTIONS-----------------------------------#
 

@@ -1,0 +1,100 @@
+#!/bin/bash
+#Helm helper scripts
+
+export HELM_CONFIG=~/.helmrc
+use ${HELM_CONFIG}
+shopt -s expand_aliases extglob
+
+#----------------------------------FUNCTIONS-----------------------------------#
+
+
+
+#----------------------------------COMPLETIONS-----------------------------------#
+function helmex_complete() {
+  COMPREPLY=()
+  case "${COMP_CWORD}" in
+    1)
+        complete_sections ${BASH_SOURCE}
+      ;;
+    *)
+        #TODO: charts
+      ;;
+  esac
+}
+complete -o nospace -F helmex_complete helmex h
+
+function helm_command()
+{
+  echo -e "\033[33mhelm $@\033[0m"
+  eval helm $@
+}
+
+function helm_action() {
+  action=$1
+  chart=$2
+
+  HELM_CONTEXT=$(kubectl config current-context)
+
+  case "${action}" in
+##Main Actions:
+    help|ex) ##print this usage information
+        echo -e "\033[1mHelm Extentions:\033[0m helmex [\033[34;1mactions\033[0m]"
+        echo -e "  Shared context with kubectl: \033[1m${HELM_CONTEXT}\033[0m"
+        document ${BASH_SOURCE}
+        echo ""
+      ;;
+##Context Actions:
+    list) ##List installed/released charts
+        helm_command list --all-namespaces
+      ;;
+    ls) ##List charts available to this context
+        #TODO
+      ;;
+    in|install) ##Install chart(s)
+        #TODO
+      ;;
+    dry|debug) ##Dry-Install chart(s)
+        #TODO
+      ;;
+    rm|uninstall|delete|remove) ##Delete and purge release/chart(s)
+        #TODO
+      ;;
+    upgrade|update|up) ##Upgrade release/chart(s)
+        #TODO
+      ;;
+    pull|custom|fetch) ##Customize a chart by pulling it in
+        #TODO
+      ;;
+##Chained Actions:
+    reinstall|rein) ##helmex remove && install
+        helm_action remove  ${chart}
+        helm_action install ${chart}
+      ;;
+  esac
+}
+
+function helm_extentions() {
+  private
+  action=${1-list}
+  shift
+
+  while
+    chart="$1"
+    helm_action ${action} ${chart}
+    shift
+    [ -n "$1" ]
+  do
+    continue
+  done
+
+}
+
+function helmex() {
+  if tty -s <&1; then
+    source $BASH_SOURCE #keep sourced for fast dev
+  fi
+  helm_extentions "$@"
+}
+
+alias h='helmex'
+

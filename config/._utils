@@ -113,7 +113,7 @@ function document() {
   do
     echo ""
     echo -e "  \033[1m${section#\#\#}\033[0m"
-    sed -n "/^${section}\$/,/^\}\$/ p" $1 | grep -Eo '[^ (]+\)\s+#.*$' | \
+    sed -n "/^${section}\$/,/^\(##.*\|\}\)\$/ p" $1 | grep -Eo '[^ (]+\)\s+#.*$' | \
     while read help
     do
       params=${help#*#}
@@ -135,11 +135,12 @@ function complete_section() {
   shift
 
   if [ -n "${section}" ];then
-    COMPREPLY+=($(compgen -W "$(sed -n "/^${section}\$/,/^\}\$/ p" $1 | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/))* .*$//' | grep -Ev '[\$\*]' | tr '|' $'\n')" -- "${COMP_WORDS[${COMP_CWORD}]}"))
+    COMPREPLY+=($(compgen -W "$(sed -n "/^${section}\$/,/^\(##.*\|\}\)\$/ p" $1 | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/))* .*$//' | grep -Ev '[\$\*]' | tr '|' $'\n')" -- "${COMP_WORDS[${COMP_CWORD}]}"))
   fi
 }
 
 function complete_sections() {
+  local IFS=$'\n'
   for section in $(grep -Eom 2 '^##.*$' $1)
   do
     complete_section "${section}" $1
@@ -150,6 +151,20 @@ function complete_pwd() {
   COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d {} ];then echo {}/;else echo {}; fi'))
 }
 
+function complete_help() {
+  completion=$(complete -p $1 | grep -Po " -F [^\s]*" | cut -d' ' -f3)
+  for i in {1..3}
+  do
+    echo -e "\033[32m$i\033[0m:"
+    COMP_CWORD=$i
+    eval $completion
+    for arg in ${COMPREPLY[@]};
+    do
+      echo -e "  ${arg}"
+    done
+  done
+}
+alias cee='complete_help'
 #--------------------------------CONFIGURATION---------------------------------#
 
 function ensure() {
