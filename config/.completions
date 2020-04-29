@@ -5,7 +5,7 @@ function osx_complete() {
   case "${COMP_CWORD}" in
     1)
         #custom local script:
-        COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d {} ];then echo {}/;else echo {}; fi'))
+        COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d "{}" ];then echo {}/;else echo {}; fi'))
 
         #actions:
         for cmd in $(cat ${RESOURCES}/path/osx | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/) .*$//' | grep -Ev '[\$\*]')
@@ -17,7 +17,7 @@ function osx_complete() {
         COMPREPLY+=($(compgen -W "$(ls -1 ~/applescript/* ${RESOURCES}/applescript/* 2>/dev/null | sed -e 's/^.*\///g' -e 's/.scpt$//' | sort -u | tr $'\n' ' ')" -- "${COMP_WORDS[${COMP_CWORD}]}"))
       ;;
     *)
-        COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d {} ];then echo {}/;else echo {}; fi'))
+        COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d "{}" ];then echo {}/;else echo {}; fi'))
       ;;
   esac
 }
