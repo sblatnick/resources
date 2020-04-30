@@ -216,3 +216,22 @@ EOF
 chmod a+x ${TMP}/to_root
 ${TMP}/to_root
 
+#Capture exit code of spawned process:
+#source: https://stackoverflow.com/questions/23614039/how-to-get-the-exit-code-of-spawned-process-in-expect-shell-script
+
+function run_with_password {
+    cmd="$2"
+    paswd="$1"
+    expect << END
+        set timeout 60
+        spawn $cmd
+        expect {
+            "yes/no" { send "yes\r" }
+            "*assword*" { send -- $paswd\r }
+        }
+        expect EOF
+        catch wait result
+        exit [lindex \$result 3]
+END
+}
+
