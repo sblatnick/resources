@@ -83,12 +83,8 @@ function helm_action() {
     cassandra|kafka|zookeeper)
         local upstream='incubator'
       ;;
-    prometheus*|elasticsearch|mariadb|openebs)
-        local upstream='stable'
-      ;;
     *)
-        #no known upstream
-        local upstream=''
+        local upstream='stable'
       ;;
   esac
   if [ -d ${HELMEX_HOME}/${chart} ];then
@@ -135,10 +131,10 @@ function helm_action() {
     in|install) ##Install chart(s)
         echo -e "\033[33mkubectl create namespace ${namespace}\033[0m"
         kubectl create namespace ${namespace} 2>&1 | sed 's/^/  /'
-        helm_command install -n ${chart} ${repo}/${chart} --debug --namespace ${namespace} ${conf}
+        helm_command install ${chart} ${repo}/${chart} --debug --namespace ${namespace} ${conf}
       ;;
     dry|debug) ##Dry-Install chart(s)
-        helm_command install -n ${chart} ${repo}/${chart} --debug --namespace ${namespace} ${conf} --dry-run
+        helm_command install ${chart} ${repo}/${chart} --debug --namespace ${namespace} ${conf} --dry-run
       ;;
     rm|uninstall|delete|remove) ##Delete and purge release/chart(s)
         helm_command del --namespace ${namespace} ${chart}
@@ -174,8 +170,7 @@ function helm_action() {
           IFS=' ' read gitrepo branch path <<< "${git_chart}"
           git archive --remote=${gitrepo} ${branch} ${path} | tar xvf -
           mkdir ${HELMEX_HOME}/${chart} 2>/dev/null
-          path="${chart}/${path}"
-        elif [[ "${upstream}" == '.' ]];then #look in helm
+        elif [[ "${upstream}" != '' ]];then #look in helm
           helm_command fetch --untar --debug ${upstream}/${chart}
           path="${chart}"
         else
