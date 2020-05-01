@@ -148,7 +148,7 @@ function complete_sections() {
 }
 
 function complete_pwd() {
-  COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d "{}" ];then echo {}/;else echo {}; fi'))
+  COMPREPLY+=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d "{}" ];then echo {}/;else echo {}; fi'))
 }
 
 function complete_help() {

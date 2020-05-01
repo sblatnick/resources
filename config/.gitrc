@@ -11,6 +11,7 @@ shopt -s expand_aliases extglob
 
 #----------------------------------COMPLETIONS-----------------------------------#
 function gitex_complete() {
+  COMPREPLY=()
   case "${COMP_CWORD}" in
     1)
         #core commands:
@@ -20,7 +21,7 @@ function gitex_complete() {
         complete_sections ${BASH_SOURCE}
       ;;
     2)
-        COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d "{}" ];then echo {}/;else echo {}; fi'))
+        complete_pwd
         case "${COMP_WORDS[1]}" in
           context|ctx|go)
               COMPREPLY=()
@@ -45,7 +46,7 @@ function gitex_complete() {
         complete_section "${section}" ${BASH_SOURCE}
       ;;
     *)
-        COMPREPLY=($(compgen -f  -- "${COMP_WORDS[${COMP_CWORD}]}" | xargs -I {} bash -c 'if [ -d "{}" ];then echo {}/;else echo {}; fi'))
+        complete_pwd
       ;;
   esac
 }
@@ -74,7 +75,8 @@ function gitex() {
     echo -e "\033[33mgitex first run...\033[0m"
 
     echo "  set pager, changing tab length"
-      $wgit config --global core.pager 'less -x2'
+      #Always use pager -+F source: https://stackoverflow.com/questions/12352049/always-use-the-pager-for-git-diff
+      $wgit config --global core.pager 'less -cx2 -+F'
 
     echo "  allow simple push/pull"
       $wgit config --global push.default simple # tracking ?

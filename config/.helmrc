@@ -6,8 +6,17 @@ use ${HELM_CONFIG}
 shopt -s expand_aliases extglob
 
 #----------------------------------FUNCTIONS-----------------------------------#
-
-
+function helmex_state() {
+  export HELMEX_CONTEXT=$(kubectl config current-context)
+  export HELMEX_HOME=$(sit "contexts.${HELMEX_CONTEXT}.path")
+  if [[ "${HELMEX_HOME}" != 'null' ]];then
+    local ignore=$(cd ${HELMEX_HOME}; ls -1 */.helm-ignore | sed 's~/\.helm-ignore$~~')
+    local charts=$(cd ${HELMEX_HOME};ls -1 | sed 's/\.yaml$//' | sort -u)
+    export HELMEX_CHARTS=$(echo ${charts} ${ignore} | tr ' ' $'\n' | sort | uniq -u)
+  else
+    export HELMEX_CHARTS=''
+  fi
+}
 
 #----------------------------------COMPLETIONS-----------------------------------#
 function helmex_complete() {
@@ -17,7 +26,17 @@ function helmex_complete() {
         complete_sections ${BASH_SOURCE}
       ;;
     *)
-        #TODO: charts
+        case "${COMP_WORDS[1]}" in
+          help|ex|list|ls)
+            ;;
+          home)
+              complete_pwd
+            ;;
+          *)
+              helmex_state
+              COMPREPLY=($(compgen -W "$(echo ${HELMEX_CHARTS})" -- "${COMP_WORDS[${COMP_CWORD}]}"))
+            ;;
+        esac
       ;;
   esac
 }
@@ -30,40 +49,164 @@ function helm_command()
 }
 
 function helm_action() {
-  action=$1
-  chart=$2
+  local action=$1
+  local chart=$2
+  local namespace=${chart} #default chart to its own namespace
 
-  HELM_CONTEXT=$(kubectl config current-context)
+  helmex_state
+
+  case "${action}" in
+    help|ex|home|pull|custom|fetch)
+      ;;
+    *)
+        if [[ "${HELMEX_HOME}" == 'null' ]];then
+          echo -e "\033[31mpath to charts not set yet\033[0m: helmex home [path]"
+        else
+          local OWD=$OLDPWD
+          cd "${HELMEX_HOME}"
+          if [[ "$?" -ne 0 ]];then
+            echo -e "\033[31minvalid path to charts:\033[0m ${HELMEX_HOME}"
+            echo -e "Fix via: helmex home [path]"
+            return
+          fi
+        fi
+      ;;
+  esac
+
+  conf=''
+  if [ -f ${HELMEX_HOME}/${chart}.yaml ];then
+    conf="-f ${chart}.yaml"
+  fi
+
+  #repo overrides:
+  case "${chart}" in
+    cassandra|kafka|zookeeper)
+        local upstream='incubator'
+      ;;
+    prometheus*|elasticsearch|mariadb|openebs)
+        local upstream='stable'
+      ;;
+    *)
+        #no known upstream
+        local upstream=''
+      ;;
+  esac
+  if [ -d ${HELMEX_HOME}/${chart} ];then
+    local repo='.' #local definition
+  else
+    local repo="${upstream}"
+  fi
 
   case "${action}" in
 ##Main Actions:
     help|ex) ##print this usage information
-        echo -e "\033[1mHelm Extentions:\033[0m helmex [\033[34;1mactions\033[0m]"
-        echo -e "  Shared context with kubectl: \033[1m${HELM_CONTEXT}\033[0m"
+        echo -e "\033[1mHelm Extentions:\033[0m helmex [\033[34;1mactions\033[0m] [\033[34;1mchart...\033[0m]"
+        echo -e "  Shared context with kubectl: \033[1m${HELMEX_CONTEXT}\033[0m ${HELMEX_HOME}"
         document ${BASH_SOURCE}
         echo ""
+        return
       ;;
 ##Context Actions:
     list) ##List installed/released charts
         helm_command list --all-namespaces
       ;;
     ls) ##List charts available to this context
-        #TODO
+        echo "${HELMEX_CHARTS}" | tr ' ' $'\n'
+      ;;
+    home) ##Set the home directory for this context
+        if [ -n "${chart}" ];then
+          local OWD=$OLDPWD
+          cd "${chart}"
+          if [[ "$?" -ne 0 ]];then
+            echo -e "\033[31minvalid path:\033[0m ${chart}"
+            return
+          fi
+          local path=$(pwd)
+          cd - >/dev/null
+          OLDPWD=$OWD
+        else
+          local path=$(pwd)
+        fi
+
+        sit "contexts.${HELMEX_CONTEXT}.path" "${path}" >/dev/null
+        echo -e "\033[32mset chart path for \033[0m\033[1m${HELMEX_CONTEXT}\033[0m: ${path}"
+        return
       ;;
     in|install) ##Install chart(s)
-        #TODO
+        echo -e "\033[33mkubectl create namespace ${namespace}\033[0m"
+        kubectl create namespace ${namespace} 2>&1 | sed 's/^/  /'
+        helm_command install -n ${chart} ${repo}/${chart} --debug --namespace ${namespace} ${conf}
       ;;
     dry|debug) ##Dry-Install chart(s)
-        #TODO
+        helm_command install -n ${chart} ${repo}/${chart} --debug --namespace ${namespace} ${conf} --dry-run
       ;;
     rm|uninstall|delete|remove) ##Delete and purge release/chart(s)
-        #TODO
+        helm_command del --namespace ${namespace} ${chart}
+        
+        echo -e "\033[33mkubectl delete namespace ${namespace}\033[0m"
+        kubectl delete namespace ${namespace} 2>&1 | sed 's/^/  /'
+
+        echo -e "\033[33mkubectl delete pv/* with released status\033[0m"
+        for object in $(kubectl get pv -o jsonpath='{range.items[?(@.status.phase=="Released")]}{"pv/"}{.metadata.name}{"\n"}{end}' | tr $'\n' '|')
+        do
+          kubectl delete ${object} 2>&1 | sed 's/^/  /'
+        done
       ;;
     upgrade|update|up) ##Upgrade release/chart(s)
-        #TODO
+        helm_command upgrade -n ${namespace} --debug ${chart} ${conf} ${repo}/${chart}
       ;;
     pull|custom|fetch) ##Customize a chart by pulling it in
-        #TODO
+        local OWD=$OLDPWD
+        mkdir ${TMP=/tmp}/${chart}
+        cd ${TMP}/${chart}
+
+        local git_chart=''
+        if [ -f ${HELMEX_HOME}/.git-helm ];then
+          source ${HELMEX_HOME}/.git-helm
+          #.git-helm Format:
+          #chart_name_with_underscores='git@github.com:example/repo.git branch path/within/repo'
+          local git_chart="chart_${chart//-/_}"
+          local git_chart="${!git_chart}"
+        fi
+
+        if [ -n "${git_chart}" ];then
+          echo -e "\033[33mfetching ${chart} from git ${git_chart}\033[0m"
+          IFS=' ' read gitrepo branch path <<< "${git_chart}"
+          git archive --remote=${gitrepo} ${branch} ${path} | tar xvf -
+          mkdir ${HELMEX_HOME}/${chart} 2>/dev/null
+          path="${chart}/${path}"
+        elif [[ "${upstream}" == '.' ]];then #look in helm
+          helm_command fetch --untar --debug ${upstream}/${chart}
+          path="${chart}"
+        else
+          echo -e "\033[31mcannot pull from local for chart:\033[0m ${chart}"
+          cd - >/dev/null
+          OLDPWD=$OWD
+          rm -Rf ${TMP}/${chart}
+          return 1
+        fi
+
+        echo -e "\033[33mcp -Rvf ${path}/* charts/${chart}\033[0m"
+        cp -Rvf ${path}/* ${HELMEX_HOME}/${chart}
+        
+        #clean up local subcharts so we use our overridden version
+        for subchart in ${HELMEX_CHARTS}
+        do
+          if [ -d ${HELMEX_HOME}/${chart}/charts/${subchart} ];then
+            echo -e "\033[33mcleaning up subchart \033[0m ${subchart}"
+            rm -Rf ${HELMEX_HOME}/${chart}/charts/${subchart}
+          fi
+        done
+
+        cd - >/dev/null
+        OLDPWD=$OWD
+        echo -e "\033[33mcleaning up work directory\033[0m ${TMP}/${chart}"
+        rm -Rf ${TMP}/${chart}
+      ;;
+
+    refresh|re) ##Delete pods to allow them to be recreated again (skips pvc pods for openebs)
+        local IFS=$'\n'
+        kubectl -n ${namespace} delete $(kubectl -n ${namespace} get pod -o=name | grep -v pvc)
       ;;
 ##Chained Actions:
     reinstall|rein) ##helmex remove && install
@@ -71,6 +214,9 @@ function helm_action() {
         helm_action install ${chart}
       ;;
   esac
+
+  cd - >/dev/null
+  OLDPWD=$OWD
 }
 
 function helm_extentions() {
