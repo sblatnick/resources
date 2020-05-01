@@ -45,6 +45,14 @@ grep
     --group-separator    #change string between contexts (default = '--')
     --no-group-separator #use '' between contexts
 
+  #exit
+    #normal:
+      0 match
+      1 no match
+      2 error occurred
+    -q #--quiet --silent
+      0 match|error
+      1 no match
 
 #grep | line buffering:
 #  grep uses line buffering only in a terminal, and because of the pipe,

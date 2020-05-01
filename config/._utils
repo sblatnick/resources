@@ -90,6 +90,20 @@ function big() {
   du -sx * 2>/dev/null | sort -r -n | head
 }
 
+function has() {
+  local IFS=$'\n'
+  ret=1
+  while read pipe
+  do
+    echo -e "${pipe}"
+    echo $pipe | grep -Pq "$@"
+    if [ $? -eq 0 ];then
+      ret=0
+    fi
+  done
+  return $ret
+}
+
 function insert() {
   if [ "$#" -lt 3 ];then
     echo -e "Usage: insert [line number] [text] [file]"
