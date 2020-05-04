@@ -264,6 +264,11 @@
   #fix last commit message:
   git commit --amend -m "New commit message"
 
+  #fix multiple commit messages:
+  git rebase --interactive $sha^
+    #Change 'pick' => 'reword'
+    #Save each changeset with new message
+
   #fix push timeout error for large files:
   git config http.postBuffer 524288000
 

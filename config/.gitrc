@@ -146,6 +146,12 @@ function gitex() {
         shift
         branch=$1
 
+        #List branches:
+        if [ -z "${branch}" ];then
+          $wgit --no-pager branch
+          return
+        fi
+
         #local branch?
         $wgit rev-parse --abbrev-ref ${branch##*/} >/dev/null 2>&1
         if [ $? -eq 0 ];then
@@ -192,6 +198,16 @@ function gitex() {
         for file in $files
         do
           $EDITOR $dir/${file##* }
+        done
+      ;;
+    resolve|mark) ##mark resolution on all conflicts
+        dir=$(pwd)
+        local IFS=$'\n'
+        files=$($wgit status -s | grep '^UU ')
+        for file in $files
+        do
+          echo -e "git add ${file##* }"
+          $wgit add ${file##* }
         done
       ;;
     push) ##reasonable default push
