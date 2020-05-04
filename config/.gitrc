@@ -351,6 +351,37 @@ function gitex() {
         shift
         gitex_subtree $@
       ;;
+    flush|force) ##force push to origin with tags
+        local branch=$($wgit rev-parse --abbrev-ref HEAD)
+        $wgit push origin --force +${branch} --tags
+      ;;
+    amend) #[sha]#amend an old commit message
+        shift
+        local sha=$1
+        shift
+        message=$@
+
+        local branch=$($wgit rev-parse --abbrev-ref HEAD)
+
+        set -e
+        trap "echo -e '\033[31mERROR:\033[0m something went wrong, returning early.';return 1" ERR
+
+        local old=$($wgit --no-pager show -s --pretty=format:"%h %s" ${sha})
+        local mini=${old%% *}
+        local old=${old##$mini }
+
+        $wgit checkout -b amend ${sha} >/dev/null 2>&1
+        $wgit commit --amend -m "${message}" >/dev/null
+        $wgit rebase amend $branch >/dev/null 2>&1
+        $wgit branch -d amend >/dev/null
+
+        echo -e "\033[33m${mini}\033[0m"
+        echo -e "  \033[31m-${old}\033[0m"
+        echo -e "  \033[32m+${message}\033[0m"
+
+        set +e
+        trap - ERR
+      ;;
     tmm) #[dest]#time machine move
         shift
 
