@@ -2,7 +2,7 @@
 #Kubernetes (k8s) helper scripts
 
 export K8_CONFIG=~/.kate
-export K8_PLUGINS=$(IFS=': '; ls -1 $PATH 2>/dev/null | grep kubectl- | sed 's/^kubectl-//')
+export K8_PLUGINS=$(IFS=': '; ls -1 $PATH 2>/dev/null | grep kubectl- | sed 's/^kubectl-//' | sed 's/_/-/')
 export K8_SUBCOMMANDS=$(kubectl -h 2>/dev/null | grep -o "^  [a-z][a-z]*" | sed 's/^  *//')
 shopt -s expand_aliases extglob
 

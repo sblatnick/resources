@@ -12,6 +12,7 @@
 
   #Create:
     useradd ${user}         #adduser == useradd
+    adduser -u ${uid} -md ${home} ${user}
 
   #Delete:
     userdel ${user}

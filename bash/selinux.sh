@@ -612,5 +612,65 @@ policycoreutils-python
   sepolgen-ifgen-attr-helper
 
 
-
+#::::::::::::::::::::The Genesis of SELinux::::::::::::::::::::
+#a Story
+ 
+NSA Anonymous Person 1:
+  Let's create a label system, where you can label anything with extra
+  permissions, not just files, but processes, ports, etc!  We can integrate it
+  with linux via a kernel module!
+NSA Anonymous Person 2:
+  That's a great idea!  Building on that, let's call it SELinux, with its own
+  parallel users and groups.  We will simply call the users "users", but the
+  groups will be called "roles".  So people can tell the difference, let's use
+  a convention of suffixes with _{letter} like user_u, role_r.  We will include
+  a concept of types, which will have the _t suffix.  For processes, we will
+  call them "domains" but still use the _t suffix.  Then, we will create
+  classes... which are really types...
+NSA Anonymous Person 1:
+  Um... isn't that unnecessarily complicated...
+NSA Anonymous Person 2:
+  No.  Let's create a system of policies for the new permissions, in a database
+  instead of with the file like chmod permissions.  Even though linux has file
+  representations of processes, we won't use those, we'll use our database
+  instead.  Better yet, let's add versioning to the policy database, starting
+  with version 12 we will use source, then in version 15 we will use both
+  source and a binary format.  In version 21, we will stop both and create
+  modules, not kernel modules as this runs in, but its own module system.  We
+  will rename and change "source" to be a "policy list"...
+NSA Anonymous Person 1:
+  I don't think...
+NSA Anonymous Person 2:
+  Let's add multiple modes to SELinux, but call them types and give them
+  overlapping three-letter-acronyms to describe it all.  Make sure the config
+  file can be in different locations on different systems, and overwritten by
+  kernel arguments.
+NSA Anonymous Person 1:
+  But...
+NSA Anonymous Person 2:
+  To one type, we will add a "sensitivity" field, which won't utilize our
+  _{letter} suffix.  We can log permission denied in a over-used centralized
+  log, but then keep the details hidden within another log tool we will create
+  for SELinux.  We should create a set of redundant tools with multiple ways to
+  do the same thing... and require package maintainers to create policies with
+  their software.
+NSA Anonymous Person 1:
+  Can you hear me?
+NSA Anonymous Person 2:
+  We will include a tool to change the labels, only we won't call them
+  labels... We will call them "contexts".  The tool will be "chcon", but changes
+  are only temporary.  If you want to make it permanent, you will have to use
+  another tool, passing it "fcontext"...
+NSA Anonymous Person 1:
+  What does the F stand for?
+NSA Anonymous Person 2:
+  Even then, the changes won't persist until you commit them, but we'll call
+  the tool "restorecon" so people will think they are reverting...
+NSA Anonymous Person 1:
+  I'm out of here...
+NSA Anonymous Person 2:
+  Then files will inherit permissions from their parent directories when copied,
+  but retain the old permissions when moved...
+ 
+Thus, security by obfuscation was born...
 

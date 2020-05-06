@@ -91,6 +91,7 @@ function big() {
 }
 
 function has() {
+  shopt -s expand_aliases
   local IFS=$'\n'
   ret=1
   while read pipe
