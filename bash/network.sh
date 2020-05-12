@@ -4,6 +4,19 @@
 
 #Look for open ports and services:
   nmap domain.com
+  netstat -pant | grep LISTEN
+
+#Check connectivity A => B
+  #Listen on port:
+    nc -l ${port}
+    nc -l localhost ${port}
+      nc: Address already in use #shows if a service is using the port
+  #Check connection:
+    nc -v localhost ${port}
+      Connection to localhost 5000 port [tcp/*] succeeded!
+      nc: connect to localhost port 5000 (tcp) failed: Connection refused
+    netstat -tulpen | grep nc
+  #source: https://unix.stackexchange.com/questions/214471/how-to-create-a-tcp-listener
 
 #IPX network:
   sudo ipx_interface add -p eth0 802.2

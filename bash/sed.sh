@@ -371,3 +371,9 @@ sed '2{/pattern/! c\replace
 #insert only if line 2 doesn't match:
 sed '2{/pattern/! i\insert
 }' test.cfg
+
+
+#print only if the block has a match:
+  sed 'H;/--START--/h;/--END--/!d;x;/match/!d'
+  #source: https://unix.stackexchange.com/questions/228699/sed-print-lines-matched-by-a-pattern-range-if-one-line-matches-a-condition
+
