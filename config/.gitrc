@@ -485,29 +485,49 @@ function gitex_action() {
       do) ##exec git on repos in the current context
           echo -e "${output}"
           eval "git $ARGS 2>&1"
+          if [ "$?" -eq 130 ];then #SIGINT
+            cd ${start}
+            return
+          fi
         ;;
       dob) ##exec git on repos in the current context of the same branch as the CWD
           if [ "$GITEX_BRANCH" == "$branch" ]; then
             echo -e "${output}"
             eval "git $ARGS 2>&1"
+            if [ "$?" -eq 130 ];then #SIGINT
+              cd ${start}
+              return
+            fi
           fi
         ;;
       mod) ##exec git on dirty repos in the current context
           if [ -n "$($wgit status --porcelain)" ]; then
             echo -e "${output}"
             eval "git $ARGS 2>&1"
+            if [ "$?" -eq 130 ];then #SIGINT
+              cd ${start}
+              return
+            fi
           fi
         ;;
       mob) ##exec git on dirty repos in the current context of the same branch as the CWD
           if [[ "$GITEX_BRANCH" == "$branch" && -n "$($wgit status --porcelain)" ]]; then
             echo -e "${output}"
             eval "git $ARGS 2>&1"
+            if [ "$?" -eq 130 ];then #SIGINT
+              cd ${start}
+              return
+            fi
           fi
         ;;
       with) ##eval on repos in the current context replacing REPO
           echo -e "${output}"
           local LARGS=${ARGS//REPO/$repo}
           eval "$LARGS"
+          if [ "$?" -eq 130 ];then #SIGINT
+            cd ${start}
+            return
+          fi
         ;;
       *)
         echo -e "\033[31mInvalid action:\033[0m ${ACTION}"

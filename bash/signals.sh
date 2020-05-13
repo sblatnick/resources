@@ -39,3 +39,18 @@
   echo "val: ${val}" #never gets here
 
   #source: https://unix.stackexchange.com/questions/48533/exit-shell-script-from-a-subshell
+
+#special meaning exit codes: https://tldp.org/LDP/abs/html/exitcodes.html
+  1       #error
+    2     #shell syntax error
+    126   #can't execute
+    127   #command not found
+    128   #exit code type invalid
+    128+n #fatal error signal kill -9
+  130     #SIGINT on sub-script/shell (128 + 2)
+    255*  #exit outside of 0-255
+
+  eval "sleep 1000"
+  if [ $? -eq 130 ];then
+    echo "interrupted"
+  fi
