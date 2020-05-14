@@ -183,6 +183,17 @@ class profile_example {
     }
   }
 
+  #Override in puppet 3.8 using selector "spaceship" operator:
+  User<|title == 'example'|> {
+    ensure  => 'present',
+    groups  => concat(hiera_array('example::groups'), 'extra'),
+  }
+  #Override in puppet 6.15 directly:
+  User['example'] {
+    ensure  => 'present',
+    groups  => concat(hiera_array('example::groups'), 'extra'),
+  }
+
   #Allow for local customization
   # Use cases:
   #  1. if file doesn't exist, create it using the template and hiera

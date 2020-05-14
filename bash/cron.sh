@@ -30,3 +30,7 @@ crontab -e
 #EXAMPLES:
 01 * * * * root run-parts /etc/cron.hourly
 01 * * * * run-parts /etc/cron.hourly
+
+
+#Running a job at boot: https://www.cyberciti.biz/faq/linux-execute-cron-job-after-system-reboot/
+@reboot /path/to/script

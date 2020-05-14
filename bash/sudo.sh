@@ -20,3 +20,6 @@ EOF
 
 #sudo append to file:
   echo "text" | sudo tee -a /path/to/file
+
+#run as other user/group:
+  runuser -l $USER -c "$cmd"

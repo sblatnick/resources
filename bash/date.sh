@@ -107,6 +107,16 @@ FORMAT:
 
 #::::::::::::::::::::USAGE::::::::::::::::::::
 
+#Write script to date stamped log and stdout:
+  VAR=/var/log
+  function logger() {
+    local script=${1##*/}
+    local log=${VAR}/${script%%.sh}.log.$(date +'%F-%H_%M_%S')
+    log "tee to log: ${log}"
+    exec 1> >(tee $log) 2>&1
+  }
+  logger ${BASH_SOURCE} #or $0
+
 #convert from epoch:
 date --date @1535130434
   Fri Aug 24 10:07:14 PDT 2018

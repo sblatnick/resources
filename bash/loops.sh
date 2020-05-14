@@ -43,6 +43,13 @@
   done 3< <(echo ${hosts} | tr ' ' $'\n')
   #See: https://superuser.com/questions/421701/bash-reading-input-within-while-read-loop-doesnt-work
 
+  #read tab delmited data line by line:
+  local IFS=$'\n'
+  while IFS=$'\t' read -u 3 host role
+  do
+    echo -e "  \033[34m${host%%.*}\033[0m ${role}"
+  done 3< <(jq -r ".[] | select(.id == \"${id}\") | [.hostname, .role] | @tsv" file.json)
+
   #counter:
   X=0
   while [ $X -le 20 ]
