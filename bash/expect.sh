@@ -235,3 +235,81 @@ function run_with_password {
 END
 }
 
+
+#Run script, commands, or login as any user (permitting you can sudo su without a password from your $USER account)
+PID=$$
+TMP=${TMP-/tmp}/${PID}
+mkdir ${TMP}
+trap "rm -rf ${TMP} >/dev/null 2>&1" EXIT
+trap "rm -rf ${TMP} >/dev/null 2>&1;kill -- -$$" SIGINT
+
+function act() {
+  action=$1
+  shift
+
+  if [ -z "$1" ];then
+    local todo="interact"
+  else
+    if [ -f "$1" ];then
+      file=$1
+    else
+      file=${TMP}/commands
+      cat << EOF > ${file}
+$@
+EOF
+    fi
+    local todo="
+set fh [open ${file}]
+set contents [read \$fh]
+close \$fh
+log_user 1
+stty -echo
+send -- \$contents
+send \"echo DONE\r\"
+expect \"DONE\"
+exit 0
+    "
+  fi
+
+  case ${action} in
+    root@*) ##Run as root: a passed script, command, or just ssh in
+        log "Logging in as root"
+        cat << EOF > ${expecter}
+#!/usr/bin/expect -f
+log_user 0
+spawn ssh -o StrictHostKeyChecking=no ${node}.lab.ppops.net
+expect "*\$* "
+send "sudo su\r"
+expect "*#* "
+${todo}
+EOF
+        chmod u+x ${expecter}
+        ${expecter}
+      ;;
+    *@*) ##Run as user: a passed script, command, or just ssh in
+        local user=${action%%@*}
+        log "Logging in as ${user}"
+        cat << EOF > ${expecter}
+#!/usr/bin/expect -f
+log_user 0
+spawn ssh -o StrictHostKeyChecking=no ${node}.lab.ppops.net
+expect "*\$* "
+send "sudo su\r"
+expect "*#* "
+send "su - ${user}\r"
+expect "*\$* "
+${todo}
+EOF
+        chmod u+x ${expecter}
+        ${expecter}
+      ;;
+    *) ##Run as your user: a passed script, command, or just ssh in
+        log "Logging in"
+        if [ -z "$1" ];then
+          ssh -o StrictHostKeyChecking=no ${node}.lab.ppops.net
+        else
+          ssh -o StrictHostKeyChecking=no ${node}.lab.ppops.net < ${file}
+        fi
+      ;;
+  esac
+}

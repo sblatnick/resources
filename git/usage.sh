@@ -75,6 +75,11 @@
   #older version of git to delete remote branch:
   git push origin :branch
 
+  #rename both local and remote branch:
+  git branch -m new_branch
+  git push origin -u new_branch
+  git push origin --delete old_branch
+
   #tagging:
     #list tags:
     git tag
@@ -406,6 +411,61 @@
       git remote add origin ssh://git@git.intranet.com/repo.git
       git push -u origin --all
       git push origin --tags
+
+    #Get disparate svn history:
+
+      #get each history segment:
+        revision=$(svn log --stop-on-copy svn://svn.intranet.com/repo/branches/0.1/subdirectory | egrep "r[0-9]+" | tail -1 | cut -d' ' -f1)
+        git svn clone -r ${revision#r} svn://svn.intranet.com/repo/branches/0.1/subdirectory
+        mv subdirectory subdirectory-0.1
+        cd subdirectory-0.1
+        git svn fetch
+        git svn rebase -l
+        cd ../
+
+        revision=$(svn log --stop-on-copy svn://svn.intranet.com/repo/branches/0.2/subdirectory | egrep "r[0-9]+" | tail -1 | cut -d' ' -f1)
+        git svn clone -r ${revision#r} svn://svn.intranet.com/repo/branches/0.2/subdirectory
+        mv subdirectory subdirectory-0.2
+        cd subdirectory-0.2
+        git svn fetch
+        git svn rebase -l
+        cd ../
+
+        revision=$(svn log --stop-on-copy svn://svn.intranet.com/repo/branches/0.3/subdirectory | egrep "r[0-9]+" | tail -1 | cut -d' ' -f1)
+        git svn clone -r ${revision#r} svn://svn.intranet.com/repo/branches/0.3/subdirectory
+        mv subdirectory subdirectory-0.3
+        cd subdirectory-0.3
+        git svn fetch
+        git svn rebase -l
+        cd ../
+
+      #pull each history into the oldest one:
+        cd ../subdirectory-0.1/
+
+        git remote add -f 0.2 ../subdirectory-0.2
+        git pull --allow-unrelated-histories -Xtheirs 0.2 master
+
+        git remote add -f 0.3 ../subdirectory-0.3
+        git pull --allow-unrelated-histories -Xtheirs 0.3 master
+
+      #Update git repo with svn history where discrepancies:
+        git tmm subdir #move to location (gitex time machine move)
+        git remote add old ../path
+        #in old cloned repo:
+          git log path/file
+        git cherry-pick -n $sha
+
+        git cherry-pick add file #stage changes
+        git checkout HEAD file   #revert
+        git reset HEAD file      #remove
+
+        git cherry-pick --continue
+
+        #force merge history:
+        git push old +master:old_branch
+
+        #in old cloned repo:
+          git reset --hard origin/old_branch
 
   #switch branches/tags and merge:
     #get other branch:

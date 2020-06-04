@@ -8,11 +8,19 @@ curl -q -X POST -H "Content-Type: application/json" -d "@${DATA}" https://${DEST
   tlsv1.2
   ciphers=AES256-SHA256
 
+#Auth:
+  curl -n           #use ~/.netrc for basic auth:
+    machine hostname.intra.net login username password P@$$W0rd
+  curl -u ${USER}   #ask for the password for basic auth
+  curl -c ~/.cookie #store session in a cookie file
+
+
 #OPTIONS:
     -q #ignore ~/.curlrc
     -X #request type, like GET, POST, SET
     -k #insecure
     -u user:password #basic auth
+    -c ~/.cookie #store session in cookie file
   #INPUT:
     -H #headers
     -d #data

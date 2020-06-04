@@ -23,6 +23,10 @@
   rpm -ivh packagename.rpm
   #install rpm with repo-based dependencies:
   yum --nogpgcheck localinstall package.rpm
+  #re-install same package version:
+    rpm -e ${pkg%%.rpm} && rpm -ivh $pkg
+    #>=4.12.0
+    rpm --reinstall package.rpm
   #uninstall rpm:
   rpm -e package
   #upgrade rpm:
@@ -309,6 +313,106 @@ rpmbuild -ba ~/.rpm/SPECS/${package}.spec
 rpm --eval "$(cat service.spec)"
 rpmspec -P service.spec
 
+#::::::::::::::::::::RPM SPEC FILE::::::::::::::::::::
+
+#--------------------SECTIONS/ORDER--------------------
+
+#built time:
+  %prep
+  %install
+#install time:
+  %pre
+  %files #installed
+  %post
+#uninstall time:
+  %preun
+  %files #removed
+  %postun
+
+#Yum Upgrade Package order:
+  #   PKG    SECTION
+  1.  new    %pretrans
+  2.  new    %pre
+  3.  new    %files #INSTALLED
+  4.  new    %post
+  5.  other  %triggerin
+  5.  new    %triggerin
+  7.  old    %triggerun
+  8.  other  %triggerun
+  9.  old    %preun
+  10. old    %files #REMOVED
+  11. old    %postun
+  12. old    %triggerpostun
+  13. other  %triggerpostun
+  14. new    %posttrans
+
+#source: https://docs.fedoraproject.org/en-US/packaging-guidelines/Scriptlets/
+
+
+#--------------------%files %macros--------------------
+%config file
+%attr(755, user, group) file                  #set file attributes
+  %attr(-, -, -) file                         #dash means use existing
+%defattr(755, user, group, dir_mode) file     #set default attributes
+%ghost file                                   #owned by package, but not installed
+                                              #(only removed) like log files
+%doc file
+%verify(mode md5) file                        #verify specified attributes                      
+%verify(not owner group) file                 #verify everything but specified
+  #attributes:
+    owner
+    grpu
+    mode
+    md5
+    size
+    maj
+    min
+    symlink
+    mtime
+%docdir
+%dir                                          #include directory but not built files within
+%files -f files.txt                           #load from file
+#source: http://ftp.rpm.org/max-rpm/s1-rpm-inside-files-list-directives.html
+
+
+#--------------------%systemd--------------------
+
+%systemd_requires
+%systemd_ordering #not required, use only if available
+
+%post
+%systemd_post apache-httpd.service
+%systemd_user_post %{name}.service
+
+%preun
+%systemd_preun apache-httpd.service
+%systemd_user_preun %{name}.service
+
+%postun
+%systemd_postun_with_restart apache-httpd.service
+
+#--------------------%setup--------------------
+
+%setup
+  -n <name>   #name of build directory
+  -c          #create dir and cd to it before unpacking
+  -D          #don't delete before unpacking
+  -T          #don't unpack source0
+  -b <n>      #unpack nth source
+  -a <n>      #unpack nth source after cd
+
+#source: http://ftp.rpm.org/max-rpm/s1-rpm-inside-macros.html
+
+
+#--------------------%patch--------------------
+
+%patch
+  -p <n>      #strip n leading slashes from filenames
+  -b <ext>    #backup file extension
+  -E          #rm empty output files
+
+#source: http://ftp.rpm.org/max-rpm/s1-rpm-inside-macros.html
+
 #::::::::::::::::::::RPM CREATION from CPAN::::::::::::::::::::
 
 #Build perl modules from CPAN as rpms (see http://perlhacks.com/2015/10/build-rpms-of-cpan-modules/):
@@ -393,8 +497,12 @@ rpmbuild -bp ${_topdir:-~/rpmbuild}/SPEC/package.spec
 sudo yum install -y yum-utils epel-release mock rpm-build
 sudo usermod -a -G mock $USER
 
-#mock uses a source rpm.  If you don't have one, you will need to create it:
-rpmbuild -bs package.spec
+#mock create source rpm:
+  mock -r epel-7-x86_64 --buildsrpm --sources rpms/SOURCES/ --spec rpms/SPECS/package.spec --resultdir result
+  #essentially runs this within chroot:
+  rpmbuild -bs package.spec
+#mock create rpm from srpm:
+  mock -r epel-7-x86_64 --no-clean --resultdir result result/package-0.1-0.el7.src.rpm
 
 #Find the config file matching the kernel and architecture:
 ll /etc/mock/
@@ -422,6 +530,12 @@ mock -r epel-6-x86_64 --resultdir ./ rebuild kernel-2.6.32-696.30.1.el6.src.rpm
 
   #prevent from %clean in spec:
   mock -r epel-7-x86_64 --no-clean --no-cleanup-after --resultdir result result/example.src.rpm
+
+#Set env variables:
+  vi /etc/mock/epel-7-x86_64.cfg
+    config_opts['files']['etc/profile.d/environment.sh'] = """
+    export BUILD_ID=0
+    """
 
 #::::::::::::::::::::PYTHON PIP::::::::::::::::::::
 

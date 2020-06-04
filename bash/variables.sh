@@ -441,6 +441,7 @@ read -d '' variable << EOF
   Variable: $var
 EOF
 echo "$variable"
+#Important note: `read -d ''` exits with a 1, so make sure you don't have `set -e`
 
 #Echo all in one:
 cat << EOF

@@ -59,3 +59,16 @@ keytool -list -keystore cacerts -storepass changeme
 #Read yaml stored cert (like from kubernetes like in /etc/kubernetes/bootstrap-kubelet.conf)
   echo "$CERT" | base64 --decode > tmp.crt
   openssl x509 -in tmp.crt -text -noout
+
+
+#Encrypt/Decrypt String using ssh keypair:
+  #Convert pub key to pem:
+  openssl rsa -in ~/.ssh/id_rsa -pubout > ~/.ssh/id_rsa.pub.pem
+
+  #Encrypt:
+  echo $string | openssl rsautl -encrypt -pubin -inkey ~/.ssh/id_rsa.pub.pem > encryped.txt
+
+  #Decrypt:
+  cat encryped.txt | openssl rsautl -decrypt -inkey ~/.ssh/id_rsa
+
+  #source: https://unix.stackexchange.com/questions/328689/how-to-encrypt-a-string-with-my-ssh-pubkey

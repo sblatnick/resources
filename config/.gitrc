@@ -130,7 +130,7 @@ function gitex() {
       ;;
     bcc) #[message]#Use your last commit message's prefix before first colon
         shift
-        local last=$($wgit --no-pager log --format=%s --author=${USER} | head -n 1)
+        local last=$($wgit --no-pager log --no-merges --format=%s --author=${USER} | head -n 1)
         local prefix=${last%%:*}
         if [ -z "$@" ];then
           echo -e "\033[31mNo commit message specified\033[0m"
@@ -394,7 +394,8 @@ function gitex() {
 
         if [ -n "${path}" ];then
           set -e
-          trap "echo -e '\033[31mERROR:\033[0m something went wrong, returning early.';return 1" ERR
+          trap 'if [ "$?" -eq "0" ]; then exit; fi; echo -e "\033[31mERROR:\033[0m ${BASH_SOURCE##*/}:$BASH_LINENO cmd: \"$BASH_COMMAND\"";trap - ERR EXIT;return 1' ERR EXIT
+          #trap 'ret=$?;if [ "$ret" -ne "0" ]; then echo -e "\033[31mERROR:\033[0m ${BASH_SOURCE##*/}:$BASH_LINENO cmd: \"$BASH_COMMAND\"";trap - ERR EXIT;fi;return $ret' ERR EXIT
           if [ ! -d ${path} ];then
             mkdir -p ${path}
           fi
@@ -415,14 +416,14 @@ function gitex() {
             fi
             $wgit mv $file $path/$file >/dev/null
             $wgit commit -a -m "Moved file \"$file\" before modification" >/dev/null
-            $wgit rebase move $branch >/dev/null 2>&1
+            $wgit rebase -Xtheirs move $branch >/dev/null 2>&1
             $wgit branch -d move >/dev/null
           done
           set +e
           echo -e "cleanup old directories"
           find . -not -path '*/\.git/*' -not -path "./${path}/*" -type d -empty -delete
           echo -e "\033[32mDONE\033[0m"
-          trap - ERR
+          trap - ERR EXIT
         else
           echo -e "\033[31mNo path specified\033[0m"
           return 1
@@ -756,12 +757,43 @@ function gitex_subtree()
   OLDPWD=$OWD
 }
 
+function gitex_svn_migrate()
+{
+  local url=$1
+
+  cd ${tmp}
+  svn log --stop-on-copy ${url} | egrep "^(r[0-9]+|Create .* branch from .* branch)" | tail -2 > ${tmp}/data
+  local revision=$(head -n 1 ${tmp}/data | cut -d' ' -f1)
+  local revision=${revision#r}
+  local branch=$(echo $url | grep -Po 'branches/[^/]*')
+  local branch=${branch#branches/}
+  local previous_branch=$(grep "Create" ${tmp}/data | cut -d' ' -f5)
+  local previous_url=${url/branches\/${branch}/branches\/${previous_branch}}
+  local base=${url##*/}
+
+  echo "clone r${revision} on ${branch}"
+  $wgit svn clone -r ${revision} "${url}"
+  mv ${base} ${base}-${branch}
+  echo ${base}-${branch} >> ${tmp}/branches
+  cd ${base}
+  $wgit svn fetch | sed 's/^/  /'
+  $wgit svn rebase -l | sed 's/^/  /'
+
+  if [ -z "${previous_branch}" ];then
+    echo "last branch reached"
+    return
+  fi
+
+  echo "next: ${previous_branch} on ${previous_url}"
+  gitex_svn_migrate "${previous_url}"
+}
+
 
 ##SVN Actions:
 function gitex_svn()
 {
   case "$1" in
-    co) ##Checkout remote branch and track
+    co) #[branch]#Checkout remote branch and track
         trap "echo 'Usage: git svn co [branch]';return 1" ERR
         shift
         local branch=$1
@@ -777,6 +809,40 @@ function gitex_svn()
 
         git branch ${branch} origin/${branch}
         git checkout ${branch}
+      ;;
+    migrate) #[svn://branches/name/subdir]#Cross-branch clone sub-directory with history
+        trap "echo 'Usage: git svn migrate [url]';return 1" ERR
+        shift
+        local url=$1
+        shift
+        trap - ERR
+
+        local OWD=$OLDPWD
+        local start=$PWD
+
+        tmpdir
+        #set -e
+        #trap 'ret=$?;if [ "$ret" -ne "0" ]; then echo -e "\033[31mERROR:\033[0m ${BASH_SOURCE##*/}:$BASH_LINENO cmd: \"$BASH_COMMAND\"";trap - ERR EXIT;fi;return $ret' ERR EXIT
+        local branch=$(echo $url | grep -Po 'branches/[^/]*')
+        local base=${url##*/}
+
+        gitex_svn_migrate ${url}
+
+        echo "Combine histories"
+        cd ${tmp}/${base}-${branch}
+        for repo in $(tail -n+2 ${tmp}/branches)
+        do
+          echo "  ${repo}:"
+          git remote add -f ${repo} ${tmp}/${repo} | sed 's/^/    /'
+          git pull --allow-unrelated-histories -Xtheirs ${repo} master | sed 's/^/    /'
+        done
+        echo "DONE: ${base}"
+        mv ${tmp}/${base}-${branch} ${start}/${base}
+
+        cd $start
+        OLDPWD=$OWD
+        #set +e
+        #trap - ERR EXIT
       ;;
     push) ##alias to dcommit
         $wgit svn dcommit

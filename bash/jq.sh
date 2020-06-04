@@ -44,3 +44,15 @@ jq ".contexts.wl.volumes |= if type==\"string\" then \"test\" else [\"test\"] en
        }
     }
 
+#// alternative operator
+a // b == COALESCE(a, b) == if a then a else b
+
+
+#Loop through retaining whitespace between tabs by using spaces:
+  #use another channel (3) to not get the printf in the loop
+  #use IFS=$'\t' for tab delimited from @tsv
+  while IFS=$'\t' read -u 3 one two three four
+  do
+    printf "  \033[34m%-8s\033[0m %-10s %s %s\n" "${one##*.}" "${two}" "${three}" "${four%%.*}"
+  #avoid "" by using .attribute // " " so the columns stay aligned in their fields
+  done 3< <(jq -r ".[] | select(.one == \"${1}\") | select(.two | contains(\"filter\")) | [.one, .two, .three // \" \", .four // \" \"] | @tsv" ${JSON_FILE})

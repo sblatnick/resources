@@ -4,6 +4,9 @@
 shopt -s expand_aliases extglob
 set -o pipefail
 
+#-----------------------------------GLOBALS------------------------------------#
+PID=$$
+
 #-----------------------------------LOGGING------------------------------------#
 
 function error() {
@@ -14,7 +17,7 @@ function log() {
   echo -e "$(date +'%F %T')   \033[0;1mLOG\033[0m: $@"
 }
 function warn() {
-  echo -e "$(date +'%F %T')  \033[33;1mWARN\033[0m: $@"
+  >&2 echo -e "$(date +'%F %T')  \033[33;1mWARN\033[0m: $@"
 }
 function run() {
   echo -e "$(date +'%F %T')   \033[0;1m$@\033[0m"
@@ -79,15 +82,37 @@ function len() {
 }
 
 function minlen() {
-  BIN='max' ACTION='len' pipe $@ | sort -n | head -n 1
+  BIN='minlen' ACTION='len' pipe $@ | sort -n | head -n 1
 }
 
 function maxlen() {
-  BIN='max' ACTION='len' pipe $@ | sort -n | tail -n 1
+  BIN='maxlen' ACTION='len' pipe $@ | sort -n | tail -n 1
 }
 
 function big() {
   du -sx * 2>/dev/null | sort -r -n | head
+}
+
+function enc() {
+  echo $@ | openssl rsautl -encrypt -pubin -inkey ~/.ssh/id_rsa.pub.pem
+}
+function encrypt() {
+  if [ ! -f ~/.ssh/id_rsa.pub.pem ];then
+    warn "Key ~/.ssh/id_rsa.pub.pem doesn't exist, creating..."
+    >&2 openssl rsa -in ~/.ssh/id_rsa -pubout > ~/.ssh/id_rsa.pub.pem
+  fi
+  BIN='encrypt' ACTION='enc' pipe #FIXME: $@
+}
+function decrypt() {
+  if [ ! -f ~/.ssh/id_rsa.pub.pem ];then
+    warn "Key ~/.ssh/id_rsa.pub.pem doesn't exist, creating..."
+    openssl rsa -in ~/.ssh/id_rsa -pubout > ~/.ssh/id_rsa.pub.pem
+  fi
+  if [ "$#" -lt 1 ];then
+    echo -e "Usage: decrypt [file]"
+    return
+  fi
+  cat $1 | openssl rsautl -decrypt -inkey ~/.ssh/id_rsa
 }
 
 function has() {
@@ -206,4 +231,22 @@ function ensure() {
       || run ${INSTALLER} install ${pkg} \
       || warn "${pkg} failed to install"
   done
+}
+
+#-------------------------------------TMP--------------------------------------#
+
+function tmpdir() {
+  export tmp=${TMP-/tmp}/util-${PID}
+  #echo "tmpdir: ${tmp}"
+  mkdir -p ${tmp}
+  function cleanup_tmpdir() {
+    local call=$1
+    if [[ 'NULL' == "${call}" ]];then
+      #echo "cleanup ${tmp}"
+      rm -rf ${tmp} >/dev/null 2>&1
+      trap - RETURN SIGINT
+      kill -- -$$
+    fi
+  }
+  trap "call=\$(caller | cut -d' ' -f2); cleanup_tmpdir \$call" RETURN SIGINT
 }
