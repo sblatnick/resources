@@ -377,3 +377,7 @@ sed '2{/pattern/! i\insert
   sed 'H;/--START--/h;/--END--/!d;x;/match/!d'
   #source: https://unix.stackexchange.com/questions/228699/sed-print-lines-matched-by-a-pattern-range-if-one-line-matches-a-condition
 
+#prepend to string using & to retain original contents:
+$ git ls-files -s | sed "s~\t\"*~&newsubdir/~"
+100755 732c363f 0	newsubdir/example.sh
+
