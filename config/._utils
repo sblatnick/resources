@@ -237,16 +237,30 @@ function ensure() {
 
 function tmpdir() {
   export tmp=${TMP-/tmp}/util-${PID}
-  #echo "tmpdir: ${tmp}"
+  OWD=$OLDPWD
+  CWD=$PWD
+  echo -e "\033[34mtmpdir: ${tmp}\033[0m"
   mkdir -p ${tmp}
   function cleanup_tmpdir() {
     local call=$1
     if [[ 'NULL' == "${call}" ]];then
-      #echo "cleanup ${tmp}"
-      rm -rf ${tmp} >/dev/null 2>&1
+      if [ -f ${tmp}/save ];then
+        echo -e "\033[34mtmpdir retained: ${tmp}\033[0m"
+      else
+        echo -e "\033[34mcleanup: ${tmp}\033[0m"
+        rm -rf ${tmp} >/dev/null 2>&1
+      fi
       trap - RETURN SIGINT
-      kill -- -$$
+      pkill -P ${PID}
+      cd $CWD
+      OLDPWD=$OWD
     fi
   }
-  trap "call=\$(caller | cut -d' ' -f2); cleanup_tmpdir \$call" RETURN SIGINT
+  trap "call=\$(caller | cut -d' ' -f2); cleanup_tmpdir \$call" RETURN
+  trap "cleanup_tmpdir NULL" SIGINT
+}
+
+function tmpsave() {
+  echo -e "\033[34mretain tmpdir: ${tmp}\033[0m"
+  touch ${tmp}/save
 }

@@ -771,20 +771,20 @@ function gitex_svn_migrate()
   local previous_url=${url/branches\/${branch}/branches\/${previous_branch}}
   local base=${url##*/}
 
-  echo "clone r${revision} on ${branch}"
+  echo -e "\033[32mclone r${revision} on ${branch}\033[0m"
   $wgit svn clone -r ${revision} "${url}"
   mv ${base} ${base}-${branch}
   echo ${base}-${branch} >> ${tmp}/branches
-  cd ${base}
+  cd ${base}-${branch}
   $wgit svn fetch | sed 's/^/  /'
   $wgit svn rebase -l | sed 's/^/  /'
 
   if [ -z "${previous_branch}" ];then
-    echo "last branch reached"
+    echo -e "\033[32mlast branch reached\033[0m"
     return
   fi
 
-  echo "next: ${previous_branch} on ${previous_url}"
+  echo -e "\033[32mnext: ${previous_branch} on ${previous_url}\033[0m"
   gitex_svn_migrate "${previous_url}"
 }
 
@@ -821,23 +821,25 @@ function gitex_svn()
         local start=$PWD
 
         tmpdir
+        tmpsave #just in case
+
         #set -e
         #trap 'ret=$?;if [ "$ret" -ne "0" ]; then echo -e "\033[31mERROR:\033[0m ${BASH_SOURCE##*/}:$BASH_LINENO cmd: \"$BASH_COMMAND\"";trap - ERR EXIT;fi;return $ret' ERR EXIT
-        local branch=$(echo $url | grep -Po 'branches/[^/]*')
-        local base=${url##*/}
 
+        local base=${url##*/}
         gitex_svn_migrate ${url}
 
-        echo "Combine histories"
-        cd ${tmp}/${base}-${branch}
-        for repo in $(tail -n+2 ${tmp}/branches)
+        local earliest=$(tail -n1 ${tmp}/branches)
+        echo -e "\033[32mCombine histories\033[0m into ${earliest}"
+        cd ${tmp}/${earliest}
+        for repo in $(head -n-1 ${tmp}/branches)
         do
-          echo "  ${repo}:"
-          git remote add -f ${repo} ${tmp}/${repo} | sed 's/^/    /'
-          git pull --allow-unrelated-histories -Xtheirs ${repo} master | sed 's/^/    /'
+          echo -e "  \033[32m${repo}\033[0m:"
+          $wgit remote add -f ${repo} ${tmp}/${repo} 2>&1 | sed 's/^/    /'
+          $wgit pull --allow-unrelated-histories -Xtheirs ${repo} master 2>&1 | sed 's/^/    /'
         done
-        echo "DONE: ${base}"
-        mv ${tmp}/${base}-${branch} ${start}/${base}
+        mv -v ${tmp}/${earliest} ${start}/${base}
+        echo -e "\033[32mDONE: ${base}\033[0m"
 
         cd $start
         OLDPWD=$OWD
