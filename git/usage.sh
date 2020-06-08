@@ -243,14 +243,15 @@
   #remove all history except within the subdirectory to make its own repo:
   git filter-branch --subdirectory-filter foodir -- --all
 
-  #move files into subdirectory:
+  #move files into subdirectory: (gitex tmm $dir)
   git filter-branch --index-filter '
     git ls-files -s \
       | sed "s~\t\"*~&newsubdir/~" \
       | GIT_INDEX_FILE=$GIT_INDEX_FILE.new \
         git update-index --index-info &&
-    mv "$GIT_INDEX_FILE.new" "$GIT_INDEX_FILE""
+    mv "$GIT_INDEX_FILE.new" "$GIT_INDEX_FILE"
   ' HEAD
+  #WARNING: \t may get unescaped with gitex, making it replace on \t, so use a literal tab character instead
 
   #source: https://git-scm.com/docs/git-filter-branch
 

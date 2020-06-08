@@ -393,46 +393,14 @@ function gitex() {
 
         local path=$1
         shift
-        #sanitize directory path:
-        local path=${path%/}
-        local path=${path#./}
-        local branch=$($wgit rev-parse --abbrev-ref HEAD)
-
-        if [ -n "${path}" ];then
-          set -e
-          trap 'ret=$?;if [ "$ret" -ne "0" ]; then echo -e "\033[31mERROR:\033[0m ${BASH_SOURCE##*/}:$BASH_LINENO cmd: \"$BASH_COMMAND\"";fi;trap - ERR EXIT;return $ret' ERR EXIT
-          if [ ! -d ${path} ];then
-            mkdir -p ${path}
-          fi
-
-          local IFS=$'\n'
-          for file in $(find . -not -path './\.git/*' -not -path "./${path}/*" -type f)
-          do
-            local file=${file#./}
-            local sha=$($wgit --no-pager log --format=%h $file | tail -1)
-            echo -e "  \033[32m${file}: \033[34m${sha}\033[0m"
-            pgit checkout -b move $sha | sed 's/^/    /'
-            local file_path=${file%/*}
-            if [[ "${file_path}" == "${file}" ]];then #no sub-path on original
-              local file_path=''
-            fi
-            if [ ! -d "${path}/${file_path}" ];then
-              mkdir -p ${path}/${file_path}
-            fi
-            pgit mv $file $path/$file | sed 's/^/    /'
-            pgit commit -a -m "Moved file \"$file\" before modification" | sed 's/^/    /'
-            pgit rebase move $branch | sed 's/^/    /'
-            pgit branch -d move | sed 's/^/    /'
-          done
-          set +e
-          echo -e "\033[32mcleanup old directories\033[0m"
-          find . -not -path './\.git/*' -not -path "./${path}/*" -type d -empty -delete
-          echo -e "\033[32mDONE\033[0m"
-          trap - ERR EXIT
-        else
-          echo -e "\033[31mNo path specified\033[0m"
-          return 1
-        fi
+        $wgit filter-branch --index-filter '
+          git ls-files -s \
+            | sed "s~	\"*~&'${path}'/~" \
+            | GIT_INDEX_FILE=$GIT_INDEX_FILE.new \
+              git update-index --index-info && \
+          mv "$GIT_INDEX_FILE.new" "$GIT_INDEX_FILE"
+        ' HEAD
+        #Use literal \t because of escaping issues
       ;;
     @(${actions}))
         export GITEX_BRANCH=$(set +e;$wgit rev-parse --abbrev-ref HEAD 2>/dev/null;set -e)
