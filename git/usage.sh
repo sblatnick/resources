@@ -255,6 +255,18 @@
 
   #source: https://git-scm.com/docs/git-filter-branch
 
+#flog - fix really bad merge and force push
+  #merged and force pushed to remote?
+  git reflog
+    f8b968a (HEAD -> master, origin/master) HEAD@{0}: pull --allow-unrelated-histories -Xtheirs SVN master: Merge made by the 'recursive' strategy.
+    38dc53d HEAD@{1}: reset: moving to origin/master
+    88dea68 HEAD@{2}: pull --allow-unrelated-histories -Xtheirs SVN master: Merge made by the 'recursive' strategy.
+    38dc53d HEAD@{3}: commit: Bug fix
+    ...
+  git reset --hard HEAD@{3}
+  git push origin +master
+
+  #source: https://github.community/t/i-accidentally-force-pushed-to-my-repo/277/3
 
 #committing:
 

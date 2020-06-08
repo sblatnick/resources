@@ -794,7 +794,7 @@ function gitex_svn()
         local start=$PWD
 
         tmpdir
-        tmpsave #just in case
+        #tmpsave #just in case
 
         #set -e
         #trap 'ret=$?;if [ "$ret" -ne "0" ]; then echo -e "\033[31mERROR:\033[0m ${BASH_SOURCE##*/}:$BASH_LINENO cmd: \"$BASH_COMMAND\"";trap - ERR EXIT;fi;return $ret' ERR EXIT
@@ -805,13 +805,22 @@ function gitex_svn()
         local earliest=$(tail -n1 ${tmp}/branches)
         echo -e "\033[32mCombine histories\033[0m into ${earliest}"
         cd ${tmp}/${earliest}
-        for repo in $(head -n-1 ${tmp}/branches)
+        for repo in $(head -n-1 ${tmp}/branches | tac)
         do
           echo -e "  \033[32m${repo}\033[0m:"
           $wgit remote add -f ${repo} ${tmp}/${repo} 2>&1 | sed 's/^/    /'
           $wgit pull --allow-unrelated-histories -Xtheirs ${repo} master 2>&1 | sed 's/^/    /'
+          $wgit status | grep -q 'both added:'
+          if [ $? -eq 0 ];then
+            for file in $($wgit status | grep 'both added:' | sed 's/^\s*both added:\s*//')
+            do
+              $wgit add $file
+            done
+            git commit -m "fixed merge"
+          fi
         done
         mv -v ${tmp}/${earliest} ${start}/${base}
+        #cp -rv ${tmp}/${earliest} ${start}/${base}
         echo -e "\033[32mDONE: ${base}\033[0m"
 
         cd $start

@@ -10,7 +10,7 @@ case "$(uname -s)" in
         open -a geany $@
       }
       alias md5sum=md5
-      alias tac="tail -r"
+      alias tac="/usr/bin/tail -r"
       alias browser="open"
       which csshx >/dev/null 2>&1 && alias cssh='csshx'
 
