@@ -796,9 +796,6 @@ function gitex_svn()
         tmpdir
         #tmpsave #just in case
 
-        #set -e
-        #trap 'ret=$?;if [ "$ret" -ne "0" ]; then echo -e "\033[31mERROR:\033[0m ${BASH_SOURCE##*/}:$BASH_LINENO cmd: \"$BASH_COMMAND\"";trap - ERR EXIT;fi;return $ret' ERR EXIT
-
         local base=${url##*/}
         gitex_svn_migrate ${url}
 
@@ -825,8 +822,6 @@ function gitex_svn()
 
         cd $start
         OLDPWD=$OWD
-        #set +e
-        #trap - ERR EXIT
       ;;
     push) ##alias to dcommit
         $wgit svn dcommit
