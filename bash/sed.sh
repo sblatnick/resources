@@ -380,4 +380,5 @@ sed '2{/pattern/! i\insert
 #prepend to string using & to retain original contents:
 $ git ls-files -s | sed "s~\t\"*~&newsubdir/~"
 100755 732c363f 0	newsubdir/example.sh
-
+#$ append:
+sed -i "/${match//\//\\/}/{s/$/${replace//\//\\/}/}" ${file}
