@@ -13,6 +13,7 @@ curl -q -X POST -H "Content-Type: application/json" -d "@${DATA}" https://${DEST
     machine hostname.intra.net login username password P@$$W0rd
   curl -u ${USER}   #ask for the password for basic auth
   curl -c ~/.cookie #store session in a cookie file
+  curl -b ~/.cookie #load session from cookie file
 
 
 #OPTIONS:
@@ -21,6 +22,7 @@ curl -q -X POST -H "Content-Type: application/json" -d "@${DATA}" https://${DEST
     -k #insecure
     -u user:password #basic auth
     -c ~/.cookie #store session in cookie file
+    -b ~/.cookie #load session from cookie file
   #INPUT:
     -H #headers
     -d #data
