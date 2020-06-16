@@ -21,7 +21,7 @@
     overflow-y: scroll !important;
   }
 
-  .jwplayer_body_1, #outerWrapper, #chromelessPlayer {
+  .jwplayer_body_1, #outerWrapper, #chromelessPlayer, [class*="wrapper-"], [class*="overlay-"] {
     display: none !important;
   }
 
