@@ -74,6 +74,30 @@ tail --pid=$pid -f /dev/null
       echo "File Modified: $line"
     done
 
+#loop:
+  #!/bin/bash
+  log=/var/log/mcafee/solidcore/solidcore.log
+  inotifywait -m -e modify $log |
+    while read line
+    do
+      echo -e "\033[33m${line}\033[0m"
+      read process id pid < <(tail -n 1 $log | grep -Po 'Process Id: \d+')
+      echo -e "  \033[32mpid:\033[0m $pid"
+      if [ -n "${pid}" ];then
+        auxwe=$(ps auxwe | grep $pid | grep -v grep)
+        tree=$(pstree $pid)
+        echo -e "  \033[34mLine:\033[0m ${line}"
+        echo -e "  \033[34mps auxwe:\033[0m"
+        echo $auxwe | sed 's/^/    /'
+        echo -e "  \033[34mpstree:\033[0m"
+        echo $tree | sed 's/^/    /'
+        sadmin xray
+      fi
+    done
+
+#what creates the directory?
+  inotifywait -m /var/spool/update/ -e create -e moved_to | while read line; do   echo -e "\033[32mLine:\033[0m ${line}";sadmin xray;pstree;ps auxwe; done
+
 #watch services (make sure they aren't running as updaters in McAfee Application Control):
 
   #!/bin/bash

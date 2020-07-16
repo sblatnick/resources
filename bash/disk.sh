@@ -96,3 +96,7 @@
     #start vm
     virsh start $vm
 
+  #find filesystem type:
+  fsck -N /dev/mapper/vg00-lv_root
+    fsck from util-linux 2.23.2
+    [/sbin/fsck.ext4 (1) -- /] fsck.ext4 /dev/mapper/vg00-lv_root

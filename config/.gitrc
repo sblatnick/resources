@@ -266,7 +266,7 @@ function gitex() {
     giff) ##show differences in order
         shift
         local IFS=$'\n'
-        for line in $($wgit --no-pager log --oneline --all -- $@)
+        for line in $($wgit --no-pager log --oneline -- $@) #removed --all because it showed other branches
         do
           sha=${line%% *}
           echo -e "\033[33m${sha}\033[0m ${line#* }"

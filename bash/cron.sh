@@ -34,3 +34,14 @@ crontab -e
 
 #Running a job at boot: https://www.cyberciti.biz/faq/linux-execute-cron-job-after-system-reboot/
 @reboot /path/to/script
+
+
+#Offset:
+5-59/20 * * * * echo "Run every 20 minutes 5 minutes after the hour"
+#* = 0-59 range
+#offset-59/frequency
+#note: must be evenly divisible by 60 to be a consistent interval:
+#  */25 = 0,25,50 or 25 minutes + 25 minutes + 10 minutes
+
+
+#source: https://stackoverflow.com/questions/12786410/run-cron-job-every-n-minutes-plus-offset

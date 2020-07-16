@@ -60,6 +60,9 @@
   # l %license license file.
   # r %readme readme file.
 
+  #see install scripts:
+  rpm -qp --scripts package.prm
+  rpm -q --scripts package
 
   #find perl module (install yum-utils first):
   repoquery -a --whatprovides 'perl(Net::HTTP)'
@@ -87,6 +90,9 @@
   yum history list package #list package changes
   yum history info package #details of package history
   rpm -qa --last | head #last packages installed and when
+
+  #Make sure the rpmdb is up-to-date for yum commands
+  yum history sync
 
   #download rpm (requires yum-utils):
   yum install --downloadonly --downloaddir=/home/$USER/ package
@@ -381,15 +387,40 @@ rpmspec -P service.spec
 %systemd_ordering #not required, use only if available
 
 %post
-%systemd_post apache-httpd.service
+%systemd_post %{name}.service
+  #rpm --eval "%systemd_post %{name}.service"
+    if [ $1 -eq 1 ] ; then
+      # Initial installation
+      systemctl preset %{name}.service >/dev/null 2>&1 || :
+    fi
 %systemd_user_post %{name}.service
 
 %preun
-%systemd_preun apache-httpd.service
+%systemd_preun %{name}.service
+  #rpm --eval "%systemd_preun %{name}.service"
+    if [ $1 -eq 0 ] ; then
+      # Package removal, not upgrade
+      systemctl --no-reload disable %{name}.service > /dev/null 2>&1 || :
+      systemctl stop %{name}.service > /dev/null 2>&1 || :
+    fi
 %systemd_user_preun %{name}.service
+  #rpm --eval "%systemd_user_preun %{name}.service"
+    if [ $1 -eq 0 ] ; then
+      # Package removal, not upgrade
+      systemctl --no-reload --user --global disable %{name}.service > /dev/null 2>&1 || :
+    fi
 
 %postun
-%systemd_postun_with_restart apache-httpd.service
+%systemd_postun_with_restart %{name}.service
+  #rpm --eval "%systemd_postun_with_restart %{name}.service"
+    systemctl daemon-reload >/dev/null 2>&1 || :
+    if [ $1 -ge 1 ] ; then
+      # Package upgrade, not uninstall
+      systemctl try-restart %{name}.service >/dev/null 2>&1 || :
+    fi
+%systemd_postun %{name}.service
+  #rpm --eval "%systemd_postun %{name}.service"
+    systemctl daemon-reload >/dev/null 2>&1 || :
 
 #--------------------%setup--------------------
 

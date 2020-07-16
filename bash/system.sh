@@ -109,6 +109,7 @@
   ps auxwe | grep $pid #full command in process
   ps uwwe $PPID #unlimited width full process calling this script
   ps axjf #like pstree
+  ps auxwe --sort=-pcpu | head #get highest cpu usage processes
   pstree
   top
   htop

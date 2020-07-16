@@ -162,3 +162,14 @@ $ echo $one
 one
 $ echo $two
 two three
+
+
+
+#Cleanup command by passing an array:
+
+ciphers=(
+  AES256-SHA
+  AES128-SHA
+)
+CIPHERS=$(IFS=':';echo "${ciphers[*]}")
+openssl --ssl-cipher-list ${CIPHERS}

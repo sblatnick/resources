@@ -18,11 +18,12 @@ function kate_set_namespace() {
 function kate_containers() {
   namespace=$1
   pod=$2
+  local IFS=$' '
   for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.initContainers[*].name}" 2>/dev/null)
   do
     echo -e "  \033[36;1m${container}\033[0m"
   done
-  for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.containers[*].name}")
+  for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.containers[*].name}" 2>/dev/null)
   do
     echo -e "  \033[34;1m${container}\033[0m"
   done
@@ -100,9 +101,17 @@ function kate_extentions() {
     -*)
         kubectl -n ${namespace} $@
       ;;
+    #command passthrough
     @($(echo -e "${K8_SUBCOMMANDS}" | tr $'\n' '|')))
-        #command passthrough
-        kubectl -n ${namespace} $@
+        #tweaks:
+        case "${1}" in
+          get)
+              kubectl -n ${namespace} $@ | grep -v '^pvc' #ignore openebs pods
+            ;;
+          *)
+              kubectl -n ${namespace} $@
+            ;;
+        esac
       ;;
     @($(echo -e "${K8_PLUGINS}" | tr $'\n' '|')))
         #plugin passthrough
@@ -132,8 +141,9 @@ function kate_extentions() {
     go|su|sugo) #[pod] [container]#List containers or attach to a specified container
         action=$1
         shift
+        local IFS=$'\n'
         if [ $# -lt 1 ]; then
-          for pod in $(kubectl -n ${namespace} get pod -o=name | sed 's~^pod/~~')
+          for pod in $(kubectl -n ${namespace} get pod -o=name | sed 's~^pod/~~' | grep -v 'pvc') #ignore openebs pvcs
           do
             echo -e "\033[32;1m${pod}\033[0m"
             kate_containers "${namespace}" "${pod}"

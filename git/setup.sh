@@ -96,3 +96,30 @@ config --global -e
 [core]
   excludesfile = /home/<user>/.gitignore
 #============== End =================
+
+
+#Hooks: https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks
+  .git/hooks/*.sample
+  #Types:
+    #Client-Side
+      #Commits:
+        pre-commit
+        prepare-commit-msg
+        commit-msg
+      #Email Workflow Hooks (git am hooks)
+        applypatch-msg
+        pre-applypatch
+        post-applypatch
+      #Misc
+        pre-rebase
+        post-rewrite
+        post-checkout
+        post-merge
+        pre-push
+        pre-auto-gc #when: git gc --auto
+    #Server-Side
+      pre-receive
+      update
+      post-receive
+
+

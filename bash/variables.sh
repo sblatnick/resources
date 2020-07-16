@@ -238,6 +238,15 @@ set -Eeuxo pipefail
   BASH_SOURCE:           ./script.sh
 
 
+  callee
+    script.sh 0
+  PARENT_COMMAND=$(ps -o comm= $PPID)
+    parent_script.sh
+  PARENT_COMMAND=$(ps -o args= $PPID)
+    parent_script.sh --args --included
+  #source: https://stackoverflow.com/questions/20572934/get-the-name-of-the-caller-script-in-bash-script
+
+
 #::::::::::::::::::::HISTORY EXPANSION::::::::::::::::::::
 
   history | less #view history with line numbers
@@ -499,4 +508,28 @@ EOF
 
   #export for a subshell:
   export -f do_stuff
+
+#::::::::::::::::::::TEMPLATE::::::::::::::::::::
+
+#package: gettext
+hello_world="hola mundo"
+envsubst < template.txt
+  echo "hello world: ${hello_world}"
+  echo "this does not work: ${hello_world#hello }"
+
+#sed eval:
+  source variables.sh
+    EXAMPLE2="something else"
+  EXAMPLE=/path/to/file.sh sed 's/"/\\\"/g;s/.*/echo "&"/e' example.txt
+    echo "${EXAMPLE2}"
+    echo "dir: $(echo ${EXAMPLE%*/})"
+    echo "example: ${EXAMPLE##*/}"
+    #Who am I? $0
+  #Result:
+    echo "something else"
+    echo "dir: /path/to/file.sh"
+    echo "example: file.sh"
+    #Who am I? sh
+
+#source: https://stackoverflow.com/questions/10683349/forcing-bash-to-expand-variables-in-a-string-loaded-from-a-file
 
