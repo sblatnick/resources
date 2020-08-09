@@ -1,0 +1,23 @@
+#!/bin/bash
+
+case "$(uname -s)" in
+  Darwin) #Mac
+      echo -e "\033[31munsupported OS for this script\033[0m"
+      exit 1
+    ;;
+  Linux)
+    ;;
+esac
+
+shopt -s expand_aliases
+
+IFS=$'\n'
+while read -r line
+do
+  path=${line%/*}
+  file=${line##*/}
+  old=${file%%.*}
+  ext=${file#*.}
+  printf "\033[32m%-30s\033[0m %s\n" "${old}" "${old} mod.${ext}"
+  convert "${path-.}/${old}.${ext}" -level 8%,83%,1.5 "${path-.}/${old} mod.${ext}"
+done < <(find . -type f)
