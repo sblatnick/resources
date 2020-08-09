@@ -1,0 +1,29 @@
+#!/bin/bash
+
+case "$(uname -s)" in
+  Darwin) #Mac
+      echo -e "\033[31munsupported OS for this script\033[0m"
+      exit 1
+    ;;
+  Linux)
+    ;;
+esac
+
+shopt -s expand_aliases
+
+url=$1
+if [ -z "${url}" ];then
+  echo -e "${0##*/} [url]"
+  echo -e "  Download youtube link as audio and convert to mp3"
+  exit
+fi
+
+result=$(youtube-dl -f 251 ${url})
+webm=$(echo -e "${result}" | grep -Po 'Destination: .*$' | cut -d' ' -f2-)
+ffmpeg -i "${webm}" -vn -ab 128k -ar 44100 -y "${webm%-*}.mp3"
+if [ $? -gt 0 ];then
+  echo -e "ERROR converting video"
+  exit
+fi
+rm -f "${webm}"
+echo -e "Output: '${webm%-*}.mp3'"
