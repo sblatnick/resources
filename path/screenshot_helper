@@ -1,0 +1,3 @@
+#!/bin/bash
+#Use with compiz fusion to help name the screenshot
+mv $1 ~/Desktop/$(date +'%F-%H_%M_%S')-screenshot.png
