@@ -17,3 +17,6 @@ modinfo module.ko                                       #get info/metadata store
 
 #Authoring:
   CONFIG_MODVERSIONS = on (default) #off means kernel specific
+
+#System Calls: https://man7.org/linux/man-pages/man2/syscalls.2.html
+

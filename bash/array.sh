@@ -173,3 +173,54 @@ ciphers=(
 )
 CIPHERS=$(IFS=':';echo "${ciphers[*]}")
 openssl --ssl-cipher-list ${CIPHERS}
+
+
+#PROCESS ARRAY ENTRIES:
+function readlink_array() {
+  #get the array name:
+  RETURN=${1::-3}
+  #create a temporary array for processing:
+  declare -a ARRAY=("${!1}")
+  shift
+
+  #Process each entry:
+  local IFS=$'\n'
+  for i in "${!ARRAY[@]}"
+  do
+    entry="${ARRAY[$i]}"
+    IFS=' ' read -ra args <<< "${entry}"
+    line=''
+    for arg in ${args[@]}
+    do
+      if [[ "${arg}" == *"/"* ]];then
+        arg=$(readlink -f ${arg} || echo ${arg})
+      fi
+      line+=" ${arg}"
+    done
+    line="${line:1}"
+    if [[ "${line}" != "${entry}" && "${line}" != "" ]];then
+      #echo "  ${entry} => ${line}"
+      ARRAY[$i]="${line}"
+    fi
+  done
+
+  #Store back in the original array:
+  local IFS=$'\n'
+  for i in "${!ARRAY[@]}"
+  do
+    eval $(echo ${RETURN}[${i}])=\"${ARRAY[$i]}\"
+  done
+}
+
+EXAMPLE=()
+  EXAMPLE+=('/usr/local/bin/example.sh')
+  EXAMPLE+=('-d /usr/bin/')
+  EXAMPLE+=('/usr/bin/yum')
+
+#before:
+for i in "${!EXAMPLE[@]}"; do echo "$i: ${EXAMPLE[$i]}"; done
+
+readlink_array EXAMPLE[@]
+
+#after:
+for i in "${!EXAMPLE[@]}"; do echo "$i: ${EXAMPLE[$i]}"; done

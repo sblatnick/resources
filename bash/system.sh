@@ -47,6 +47,10 @@
 #edit grub default settings:
   sudo vi /etc/default/grub
     GRUB_TIMEOUT=0 #set to 0 wait time in grub menu
+    #Kernel to boot:
+      #previously selected saved in /boot/grub2/grubenv "saved_entry="
+      #use 0 for first entry
+      GRUB_DEFAULT=saved
 #apply defaults:
   #CentOS/Redhat:
     sudo grub2-mkconfig -o /boot/grub2/grub.cfg

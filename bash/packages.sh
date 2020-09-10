@@ -7,6 +7,7 @@
 
 #rpm/fedora/yum based linux:
   yum install fuse-sshfs
+  yum downgrade package-1.0
   yum search package
   yum check-update         #like apt-get update, updates the package definitions without installing anything
   yum clean expire-cache   #clear cache to see recent changes to the repos
@@ -29,10 +30,13 @@
     rpm --reinstall package.rpm
   #uninstall rpm:
   rpm -e package
+  rpm -e --nodeps package
   #upgrade rpm:
   rpm -Uvh packagename.rpm
   #downgrade rpm:
   rpm -Uvh --oldpackage packagename.rpm
+  #force downgrade ignoring dependencies:
+  rpm -Uvh --nodeps --oldpackage --force ${rpm}
   #install group:
   yum groupinstall "Development Tools"
   #uninstall group:
@@ -42,6 +46,7 @@
   #uninstall/remove:
   yum remove package
   rpm -e package
+  rpm -e --noscripts package
   
   #see changes since install from the package/rpm (https://www.novell.com/coolsolutions/feature/16238.html)
   rpm -V package
@@ -63,6 +68,9 @@
   #see install scripts:
   rpm -qp --scripts package.prm
   rpm -q --scripts package
+
+  #output version of rpm only:
+  rpm --qf "%{VERSION}" -q package
 
   #find perl module (install yum-utils first):
   repoquery -a --whatprovides 'perl(Net::HTTP)'
@@ -150,12 +158,6 @@
   #get repo urls for importing elsewhere:
   grep baseurl /etc/yum.repos.d/*
 
-  #change repos:
-  yum-config-manager --disable
-  yum-config-manager --add-repo http://example.repo.com/yum/centos/7_latest/os/x86_64/
-  rpm --import http://example.repo.com/yum/centos/7_latest/os/x86_64/RPM-GPG-KEY-CentOS-7
-  yum clean all
-
   #remove repo:
   rm -f /etc/yum.repos.d/name.repo
 
@@ -164,6 +166,13 @@
   yum repolist enabled
   yum repolist disabled
   yum repolist all #enabled and disabled
+
+  #change repos:
+  yum-config-manager --disable *
+  yum-config-manager --enable CentOS-7.*
+  yum-config-manager --add-repo http://example.repo.com/yum/centos/7_latest/os/x86_64/
+  rpm --import http://example.repo.com/yum/centos/7_latest/os/x86_64/RPM-GPG-KEY-CentOS-7
+  yum clean all
 
 #debian:
   apt-get install package

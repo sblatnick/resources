@@ -37,3 +37,12 @@
 
 #debug connection:
   strace ls /var/www/
+
+#set up nfs server:
+  mkdir -p /mnt/volume
+  yum install nfs-utils nfs-utils-lib
+  systemctl start rpcbind nfs-server rpc-statd
+  systemctl enable rpcbind nfs-server
+  vi /etc/exports
+    /mnt/volume	*.intra.net(rw)
+  exportfs -a
