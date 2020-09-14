@@ -37,10 +37,10 @@ function agg() {
   local IFS=$'\n'
   local groups=$(echo "$@" | grep -Eo '\([^)]*\)')
   if [ -z "${groups}" ];then
-    ag --color -H $@ # -W $(tput cols) doesn't work on mac
+    ag --color -H "$@" # -W $(tput cols) doesn't work on mac
   else
     pattern=$(echo -n "${groups}" | tr $'\n' '|')
-    ag --color -H --color-match '0' $@ | ag --color --passthrough "${pattern}"
+    ag --color -H --color-match '0' "$@" | ag --color --passthrough "${pattern}"
   fi
   tput smam #undo trim setting
 }
@@ -48,7 +48,7 @@ function agg() {
 #ag coloring and pipe to less
 function lag() {
   less_search "$@"
-  agg $@ | $less -SRi
+  agg "$@" | $less -SRi
 }
 
 #remove comment lines and blank lines
