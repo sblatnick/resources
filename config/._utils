@@ -69,6 +69,10 @@ function pipe() {
   fi
 }
 
+function chomp() {
+  BIN='chomp' pipe $@ | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+}
+
 function min() {
   BIN='min' pipe $@ | sort -n | head -n 1
 }
@@ -79,6 +83,11 @@ function max() {
 
 function len() {
   expr length $@
+}
+
+#line count:
+function lc() {
+  BIN='lc' pipe $@ | wc -l | chomp
 }
 
 function minlen() {
