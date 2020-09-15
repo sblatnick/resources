@@ -38,8 +38,11 @@ function gitex_complete() {
               COMPREPLY=($(compgen -W "$($wgit svn 2>&1 | grep "^  [a-z]" | cut -d' ' -f3)" -- "${COMP_WORDS[2]}"))
               section="##SVN Actions:"
             ;;
+          co)
+              COMPREPLY=($(compgen -W "$($wgit --no-pager branch | sed 's/^\*//')" -- "${COMP_WORDS[2]}"))
+            ;;
           do|dob|mod|mob)
-              COMPREPLY=($(compgen -W "$(git help -a | grep "^  [a-z]")" -- "${COMP_WORDS[2]}"))
+              COMPREPLY=($(compgen -W "$(git help -a | grep -Eo "^  *[a-z-]*")" -- "${COMP_WORDS[2]}"))
             ;;
         esac
 
