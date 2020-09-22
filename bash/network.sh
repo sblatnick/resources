@@ -16,6 +16,7 @@
       Connection to localhost 5000 port [tcp/*] succeeded!
       nc: connect to localhost port 5000 (tcp) failed: Connection refused
     netstat -tulpen | grep nc
+    netstat -an | grep :25
   #source: https://unix.stackexchange.com/questions/214471/how-to-create-a-tcp-listener
 
 #IPX network:
@@ -225,22 +226,8 @@ chkconfig iptables off
 #::::::::::::::::::::TELNET::::::::::::::::::::
 
 #telnet:
-  #IMAP:
-  telnet imap.email.com 143
-  x login user@email.com Password
-  x LIST "" "*"
-  #HTTP:
-  telnet hostname.com 80
-  GET / HTTP/1.1
-  Host: hostname.com
-  #HEAD:
-  telnet hostname.com 80
-  HEAD / HTTP/1.1
-  Host: hostname.com
-  #HTTPS:
-  openssl s_client -connect example.com:443
-  GET / HTTP/1.1
-  Host: hostname.com
+  telnet host.com 80
+  nc -Cv host.com 80
 
 #no telnet? can't install? use /dev/tcp:
 (echo > /dev/tcp/hostname/22) >/dev/null 2>&1 \
@@ -251,55 +238,6 @@ It's up
     echo "It's up" || echo "It's down"
 It's down
 #source: https://superuser.com/questions/621870/test-if-a-port-on-a-remote-system-is-reachable-without-telnet
-
-#expect:
-  #smtp:
-  expect << EOF
-set timeout 20
-spawn telnet hostname 8824
-expect "* ESMTP SERVER-BANNER"
-EOF
-
-for i in $(seq -f "%02g" 1 100)
-do
-    echo "$i attempt:"
-    expect << EOF | tail -n 1 | sed 's/^/  /'
-set timeout 5
-spawn telnet smtp.example.com 25
-expect {
-  timeout {puts "timed out"; exit}
-  "connection refused" {puts "connection refused"; exit}
-  "unknown host" {puts "connection refused"; exit}
-  "* ESMTP *" {puts "saw banner"; exit}
-}
-EOF
-done
-
-  #imap:
-  expect << EOF
-set timeout 20
-spawn telnet $server $port
-expect "*Welcomes You"
-send "a1 LOGIN $user $password\r"
-expect -re "NO|OK"
-EOF
-
-  #pop:
-  expect << EOF
-set timeout 20
-spawn telnet $server $port
-expect "OK"
-send "user $user\r"
-expect -re "ERR|OK"
-send "pass $password\r"
-expect -re "ERR|OK"
-EOF
-
-  #ssl telnet:
-    #POP:
-      openssl s_client -showcerts -connect mail.example.com:995
-    #smtp using starttls:
-      openssl s_client -showcerts -connect smtp.example.com:25 -starttls smtp
 
 
 #netcat to push a binary payload to a host on a port:
