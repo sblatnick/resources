@@ -336,6 +336,13 @@ sed -i '/^start$/,/^end$/ s/search/replace/' test.txt
 #Multiple replace within matches (group commands)
 sed -i '/^start$/,/^end$/ {s/search/replace/;s/one/two/}' test.txt
 
+#Skip first use second block:
+  sed -n '0,/^menuentry/!{/^menuentry/,/}/ {p}}' /boot/grub2/grub.cfg
+  #Swap second match names:
+  sed -i '0,/^menuentry/!{/^menuentry/,/}/ {s|Linux.*)|Linux Recovery|;s|linux16 /vmlinuz|linux16 /rescue/vmlinuz|;s|initrd16 /initramfs|initrd16 /rescue/initramfs|}}' /boot/grub2/grub.cfg
+  #Testing:
+  sed -n '0,/^menuentry/!{/^menuentry/,/}/ {s|Linux.*)|Linux Recovery|;s|linux16 /vmlinuz|linux16 /rescue/vmlinuz|;s|initrd16 /initramfs|initrd16 /rescue/initramfs|;p}}' /boot/grub2/grub.cfg
+
 #print values of a variable without the variable name:
   sed -n 's/^hosts=//p' test.conf
   #lower case:
