@@ -57,3 +57,22 @@
   GROUP BY ... HAVING COUNT(id) > 10
 
 
+-- REPLICATION --
+
+    STOP SLAVE;
+    RESET SLAVE;
+    -- mysqldump -hdb.net -uroot -ppassword --all-databases > dump.sql
+    -- mysql < dump.sql
+    -- status=$(mysql -uroot -ppassword -hdb.net -BNe "SHOW MASTER STATUS")
+    -- file=$(echo $status | awk '{print $1}')
+    -- position=$(echo $status | awk '{print $2}')
+    -- mysql -BNe "
+      CHANGE MASTER TO
+        MASTER_HOST='db.net',
+        MASTER_USER='root',
+        MASTER_PASSWORD='password',
+        MASTER_LOG_FILE='${file}',
+        MASTER_LOG_POS=${position}
+    -- "
+    start slave;
+    show slave status\G -- make sure there are no errors

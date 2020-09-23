@@ -2,6 +2,13 @@
 
 telnet smtp.email.com 25
 nc -Cv smtp.email.com 25
+sendmail -bs -d64.5
+  #-bs single SMTP session in the foreground w/ STDIN/OUT, then exit
+  #   source: http://etutorials.org/Server+Administration/Sendmail/Part+II+Administration/Chapter+15.+The+sendmail+Command+Line/bs/
+  #-d debug category.level (Default/unspecified: 0-99.1)
+  #   category = what part of sendmail
+  #   level = verbosity, where level > 100 modifies behavior
+  #   source: http://etutorials.org/Server+Administration/Sendmail/Part+II+Administration/Chapter+16.+Debug+sendmail+with+-d/16.1+The+Syntax+of+-d/
 openssl s_client -showcerts -connect smtp.email.com:25 -starttls smtp
   HELO smtp.email.com
 
