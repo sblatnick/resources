@@ -87,3 +87,10 @@ scp $src $dst 2>&1 | sed "s/^/:: ${BASH_COMMAND} :: args: $src, $dst :: /"
   done
 #print commands run:
   set -x
+
+#tee to log, then continue to stdout discontinuing the tee:
+  trap 'exit' TERM
+  exec 1> >(tee log.out;tee /dev/null) 2>&1
+  echo "logging to log.out"
+  pkill -nx tee
+  echo "dicontinued log.out"

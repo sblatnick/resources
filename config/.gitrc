@@ -229,7 +229,7 @@ function gitex() {
         #git-svn repo?
         if [ -z "${url}" ];then
           branch=$($wgit rev-parse --abbrev-ref HEAD)
-          $wgit push origin $branch
+          $wgit push origin $branch --tags
           return $?
         else
           $wgit svn dcommit
@@ -246,7 +246,7 @@ function gitex() {
         #git-svn repo?
         if [ -z "${url}" ];then
           branch=$($wgit rev-parse --abbrev-ref HEAD)
-          $wgit pull origin $branch
+          $wgit pull origin $branch --tags
           return $?
         else
           $wgit svn rebase
