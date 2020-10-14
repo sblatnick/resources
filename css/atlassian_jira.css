@@ -7,27 +7,56 @@
 /*Right Details Column*/
 
 #viewissuesidebar {
-  width: 230px !important;
-  padding-left: 0px !important;
+  width: 260px;
+  padding-left: 0px;
   font-size: 9px;
 }
 
 .item-details dl>dt {
-  display: table-cell !important;
-  width: 80px !important;
-  line-height: 10px !important;
+  display: table-cell;
+  width: 80px;
+  line-height: 10px;
 }
 
 .item-details dl>dd {
-  display: table-cell !important;
-  line-height: 10px !important;
+  display: table-cell;
+  line-height: 10px;
 }
 
-a#watching-toggle {
+#watching-toggle {
   white-space: nowrap;
   overflow-x: hidden;
   width: 63px;
   display: inline-block;
+}
+
+.issue-link-key {
+  display: inline !important;
+  margin-right: 3px !important;
+}
+
+.issue-link-summary {
+  display: inline !important;
+}
+
+/* Comment Dialog: Fill Screen */
+.jira-dialog {
+  width: 98%;
+  height: 98%;
+    margin-left: 0px;
+    margin-top: 0px;
+  left: 1%;
+  position: fixed;
+  top: 1%;
+  z-index: 3000;
+}
+.form-body {
+  max-height: 100vh;
+  height: 87vh;
+}
+
+iframe[id^='mce_'] {
+  height: 80vh;
 }
 
 /*Left Side Bar */
