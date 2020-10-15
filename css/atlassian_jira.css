@@ -31,12 +31,12 @@
 }
 
 .issue-link-key {
-  display: inline !important;
-  margin-right: 3px !important;
+  display: inline;
+  margin-right: 3px;
 }
 
 .issue-link-summary {
-  display: inline !important;
+  display: inline;
 }
 
 /* Comment Dialog: Fill Screen */
@@ -54,7 +54,9 @@
   max-height: 100vh;
   height: 87vh;
 }
-
+#issue-create .form-body {
+  height: 100%;
+}
 iframe[id^='mce_'] {
   height: 80vh;
 }
