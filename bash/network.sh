@@ -11,6 +11,11 @@
     nc -l ${port}
     nc -l localhost ${port}
       nc: Address already in use #shows if a service is using the port
+  #Find hosts on network:
+    nmap -sn 192.168.0.0/24 | grep -Po 'scan report for .*$' | cut -d' ' -f5-
+  #Find hosts listening to 8080:
+    nmap -sV -p 8080 192.168.0.0/24 -open
+    host 192.168.0.10
   #Check connection:
     nc -v localhost ${port}
       Connection to localhost 5000 port [tcp/*] succeeded!

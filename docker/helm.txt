@@ -85,6 +85,24 @@
       done
     done 3< <(grep -hEro '.Values.[a-zA-Z.]*' templates/ | sort | uniq | cut -d. -f 3-) | sort | uniq | sed -e 's/^.//' -e 's/[^\.]*\./  /g' -e 's/$/:/'
 
+  #Generate kubectl create|apply yaml files to use where helm isn't available:
+    #helm3 for --output-dir
+    helm template --output-dir chart/yaml chartname ./chart --debug --namespace chart
+
+    #Example with nginx-ingress overriding values.yaml:
+    helm fetch --untar --debug stable/nginx-ingress
+    mkdir nginx-ingress/yaml
+    helm template --output-dir nginx-ingress/yaml nginx-ingress ./nginx-ingress --debug --namespace nginx-ingress -f nginx-ingress.yaml
+
+    cd nginx-ingress/yaml/nginx-ingress/templates
+    namespace=nginx-ingress
+
+    for yaml in *.yaml
+    do
+      echo kubectl -n ${namespace} create -f $yaml
+      kubectl -n ${namespace} create -f $yaml
+    done
+
   #Dependencies:
     cd mychart
     helm dependency update

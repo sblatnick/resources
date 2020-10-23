@@ -84,7 +84,7 @@ function kate_extentions() {
         do
           if [ "$ctx" == "$context" ];then
             echo -e "\033[33;1m${ctx}\033[0m"
-            kubectl get namespace -o name | sed 's/namespace\///' |
+            kubectl get namespace -o name 2>/dev/null | sed 's/namespace\///' |
             while read ns
             do
               if [ "$ns" == "$namespace" ];then
@@ -191,7 +191,8 @@ function kate_extentions() {
           kubectl config use-context $1 >/dev/null 2>&1
           echo -en "Switching to context \033[32;1m${1}\033[0m ";
           if [ -z ${2} ]; then
-            kate_set_namespace default
+            local namespace=$(kubectl config view --minify --output 'jsonpath={..namespace}')
+            kate_set_namespace ${namespace:-default}
           else
             shift
             #namespaces

@@ -1,0 +1,23 @@
+#!/bin/bash
+shopt -s expand_aliases extglob
+
+case "$(uname -s)" in
+  Darwin) #Mac
+      alias grep='ggrep'
+      alias head='ghead'
+    ;;
+  Linux)
+    ;;
+esac
+
+ifconfig | grep -Po 'inet [^ ]*' | cut -d' ' -f2 | grep -v 127.0.0.1 | grep '^17.' | \
+while read network
+do
+  echo -e "${network}"
+  nmap -sn ${network}/24 | grep -Po 'scan report for .*$' | cut -d' ' -f4 | \
+  while read ip
+  do
+    echo -e "  ${ip}"
+    nmap ${ip} | sed -n '/^PORT/,/^$/ p' | sed 's/^/    /'
+  done
+done

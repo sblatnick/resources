@@ -160,6 +160,8 @@ Example arguments:
     kubectl create -f resource.yaml
       #service (can also be created in yaml):
       kubectl expose deployment my-deployment --type="LoadBalancer" --name="my-pod"
+      #dry run:
+      kubectl -n namespace create -f resource.yaml --dry-run=client
 
     #update:
     kubectl apply -f resource.yaml
@@ -192,6 +194,8 @@ Example arguments:
     kubectl delete $(kubectl get crd -o=name)
     kubectl delete $(kubectl get sc -o=name)
     kubectl delete $(kubectl get pv -o jsonpath='{range.items[?(@.status.phase=="Released")]}{"pv/"}{.metadata.name}{"\n"}{end}') #delete released persistent volumes
+
+    kubectl -n namespace delete all --all
 
     #force delete:
     kubectl delete pod my-pod --grace-period=0 --force --namespace my-namespace

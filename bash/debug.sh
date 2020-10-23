@@ -104,4 +104,6 @@ strace
   -E var      Remove var from the inherited list of environment variables before passing it on to the command.
        
 
-
+#::::::::::::::::::::COMPARE BYTES::::::::::::::::::::
+#cmp - compare two files byte by byte
+cmp -lb left.ibd right.ibd
