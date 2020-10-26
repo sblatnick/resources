@@ -1,2 +1,2 @@
 #!/bin/bash
-cdrdao read-cd --read-raw --datafile my_game_rip.bin --device /dev/cdrw --driver generic-mmc-raw my_game_rip.toc
+cdrdao read-cd --read-raw --datafile "${1:-psx}.bin" --device /dev/cdrw --driver generic-mmc-raw "${1:-psx}.toc"
