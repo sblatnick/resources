@@ -7,7 +7,15 @@ case "$(uname -s)" in
       export TMP=/tmp
       export BASHRC=~/.bash_profile
       function geany() {
-        open -a geany $@
+        while [ $# -gt 0 ]
+        do
+          if [ ! -f "$1" ];then
+            touch "$1"
+          fi
+          open -a geany "$1"
+          shift
+        done
+        
       }
       alias md5sum=md5
       alias tac="/usr/bin/tail -r"

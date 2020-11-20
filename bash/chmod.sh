@@ -195,3 +195,8 @@ umask 0077 #results in 600 permissions
   #(old way):
   chgrp <group> <directory>
   chmod g+s <directory>
+
+#Directory permissions analysis:
+  dir=/etc/example/long/path/to/file.conf
+  while [ -n "${dir}" ]; do ls -ld ${dir}; dir=${dir%/*}; done
+

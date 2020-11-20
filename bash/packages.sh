@@ -28,6 +28,14 @@
     rpm -e ${pkg%%.rpm} && rpm -ivh $pkg
     #>=4.12.0
     rpm --reinstall package.rpm
+  #remove duplicate packages
+    #when something was reinstalled resulting in multiples of the same:
+    rpm -e --nodeps --noscripts package-1.1.el7
+    error: "package-1.1.el7" specifies multiple packages:
+      package-1.1.el7.noarch
+      package-1.1.el7.noarch
+    #remove duplicates:
+    rpm -e --allmatches --nodeps --noscripts package-1.1.el7
   #uninstall rpm:
   rpm -e package
   rpm -e --nodeps package

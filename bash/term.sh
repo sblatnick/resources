@@ -13,6 +13,14 @@ tty -s <&1 && echo -en "\033]0;TITLE\a"
 PROMPT_COMMAND='printf "\033]0;%s@%s:%s\007" "${USER}" "${HOSTNAME%%.*}" "${PWD/#$HOME/~}"'
 PROMPT_COMMAND='echo -ne "\033]0;YOUR TITLE GOES HERE\007"'
 
+#If running a nagios check or cron job requiring a tty, fake it:
+  #uses expect
+  unbuffered 'timeout 5s check_command'
+  #less portable:
+  script -eqc 'timeout 5s check_command'
+#If running over ssh a command requiring a tty, use -t:
+ssh -t user@host "command"
+
 #::::::::::::::::::::DETECT TERMINAL SIZE::::::::::::::::::::
 
 tput cols  #columns
