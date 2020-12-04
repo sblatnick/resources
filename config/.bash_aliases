@@ -16,6 +16,12 @@ which ggrep >/dev/null 2>&1 && alias grep='ggrep --color=auto' || alias grep='gr
 alias less='less -SRi' #add N for line numbers
 alias resource="trap - RETURN;source ${BASHRC};" #unset trap from tmpdir
 
+#Facilitate connecting to NAS:
+function nasfs() {
+  sshfs -o cache=no,uid=1000,gid=1000 $USER@nas:/ ~/nas
+}
+alias nas='ssh $USER@nas'
+
 #alias diff='colordiff -u' #use +- instead of <>
 function diff() {
   if tty -s <&1; then
