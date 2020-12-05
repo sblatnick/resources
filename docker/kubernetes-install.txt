@@ -85,6 +85,9 @@
     #Install k3s with docker (instead of containerd)
       curl -sfL https://get.k3s.io | sh -s - --docker
 
+    #Docker Image Repository:
+      docker run -d -p 5000:5000 --restart=always --name registry registry:2
+
     #Use token on agents:
       cat /var/lib/rancher/k3s/server/node-token
 
@@ -100,3 +103,14 @@
     #kubeconfig
       scp root@${MASTER}:/etc/rancher/k3s/k3s.yaml ~/.kube/config
 
+    #Use your image repo:
+      sudo vi /etc/docker/daemon.json
+        {
+          "insecure-registries" : ["${MASTER}:5000"]
+        }
+      sudo systemctl restart docker
+
+      docker pull centos:8 #pull from DockerHub
+
+      docker tag centos:8 ${MASTER}:5000/centos:8
+      docker push ${MASTER}:5000/centos:8
