@@ -73,3 +73,30 @@
     mynode02  Ready     master,node   2d        v1.13.1
     mynode03  Ready     node          2d        v1.13.1
 
+#K3s with Docker
+  #All nodes (CentOS 8):
+    curl https://releases.rancher.com/install-docker/19.03.sh | sh
+  #Master:
+    #Allow kubectl remote access:
+      iptables -tnat --flush
+      systemctl stop firewalld
+      systemctl disable firewalld
+
+    #Install k3s with docker (instead of containerd)
+      curl -sfL https://get.k3s.io | sh -s - --docker
+
+    #Use token on agents:
+      cat /var/lib/rancher/k3s/server/node-token
+
+  #Agents:
+    curl -sfL https://get.k3s.io | K3S_URL=https://${MASTER}:6443 K3S_TOKEN=${TOKEN} sh -s - --docker
+
+  #Client Admin (Debian):
+    #Install Helm:
+      echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+      sudo apt-get update
+      sudo apt-get install helm
+
+    #kubeconfig
+      scp root@${MASTER}:/etc/rancher/k3s/k3s.yaml ~/.kube/config
+
