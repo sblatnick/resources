@@ -41,7 +41,7 @@ case "$1" in
         sqlite3 ${DB} "CREATE TABLE files (md5 TEXT, path TEXT)"
         sqlite3 ${DB} "CREATE INDEX index_md5 ON files(md5)"
       fi
-      find ${2-./} -type f -not -ipath '*/@*' |
+      find "${2-./}" -type f -not -ipath '*/@*' |
       while read file
       do
         md5=$(md5sum "${file}" | cut -d' ' -f1)
