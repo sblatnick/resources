@@ -103,7 +103,7 @@ function docker_extentions() {
 
   #load defaults
   context=$(sit 'current')
-  repo=$(sit 'repo')
+  repo=$(coalesce "$(sit 'repo')" '')
   user=$(coalesce "$(sit 'user')" 'root')
   path=$(sit contexts[current].path)
 
@@ -153,20 +153,20 @@ function docker_extentions() {
         ;;
       edit|new) #[name]#open Dockerfile in current context, create new one if not present
           if [ -f ${df} ];then
-            $EDITOR ${path}/${target}
+            $EDITOR ${df}
           else
             cat > ${df} << EOF
 FROM ${repo}centos:6
 USER ${user-root}
 
-RUN \
-  yum install -y yum-utils && \
-  yum install -y \
-    gcc \
-    autoconf \
-    automake \
-    libtool \
-    make && \
+RUN \\
+  yum install -y yum-utils && \\
+  yum install -y \\
+    gcc \\
+    autoconf \\
+    automake \\
+    libtool \\
+    make && \\
   yum clean all
 
 ENTRYPOINT /bin/bash

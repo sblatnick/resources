@@ -1,0 +1,16 @@
+FROM centos:8
+USER root
+
+RUN \
+  yum install -y \
+    yum-utils \
+    epel-release && \
+  yum install -y \
+    the_silver_searcher \
+    httpd \
+    php
+
+#/usr/sbin/httpd $OPTIONS -DFOREGROUND
+#TODO: add doku
+
+ENTRYPOINT /bin/bash
