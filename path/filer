@@ -1,0 +1,82 @@
+#!/bin/bash
+#ssh -q steve@nas 'cat | bash /dev/stdin scan /volume1/photo' < ./filer
+
+TMP=/dev/shm
+DB=${TMP}/files.db
+START=$(date +%s)
+
+function _passed()
+{
+  local END=$(date +%s)
+  local passed=$((END - START))
+  echo "took $((passed / 60)) min $(( passed % 60 )) sec"
+}
+
+function _document() {
+  grep -Eo '^##.*$' $1 |
+  while read section
+  do
+    echo ""
+    echo -e "  \033[1m${section#\#\#}\033[0m"
+    sed -n "/^${section}\$/,/^\(##.*\|\}\)\$/ p" $1 | grep -Eo '[^ (]+\)\s+#.*$' | \
+    while read help
+    do
+      params=${help#*#}
+      params=${params%%#*}
+      if [ -z "${params}" ];then
+        params="$(grep -A 1 -F "${help}" $1 | tail -n 1 | grep 'trap' | grep -Eo '\[[^]]*\]' | tr $'\n' ' ')"
+      fi
+      col=$(printf "\033[34;1m%s\033[0m %s" "${help%%)*#*}" "${params}")
+      printf "    %-60s %s\n" "${col}" "${help##*#}"
+    done
+  done
+  echo ""
+}
+
+##Main
+case "$1" in
+  scan) #[path]#Generate File DB
+      trap _passed EXIT SIGINT SIGTERM
+      if [ ! -f ${DB} ];then
+        sqlite3 ${DB} "CREATE TABLE files (md5 TEXT, path TEXT)"
+        sqlite3 ${DB} "CREATE INDEX index_md5 ON files(md5)"
+      fi
+      find ${2-./} -type f -not -ipath '*/@*' |
+      while read file
+      do
+        md5=$(md5sum "${file}" | cut -d' ' -f1)
+        echo -e "${md5} ${file}"
+        sqlite3 ${DB} "INSERT INTO files (md5, path) VALUES('${md5}','${file//\'/\'\'}')"
+      done
+    ;;
+  dups) ##List duplicate md5sums
+      sqlite3 ${DB} "SELECT (SELECT COUNT(*) FROM files m WHERE m.md5 = f.md5) AS cnt, f.md5, f.path FROM files f WHERE cnt > 1 ORDER BY cnt DESC, md5 ASC LIMIT 10"
+    ;;
+  clean) ##Delete File DB
+      rm ${DB} 2>/dev/null
+    ;;
+  delete) #[md5]#Delete files matching md5
+      if [ -z "$2" ];then
+        echo -e "Must specify an md5"
+        exit
+      fi
+      set -e
+      echo -e "Fetching paths..."
+      sqlite3 ${DB} "SELECT path FROM files WHERE md5 = '${2}'" |
+      while read file
+      do
+        echo rm "${file}"
+        rm "${file}"
+      done
+      echo -e "Removing from db..."
+      sqlite3 ${DB} "DELETE FROM files WHERE md5 = '${2}'"
+      echo -e "DONE"
+    ;;
+  '')
+      _document ${BASH_SOURCE}
+    ;;
+  *)
+      echo -e "no such arg: ${1}"
+    ;;
+esac
+
