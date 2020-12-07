@@ -1,0 +1,6 @@
+#!/bin/bash
+
+video=$1
+
+ffmpeg -i "${video}" -vcodec copy -acodec aac "${video%.*}.mp4"
+

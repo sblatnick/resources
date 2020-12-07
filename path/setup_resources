@@ -44,7 +44,8 @@ case "$(uname -s)" in
       case "${PACKAGER}" in
         rpm)
             ensure \
-              subversion-perl
+              subversion-perl \
+              epel-release
           ;;
         deb)
             ensure \

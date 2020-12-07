@@ -1,2 +1,4 @@
 #!/bin/bash
 cdrdao read-cd --read-raw --datafile "${1:-psx}.bin" --device /dev/cdrw --driver generic-mmc-raw "${1:-psx}.toc"
+gio trash "${1:-psx}.toc"
+aplay /usr/share/sounds/sound-icons/at

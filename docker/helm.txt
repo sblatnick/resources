@@ -1,13 +1,21 @@
 #Helm
   #Helm is like yum/apt, and installs to the current kubectl context
-  #Tiller is the server component
+  #Helm 2 only: Tiller is the server component
 
-  #Install helm client:
+  #Install helm client (OSX):
   brew install kubernetes-helm
 
-  #Add incubator repo to helm (in addition to stable):
-  helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com/
+  #Add repos to helm (in addition to stable):
+  helm repo add stable https://charts.helm.sh/stable
+  helm repo add incubator https://charts.helm.sh/incubator
+  helm repo update
 
+  #List repos:
+  helm repo list
+
+  #Search Repo:
+  helm search repo ${repo} ${chart}
+  
   #Modify charts:
   git clone git@github.com:helm/charts.git
 
@@ -50,6 +58,23 @@
       helm install -n release repo/chart --namespace my-namespace      #release named
       helm install repo/chart --generate-name --namespace my-namespace #random release name
 
+    #install doku wiki:
+      #prereqs: install metallb, openebs
+      #conflicts: nginx, traefik (k3s default)
+      
+      helm repo add bitnami https://charts.bitnami.com/bitnami
+      kubectl create namespace doku
+      helm install --namespace doku doku --set dokuwikiUsername=admin,dokuwikiPassword=password,persistence.storageClass=openebs-jiva-default,persistence.size=5Gi bitnami/dokuwiki
+
+      #Error openebs "failed calling webhook"? https://github.com/openebs/openebs/issues/3046
+      EDITOR=vi
+      kubectl edit validatingwebhookconfigurations openebs-validation-webhook-cfg
+        -failurePolicy: Fail
+        +failurePolicy: Ignore
+      
+      #FIXME:
+        MountVolume.WaitForAttach failed for volume "pvc-89a235f0-7b01-4804-8c05-d892424cb215" : failed to get any path for iscsi disk, last err seen:
+        iscsi: failed to sendtargets to portal 10.41.8.55:3260 output: iscsiadm: connect to 10.41.8.55 timed out
 
     #Install using different releases and namespaces with the same charts:
     helm install -f "values.yaml,cassandra.yaml" --namespace cassandra -n cassandra-storage ./local-storage

@@ -79,7 +79,7 @@ function kate_extentions() {
 
   case "${1}" in
     '')
-        IFS='|'
+        local IFS='|'
         for ctx in $(kubectl config get-contexts -o=name | tr $'\n' '|')
         do
           if [ "$ctx" == "$context" ];then

@@ -10,6 +10,13 @@
   kubectl create -f openesb-operator.yaml
   kubectl create -f openesb-storageclass.yaml
 
+#Helm Install:
+  helm repo add openebs https://openebs.github.io/charts
+  helm install --namespace openebs openebs openebs/openebs
+  
+  #Uninstall:
+  helm delete --namespace openebs openebs
+
 #Uninstall:
   kubectl delete -f openesb-operator.yaml
   kubectl delete -f openesb-storageclass.yaml
