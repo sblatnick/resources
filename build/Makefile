@@ -19,6 +19,7 @@ TAG       = $(shell $(YQ) r build/Chart.yaml appVersion 2>/dev/null)
 NAMESPACE = $(shell $(YQ) r build/values.yaml namespace 2>/dev/null)
 MANAGED   = $(shell $(YQ) r build/values.yaml managed 2>/dev/null)
 SC        = $(findstring openebs,$(shell $(YQ) r build/values.yaml persistence.storageClass 2>/dev/null))
+PACKAGE   = $(filter serv-k8s-$(firstword $(TAG) ready).tar.gz,serv-k8s-$(TAG).tar.gz)
 
 #Handle helm version discrepancies
 V3        = $(findstring v3,$(shell helm version --short))
@@ -46,7 +47,7 @@ uninstall: remove
 tar: package
 
 #Ingore:
-.PHONY: chart
+.PHONY: chart ready list image push install update remove $(TARGETS)
 
 #Actions:
 
@@ -66,12 +67,15 @@ ready:
 		make list | sed 's/^/  /'; \
 		exit 1; \
 	}
+#original target:
+	@echo $(MAKECMDGOALS)
 image: ready
 	docker build -t $(IMAGE):$(TAG) -f build/Dockerfile build/
 push: ready
 	docker push $(IMAGE):$(TAG)
 
-chart: ready
+chart: ready build/yaml
+build/yaml:
 	mkdir -p build/yaml
 ifeq ($(V3),v3)
 	helm template --output-dir build/yaml serv ./build --debug --namespace $(NAMESPACE)
@@ -118,12 +122,14 @@ else
 	@$(foreach pv,$(NS_PVS), kubectl -n $(NAMESPACE) delete $(pv);)
 endif
 
-package: ready
+package: ready chart $(PACKAGE)
+$(PACKAGE):
 	mv build serv
 	tar -czvf serv-k8s-$(TAG).tar.gz ./serv
 	mv serv build
 
 clean:
 	rm -rf build
+	rm -f serv-k8s-*.tar.gz
 
 
