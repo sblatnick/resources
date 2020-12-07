@@ -9,15 +9,24 @@ Pods: #Headless Services need to address the pods:
 
 #===================================INGRESS====================================#
 #Install the nginx ingress controller with a load balancer service:
-helm install nginx-ingress metallb
+  helm repo add nginx-stable https://helm.nginx.com/stable
+  helm repo add bitnami https://charts.bitnami.com/bitnami
+  helm repo update
+
+  kubectl create namespace nginx
+  helm install --namespace nginx nginx nginx-stable/nginx-ingress
+  vi values.yaml #see below
+    configInline:
+      address-pools:
+      - name: network
+        protocol: layer2
+        addresses:
+        - 192.168.0.200-192.168.0.220
+  helm install -f values.yaml --namespace metallb metallb bitnami/metallb
+
 #MetalLB can be used as a load balancer for bare-metal k8s
-#An IP range is reserved by MetalLB's values.yaml:
-configInline:
-  address-pools:
-  - name: my-network
-    protocol: layer2
-    addresses:
-    - 10.24.250.1-10.24.250.255
+#An IP range is reserved by MetalLB's values.yaml
+
 #One of those IPs is used as a load balancer, allowing us to access any service via subdomains.
 NAME                                       TYPE           CLUSTER-IP      EXTERNAL-IP     PORT(S)                      AGE
 service/nginx-ingress-controller           LoadBalancer   10.24.249.150   10.24.250.101   80:30415/TCP,443:30382/TCP   1d

@@ -83,7 +83,7 @@
       systemctl disable firewalld
 
     #Install k3s with docker (instead of containerd)
-      curl -sfL https://get.k3s.io | sh -s - --docker
+      curl -sfL https://get.k3s.io | sh -s - --docker --disable traefik
 
     #Docker Image Repository:
       docker run -d -p 5000:5000 --restart=always --name registry registry:2
@@ -92,7 +92,7 @@
       cat /var/lib/rancher/k3s/server/node-token
 
   #Agents:
-    curl -sfL https://get.k3s.io | K3S_URL=https://${MASTER}:6443 K3S_TOKEN=${TOKEN} sh -s - --docker
+    curl -sfL https://get.k3s.io | K3S_URL=https://${MASTER}:6443 K3S_TOKEN=${TOKEN} sh -s - --docker --disable traefik
 
   #Client Admin (Debian):
     #Install Helm:
