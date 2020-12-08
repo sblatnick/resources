@@ -75,13 +75,14 @@
 
 #K3s with Docker
   #All nodes (CentOS 8):
-    curl https://releases.rancher.com/install-docker/19.03.sh | sh
-  #Master:
-    #Allow kubectl remote access:
+    #Install Docker:
+      curl https://releases.rancher.com/install-docker/19.03.sh | sh
+    #Allow kubectl remote access and openebs access:
       iptables -tnat --flush
       systemctl stop firewalld
       systemctl disable firewalld
 
+  #Master:
     #Install k3s with docker (instead of containerd)
       curl -sfL https://get.k3s.io | sh -s - --docker --disable traefik
 
