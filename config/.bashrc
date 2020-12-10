@@ -1,5 +1,5 @@
 #!/bin/bash
-export PATH="${PATH}:${RESOURCES}/path:${HOME}/.krew/bin"
+export PATH="${PATH}:${RESOURCES}/path:${HOME}/.krew/bin:/usr/sbin"
 
 function extract()
 {
