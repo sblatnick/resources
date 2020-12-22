@@ -64,17 +64,23 @@
       
       helm repo add bitnami https://charts.bitnami.com/bitnami
       kubectl create namespace doku
-      helm install --namespace doku doku --set dokuwikiUsername=admin,dokuwikiPassword=password,persistence.storageClass=openebs-jiva-default,persistence.size=5Gi bitnami/dokuwiki
+      helm install --namespace doku doku --set dokuwikiUsername=admin,dokuwikiPassword=password,persistence.storageClass=openebs-jiva-default,persistence.size=3Gi bitnami/dokuwiki
+      #NFS: helm install --namespace doku doku --set dokuwikiUsername=admin,dokuwikiPassword=password,persistence.storageClass=nfs,persistence.size=2790M bitnami/dokuwiki
+
+      #uninstall:
+      helm delete --namespace doku doku
+      
+      #increase replica count (don't scale the replicaset, NFS-only):
+      kubectl -n doku scale --replicas 3 deployment/doku-dokuwiki
+
+      #see which node the pods are on:
+      kubectl -n doku get pod -o wide
 
       #Error openebs "failed calling webhook"? https://github.com/openebs/openebs/issues/3046
       EDITOR=vi
       kubectl edit validatingwebhookconfigurations openebs-validation-webhook-cfg
         -failurePolicy: Fail
         +failurePolicy: Ignore
-      
-      #FIXME:
-        MountVolume.WaitForAttach failed for volume "pvc-89a235f0-7b01-4804-8c05-d892424cb215" : failed to get any path for iscsi disk, last err seen:
-        iscsi: failed to sendtargets to portal 10.41.8.55:3260 output: iscsiadm: connect to 10.41.8.55 timed out
 
     #Install using different releases and namespaces with the same charts:
     helm install -f "values.yaml,cassandra.yaml" --namespace cassandra -n cassandra-storage ./local-storage
