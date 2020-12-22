@@ -88,6 +88,14 @@ ssh <remoteUser>@<remoteMachine> -R <remote listening port>:<remote machine refe
     ProxyCommand /usr/bin/corkscrew proxyServer proxyPort %h %p
     ProxyCommand /usr/bin/corkscrew proxyServer proxyPort %h %p [script name]
 
+#VPN connect by interface:
+  $ ifconfig
+    vpn0:
+      inet 10.18.47.11
+  $ host example.intra.net
+    example.intra.net has address 10.21.250.139
+  $ ssh -b 10.18.47.11 10.21.250.139
+
 #::::::::::::::::::::SSH KEYS::::::::::::::::::::
 
 #password-less ssh:

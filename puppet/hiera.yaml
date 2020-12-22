@@ -72,3 +72,4 @@ pools:
 settings::config:
   'key': 'value'
   'key2': 'value2'
+

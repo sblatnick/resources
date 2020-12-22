@@ -18,15 +18,50 @@ function kate_set_namespace() {
 function kate_containers() {
   namespace=$1
   pod=$2
+  action=${3-noop}
+  local found=0
+  local where=''
   local IFS=$' '
+  local JSON=$(kubectl -n ${namespace} get pod ${pod} -o=json)
   for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.initContainers[*].name}" 2>/dev/null)
   do
-    echo -e "  \033[36;1m${container}\033[0m"
+    local state=$(echo ${JSON} | jq -r ".status.initContainerStatuses[] | select(.name == \"${container}\") | [.state | keys[]] | @tsv")
+    printf "  \033[36;1m%-10s\033[0m %s\n" "${container}" "${state}"
+    if [[ "${state}" == "running" ]];then
+      $((found++))
+      where=${container}
+    fi
   done
   for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.containers[*].name}" 2>/dev/null)
   do
-    echo -e "  \033[34;1m${container}\033[0m"
+    local state=$(echo ${JSON} | jq -r ".status.containerStatuses[] | select(.name == \"${container}\") | [.state | keys[]] | @tsv")
+    printf "  \033[34;1m%-10s\033[0m %s\n" "${container}" "${state}"
+    if [[ "${state}" == "running" ]];then
+      ((found++))
+      where=${container}
+    fi
   done
+  if [[ ${action} != 'noop' && ${found} -eq 1 ]];then
+    echo "Connecting to ${pod} ${where}"
+    kate_go "${action}" "${namespace}" "${pod}" "${where}"
+  fi
+}
+
+function kate_go() {
+  local action=$1
+  local namespace=$2
+  local pod=$3
+  local container=$4
+  local shell=${5:-bash}
+
+  case "${action}" in
+    su|sugo)
+        kubectl exec_as -n ${namespace} -u root -c ${container} ${pod} -- /bin/${shell}
+      ;;
+    go|*)
+        kubectl -n ${namespace} exec -it -c ${container} ${pod} -- /bin/${shell}
+      ;;
+  esac
 }
 
 #----------------------------------COMPLETIONS-----------------------------------#
@@ -149,20 +184,13 @@ function kate_extentions() {
             kate_containers "${namespace}" "${pod}"
           done
         elif [ $# -lt 2 ]; then
-          kate_containers "${namespace}" "${1}"
+          kate_containers "${namespace}" "${1}" "${action}"
         else
           pod=$1
           shift
           container=$1
           shell=$2
-          case "${action}" in
-            su|sugo)
-                kubectl exec_as -n ${namespace} -u root -c ${container} ${pod} -- /bin/${shell:-bash}
-              ;;
-            go|*)
-                kubectl -n ${namespace} exec -it -c ${container} ${pod} -- /bin/${shell:-bash}
-              ;;
-          esac
+          kate_go "${action}" "${namespace}" "${pod}" "${container}" "${shell}"
         fi
       ;;
     ex) ##Print usage information

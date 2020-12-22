@@ -76,7 +76,26 @@ find . -path ./.git -prune -or -print
   find -L /path/ -maxdepth 4 -iname folder -type d | xargs -0 -I{} find '{}' -regextype posix-extended -type f -regex '.*[^/]{8,}'
 
 #get largest directories (KB) in the current path:
-du -sx * 2>/dev/null | sort -r -n | head
+du -shx * 2>/dev/null | sort -rh | head
+
+#in parallel (consider adding `timeout`):
+  TMP=/dev/shm/size.tmp
+  rm -f ${TMP}
+  for here in $(ls -lQ | grep -P '^[d-]' | cut -d'"' -f2)
+  do
+    du -shx ${here} >> ${TMP} &
+  done
+
+  #optional if taking a while:
+  for job in $(jobs -p)
+  do
+    wait $job
+  done
+
+  sort -rh ${TMP} | head
+
+#find any files >=100MB
+find -type f -size 100M
 
 #list files which are being used by a process but have been deleted (like a run-away log file):
 lsof +L1
