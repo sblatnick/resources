@@ -22,6 +22,18 @@ function nasfs() {
 }
 alias nas='ssh $USER@nas'
 
+BINDER=$(ifconfig 2>/dev/null | grep 'inet 192' | cut -d' ' -f2)
+function binder() {
+  alias ${1}="ssh -b ${BINDER} root@192.168.0.${2}"
+}
+binder c1 25
+binder c2 26
+binder c3 27
+
+function proxy() {
+  ssh -b ${BINDER} root@192.168.0.27 -D 1313
+}
+
 #alias diff='colordiff -u' #use +- instead of <>
 function diff() {
   if tty -s <&1; then
