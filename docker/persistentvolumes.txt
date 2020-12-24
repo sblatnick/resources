@@ -28,9 +28,10 @@
 #NFS
   #On each node:
     yum install -y nfs-utils
+    systemctl start rpcbind
+    systemctl enable rpcbind
 
   helm install --namespace openebs nfs --set persistence.enabled=true,persistence.storageClass=openebs-jiva-default,persistence.size=3Gi,storageClass.name=nfs,storageClass.provisionerName=openebs.io/nfs stable/nfs-server-provisioner
-  #FIXME: mount.nfs needs mountOptions nfsvers=4.1
 
 #Troubleshooting:
 

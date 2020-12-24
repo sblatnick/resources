@@ -123,3 +123,24 @@ config --global -e
       post-receive
 
 
+#git server
+  #Client:
+  git clone user@server:/path/to/repo
+  
+  #server:
+  git config receive.denyCurrentBranch updateInstead
+  vi .git/hooks/post-update
+    #!/bin/bash
+    #pwd is in .git/ of the repo
+    #Refresh doku wiki cache:
+    touch ../conf/local.php
+  chmod a+x .git/hooks/post-update
+  vi .git/hooks/update
+    #!/bin/bash
+    cd ../ #get out of .git/
+    if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
+      git add .
+      git commit -m "auto-commit local changes"
+      echo "Local changes committed before merging"
+    fi
+  chmod a+x .git/hooks/update
