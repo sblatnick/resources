@@ -22,7 +22,7 @@ function nasfs() {
 }
 alias nas='ssh $USER@nas'
 
-BINDER=$(ifconfig 2>/dev/null | grep 'inet 192' | cut -d' ' -f2)
+BINDER=$(ifconfig 2>/dev/null | grep -Po 'inet 192\.[0-9\.]*' | cut -d' ' -f2)
 function binder() {
   alias ${1}="ssh -b ${BINDER} root@192.168.0.${2}"
 }

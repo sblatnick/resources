@@ -132,7 +132,9 @@ config --global -e
   vi .git/hooks/post-update
     #!/bin/bash
     #pwd is in .git/ of the repo
-    #Refresh doku wiki cache:
+    echo "Correct permissions"
+    chown -R 1000 ../
+    echo "Refresh cache for Dokuwiki"
     touch ../conf/local.php
   chmod a+x .git/hooks/post-update
   vi .git/hooks/update
