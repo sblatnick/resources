@@ -64,8 +64,10 @@
       
       helm repo add bitnami https://charts.bitnami.com/bitnami
       kubectl create namespace doku
+      #Singleton:
       helm install --namespace doku doku --set dokuwikiUsername=admin,dokuwikiPassword=password,persistence.storageClass=openebs-jiva-default,persistence.size=3Gi bitnami/dokuwiki
-      #NFS: helm install --namespace doku doku --set dokuwikiUsername=admin,dokuwikiPassword=password,persistence.storageClass=nfs,persistence.size=2790M bitnami/dokuwiki
+      #NFS:
+      helm install --namespace doku doku --set dokuwikiUsername=admin,dokuwikiPassword=password,persistence.storageClass=nfs,persistence.size=2790M bitnami/dokuwiki
 
       #uninstall:
       helm delete --namespace doku doku

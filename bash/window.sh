@@ -24,6 +24,8 @@ zenity --forms --title "Title" --add-password="PIN" --add-password="Password"
 #site: http://sourceforge.net/projects/yad-dialog/
 
 #::::::::::::::::::::NOTIFICATION::::::::::::::::::::
+sudo apt install libnotify-bin
+
 notify-send [main message] [secondary message]
 notify-send -i [icon file or stock name] [main message] [secondary message]
 

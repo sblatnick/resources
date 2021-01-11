@@ -89,6 +89,7 @@ function gitex() {
 
     echo "  allow simple push/pull"
       $wgit config --global push.default simple # tracking ?
+      $wgit config --global pull.ff only
 
     echo "  setup colors..."
       $wgit config --global color.diff auto

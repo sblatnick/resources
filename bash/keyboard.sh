@@ -20,14 +20,28 @@ xkb_keymap {
 ' | xkbcomp - -i 11 $DISPLAY
 
 #set power key to act as an END key (ASUS laptop):
-#(You may also want to set in dconf-editor org.mate.power-manager.power-button = nothing)
-sudo apt-get install acpi-fakekey
-grep KEY_END /usr/share/acpi-support/key-constants
-  KEY_END=107
-sudo nano /etc/acpi/powerbtn-acpi-support.sh
-  acpi_fakekey 107
-  exit 0
+  #SysV:
+    #(You may also want to set in dconf-editor org.mate.power-manager.power-button = nothing)
+    sudo apt-get install acpi-fakekey
+    grep KEY_END /usr/share/acpi-support/key-constants
+      KEY_END=107
+    sudo nano /etc/acpi/powerbtn-acpi-support.sh
+      acpi_fakekey 107
+      exit 0
+  #systemd on MATE (acpi not present):
+    sudo apt install xdotool
 
+    System => Preferences => Hardware => Power Management
+    General => When the power button is pressed: Do nothing
+    
+    sudo vi /etc/systemd/logind.conf
+    reboot
+    
+    System => Preferences => Hardware => Keyboad Shortcuts
+    New...
+      Name:    Power Key
+      Command: xdotool key End
+    Set shortcut to the power key
 #::::::::::::::::::::RAPOO MOUSE MAP::::::::::::::::::::
 #!/bin/bash
 echo '
