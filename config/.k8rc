@@ -25,16 +25,16 @@ function kate_containers() {
   local JSON=$(kubectl -n ${namespace} get pod ${pod} -o=json)
   for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.initContainers[*].name}" 2>/dev/null)
   do
-    local state=$(echo ${JSON} | jq -r ".status.initContainerStatuses[] | select(.name == \"${container}\") | [.state | keys[]] | @tsv")
+    local state=$(echo ${JSON} | jq -r ".status.initContainerStatuses[] | select(.name == \"${container}\") | [.state | keys[]] | @tsv" 2>/dev/null)
     printf "  \033[36;1m%-10s\033[0m %s\n" "${container}" "${state}"
     if [[ "${state}" == "running" ]];then
-      $((found++))
+      ((found++))
       where=${container}
     fi
   done
   for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.containers[*].name}" 2>/dev/null)
   do
-    local state=$(echo ${JSON} | jq -r ".status.containerStatuses[] | select(.name == \"${container}\") | [.state | keys[]] | @tsv")
+    local state=$(echo ${JSON} | jq -r ".status.containerStatuses[] | select(.name == \"${container}\") | [.state | keys[]] | @tsv" 2>/dev/null)
     printf "  \033[34;1m%-10s\033[0m %s\n" "${container}" "${state}"
     if [[ "${state}" == "running" ]];then
       ((found++))
@@ -57,6 +57,9 @@ function kate_go() {
   case "${action}" in
     su|sugo)
         kubectl exec_as -n ${namespace} -u root -c ${container} ${pod} -- /bin/${shell}
+      ;;
+    log)
+        kubectl -n ${namespace} logs -c ${container} ${pod} --follow
       ;;
     go|*)
         kubectl -n ${namespace} exec -it -c ${container} ${pod} -- /bin/${shell}
@@ -173,12 +176,13 @@ function kate_extentions() {
         shift
         kubectl -n ${namespace} delete $(kubectl -n ${namespace} get $@ -o=name) --grace-period 0 --force
       ;;
-    go|su|sugo) #[pod] [container]#List containers or attach to a specified container
+    go|su|sugo|log) #[pod] [container]#List containers or attach/tail a specified container
         action=$1
         shift
         local IFS=$'\n'
         if [ $# -lt 1 ]; then
-          for pod in $(kubectl -n ${namespace} get pod -o=name | sed 's~^pod/~~' | grep -v 'pvc') #ignore openebs pvcs
+          #ignore openebs pvcs
+          for pod in $(kubectl -n ${namespace} get pod -o=name | sed 's~^pod/~~' | grep -v 'pvc')
           do
             echo -e "\033[32;1m${pod}\033[0m"
             kate_containers "${namespace}" "${pod}"

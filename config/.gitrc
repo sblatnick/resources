@@ -276,6 +276,9 @@ function gitex() {
           $wgit --no-pager show --color ${sha} -- $@ | sed 's/^/  /'
         done | $wless -x2 -RS #eval $($wgit config --get core.pager)
       ;;
+    tags) ##
+        $wgit --no-pager log --tags --simplify-by-decoration --pretty="format:%ai %d"
+      ;;
     generate|gen) #[files]#generate a consolidated diff
         shift
         local branch=$($wgit rev-parse --abbrev-ref HEAD)
