@@ -154,6 +154,18 @@ function insert() {
 }' ${file}
 }
 
+function stack() {
+  pid=${1-$$}
+  if [[ $pid -eq $$ ]];then
+    printf "%-5s %s\n" "PID" "COMMAND"
+  fi
+  read ppid command < <(ps -o ppid=,args= ${pid})
+  printf "%-5s %s\n" ${pid} "${command}"
+  if [[ 1 -ne ${ppid} ]];then
+    stack ${ppid}
+  fi
+}
+
 #--------------------------------DOCUMENTATION---------------------------------#
 
 function document() {

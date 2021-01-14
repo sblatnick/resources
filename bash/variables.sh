@@ -140,19 +140,20 @@ number=$((10#$digits))
 
 #::::::::::::::::::::PARAMETER VARIABLES::::::::::::::::::::
 
-$0  # basename of program, but use `basename $0` to get just the program
-    # (in case the user called it with a path)
-$1  # ... $9  first 9 parameters
-$@  # all parameters
-$*  # all parameters delimited, even if in quotes or with spaces
-    # (like "hello world" becomes "hello" "world")
-$#  #number of parameters
-$?  #exit value of the last run command (error detection, use after you run
-    # something to see if it worked)
-$$  #PID (process ID number) of currently running shell, usefull for temp
-    # file generation in case the script is ran more than once before completion
-$!  #PID of last running background process
-    # "This is useful to keep track of the process as it gets on with its job."
+$0    # basename of program, but use `basename $0` to get just the program
+      # (in case the user called it with a path)
+$1    # ... $9  first 9 parameters
+$@    # all parameters
+$*    # all parameters delimited, even if in quotes or with spaces
+      # (like "hello world" becomes "hello" "world")
+$#    #number of parameters
+$?    #exit value of the last run command (error detection, use after you run
+      # something to see if it worked)
+$$    #PID (process ID number) of currently running shell, usefull for temp
+      # file generation in case the script is ran more than once before completion
+$PPID #parent pid
+$!    #PID of last running background process
+      # "This is useful to keep track of the process as it gets on with its job."
 
 #$! is kinda tricky to use:
   set -e
@@ -246,6 +247,21 @@ set -Eeuxo pipefail
     parent_script.sh --args --included
   #source: https://stackoverflow.com/questions/20572934/get-the-name-of-the-caller-script-in-bash-script
 
+  #recursive stack trace:
+    #!/bin/bash
+    function stack() {
+      pid=${1-$$}
+      depth=${2-1}
+      indentation=$(printf '  %.0s' $(seq ${depth}))
+      if [[ 1 -eq ${depth} ]];then
+        printf "%-5s${indentation}%s\n" "PID" "COMMAND"
+      fi
+      printf "%-5s${indentation}%s\n" ${pid} "$(ps -o args= $pid)"
+      ppid=$(ps -o ppid= $pid)
+      if [[ 1 -ne ${ppid} ]];then
+        stack ${ppid} $((depth+1))
+      fi
+    }
 
 #::::::::::::::::::::HISTORY EXPANSION::::::::::::::::::::
 
