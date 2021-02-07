@@ -107,5 +107,13 @@ case "$(uname -s)" in
           return $?
         }
       fi
+
+      #AppImages:
+      if [ -d ~/.apps ];then
+        for app in $(cd ~/.apps/;ls -1 *.AppImage); do
+          alias ${app%%-*}=~/.apps/${app}
+        done
+      fi
+
     ;;
 esac

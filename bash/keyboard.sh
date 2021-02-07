@@ -2,7 +2,7 @@
 
 #::::::::::::::::::::EXAMPLES::::::::::::::::::::
 
-#rebind 
+#rebind
 echo '
 xkb_keymap {
   partial xkb_keycodes "evdev+aliases(qwerty)" {
@@ -33,14 +33,17 @@ xkb_keymap {
 
     System => Preferences => Hardware => Power Management
     General => When the power button is pressed: Do nothing
-    
+
     sudo vi /etc/systemd/logind.conf
     reboot
-    
+
     System => Preferences => Hardware => Keyboad Shortcuts
     New...
-      Name:    Power Key
+      Name:    End Key
       Command: xdotool key End
+    New...
+      Name:    Shift + End Key
+      Command: xdotool key Shift+End
     Set shortcut to the power key
 #::::::::::::::::::::RAPOO MOUSE MAP::::::::::::::::::::
 #!/bin/bash
@@ -116,14 +119,14 @@ xinput --list
   interpret Pointer_DblClick3+AnyOfOrNone(all) {
     action= PtrBtn(button=3,count=2);
   };
-  
-  
+
+
 xkb_keymap {
   xkb_keycodes    { include "evdev+aliases(qwerty)"    };
   xkb_types        { include "complete"    };
   xkb_compatibility { include "complete" };
-  #xkb_symbols    { include 
-"pc+us+br:2+inet(evdev)+altwin(swap_lalt_lwin)+group(alt_shift_toggle)+terminate(ctrl_alt_bksp)" 
+  #xkb_symbols    { include
+"pc+us+br:2+inet(evdev)+altwin(swap_lalt_lwin)+group(alt_shift_toggle)+terminate(ctrl_alt_bksp)"
 };
   xkb_geometry    { include "pc(pc105)"    };
 
