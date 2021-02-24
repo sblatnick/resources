@@ -34,23 +34,26 @@ case "$(uname -s)" in
       ensure -p coreutils greadlink gexpr
       ensure -p gnu-sed gsed
       ensure -p grep ggrep
-      ensure csshx dos2unix colordiff bash-completion
+      ensure csshx dos2unix colordiff bash-completion the_silver_searcher kubernetes-helm
     ;;
   Linux)
       ensure \
         cssh \
         python \
         geany
+      #Missing: helm, kubectl kops
       case "${PACKAGER}" in
         rpm)
             ensure \
               subversion-perl \
-              epel-release
+              epel-release \
+              the_silver_searcher
           ;;
         deb)
             ensure \
               net-tools \
-              libsvn-perl
+              libsvn-perl \
+              silversearcher-ag
           ;;
       esac
     ;;
@@ -59,17 +62,12 @@ esac
 #TODO: check on linux platforms
 ensure \
   ansible \
-  helm \
   jq \
   jo \
-  kops \
-  kubernetes-cli \
-  kubernetes-helm \
   nmap \
   socat \
   tee \
   telnet \
-  the_silver_searcher \
   watch \
   wget
 

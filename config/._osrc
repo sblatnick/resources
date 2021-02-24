@@ -100,7 +100,7 @@ case "$(uname -s)" in
           return $?
         }
       else #Debian
-        export INSTALLER="sudo apt-get -y install"
+        export INSTALLER="sudo apt-get install -y"
         export PACKAGER="deb"
         function check_package() {
           dpkg -l $@ >/dev/null 2>&1
