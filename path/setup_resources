@@ -25,7 +25,7 @@ else
 fi
 
 echo "source resources..."
-source ${BASH_SOURCE#/path/*}/config/bashrc
+source ${BASH_SOURCE%/path/*}/config/bashrc
 
 log "Installing packages..."
 
