@@ -249,7 +249,7 @@ function ensure() {
     which ${bin} >/dev/null 2>&1 \
       || check_package ${pkg} \
       && log "${bin} already installed" \
-      || run ${INSTALLER} install ${pkg} \
+      || run ${INSTALLER} ${pkg} \
       || warn "${pkg} failed to install"
   done
 }
