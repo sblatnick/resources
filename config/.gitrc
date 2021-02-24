@@ -201,7 +201,7 @@ function gitex() {
         $wgit checkout -b ${branch}
         return $?
       ;;
-    modified) ##open dirty files in $EDITOR
+    modified|edit|ed) ##open dirty files in $EDITOR
         dir=$(pwd)
         local IFS=$'\n'
         files=$($wgit status -s)
@@ -487,6 +487,10 @@ function gitex_action() {
       mod) ##exec git on dirty repos in the current context
           if [ -n "$($wgit status --porcelain)" ]; then
             echo -e "${output}"
+            if [ -z "${ARGS}" ];then
+              git modified
+              continue
+            fi
             eval "git $ARGS 2>&1"
             if [ "$?" -eq 130 ];then #SIGINT
               cd ${start}

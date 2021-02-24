@@ -1,4 +1,5 @@
 # Add custom facts here
+#Installed: /var/lib/puppet/lib/facter/facts.rb
 
 Facter.add(:users) do
   has_weight 100

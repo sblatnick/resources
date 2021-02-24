@@ -156,6 +156,8 @@ Run Level    Mode                               Action
 systemctl status #verbose showing of each
 systemctl status | grep '.service$' | sed 's/^ *[├│└─ ]*//' | sort -u
 
+systemctl list-dependencies
+
 #systemd startup script as a setup service:
   /usr/lib/systemd/system/setup.service:
     [Unit]

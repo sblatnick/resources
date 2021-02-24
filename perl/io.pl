@@ -39,3 +39,27 @@
     }
   }
   $/ = "n"; #Read file line by line again from here on
+
+
+#Concat files to a 400 file
+use Fcntl qw(O_WRONLY O_CREAT);
+#Args: self, output, input...
+sub _concat {
+  my ($self, @arg) = @_;
+  my $output = shift @arg;
+  print STDOUT "cat ";
+  foreach my $input (@arg) {
+    print STDOUT "$input ";
+  }
+  print STDOUT "> $output\n";
+  sysopen(my $out, $output, O_WRONLY | O_CREAT, 0400) or die "Couldn't open '$output': $!";
+
+  foreach my $input (@arg) {
+    open(my $in, "<", $input) or die "Couldn't open '$input': $!";
+    while (my $line = <$in>) {
+      print $out $line;
+    }
+    close $in;
+  }
+  close $out;
+}

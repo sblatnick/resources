@@ -25,7 +25,7 @@ else
 fi
 
 echo "source resources..."
-source ${BASH_SOURCE%/path/*}/config/bashrc
+source ${BASH_SOURCE#/path/*}/config/bashrc
 
 log "Installing packages..."
 
@@ -49,6 +49,7 @@ case "$(uname -s)" in
           ;;
         deb)
             ensure \
+              net-tools \
               libsvn-perl
           ;;
       esac

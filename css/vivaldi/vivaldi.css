@@ -45,3 +45,8 @@
 .close, .close:hover {
   background-color: rgba(0, 0, 0, 1.0);
 }
+
+/* Hide 2-level tab favicon/close */
+#tabs-container .favicon, #tabs-container .close {
+  display: none;
+}

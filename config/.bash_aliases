@@ -24,11 +24,12 @@ alias nas='ssh $USER@nas'
 
 BINDER=$(ifconfig 2>/dev/null | grep -Po 'inet 192\.[0-9\.]*' | cut -d' ' -f2)
 function binder() {
-  alias ${1}="ssh -b ${BINDER} root@192.168.0.${2}"
+  alias ${1}="ssh -b ${BINDER} ${3-root}@192.168.0.${2}"
 }
 binder c1 25
 binder c2 26
 binder c3 27
+binder elite 14 steve
 
 function proxy() {
   ssh -b ${BINDER} root@192.168.0.27 -D 1313
