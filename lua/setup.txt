@@ -1,0 +1,24 @@
+
+#Install luarocks and love:
+  sudo apt install lua5.2 liblua5.2-dev love lua-zip libzip-dev
+  wget https://luarocks.org/releases/luarocks-3.5.0.tar.gz
+  tar zxpf luarocks-3.5.0.tar.gz
+  cd luarocks-3.5.0
+  ./configure
+  make
+  sudo make install
+
+#Install love-release:
+  sudo luarocks install --server=http://luarocks.org/dev lua-zip
+  sudo luarocks install love-release
+
+
+#Use luarocks:
+
+  sudo luarocks install luasocket
+  lua
+  > require "socket"
+
+  luarocks list
+
+
