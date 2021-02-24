@@ -38,7 +38,6 @@ case "$(uname -s)" in
     ;;
   Linux)
       ensure \
-        cssh \
         python \
         geany
       #Missing: helm, kubectl kops
@@ -47,9 +46,11 @@ case "$(uname -s)" in
             ensure \
               subversion-perl \
               epel-release \
-              the_silver_searcher
+              the_silver_searcher \
+              cssh
           ;;
         deb)
+            #Missing: cssh
             ensure \
               net-tools \
               libsvn-perl \
