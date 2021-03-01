@@ -35,6 +35,10 @@ function proxy() {
   ssh -b ${BINDER} root@192.168.0.27 -D 1313
 }
 
+function tunnel() {
+  ssh -b ${BINDER} -L 24800:elite:24800 steve@elite
+}
+
 #alias diff='colordiff -u' #use +- instead of <>
 function diff() {
   if tty -s <&1; then

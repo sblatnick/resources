@@ -252,6 +252,14 @@ function kate() {
 function kl() {
   kate $@ | less
 }
+#kubectl/kate watch = KL
+function kw() {
+  while [ $? ]
+  do
+    kate $@
+  done
+}
+
 #kube control = KC
 alias k='kate'
 alias k8='kate'
