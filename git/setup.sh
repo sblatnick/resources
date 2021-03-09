@@ -146,3 +146,15 @@ config --global -e
       echo "Local changes committed before merging"
     fi
   chmod a+x .git/hooks/update
+
+#Fix git-svn on MacOS Catalina:
+  #Install newer git that won't seg fault attempting to run `git svn`:
+  https://sourceforge.net/projects/git-osx-installer/
+  #(yes, the "mavericks" dmg works fine on Catalina)
+
+  #Update your ~/.bash_profile:
+    #prepend path to the newer version of git to your path:
+    export PATH=/usr/local/opt/git/bin:${PATH}
+    #set your perl to include SVN/Core.pm, I found it here in homebrew:
+    export PERL5LIB=/usr/local/var/homebrew/linked/subversion/lib/perl5/site_perl/5.18.4/darwin-thread-multi-2level/
+
