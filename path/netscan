@@ -10,7 +10,7 @@ case "$(uname -s)" in
     ;;
 esac
 
-ifconfig | grep -Po 'inet [^ ]*' | cut -d' ' -f2 | grep -v 127.0.0.1 | grep '^17.' | \
+ifconfig | grep -Po 'inet [^ ]*' | cut -d' ' -f2 | grep -v 127.0.0.1 | grep '^192.' | \
 while read network
 do
   echo -e "${network}"
