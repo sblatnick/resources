@@ -148,13 +148,31 @@ config --global -e
   chmod a+x .git/hooks/update
 
 #Fix git-svn on MacOS Catalina:
-  #Install newer git that won't seg fault attempting to run `git svn`:
-  https://sourceforge.net/projects/git-osx-installer/
-  #(yes, the "mavericks" dmg works fine on Catalina)
+  #HomeBrew (incomplete?):
+    brew install gobject-introspection #maybe?
+    brew install subversion
+    #Upgrade:
+    brew upgrade git
+    #Add to ~/.bash_profile:
+    export PATH=/usr/local/opt/git/bin:${PATH}
+    export PERL5LIB=/usr/local/var/homebrew/linked/subversion/lib/perl5/site_perl/5.18.4/darwin-thread-multi-2level
+  #MacPorts:
+  #Install latest in macports:
+    sudo port selfupdate
+    sudo port upgrade git
+    #sudo port uninstall subversion-perlbindings-5.30
+    sudo port install subversion-perlbindings-5.28
 
   #Update your ~/.bash_profile:
     #prepend path to the newer version of git to your path:
-    export PATH=/usr/local/opt/git/bin:${PATH}
+    export PATH=/opt/local/bin:${PATH}
     #set your perl to include SVN/Core.pm, I found it here in homebrew:
-    export PERL5LIB=/usr/local/var/homebrew/linked/subversion/lib/perl5/site_perl/5.18.4/darwin-thread-multi-2level/
+    export GITPERLLIB=/opt/local/share/perl5
 
+  #Fix keychain svn credentials:
+    #Open "Keychain Access" and delete the svn key
+    #Delete the auth stored by subversion:
+    rm -rf ~/.subversion
+    #Invoke a git-svn command
+    git svn rebase -l
+    #Enter password one last time

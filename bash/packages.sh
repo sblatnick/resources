@@ -249,6 +249,8 @@
 #::::::::::::::::::::MAC::::::::::::::::::::
 
 #Homebrew:
+  #installed to:
+  /usr/local/opt/
   #list installed packages:
   brew list
   #install
@@ -257,6 +259,8 @@
   brew upgrade package
 
 #MacPorts:
+  #installed to:
+  /opt/local/bin
   #list installed packages:
   port installed
   #install package

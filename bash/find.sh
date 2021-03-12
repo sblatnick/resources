@@ -103,7 +103,16 @@ lsof +L1
 cd /
 for dir in $(ls */ -d);do echo $dir;cd $dir;du -sx * 2>/dev/null | sort -r -n | head | sed 's/^/  /';cd /;done
 
-
+#Permissions:
+  -perm 0400  #exact
+    -0111 would only match 0111
+  -perm -0400 #all match
+    -0111 would match 0755, 0744, etc
+  -perm /0037 #any match
+    -0037 would match any:
+      group  wx  0020 || 0010
+      others rwx 0004 || 0003 || 0001
+  -ls #print permissions like ls -l
 
 #Set sticky bit on all world writable, skipping spool directory:
 df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' build -not \( -path '/var/spool/*' -prune \) -xdev -type d -perm -0002 2>/dev/null | \

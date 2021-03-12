@@ -418,7 +418,7 @@ function gitex() {
         shift
         gitex_context $@
       ;;
-    top) ##cd to toplevel
+    top|up) ##cd to toplevel
         cd $($wgit rev-parse --show-toplevel)
       ;;
     tut) ##open tutorial in $EDITOR
