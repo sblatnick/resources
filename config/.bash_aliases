@@ -37,7 +37,7 @@ function proxy() {
 }
 
 function tunnel() {
-  ssh -b ${BINDER} -L 24800:192.168.0.14:24800 steve@192.168.0.14
+  ssh -b ${BINDER} -L 24800:192.168.0.14:24800 -D 1313 steve@192.168.0.14
 }
 
 #alias diff='colordiff -u' #use +- instead of <>

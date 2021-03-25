@@ -15,6 +15,7 @@ YQ        = $(firstword $(shell which yq) chart/lib/yq)
 
 #Use yq to fetch from yaml:
 IMAGE     = $(shell $(YQ) r build/values.yaml serv.image 2>/dev/null)
+REGISTRY  = $(shell echo $(IMAGE) | cut -d'/' -f1)
 TAG       = $(shell $(YQ) r build/Chart.yaml appVersion 2>/dev/null)
 NAMESPACE = $(shell $(YQ) r build/values.yaml namespace 2>/dev/null)
 MANAGED   = $(shell $(YQ) r build/values.yaml managed 2>/dev/null)
@@ -47,7 +48,7 @@ uninstall: remove
 tar: package
 
 #Ingore:
-.PHONY: chart ready list image push install update remove $(TARGETS)
+.PHONY: chart ready list image push run install update remove $(TARGETS)
 
 #Actions:
 
@@ -56,6 +57,14 @@ $(TARGETS): clean
 	mkdir -p build
 	cp -rf chart/ build/
 	cp -rf targets/$@/ build/
+#alternatively link instead:
+	@echo "Link chart"
+	find chart/ -type d -exec sh -c 'mkdir -p build$${0#chart/}' {} \;
+	find chart -type f -exec sh -c 'ln $$0 build/$${0#chart/}' {} \;
+	@echo "Link target"
+	find targets/$@/ -type d -exec sh -c 'mkdir -p build$${0#targets/*/}' {} \;
+	find targets/$@ -type f -exec sh -c 'ln $$0 build/$${0#targets/*/}' {} \;
+	@echo "Made target $@"
 #list all customer targets
 list:
 #@ prefix means don't print command
@@ -72,7 +81,19 @@ ready:
 image: ready
 	docker build -t $(IMAGE):$(TAG) -f build/Dockerfile build/
 push: ready
+	docker login $(REGISTRY)
 	docker push $(IMAGE):$(TAG)
+run: ready
+	docker run -it --rm \
+		--add-host=serv-k8s.svc.cluster.local:127.0.0.1 \
+		-v $(shell pwd)/build/inc:/opt \
+		-v $(shell pwd)/build/values.yaml:/opt/values.yaml \
+		-w /opt \
+		-h serv-k8s \
+		--name serv-k8s \
+		-P \
+		$(IMAGE):$(TAG) \
+		/bin/bash
 
 chart: ready build/yaml
 build/yaml:
