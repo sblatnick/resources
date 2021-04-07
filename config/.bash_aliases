@@ -75,6 +75,19 @@ function lag() {
   agg "$@" | $less -SRi
 }
 
+#ag no comments
+function nag() {
+  needle=${@//\//\\/}
+  less_search "$@"
+  for file in $(ag "${needle}" -l)
+  do
+    nocomment $file | sed "/ #.*${needle}/d" | ag "${needle}" >/dev/null 2>&1
+    if [ $? -eq 0 ];then
+      ag --color -H "${needle}" $file | sed "/ #.*${needle}/d"
+    fi
+  done | $less -SRi
+}
+
 #remove comment lines and blank lines
 function nocomment() {
   cat $@ | sed -e '/^[ ]*#/d' -e '/^[ ]*\/\//d' -e '/^[ ]*$/d'

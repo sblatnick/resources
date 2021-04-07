@@ -70,7 +70,7 @@ case "$(uname -s)" in
         esac
       }
 
-      export EDITOR="geany"
+      export EDITOR="vi" #geany doesn't open properly on MacOS
       export INSTALLER="brew install"
       export PACKAGER="dmg"
       function check_package() {

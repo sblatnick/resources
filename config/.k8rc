@@ -156,7 +156,7 @@ function kate_extentions() {
         kubectl $@
       ;;
     #Custom commands:
-    tail)
+    tail) ##kubetail
         which kubetail >/dev/null 2>&1
         if [ "$?" -ne "0" ]; then
           echo -e "\033[31mkubetail not installed in path\033[0m git clone git@github.com:johanhaleby/kubetail.git"

@@ -34,6 +34,10 @@ service/nginx-ingress-controller           LoadBalancer   10.24.249.150   10.24.
 #Use /etc/hosts to get the browser to pass the right header of the subdomain to the load balancer:
 10.24.250.101 cluster.net service.cluster.net #etc
 
+#Get the LoadBalancer:
+LB=$(kubectl -n nginx-ingress get service/nginx-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[].ip}')
+echo "${LB} cluster.net service.cluster.net" | sudo tee -a /etc/hosts
+
 #Then, you can reach HTTPS with header HTTP header:
 openssl s_client -connect service.cluster.net:443
 GET / HTTP/1.1
@@ -42,6 +46,15 @@ Host: service.cluster.net
 
 #Logs:
 kubectl -n nginx-ingress logs --tail 100 --follow $(kubectl -n nginx-ingress get pod -o=name | grep controller)
+
+#If you see Bad Gateway in the browser, check for:
+  "upstream prematurely closed connection while reading response header from upstream"
+  #This is because of an annotation that has changed for nginx in the ingress:
+  EDITOR=vi
+  kubectl -n namespace edit ingress myingress
+      nginx.ingress.kubernetes.io/secure-backends: "false"  #depricated, but you can leave it
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTPS" #add this line
+  #source: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#backend-protocol
 
 #===============================TLS TERMINATION================================#
 #Example:
