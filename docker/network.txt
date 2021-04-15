@@ -47,7 +47,7 @@ service/nginx-ingress-controller           LoadBalancer   10.24.249.150   10.24.
       vi /opt/local/etc/dnsmasq.conf
       sudo launchctl start homebrew.mxcl.dnsmasq
     #dnsmasq.conf:
-      address=/intra.net/10.24.252.101
+      address=/intra.net/10.24.250.101
       listen-address=127.0.0.1
     #restart dnsmasq
 
