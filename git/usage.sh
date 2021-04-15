@@ -417,6 +417,15 @@
         #continue the rebase:
         git rebase --continue
 
+      #problems pulling latest or checking out another branch?
+        Checking svn:mergeinfo changes since rXXXX: XX sources, XX changed
+        YAML Error: Invalid element in map
+           Code: YAML_LOAD_ERR_BAD_MAP_ELEMENT
+           Line: 3
+           Document: 1
+         at /usr/lib/perl5/YAML/Loader.pm line 350.
+      rm -rf .git/svn/.caches
+
       #directories missed? repeat above on later commits by file
 
     #Merge history into existing git repo:

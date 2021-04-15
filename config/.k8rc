@@ -113,7 +113,11 @@ function kate_extentions() {
   private
 
   context=$(kubectl config current-context)
-  source ${K8_CONFIG} 2>/dev/null #get current namespace
+  if [ -z "${NS}" ];then
+    source ${K8_CONFIG} 2>/dev/null #get current namespace
+  else
+    namespace=${NS}
+  fi
 
   case "${1}" in
     '')
@@ -175,6 +179,10 @@ function kate_extentions() {
     killall) ##Alias to force delete all of object type
         shift
         kubectl -n ${namespace} delete $(kubectl -n ${namespace} get $@ -o=name) --grace-period 0 --force
+      ;;
+    ingress|net) ##Alias to follow nginx ingress controller logs
+        shift
+        kubectl -n nginx-ingress logs --tail 100 --follow $(kubectl -n nginx-ingress get pod -o=name | grep controller)
       ;;
     go|su|sugo|log) #[pod] [container]#List containers or attach/tail a specified container
         action=$1

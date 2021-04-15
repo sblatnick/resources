@@ -34,6 +34,23 @@ service/nginx-ingress-controller           LoadBalancer   10.24.249.150   10.24.
 #Use /etc/hosts to get the browser to pass the right header of the subdomain to the load balancer:
 10.24.250.101 cluster.net service.cluster.net #etc
 
+#Or use dnsmasq for wildcards:
+  sudo mkdir -v /etc/resolver
+  sudo bash -c 'echo "nameserver 127.0.0.1" > /etc/resolver/intra.net'
+  #MacOS:
+    #brew:
+      brew install dnsmasq
+      sudo brew services start dnsmasq
+      vi /usr/local/etc/dnsmasq.conf
+    #macports:
+      sudo port install dnsmasq
+      vi /opt/local/etc/dnsmasq.conf
+      sudo launchctl start homebrew.mxcl.dnsmasq
+    #dnsmasq.conf:
+      address=/intra.net/10.24.252.101
+      listen-address=127.0.0.1
+    #restart dnsmasq
+
 #Get the LoadBalancer:
 LB=$(kubectl -n nginx-ingress get service/nginx-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[].ip}')
 echo "${LB} cluster.net service.cluster.net" | sudo tee -a /etc/hosts

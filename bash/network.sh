@@ -270,4 +270,4 @@ It's down
 #::::::::::::::::::::OTHER::::::::::::::::::::
 
 #download public cert
-openssl s_client -connect https://website.com </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > website.cer
+openssl s_client -connect website.com:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > website.cer
