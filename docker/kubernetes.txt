@@ -200,6 +200,13 @@ Example arguments:
     #force delete:
     kubectl delete pod my-pod --grace-period=0 --force --namespace my-namespace
 
+    #Problem with space on nodes?  Try cleaning up docker:
+    docker rm $(docker ps -q -f status=exited)
+    docker volume rm $(docker volume ls -qf dangling=true)
+    docker rmi $(docker images --filter "dangling=true" -q --no-trunc)
+    
+    docker system prune -a -f --volumes
+
     #set: update deployment image version:
     kubectl set image deployment/my-deployment my-pod=repo.intra.net/dev/my-pod:0.1
 

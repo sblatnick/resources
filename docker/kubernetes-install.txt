@@ -73,6 +73,16 @@
     mynode02  Ready     master,node   2d        v1.13.1
     mynode03  Ready     node          2d        v1.13.1
 
+  #Reinitialize kubernetes:
+    kubeadm init phase certs all --apiserver-advertise-address <IP>
+    kubeadm init phase kubeconfig all
+  #Renew kubernetes certs:
+    kubeadm alpha certs renew all
+  #Check expiration:
+    kubeadm alpha certs check-expiration
+  #Manually check:
+    openssl x509 -in /etc/kubernetes/pki/apiserver.crt -noout -text |grep ' Not '
+
 #K3s with Docker
   #All nodes (CentOS 8):
     #Install Docker:

@@ -6,6 +6,9 @@
   alias docker-rm-stopped='docker rm -v $(docker ps -a -q -f status=exited)'
   alias docker-rm-dangling='docker rmi $(docker images -q -f dangling=true)'
 
+  #cleanup:
+  docker system prune -a
+
 #Repos:
 
   #Login to your own docker repo:

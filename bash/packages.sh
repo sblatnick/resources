@@ -255,6 +255,8 @@
   brew list
   #install
   brew install package
+  #specific version:
+  brew install python@3.7
   #update:
   brew upgrade package
 
