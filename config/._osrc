@@ -84,14 +84,14 @@ case "$(uname -s)" in
       export BASHRC=~/.bashrc
       alias browser="python -m webbrowser"
 
-      which geany >/dev/null
+      which geany >/dev/null 2>&1
       if [ $? -eq 0 ];then
         export EDITOR="geany"
       else
         export EDITOR="vi"
       fi
 
-      which yum >/dev/null
+      which yum >/dev/null 2>&1
       if [ $? -eq 0 ];then #CentOS
         export INSTALLER="sudo yum install -y"
         export PACKAGER="rpm"

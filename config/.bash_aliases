@@ -2,7 +2,7 @@
 
 function origin() {
   while [ -n "$1" ]; do
-    where=$(which $1 2>&1 || continue)
+    where=$(which $1 --skip-alias 2>&1 || continue)
     eval $1=${where}
     shift
   done
