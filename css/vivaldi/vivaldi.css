@@ -46,7 +46,72 @@
   background-color: rgba(0, 0, 0, 1.0);
 }
 
+.linux:not(.alt) #tabs-container .close {
+  position: relative;
+  left: 0px;
+}
+
 /* Hide 2-level tab favicon/close */
 /*#tabs-container .favicon, #tabs-container .close {
   display: none;
 }*/
+
+/*Source: https://www.reddit.com/r/vivaldibrowser/comments/6yaxc5/refinement_move_the_vivaldi_button_to_the/ */
+/* Remove header */
+:-webkit-any(.native, .maximized)#browser #header {
+  min-height: 0 !important;
+}
+
+/* Keep Vivaldi button */
+:-webkit-any(.native, .maximized)#browser .vivaldi  {
+  z-index: 1;
+  top: 5px !important;
+}
+
+/* Keep horizontal menu */
+:-webkit-any(.native, .maximized)#browser .topmenu {
+  position: absolute;
+}
+
+:-webkit-any(.native, .maximized)#browser .vivaldi {
+  top: 0px !important;
+}
+
+.toolbar-mainbar {
+  height: 26px;
+}
+
+.toolbar.toolbar-droptarget.toolbar-mainbar.toolbar-large {
+  padding-left: 26px;
+}
+
+.toolbar-mainbar > .button-toolbar > button, .toolbar-mainbar > .toolbar-group > .button-toolbar > button {
+  height: 26px;
+}
+
+/* Reduce toolbar size for horizontal menu */
+:-webkit-any(.native, .maximized).horizontal-menu#browser:not(.tabs-top) .toolbar.toolbar-addressbar {
+  padding-left: 267px;
+}
+
+/* Non-Native window fixes */
+
+/* Keep window buttons */
+.maximized#browser .window-buttongroup {
+  z-index: 1;
+}
+
+/* Reduce toolbar size for window buttons */
+.maximized#browser:not(.native):not(.tabs-top) .toolbar.toolbar-addressbar {
+  padding-right: 140px;
+}
+
+/* Adjust horizontal menu position */
+.maximized#browser:not(.native) .topmenu {
+  left: -30px;
+}
+
+/* Remove vivaldi button, horizontal menu and window buttons when no ui */
+.maximized.minimal-ui#browser :-webkit-any(.vivaldi, .topmenu, .window-buttongroup) {
+  display: none !important;
+}
