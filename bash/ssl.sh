@@ -1,4 +1,6 @@
 #::::::::::::::::::::OPENSSL::::::::::::::::::::
+#View Cert information:
+  openssl x509 -text -noout -in certificate.crt
 
 #create passwordless cert for a ruby thin server:
   #create private key:

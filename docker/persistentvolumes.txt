@@ -12,10 +12,11 @@
 
 #Helm Install:
   helm repo add openebs https://openebs.github.io/charts
-  helm install --namespace openebs openebs openebs/openebs
+  helm repo update
+  helm install openebs openebs/openebs -n openebs --create-namespace
   
   #Uninstall:
-  helm delete --namespace openebs openebs
+  helm delete -n openebs openebs
 
 #Uninstall:
   kubectl delete -f openesb-operator.yaml
@@ -100,6 +101,72 @@
 
     #the pod should pick it up again
       Normal   SuccessfulAttachVolume  14m  attachdetach-controller  AttachVolume.Attach succeeded for volume "pvc-c31a111d-42b8-11ea-b210-b8ca3a6c26b4"
+
+  #Old Helm Charts?
+    #Remove deprecated ones:
+      helm repo remove stable https://charts.helm.sh/stable
+      helm repo remove incubator https://charts.helm.sh/incubator
+    #Tear down your charts that were using the old version:
+      helm del -n mynamespace mydeployment
+    #Remove the old StorageClass definitions:
+      kubectl delete $(kubectl get sc -o=name)
+    #Delete persistent volumes:
+      kubectl -n ${NAMESPACE} delete $(kubectl -n ${NAMESPACE} get pvc -o=name)
+    #Install the chart mentioned up top of this file or just the jiva one for small clusters
+      helm repo add openebs-jiva https://openebs.github.io/jiva-operator
+      helm repo update
+      helm install openebs-jiva openebs-jiva/jiva -n openebs --create-namespace
+
+  #Less than 3 worker nodes?  We need to fix the toleration for using the masters too
+    #This will tolerate any node:
+    vi openebs-policy-sc.yaml:
+      apiVersion: openebs.io/v1alpha1
+      kind: JivaVolumePolicy
+      metadata:
+       name: openebs-all-nodes
+       namespace: openebs
+      spec:
+       replicaSC: openebs-hostpath
+       enableBufio: false
+       autoScaling: false
+       target:
+         replicationFactor: 3
+      ---
+      apiVersion: storage.k8s.io/v1
+      kind: StorageClass
+      metadata:
+        name: openebs-jiva-default
+      provisioner: jiva.csi.openebs.io
+      parameters:
+        cas-type: "jiva"
+        policy: "openebs-all-nodes"
+
+    #source:
+    # - https://medium.com/kubernetes-tutorials/making-sense-of-taints-and-tolerations-in-kubernetes-446e75010f4e
+    # - https://github.com/openebs/jiva-operator/blob/master/docs/tutorials/policies.md#targetreplica-pod-toleration
+    # - https://github.com/openebs/jiva-operator/blob/master/docs/quickstart.md#steps-to-provision-a-jiva-volume
+    kubectl apply -f openebs-policy-sc.yaml
+
+  #Disk Usage problems?  Clean up:
+    docker rm $(docker ps -q -f status=exited)
+    docker volume rm $(docker volume ls -qf dangling=true)
+    docker rmi $(docker images --filter "dangling=true" -q --no-trunc)
+
+    docker system prune -a -f --volumes
+
+  #Using k8s >1.18?  Work-around for compatibility: https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner/issues/25
+    #On the k8s master, add this feature flag to the api server:
+    [master ~] # vi /etc/kubernetes/manifests/kube-apiserver.yaml
+    spec:
+      containers:
+      - command:
+        - kube-apiserver
+        - --feature-gates=RemoveSelfLink=false
+    #Apply twice:
+    [master ~] # kubectl apply -f /etc/kubernetes/manifests/kube-apiserver.yaml
+    pod/kube-apiserver created
+    [master ~] # kubectl apply -f /etc/kubernetes/manifests/kube-apiserver.yaml
+    pod/kube-apiserver configured
 
 #------------------------------------ROOK---------------------------------------
 #(Not working for me)

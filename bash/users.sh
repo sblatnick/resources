@@ -43,11 +43,29 @@
     groupadd ${group}
 
   #Add user to group(s):
-    usermod -a -G ${group} ${user}
-    usermod -a -G ${group1},${group2},${group3} ${user}
+    usermod -aG ${group} ${user}
+    usermod -aG ${group1},${group2},${group3} ${user}
 
   #Remove by explicitly setting group(s)
     usermod -G ${group1},${group2} ${user}
 
   #Change primary group:
     usermod -g ${group} ${user}
+
+
+#::::::::::::::::::::SSSD::::::::::::::::::::
+
+#To make local customizations:
+vi /etc/sssd/conf.d/local.conf
+  [sssd]
+  domains = default, local
+
+  [domain/local]
+  auth_provider = local
+  id_provider = local
+  description = Default Local Domain
+chmod 600 /etc/sssd/conf.d/local.conf
+systemctl restart sssd
+sss_groupadd ${GROUP}
+sss_useradd -G ${GROUP} ${USER}
+#FIXME: need to manage user locally with this method

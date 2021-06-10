@@ -6,8 +6,13 @@
   brew install kubernetes-helm
 
   #Add repos to helm (in addition to stable):
-  helm repo add stable https://charts.helm.sh/stable
-  helm repo add incubator https://charts.helm.sh/incubator
+  #Deprecated:
+    helm repo add stable https://charts.helm.sh/stable
+    helm repo add incubator https://charts.helm.sh/incubator
+  #OpenEBS repo:
+    helm repo add openebs https://openebs.github.io/charts
+    helm repo update
+    helm install openebs openebs/openebs -n openebs --create-namespace
   helm repo update
 
   #List repos:
@@ -405,6 +410,63 @@
 
       #source: https://www.reddit.com/r/golang/comments/7apv04/what_is_the_difference_between_template_and_block/
 
+#Helm chart hooks: https://helm.sh/docs/topics/charts_hooks/
+  helm install ${chart}
+    pre-install
+    post-install
+  helm upgrade ${chart}
+    pre-install
+    post-install
+    
+    pre-delete
+    post-delete
+
+    post-upgrade
+
+    pre-rollback
+    post-rollback
+
+    test
+
+  #Example: templates/post-install-job.yaml
+    apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: "{{ .Release.Name }}"
+      labels:
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        app.kubernetes.io/version: {{ .Chart.AppVersion }}
+        helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+      annotations:
+        # This is what defines this resource as a hook. Without this line, the
+        # job is considered part of the release.
+        "helm.sh/hook": post-install,post-upgrade #Comma delimit for applying one resource to multiple hooks
+        "helm.sh/hook-weight": "-5" #ascending order
+        "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+          #Possible values:
+            before-hook-creation  (DEFAULT) Delete the previous resource before a new hook is launched
+            hook-succeeded        Delete the resource after the hook is successfully executed
+            hook-failed           Delete the resource if the hook failed during execution 
+    spec:
+      template:
+        metadata:
+          name: "{{ .Release.Name }}"
+          labels:
+            app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+            app.kubernetes.io/instance: {{ .Release.Name | quote }}
+            helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: post-install-job
+            image: "alpine:3.3"
+            command: ["/bin/sleep","{{ default "10" .Values.sleepyTime }}"]
+
+
+#Helm CRD (Custom Resouce Definitions) https://helm.sh/docs/chart_best_practices/custom_resource_definitions/
+  #Sometimes CRDs must be created before deploying pods.
+  #Put their definitions in the "crds" folder (Helm 2: "crd-install")
 
 #values.yaml:
 

@@ -144,6 +144,12 @@ Example arguments:
   #Makes the node schedulable for pods again:
   kubectl uncordon node02
 
+  #Tutorial: https://medium.com/kubernetes-tutorials/making-sense-of-taints-and-tolerations-in-kubernetes-446e75010f4e
+  #Allow on any node:
+    tolerations:
+    - operator: "Exists"
+    #key is "" implicitly
+
 #===================================COMMANDS===================================#
 
   kubectl [action] [resource] [name] [flagged args]
@@ -374,6 +380,29 @@ Example arguments:
 
     #get minicube IP:
     minikube ip
+
+  #Container hooks:
+    # https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/
+    # https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/
+    postStart
+    preStop
+
+    #Example:
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: lifecycle-demo
+    spec:
+      containers:
+      - name: lifecycle-demo-container
+        image: nginx
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "echo Hello from the postStart handler > /usr/share/message"]
+          preStop:
+            exec:
+              command: ["/bin/sh","-c","nginx -s quit; while killall -0 nginx; do sleep 1; done"]
 
 #NFS for bare metal:
   #Simple steps:
