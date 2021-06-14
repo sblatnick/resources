@@ -511,8 +511,9 @@ result: /root/rpmbuild/RPMS/x86_64/package.rpm
 sudo yum install -y yum-utils rpmdevtools
 
 #prepare directories:
-mkdir -p ~/.rpm/{RPMS,SRPMS,BUILD,SOURCES,SPECS,tmp}
-mkdir ~/.rpm/RPMS/{x86_64,noarch}
+mkdir -p ~/.rpm/{RPMS/{x86_64,noarch},SRPMS,BUILD,SOURCES,SPECS,tmp}
+  #default location:
+  mkdir -p ~/rpmbuild/{RPMS/{x86_64,noarch},SRPMS,BUILD,SOURCES,SPECS,tmp}
 
 #Find dependencies (you may need to modify multiple packages):
 yum deplist tomcat
