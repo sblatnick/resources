@@ -104,6 +104,9 @@ ssh <remoteUser>@<remoteMachine> -R <remote listening port>:<remote machine refe
   #add the line in LOCALHOST: ~/.ssh/id_rsa.pub (without the .pub is your private key)
   #  to the file REMOTEHOST: ~/.ssh/authorized_keys
 
+  #See how many bits the key uses:
+  ssh-keygen -l -f ~/.ssh/id_rsa.pub
+
   #change the password/passphrase:
   ssh-keygen -p
   #you can also delete id_rsa and id_rsa.pub to start over
