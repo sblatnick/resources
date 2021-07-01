@@ -24,3 +24,5 @@ group_b=(one three)
     three
     two
 
+#Count DESC Unique
+  sort | uniq -c | sort -nr

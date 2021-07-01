@@ -75,8 +75,23 @@ find . -path ./.git -prune -or -print
 #pipe find to find with files with >=8 digits:
   find -L /path/ -maxdepth 4 -iname folder -type d | xargs -0 -I{} find '{}' -regextype posix-extended -type f -regex '.*[^/]{8,}'
 
+#Get largest directories under root:
+find / -xdev -maxdepth 2 | grep -Po '^/.*/' | sort -u | xargs -I '{}' du -shx '{}' | sort -rh
+
 #get largest directories (KB) in the current path:
 du -shx * 2>/dev/null | sort -rh | head
+
+#hidden directory sizes:
+ls -1A | grep '^\.' | xargs -I '{}' du -shx '{}' | sort -rh
+
+#Truncate deleted file with a process holding it:
+# https://serverfault.com/questions/232525/df-in-linux-not-showing-correct-free-space-after-file-removal/232526
+lsof +L1 | grep maillog
+  rsyslogd 15114    root   23w   REG  253,0 11841540096     0  37637214 /var/log/maillog-20210530 (deleted)
+cd /proc/15114/fd
+ls -l |grep deleted
+  l-wx------ 1 root root 64 Jun 25 12:19 23 -> /var/log/maillog-20210530 (deleted)
+> 23
 
 #in parallel (consider adding `timeout`):
   TMP=/dev/shm/size.tmp

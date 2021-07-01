@@ -385,6 +385,15 @@ sed '/AllowGroups /{/ root /! s/AllowGroups /AllowGroups root /}' /etc/ssh/sshd_
 #print only if the block has a match:
   sed 'H;/--START--/h;/--END--/!d;x;/match/!d'
   #source: https://unix.stackexchange.com/questions/228699/sed-print-lines-matched-by-a-pattern-range-if-one-line-matches-a-condition
+#print only if the block does NOT have a match (remove ! from d):
+  sed 'H;/--START--/h;/--END--/!d;x;/match/d'
+#remove newlines:
+  sed ':a;N;$!ba;s/\n/ /g'
+#remove newlines within blocks
+  sed 'H;/<tag/h;/<\/tag>/!d;x;s/$/\r/' example.xml | tr -d $'\n' | sed 's/\r/\n/g'
+#capture groups within blocks:
+  sed 'H;/<tag/h;/<\/tag>/!d;x;s/$/\r/' example.xml | tr -d $'\n' | sed 's/\r/\n/g' | sed 's/^.*<name>\([^<]*\)<\/name>.*<desc>\([^<]*\)<\/desc>.*ver="\([^"]*\)".*$/\1 \2 \3/'
+
 
 #prepend to string using & to retain original contents:
 $ git ls-files -s | sed "s~\t\"*~&newsubdir/~"
