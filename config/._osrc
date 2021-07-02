@@ -30,7 +30,7 @@ case "$(uname -s)" in
         done
       }
 
-      galias sed readlink expr head tail #brew install gnu-sed grep coreutils
+      galias sed readlink expr head tail sort #brew install gnu-sed grep coreutils
 
       function service() {
         local action=$1
