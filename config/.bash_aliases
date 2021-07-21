@@ -13,7 +13,7 @@ origin less grep diff ag git
 ls --color >/dev/null 2>&1 && alias ls='ls --color=auto' || alias ls='ls -G'
 alias ll='ls -l'
 which ggrep >/dev/null 2>&1 && alias grep='ggrep --color=auto' || alias grep='grep --color=auto'
-alias less='less -SRi' #add N for line numbers
+alias less='less -SRi' #add N for line numbers, use `less -+S` to re-enable wrapping
 alias resource="trap - RETURN;source ${BASHRC};" #unset trap from tmpdir
 
 #Facilitate connecting to NAS:

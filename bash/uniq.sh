@@ -24,5 +24,8 @@ group_b=(one three)
     three
     two
 
+#ONLY IN GROUP B USING MULTILINE STRINGS (!INTERSECTION && !A)
+  echo "${group_a}"$'\n'"${group_a}"$'\n'"${group_b}" | sort | uniq -u
+
 #Count DESC Unique
   sort | uniq -c | sort -nr

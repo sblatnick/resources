@@ -202,6 +202,32 @@ function gitex() {
         $wgit checkout -b ${branch}
         return $?
       ;;
+    rs) #[rm] [pattern]#remote branch listing, rm to delete local tracked branch
+        shift
+        local branches=$(git --no-pager branch --format '%(refname:lstrip=1)' | sed 's/^heads/local/')$'\n'$($wgit --no-pager branch -r --format '%(refname:lstrip=2)')
+        local IFS=$'\n'
+        if [[ "$1" == "rm" ]];then
+          local delete='true'
+          shift
+        fi
+        for remote in local $(git remote)
+        do
+          echo -e "\033[32m${remote}\033[0m"
+          if [ -n "$1" ];then
+            if [[ "${delete}" == 'true' ]];then
+              for branch in $(echo "${branches}" | grep "^local/" | grep "$1" | sed -n "/${remote}\// s///p")
+              do
+                echo -e "  \033[31mdeleting\033[0m ${branch}"
+                $wgit branch -D ${branch}
+              done
+            else
+              echo "${branches}" | grep "$1" | sed -n "/${remote}\// s//  /p"
+            fi
+          else
+            echo "${branches}" | sed -n "/${remote}\// s//  /p"
+          fi
+        done
+      ;;
     modified|edit|ed) ##open dirty files in $EDITOR
         dir=$(pwd)
         local IFS=$'\n'

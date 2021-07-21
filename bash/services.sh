@@ -150,6 +150,69 @@ Run Level    Mode                               Action
 150-199   reserved for application use
 200-254   reserved
 
+#Dummy Service for testing
+  #/etc/init.d/dummy
+    #!/bin/bash
+    # chkconfig: - 20 80
+    # description: Dummy service.  Do nothing bug log every 10 seconds.
+
+    service=${0##*/}
+
+    . /etc/init.d/functions
+
+    PID=/var/dummy.pid
+    SERVICE=/bin/dummy
+
+    start() {
+      echo -n "Starting ${service} server: "
+      if [ -f $PID ] && [ $(checkpid $(<$PID);echo $?) ];then
+        failure "service already running"
+        echo
+        return 1
+      fi
+      $SERVICE >/dev/null 2>&1 &
+      success "${service} server startup"
+      echo
+    }
+
+    stop() {
+      echo -n "Stopping ${service} server: "
+      killproc -p $PID /bin/dummy
+      echo
+    }
+
+    case "$1" in
+      start|stop)
+          $1
+        ;;
+      restart)
+          $0 stop
+          $0 start
+        ;;
+      status)
+          status -p ${PID} ${service}
+          tail /var/log/dummy.log
+        ;;
+      *)
+          echo "Usage: $0 {start|stop|status|restart}"
+        ;;
+    esac
+
+  #/bin/dummy
+    #!/bin/bash
+
+    PID=/var/dummy.pid
+    LOG=/var/log/dummy.log
+
+    exec 1> >(tee -a $LOG) 2>&1
+    echo $$ > $PID
+
+    while [ 1 ];
+    do
+      echo "Dummy: $(date)"
+      sleep 10
+    done
+
 #::::::::::::::::::::SYSTEMD::::::::::::::::::::
 
 #List services:

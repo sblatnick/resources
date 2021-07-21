@@ -135,6 +135,10 @@ sed
   #sed inplace replacement:
   sed 's/replace/regex/' -i file.txt
 
+  #replace matching lines without passing the pattern twice:
+  sed -n "/${remote}\// s//  /p"
+  #"origin/master" -> "  master"
+
   #only act on matching lines like awk:
     #replace trailing comma on all lines matching regex with a semicolon
     sed -i '/regex/ s/,$/;/' /dev/shm/file.$$
