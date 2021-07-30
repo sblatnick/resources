@@ -15,6 +15,7 @@ alias ll='ls -l'
 which ggrep >/dev/null 2>&1 && alias grep='ggrep --color=auto' || alias grep='grep --color=auto'
 alias less='less -SRi' #add N for line numbers, use `less -+S` to re-enable wrapping
 alias resource="trap - RETURN;source ${BASHRC};" #unset trap from tmpdir
+#Alternatively: `eval $SHELL`
 
 #Facilitate connecting to NAS:
 function nasfs() {

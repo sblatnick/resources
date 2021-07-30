@@ -92,6 +92,9 @@ function gitex() {
       $wgit config --global pull.ff only
       $wgit config --global pull.rebase true
 
+    echo "  set default branch"
+      $wgit config --global init.defaultBranch master
+
     echo "  setup colors..."
       $wgit config --global color.diff auto
       $wgit config --global color.branch auto
@@ -164,8 +167,8 @@ function gitex() {
         fi
 
         #local branch?
-        $wgit rev-parse --abbrev-ref ${branch##*/} >/dev/null 2>&1
-        if [ $? -eq 0 ];then
+        b=$($wgit --no-pager branch --list ${branch##*/})
+        if [ -n "$b" ];then
           echo -e "\033[33mcheckout local branch ${branch##*/}\033[0m"
           $wgit checkout ${branch##*/}
           return $?

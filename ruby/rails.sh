@@ -74,8 +74,8 @@
       get "/articles", to: "articles#index"
     end
 #Action:
-  generate controller Articles index
-  generate controller Articles index --skip-routes
+  rails generate controller Articles index
+  rails generate controller Articles index --skip-routes
 #View:
   app/views/articles/index.html.erb
 
