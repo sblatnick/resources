@@ -66,6 +66,9 @@
   #show remote branches:
   git branch -r
 
+  #view file in another branch:
+  git show branch:file
+
   #delete a local branch:
   git branch -d bugfix #Delete a branch.
   git branch -D bugfix #Delete a branch irrespective of its merged status.
@@ -155,7 +158,8 @@
     #restore a deleted file:
     git log --diff-filter=D --summary #find the deleted changeset
     git log -- deletedFile.txt        #view changes on a file deleted
-    git checkout $commit~1 filename   #check it out
+    git checkout HEAD filename        #check it out
+    #old: git checkout $commit~1 filename
 
   #Abandon all my changes in Master branch and make it identical to the upstream's master branch?
     #(source: http://stackoverflow.com/questions/8134960/git-how-to-revert-master-branch-to-upstream)

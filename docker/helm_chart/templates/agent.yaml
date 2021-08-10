@@ -1,0 +1,2 @@
+{{- $data := dict "Values" .Values "Release" .Release "Chart" .Chart "role" "agent" }}
+{{ include "my.pod" $data }}

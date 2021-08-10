@@ -18,6 +18,13 @@
     echo "hello world and everybody in it" | rev | cut -d' ' -f 1-2 | rev
       in it
 
+#::::::::::::::::::::DIRECTORY STACK::::::::::::::::::::
+
+#Instead of using cd within a script, consider using:
+pushd #push directory built-in
+popd  #pop  directory built-in
+  -n    #don't actually change directories
+
 #::::::::::::::::::::SORT::::::::::::::::::::
 
   sort

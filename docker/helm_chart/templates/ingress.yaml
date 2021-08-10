@@ -1,0 +1,50 @@
+{{- if .Values.ingress.class }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Values.name }}.{{ .Values.my.public }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Values.app }}
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: {{ replace "+" "_" .Chart.Version | printf "%s-%s" .Chart.Name }}
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingress.class | quote }}
+    nginx.ingress.kubernetes.io/secure-backends: "false"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    {{- if eq .Values.ingress.affinity "cookie" }}
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
+    {{- else if eq .Values.ingress.affinity "client-ip"}}
+    nginx.ingress.kubernetes.io/upstream-hash-by: "$the_real_ip"
+    {{- else if ne .Values.ingress.affinity ""}}
+    {{ required "invalid value for .Values.ingress.affinity" "" }}
+    {{- end }}
+spec:
+  tls:
+  - hosts:
+  {{- range $role, $object := .Values.roles }}
+    {{- range $name, $port := $object.ports }}
+      {{- if eq $port.type "http" }}
+    - "{{ $name }}.{{ $role }}.{{ $.Values.my.public }}"
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if $.Values.ingress.certSecretName }}
+    secretName: {{ $.Values.ingress.certSecretName | quote }}
+  {{- end }}
+  rules:
+  {{- range $role, $object := .Values.roles }}
+    {{- range $name, $port := $object.ports }}
+      {{- if eq $port.type "http" }}
+  - host: "{{ $name }}.{{ $role }}.{{ $.Values.my.public }}"
+    http:
+      paths:
+      - backend:
+          serviceName: {{ $role | quote }}
+          servicePort: {{ $port.port }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}

@@ -1,0 +1,61 @@
+# Default values for my.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+name: my
+app: my
+namespace: my
+
+my:
+  user: my
+  uid: 1001
+  gid: 1001
+  image: imagerepo.net/cib/my
+  root: /opt/my
+  domain: svc.cluster.local
+  public: intra.net
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: openebs-jiva-default
+ingress:
+  class: nginx
+  certSecretName: tls
+  affinity: ''
+service:
+  type: LoadBalancer
+
+install:
+  port: 8080
+
+roles:
+  master:
+    init: "/tmp/my/init.sh --role master"
+    startup: "/tmp/my/root.sh --role master"
+    ports:
+      httpd:
+        type: http
+        port: 8080
+  agent:
+    replicas: 2
+    init: "/tmp/my/install.sh --role agent"
+    startup: "/tmp/my/root.sh --role agent"
+    ports:
+      httpd:
+        type: http
+        port: 8080
+    probes:
+      startupProbe:
+        tcpSocket:
+          port: httpd
+        failureThreshold: 30
+        periodSeconds: 60
+      readinessProbe:
+        tcpSocket:
+          port: httpd
+        periodSeconds: 30
+      livenessProbe:
+        tcpSocket:
+          port: httpd
+        periodSeconds: 30
+

@@ -1,0 +1,28 @@
+{{- range $role, $object := .Values.roles }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $role }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ $role }}
+    helm.sh/chart: {{ replace "+" "_" $.Chart.Version | printf "%s-%s" $.Chart.Name }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+  {{- range $name, $value := $.Values.service.labels }}
+    {{ $name }}: {{ $value | quote }}
+  {{- end }}
+spec:
+  type: {{ $.Values.service.type }}
+  ports:
+  {{- range $name, $port := $object.ports }}
+    - port: {{ $port.port }}
+      targetPort: {{ $port.port }}
+      protocol: TCP
+      name: {{ $name }}
+  {{- end }}
+  selector:
+    app.kubernetes.io/name: {{ $role }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+---
+{{- end }}

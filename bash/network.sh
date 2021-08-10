@@ -208,7 +208,7 @@ chkconfig iptables off
   #  Server:    192.168.1.219
   #  Address:  192.168.1.219#53
   #
-  #  Name:  rbl0105.sj2.proofpoint.com
+  #  Name:  rbl0105.intra.net
   #  Address: 192.168.0.251
 
 #scan for other computers (port sniff), their OSs and IP addresses:
