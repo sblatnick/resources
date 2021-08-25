@@ -18,6 +18,24 @@ class Result {
  * that can be calculated by summing exactly four of the five integers.
  */
     public static void miniMaxSum(List<Integer> arr) {
+        TreeMap<Integer, Integer> sorted = new TreeMap<Integer, Integer>();
+        for(Integer i : arr) {
+            int prev = sorted.containsKey(i) ? sorted.get(i) : 0;
+            sorted.put(i, prev + 1);
+        }
+        Long total = 0L;
+        for(Map.Entry<Integer, Integer> entry : sorted.entrySet()) {
+            for(int i=0; i < entry.getValue(); i++) {
+                total += entry.getKey();
+            }
+        }
+        Long min = total - sorted.lastKey();
+        Long max = total - sorted.firstKey();
+        System.out.println(min + " " + max);
+    }
+
+    //Only works if unique integers are passed
+    public static void uniqMiniMaxSum(List<Integer> arr) {
         TreeSet<Integer> sorted = new TreeSet<Integer>();
         for(Integer i : arr) {
              sorted.add(i);
@@ -31,7 +49,6 @@ class Result {
         Long max = total - array[0];
         System.out.println(min + " " + max);
     }
-
 }
 
 public class Solution {
@@ -48,5 +65,8 @@ public class Solution {
     }
 }
 
-//140638725 436257910 953274816 734065819 362748590
-//1673711044 2486347135
+//in:  140638725 436257910 953274816 734065819 362748590
+//out: 1673711044 2486347135
+
+//in:  5 5 5 5 5
+//out: 20 20
