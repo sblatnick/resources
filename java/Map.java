@@ -17,19 +17,21 @@ class Result {
  * Given five positive integers, find the minimum and maximum values 
  * that can be calculated by summing exactly four of the five integers.
  */
-    //Only works if unique integers are passed
+
     public static void miniMaxSum(List<Integer> arr) {
-        TreeSet<Integer> sorted = new TreeSet<Integer>();
+        TreeMap<Integer, Integer> sorted = new TreeMap<Integer, Integer>();
         for(Integer i : arr) {
-             sorted.add(i);
+            int prev = sorted.containsKey(i) ? sorted.get(i) : 0;
+            sorted.put(i, prev + 1);
         }
         Long total = 0L;
-        for(Integer i : sorted) {
-            total += i;
+        for(Map.Entry<Integer, Integer> entry : sorted.entrySet()) {
+            for(int i=0; i < entry.getValue(); i++) {
+                total += entry.getKey();
+            }
         }
-        Integer[] array = sorted.toArray(new Integer[sorted.size()]);
-        Long min = total - array[sorted.size() - 1];
-        Long max = total - array[0];
+        Long min = total - sorted.lastKey();
+        Long max = total - sorted.firstKey();
         System.out.println(min + " " + max);
     }
 }
@@ -52,5 +54,4 @@ public class Solution {
 //out: 1673711044 2486347135
 
 //in:  5 5 5 5 5
-//out: 0 0
-//ERROR
+//out: 20 20
