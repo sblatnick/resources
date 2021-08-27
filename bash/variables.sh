@@ -247,6 +247,11 @@ set -Eeuxo pipefail
     parent_script.sh --args --included
   #source: https://stackoverflow.com/questions/20572934/get-the-name-of-the-caller-script-in-bash-script
 
+  #Write `set -x` output to it's own log:
+  exec 3> $LOG
+  BASH_XTRACEFD=3
+  #resource: https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html
+
   #recursive stack trace:
     #!/bin/bash
     function stack() {

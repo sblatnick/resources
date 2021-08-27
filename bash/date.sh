@@ -3,7 +3,8 @@
 
 date [OPTION]... [+FORMAT]
 
--d|--date         display time described, not 'now' 
+-d|--date         display time described, not 'now'
+                    "5 days ago"
 -f|--file         like --date once for each line 
 -I|--iso-8601     output date/time in ISO 8601 format, optional precision:
                     'date' (default)

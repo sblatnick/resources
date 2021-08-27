@@ -90,6 +90,10 @@ alias tac="tail -r"
 tar -czvf archive.tar.gz ./directory
 #decompress:
 tar -zxvf filename.tgz
+#delete file from jar/zip:
+zip -d file.jar path/to/file.txt
+#add file:
+gzip -dc archive.tar.gz | tar -r internal/path/to/.external/path/to/file.txt | gzip > archive_new.tar.gz –
 
 #::::::::::::::::::::REGEX SEARCH/REPLACE::::::::::::::::::::
 

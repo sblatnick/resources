@@ -279,6 +279,9 @@
   #commit all changes to the local repo:
   git commit -a -m "<message>"
 
+  #undo last local commit without losing changes:
+  git reset HEAD~
+
 #squashing multiple commits into one:
 
   git checkout foo #check out the dev branch
