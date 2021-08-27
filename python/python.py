@@ -83,6 +83,13 @@ miniMaxSum(arr)
   #count matches
   list1.count("apple")
 
+  #range(i) creates list from 0 to < i
+  #range(start, stop, step)
+  x = range(6)
+  for n in x:
+    print(n)
+    #0, 1, 2, 3, 4, 5
+
 #Tuples
   #initialize:
   tuple1 = (1, 1, 5, 7, 9, 3)

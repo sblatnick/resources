@@ -1,0 +1,30 @@
+Some common services used for cloud computing
+
+  Cassandra
+  - noSQL = Tables without joining
+
+  Zookeeper
+  etcd
+  - Store hierarchical config
+  - directory structure
+  - like multi-dimensional hash/dictionary/map/associativeArray
+      A 2D Python dictionary: storage["first"]["second"] = "value"
+    Any depth easily using path instead of dictionaries:
+      /first/second/third/fourth = "value"
+
+  Kafka
+  - Event streams
+  - like log tailing, or queue
+  - read, write, store, and process events called "records"
+  - organized by "topics"
+  - Start: (Note: Soon, ZooKeeper will no longer be required by Apache Kafka.)
+    bin/zookeeper-server-start.sh config/zookeeper.properties
+    bin/kafka-server-start.sh config/server.properties
+  - Create topic
+    bin/kafka-topics.sh --create --topic quickstart-events --bootstrap-server localhost:9092
+  - Insert Events one per line, Ctrl-C to exit:
+    bin/kafka-console-producer.sh --topic quickstart-events --bootstrap-server localhost:9092
+  - Read (immediate, Ctrl-C to stop listening)
+    bin/kafka-console-consumer.sh --topic quickstart-events --from-beginning --bootstrap-server localhost:9092
+  - Kafka Connect = ingest data from external systems
+  - Kafka Streams = client library in Java/Scala
