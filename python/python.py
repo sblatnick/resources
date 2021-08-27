@@ -17,6 +17,42 @@ def miniMaxSum(arr):
 arr=list(map(int ,input().rstrip().split()))    
 miniMaxSum(arr)
 
+#Hackerrank Challenge
+#given list of integers, give ratio of parities
+summary = {
+    "pos" : 0,
+    "neg" : 0,
+    "nil" : 0
+}
+
+def parity(i):
+    if i < 0:
+        summary["neg"] += 1
+    elif i > 0:
+        summary["pos"] += 1
+    else:
+        summary["nil"] += 1
+
+def plusMinus(arr):
+    for i in arr:
+        parity(i)
+    print("%0.6f" % (summary["pos"] / len(arr)))
+    print("%0.6f" % (summary["neg"] / len(arr)))
+    print("%0.6f" % (summary["nil"] / len(arr)))
+
+#Hackerrank Challenge
+#convert AM/PM to military time
+def timeConversion(s):
+    s = re.sub("AM$", "", s)
+    (s, i) = re.subn("PM$", "", s)
+    if i > 0:
+        hour = int(s[0:2]) + 12
+        if hour < 24:
+            s = re.sub("^\d\d", str(hour), s)
+    else:
+        s = re.sub("^12", "00", s)
+    return s
+
 
 #Help below derived from https://www.w3schools.com/python/default.asp
 
