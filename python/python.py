@@ -53,6 +53,35 @@ def timeConversion(s):
         s = re.sub("^12", "00", s)
     return s
 
+#Hackerrank Challenge: offset k characters
+
+# The function accepts following parameters:
+#  1. STRING s
+#  2. INTEGER k
+#
+
+# a = 97, z = 122
+# A = 65, Z = 90
+
+def caesarCipher(s, k):
+    offset = (k % 26)
+    result = ""
+    print(ord("Z"))
+    for l in s:
+        if l.isalpha():
+            i = ord(l)
+            if i < 91:
+                z = 90
+            else:
+                z = 122
+            i += offset
+            if i > z:
+                i -= 26
+            result += chr(i)
+        else:
+            result += l
+    return result
+#If k == 1, a -> b and Z -> A
 
 #Help below derived from https://www.w3schools.com/python/default.asp
 
