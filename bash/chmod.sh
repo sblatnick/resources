@@ -61,6 +61,7 @@ install -m 640 -o user -g group /dev/null /var/log/example
 #Additional users/groups and permissions
 ls -l $file
   -rw-r--r-+ #+ means additional permissions through ACL
+chacl
 getfacl $file
   # file: $file   #
   # owner: root
@@ -72,6 +73,8 @@ getfacl $file
   mask::rwx       #permissions granted to additional user/groups
   other:---
 setfacl -m u:john:rw,g:accounts:rwx $file
+
+chacl u::rwx,g::r-x,o::r--,u:bob:r--,m::r-x file1 file2
 
 #Defaults:
 setfacl -m default:u:john:rw,g:accounts:rwx $directory

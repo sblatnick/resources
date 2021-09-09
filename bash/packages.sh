@@ -77,6 +77,9 @@
   rpm -qp --scripts package.prm
   rpm -q --scripts package
 
+  #remove from rpmdb but not from disk:
+  rpm -e --justdb package
+
   #output version of rpm only:
   rpm --qf "%{VERSION}" -q package
 
