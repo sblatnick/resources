@@ -87,9 +87,9 @@ def caesarCipher(s, k):
 
 #Collection   ordered   changeable  duplicates
 #List         y         y           y
+#Dictionary   y         y           n
 #Tuple        y         n           y
 #Set          n         n           n
-#Dictionary   y         y           n
 
 #Lists
   #Initialize:
@@ -154,92 +154,6 @@ def caesarCipher(s, k):
   for n in x:
     print(n)
     #0, 1, 2, 3, 4, 5
-
-#Tuples
-  #initialize:
-  tuple1 = (1, 1, 5, 7, 9, 3)
-
-  #get
-  tuple1[0]
-  #unpack
-  (green, yellow, red) = fruits
-
-  #work around to modify by casting into a list
-  y = list(x)
-  y[1] = "kiwi"
-  x = tuple(y)
-
-  #loops
-  for x in thistuple:
-    print(x)
-  for i in range(len(thistuple)):
-    print(thistuple[i])
-  i = 0
-  while i < len(thistuple):
-    print(thistuple[i])
-    i = i + 1
-
-  #join
-  tuple3 = tuple1 + tuple2
-  tuple1.update(tuple2)
-
-  #multiply
-  mytuple = fruits * 2
-
-  #count matches
-  mytuple.count("apple")
-  #find first index of value (exception if not found)
-  mytuple.index("apple")
-
-#Sets
-  #initialize
-  myset = {"apple", "banana", "cherry"}
-  #order not preserved
-  #duplicates ignored
-  #mixed types:
-  set1 = {"abc", 34, True, 40, "male"}
-
-  #test:
-  "abc" in set1
-
-  #loop:
-  for x in thisset:
-    print(x)
-
-  #add
-  thisset.add("orange")
-
-  #remove
-  thisset.remove("orange") #error if not present
-  thisset.discard("orange") #no error
-
-  #remove last
-  thisset.pop() #no order, so you don't know which
-
-  #join
-  thisset.update(tropical)
-  set3 = set1.union(set2)
-
-  #intersection
-  z = x.intersection_update(y)
-
-  #non-intersection
-  z = x.symmetric_difference(y)
-
-  #clear
-  thisset.clear()
-
-  #delete
-  del thisset
-
-  #misc
-  copy()
-  difference()
-  difference_update()
-  isdisjoint()
-  issubset()
-  issuperset()
-  symmetric_difference_update()
 
 #Dictionaries
   #initialize
@@ -335,3 +249,93 @@ def caesarCipher(s, k):
     print(x)
   except:
     print("An exception occurred")
+
+#Less used data structures
+  #Tuples
+    #initialize:
+    tuple1 = (1, 1, 5, 7, 9, 3)
+
+    #get
+    tuple1[0]
+    #unpack
+    (green, yellow, red) = fruits
+
+    #work around to modify by casting into a list
+    y = list(x)
+    y[1] = "kiwi"
+    x = tuple(y)
+
+    #loops
+    for x in thistuple:
+      print(x)
+    for i in range(len(thistuple)):
+      print(thistuple[i])
+    i = 0
+    while i < len(thistuple):
+      print(thistuple[i])
+      i = i + 1
+
+    #join
+    tuple3 = tuple1 + tuple2
+    tuple1.update(tuple2)
+
+    #multiply
+    mytuple = fruits * 2
+
+    #count matches
+    mytuple.count("apple")
+    #find first index of value (exception if not found)
+    mytuple.index("apple")
+
+  #Sets
+    #initialize
+    myset = {"apple", "banana", "cherry"}
+    #order not preserved
+    #duplicates ignored
+    #mixed types:
+    set1 = {"abc", 34, True, 40, "male"}
+
+    #test:
+    "abc" in set1
+
+    #loop:
+    for x in thisset:
+      print(x)
+
+    #add
+    thisset.add("orange")
+
+    #remove
+    thisset.remove("orange") #error if not present
+    thisset.discard("orange") #no error
+
+    #remove last
+    thisset.pop() #no order, so you don't know which
+
+    #join
+    thisset.update(tropical)
+    set3 = set1.union(set2)
+
+    #intersection
+    z = x.intersection_update(y)
+
+    #non-intersection
+    z = x.symmetric_difference(y)
+
+    #clear
+    thisset.clear()
+
+    #delete
+    del thisset
+
+    #misc
+    copy()
+    difference()
+    difference_update()
+    isdisjoint()
+    issubset()
+    issuperset()
+    symmetric_difference_update()
+
+
+
