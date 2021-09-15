@@ -238,7 +238,8 @@ set -Eeuxo pipefail
   BASH_LINENO:           0
   BASH_SOURCE:           ./script.sh
 
-
+  #Full path to script:
+    readlink -f ${BASH_SOURCE}
   callee
     script.sh 0
   PARENT_COMMAND=$(ps -o comm= $PPID)
