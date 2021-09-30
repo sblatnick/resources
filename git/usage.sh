@@ -13,6 +13,10 @@
   git whatchanged --invert-grep --author=$USER directory #get everyone else's whatchanged logs for the specified directory
   git -C /path #run as if in the git directory
 
+#create repo:
+  git init
+  git init --bare #usefull for when you want no working copy for a server to trigger autodeploy
+
 #diff
   #setup meld as a diff tool:
   git config --global diff.tool meld

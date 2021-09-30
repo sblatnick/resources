@@ -135,6 +135,7 @@ sed
   #sed inplace replacement:
   sed 's/replace/regex/' -i file.txt
 
+  #REPEAT LAST PATTERN
   #replace matching lines without passing the pattern twice:
   sed -n "/${remote}\// s//  /p"
   #"origin/master" -> "  master"

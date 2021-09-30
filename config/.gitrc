@@ -311,6 +311,24 @@ function gitex() {
     tags) ##
         $wgit --no-pager log --tags --simplify-by-decoration --pretty="format:%ai %d"
       ;;
+    peek) #[branch] [file]#Look at other branches without switching
+        shift
+        branch=$1
+        shift
+        file=$1
+        shift
+        if [ -z "${branch}" ];then
+          gitex co
+          return $?
+        fi
+        if [ -z "${file}" ];then
+          $wgit diff HEAD..${branch} --name-only
+          return $?
+        else
+          $wgit show ${branch}:${file}
+          return $?
+        fi
+      ;;
     generate|gen) #[files]#generate a consolidated diff
         shift
         local branch=$($wgit rev-parse --abbrev-ref HEAD)
