@@ -371,7 +371,7 @@ function gitex() {
           $wgit cherry-pick -n $commit -Xtheirs $@
         done
 
-        git --no-pager diff -U10000 --cached > $diff
+        $wgit --no-pager diff -U10000 --cached > $diff
         echo -e "\033[32mPatch output to: \033[0m ${diff}"
 
         echo -e "\033[33mcleaning up\033[0m"
@@ -416,6 +416,17 @@ function gitex() {
     flush|force) ##force push to origin with tags
         local branch=$($wgit rev-parse --abbrev-ref HEAD)
         $wgit push origin --force +${branch} --tags
+      ;;
+    restore|res) #[sha]#List/Restore deleted files
+        shift
+        if [ -z "${1}" ];then
+          $wgit --no-pager log --diff-filter=D --oneline --summary
+        else
+          while [ -n "$1" ]; do
+            $wgit checkout ${1}^ -- $($wgit --no-pager log $1 --diff-filter=D --oneline --summary | grep "delete mode " | cut -d' ' -f5- | tr $'\n' ' ')
+            shift
+          done
+        fi
       ;;
     amend) #[sha]#amend an old commit message
         shift
