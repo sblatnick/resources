@@ -83,6 +83,10 @@ def caesarCipher(s, k):
     return result
 #If k == 1, a -> b and Z -> A
 
+#JSON
+  #compact
+  print(json.dumps(result, separators=(',', ':')))
+
 #Help below derived from https://www.w3schools.com/python/default.asp
 
 #Collection   ordered   changeable  duplicates
