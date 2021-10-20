@@ -51,11 +51,17 @@ function pipe() {
       result=""
       while [ -n "$1" ]; do
         if [ -f $1 ];then
-          cat $1 |
-          while read pipe
-          do
-            ${ACTION-echo} "$pipe"
-          done
+          if [[ "line" == "${TYPE-line}" ]];then
+            while IFS=$'\n' read pipe
+            do
+              ${ACTION-echo} "$pipe"
+            done < $1
+          else
+            while IFS=$'\n' read pipe
+            do
+              result="${result}${pipe}"
+            done < $1
+          fi
         else
           if [[ "line" == "${TYPE-line}" ]];then
             ${ACTION-echo} "$1"
