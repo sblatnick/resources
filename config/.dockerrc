@@ -176,7 +176,7 @@ EOF
           return
         ;;
       list) ##list Dockerfiles in current context
-          ls -1 $path | sed 's/\.df//'
+          cd ${path} && ls -1 */Dockerfile *.df 2>/dev/null | sed 's/\.df//;s/\/Dockerfile//'
           return
         ;;
       img|build|make) #[name]#Create docker image
