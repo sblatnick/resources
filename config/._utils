@@ -48,6 +48,7 @@ function pipe() {
       echo -e "Usage: stdin | ${BIN-pipe} [lines|file]"
       return
     else
+      result=""
       while [ -n "$1" ]; do
         if [ -f $1 ];then
           cat $1 |
@@ -56,10 +57,17 @@ function pipe() {
             ${ACTION-echo} "$pipe"
           done
         else
-          ${ACTION-echo} "$1"
+          if [[ "line" == "${TYPE-line}" ]];then
+            ${ACTION-echo} "$1"
+          else
+            result="${result}${1}"
+          fi
         fi
         shift
       done
+      if [ -n "${result}" ];then
+        ${ACTION-echo} "${result}"
+      fi
     fi
   else
     if [[ "line" == "${TYPE-line}" ]];then
@@ -123,10 +131,10 @@ function encrypt() {
     warn "Key ~/.ssh/id_rsa.pub.pem doesn't exist, creating..."
     >&2 openssl rsa -in ~/.ssh/id_rsa -pubout > ~/.ssh/id_rsa.pub.pem
   fi
-  BIN='encrypt' ACTION='enc' pipe #FIXME: $@
+  BIN='encrypt' ACTION='enc' pipe $@
 }
 function decrypt() {
-  BIN='decrypt' ACTION='dec' TYPE='stream' pipe
+  BIN='decrypt' ACTION='dec' TYPE='stream' pipe $@
 }
 
 function has() {
