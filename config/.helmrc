@@ -10,7 +10,7 @@ function helmex_state() {
   export HELMEX_CONTEXT=$(kubectl config current-context)
   export HELMEX_HOME=$(sit "contexts.${HELMEX_CONTEXT}.path")
   if [[ "${HELMEX_HOME}" != 'null' ]];then
-    local ignore=$(cd ${HELMEX_HOME}; ls -1 */.helm-ignore | sed 's~/\.helm-ignore$~~')
+    local ignore=$(cd ${HELMEX_HOME}; ls -1 */.helm-ignore 2>/dev/null | sed 's~/\.helm-ignore$~~')
     local charts=$(cd ${HELMEX_HOME};ls -1 | sed 's/\.yaml$//' | sort -u)
     export HELMEX_CHARTS=$(echo ${charts} ${ignore} | tr ' ' $'\n' | sort | uniq -u)
   else

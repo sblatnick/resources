@@ -62,10 +62,19 @@ function pipe() {
       done
     fi
   else
-    while IFS= read pipe
-    do
-      ${ACTION-echo} "$pipe"
-    done
+    if [[ "line" == "${TYPE-line}" ]];then
+      while IFS=$'\n' read pipe
+      do
+        ${ACTION-echo} "$pipe"
+      done
+    else
+      result=""
+      while IFS=$'\n' read pipe
+      do
+        result="${result}${pipe}"
+      done
+      ${ACTION-echo} "${result}"
+    fi
   fi
 }
 
@@ -103,8 +112,12 @@ function big() {
 }
 
 function enc() {
-  echo $@ | openssl rsautl -encrypt -pubin -inkey ~/.ssh/id_rsa.pub.pem
+  echo "$@" | openssl rsautl -encrypt -pubin -inkey ~/.ssh/id_rsa.pub.pem | base64
 }
+function dec() {
+  echo "$@" | base64 -d | openssl rsautl -decrypt -inkey ~/.ssh/id_rsa
+}
+
 function encrypt() {
   if [ ! -f ~/.ssh/id_rsa.pub.pem ];then
     warn "Key ~/.ssh/id_rsa.pub.pem doesn't exist, creating..."
@@ -113,15 +126,7 @@ function encrypt() {
   BIN='encrypt' ACTION='enc' pipe #FIXME: $@
 }
 function decrypt() {
-  if [ ! -f ~/.ssh/id_rsa.pub.pem ];then
-    warn "Key ~/.ssh/id_rsa.pub.pem doesn't exist, creating..."
-    openssl rsa -in ~/.ssh/id_rsa -pubout > ~/.ssh/id_rsa.pub.pem
-  fi
-  if [ "$#" -lt 1 ];then
-    echo -e "Usage: decrypt [file]"
-    return
-  fi
-  cat $1 | openssl rsautl -decrypt -inkey ~/.ssh/id_rsa
+  BIN='decrypt' ACTION='dec' TYPE='stream' pipe
 }
 
 function has() {
