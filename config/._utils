@@ -185,6 +185,17 @@ function stack() {
   fi
 }
 
+function export_all() {
+  if [ "$#" -lt 1 ];then
+    echo -e "Usage: export_all [file]"
+    return
+  fi
+  for var in $(grep -o '^[[:space:]]*[A-Za-z_]*=' ${1} | sed 's/=$//;s/^ *//')
+  do
+    export $var
+  done
+}
+
 #--------------------------------DOCUMENTATION---------------------------------#
 
 function document() {
