@@ -43,6 +43,30 @@ class Kotlin {
       println(multiply(2, 4))
     }
 
+  //Functions as parameters: combine()
+    fun <T, R> Collection<T>.fold(
+      initial: R,
+      combine: (acc: R, nextElement: T) -> R
+    ): R {
+      var accumulator: R = initial
+      for (element: T in this) {
+        accumulator = combine(accumulator, element)
+      }
+      return accumulator
+    }
+  //Lambda:
+  items.fold(0, { 
+    //parameters ->
+    acc: Int, i: Int ->
+    //contents
+    print("acc = $acc, i = $i, ") 
+    val result = acc + i
+    println("result = $result")
+    //last expression in a lambda is the return value:
+    result
+  })
+
+
   //Infix = member functions on single parameter, without . and ()
     fun main() {
 
@@ -149,6 +173,13 @@ class Kotlin {
 
 
   //Delegated Properties:
+
+    //read-only:
+    //- thisRef same or supertype of the owning class
+    //- property must be KProperty<*> or supertype
+    //mutable:
+    //- setValue(thisRef: Owner, property: KProperty<*>, value: Any?)
+
     //Define:
     class Example {
       var p: String by Delegate()
@@ -183,12 +214,15 @@ class Kotlin {
           Hello
         println(lazyValue)
           Hello
+      //lazy variable = only executed at most once if the variable is accessed
+        val memoizedFoo by lazy(computeFoo)
       //observable = handler callback after update
         import kotlin.properties.Delegates
 
         class User {
             var name: String by Delegates.observable("<no name>") {
-                prop, old, new -> println("$old -> $new")
+                prop, old, new ->
+                println("$old -> $new")
             }
         }
 
@@ -202,7 +236,19 @@ class Kotlin {
       var delegatedToMember: Int by this::memberInt
       var delegatedToTopLevel: Int by ::topLevelInt
       val delegatedToAnotherClass: Int by anotherClassInstance::anotherClassInt
-
-
+    //Map storage
+      class User(val map: Map<String, Any?>) {
+        val name: String by map
+        val age: Int     by map
+      }
+      val user = User(mapOf(
+        "name" to "John Doe",
+        "age"  to 25
+      ))
+      println(user.name) // Prints "John Doe"
+      println(user.age)  // Prints 25
+    //Extension interface:
+      //check the consistency of the property upon its initialization:
+      provideDelegate(thisRef: Example, prop: KProperty<*>): ReadOnlyProperty<Example, T>
 }
 
