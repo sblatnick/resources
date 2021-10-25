@@ -43,6 +43,12 @@ class Kotlin {
       println(multiply(2, 4))
     }
 
+  //Function Variable # of Parameters:
+    fun printAll(vararg messages: String) {                            // 1
+      for (m in messages) println(m)
+    }
+    printAll("Hello", "Hallo", "Salut", "Hola")
+
   //Functions as parameters: combine()
     fun <T, R> Collection<T>.fold(
       initial: R,
@@ -250,5 +256,43 @@ class Kotlin {
     //Extension interface:
       //check the consistency of the property upon its initialization:
       provideDelegate(thisRef: Example, prop: KProperty<*>): ReadOnlyProperty<Example, T>
+
+  //Variables:
+    //Mutable:
+    var a: String = "initial"
+    //Immutable:
+    val b: Int = 1
+    //Inferred type:
+    val c = 3
+    //Declared not initialized:
+    var e: Int
+    //"Variable 'e' must be initialized":
+    println(e)
+
+  //Null:
+    var neverNull: String = "This can't be null"
+    neverNull = null //error at compile
+    //Inferred type also not nullable:
+    var neverNull = "This can't be null"
+    neverNull = null //error at compile
+
+    //Use ? to indicate variable can contain null:
+    var nullable: String? = "You can keep a null here"
+    nullable = null
+
+    //Parameters:
+    fun strLength(notNull: String): Int {
+      return notNull.length
+    }
+    fun describeString(maybeString: String?): String {              // 1
+      if (maybeString != null && maybeString.length > 0) {        // 2
+        return "String of length ${maybeString.length}"
+      } else {
+        return "Empty or null string"                           // 3
+      }
+    }
+    //Compilation errors with invalid usage:
+    strLength(nullable)
+
 }
 
