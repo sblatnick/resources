@@ -6,60 +6,69 @@ class Kotlin {
   //Source: https://play.kotlinlang.org/byExample/01_introduction/01_Hello%20world
 
   //Functions:
-    //parameter of type String and returns Unit (no return value).
-    fun printMessage(message: String): Unit {
-      println(message)
-    }
-
-    //second optional parameter with default value "Info"
-    //return type is omitted, meanings Unit
-    fun printMessageWithPrefix(message: String, prefix: String = "Info") {
-      println("[$prefix] $message")
-    }
-
-    fun sum(x: Int, y: Int): Int {
-      return x + y
-    }
-
-    //A single-expression function that returns an integer (inferred).
-    fun multiply(x: Int, y: Int) = x * y
-
-  //Function Usage:
-
-    fun main() {
-      println("Hello, World!")
-
-      //Calls the first function with the argument Hello.
-      printMessage("Hello")
-      //Calls the function with two parameters, passing values for both of them.
-      printMessageWithPrefix("Hello", "Log")
-      //Calls the same function omitting the second one. The default value Info is used.
-      printMessageWithPrefix("Hello")
-      //Calls the same function using named arguments and changing the order of the arguments.
-      printMessageWithPrefix(prefix = "Log", message = "Hello")
-      //Prints the result of the sum function call.
-      println(sum(1, 2))
-      //Prints the result of the multiply function call.
-      println(multiply(2, 4))
-    }
-
-  //Function Variable # of Parameters:
-    fun printAll(vararg messages: String) {                            // 1
-      for (m in messages) println(m)
-    }
-    printAll("Hello", "Hallo", "Salut", "Hola")
-
-  //Functions as parameters: combine()
-    fun <T, R> Collection<T>.fold(
-      initial: R,
-      combine: (acc: R, nextElement: T) -> R
-    ): R {
-      var accumulator: R = initial
-      for (element: T in this) {
-        accumulator = combine(accumulator, element)
+    //Definitions:
+      //parameter of type String and returns Unit (no return value).
+      fun printMessage(message: String): Unit {
+        println(message)
       }
-      return accumulator
-    }
+
+      //second optional parameter with default value "Info"
+      //return type is omitted, meanings Unit
+      fun printMessageWithPrefix(message: String, prefix: String = "Info") {
+        println("[$prefix] $message")
+      }
+
+      fun sum(x: Int, y: Int): Int {
+        return x + y
+      }
+
+      //A single-expression function that returns an integer (inferred).
+      fun multiply(x: Int, y: Int) = x * y
+
+    //Shorthand:
+      fun push(element: E) = elements.add(element)
+
+    //Usage:
+
+      fun main() {
+        println("Hello, World!")
+
+        //Calls the first function with the argument Hello.
+        printMessage("Hello")
+        //Calls the function with two parameters, passing values for both of them.
+        printMessageWithPrefix("Hello", "Log")
+        //Calls the same function omitting the second one. The default value Info is used.
+        printMessageWithPrefix("Hello")
+        //Calls the same function using named arguments and changing the order of the arguments.
+        printMessageWithPrefix(prefix = "Log", message = "Hello")
+        //Prints the result of the sum function call.
+        println(sum(1, 2))
+        //Prints the result of the multiply function call.
+        println(multiply(2, 4))
+      }
+
+    //Variable # of Parameters:
+      fun printAll(vararg messages: String) {                            // 1
+        for (m in messages) println(m)
+      }
+      printAll("Hello", "Hallo", "Salut", "Hola")
+
+    //Multiple returned variables ("Destructuring Declarations"):
+      val (_, emailAddress) = getUser()
+      //_ tells the compiler not to warn about unused variable
+
+    //Functions as parameters: combine()
+      fun <T, R> Collection<T>.fold(
+        initial: R,
+        combine: (acc: R, nextElement: T) -> R
+      ): R {
+        var accumulator: R = initial
+        for (element: T in this) {
+          accumulator = combine(accumulator, element)
+        }
+        return accumulator
+      }
+
   //Lambda:
   items.fold(0, { 
     //parameters ->
@@ -294,5 +303,39 @@ class Kotlin {
     //Compilation errors with invalid usage:
     strLength(nullable)
 
+  //Scope Functions:
+  // object.func { customName ->
+  //   logic(customName) || logic(it)
+  //   return last expression
+  // }
+
+    //let:
+      val empty = "example".let {
+        println(it)
+        it.isEmpty()
+      }
+      strOne?.let { firstString ->       // 5 
+        strTwo?.let { secondString ->
+          println("$firstString : $secondString")
+        }
+      }
+    //run: passes object as `this`
+      ns?.run {
+        isEmpty()
+      }
+    //with:
+      // instead of repeating the object:
+      println("${configuration.host}:${configuration.port}")
+      with(configuration) {
+        println("$host:$port")
+      }
+    //apply: returns object when done, object is `this`
+      object.apply {
+        name = "Example"
+      }
+    //also: returns object, but passable as `it`:
+      object.also {
+        example(it)
+      }
 }
 
