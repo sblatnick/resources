@@ -183,7 +183,7 @@ function gitex() {
         fi
 
         #specific remote branch?
-        if [ "${branch}" != "${branch##*/}" ];then
+        if $wgit remote | grep -q "^${branch%%/*}\$";then
           echo -e "\033[33mtrack specific remote branch ${branch}\033[0m"
           $wgit checkout --track ${branch}
           return $?
@@ -417,7 +417,7 @@ function gitex() {
         local branch=$($wgit rev-parse --abbrev-ref HEAD)
         $wgit push origin --force +${branch} --tags
       ;;
-    restore|res) #[sha]#List/Restore deleted files
+    res) #[sha]#List/Restore deleted files
         shift
         if [ -z "${1}" ];then
           $wgit --no-pager log --diff-filter=D --oneline --summary

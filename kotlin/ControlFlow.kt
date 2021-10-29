@@ -27,6 +27,14 @@
       println("$name is $age years old")          
     }
 
+  //forEach:
+    map.forEach {
+        k, v -> println("key $k: value $v")
+    }
+    "1,2,3".split(",").forEach {
+      println("$it")
+    }
+
   //while
     while (cakesEaten < 5) {
       eatACake()

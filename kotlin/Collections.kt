@@ -29,7 +29,7 @@
     map.containsKey(key)
 
     map.forEach {
-        k, v -> println("ID $k: credit $v")
+        k, v -> println("key $k: value $v")
     }
     map.withDefault { k -> k.length }
 
