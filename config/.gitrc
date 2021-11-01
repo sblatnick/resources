@@ -167,18 +167,18 @@ function gitex() {
         fi
 
         #local branch?
-        b=$($wgit --no-pager branch --list ${branch##*/})
+        b=$($wgit --no-pager branch --list ${branch})
         if [ -n "$b" ];then
-          echo -e "\033[33mcheckout local branch ${branch##*/}\033[0m"
-          $wgit checkout ${branch##*/}
+          echo -e "\033[33mcheckout local branch ${branch}\033[0m"
+          $wgit checkout ${branch}
           return $?
         fi
 
         #svn branch?
         url=$($wgit config --get svn-remote.svn.url)
         if [ -n "${url}" ];then
-          echo -e "\033[33mcheckout svn branch ${branch##*/}\033[0m"
-          git svn co ${branch##*/}
+          echo -e "\033[33mcheckout svn branch ${branch}\033[0m"
+          git svn co ${branch}
           return $?
         fi
 

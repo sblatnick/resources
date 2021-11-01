@@ -17,18 +17,19 @@ function doc_ctx() {
 }
 function docrc() {
   if [ "$#" -lt 1 ];then
-    echo -e "Usage: docrc [name] [key] [value]"
+    echo -e "Usage: docrc [key] [value]"
     return
   fi
 
-  target=$1
-  shift
-  key=$1
-  shift
-  value=$1
-
   rc=$(sit contexts[current].path)/.dockerrc
-  result=$(SIT_TMP=${rc} sit images.${target}.${key} ${value})
+  if [ ! -f ${rc} ];then
+    echo '{ }' > ${rc}
+  fi
+
+  key=$1
+  value=$2
+
+  result=$(SIT_TMP=${rc} sit ${key} ${value})
   if [ $? -gt 0 ];then
     return 1
   fi
@@ -103,59 +104,50 @@ function docker_extentions() {
 
   #load defaults
   context=$(sit 'current')
-  repo=$(coalesce "$(sit 'repo')" '')
-  user=$(coalesce "$(sit 'user')" 'root')
+  repo=$(coalesce "$(sit 'repo')" "$(docrc 'repo')" '')
+  user=$(coalesce "$(sit 'user')" "$(docrc 'user')" 'root')
   path=$(sit contexts[current].path)
 
   #------------------------------------MAIN--------------------------------------#
   action=$1
   shift
+  target=${1%%:*}
+  start=$2
+  version=${1/$target/}
+  version=${version#:}
+  version=${version:=0.1}
 
-  while
-    target=${1%%:*}
-    start=$2
-    version=${1/$target/}
-    version=${version#:}
-    version=${version:=0.1}
+  if [ -f ${path}/${target} ];then
+    df=${path}/${target}
+  elif [ -f ${path}/${target}.df ];then
+    df=${path}/${target}.df
+  elif [ -f ${path}/${target}/Dockerfile ];then
+    df=${path}/${target}/Dockerfile
+  else
+    df=${path}/${target}.df
+  fi
 
-    if [ -f ${path}/${target} ];then
-      df=${path}/${target}
-    elif [ -f ${path}/${target}.df ];then
-      df=${path}/${target}.df
-    elif [ -f ${path}/${target}/Dockerfile ];then
-      df=${path}/${target}/Dockerfile
-    else
-      df=${path}/${target}.df
-    fi
+  img=${target}
+  stages=$(grep -E 'FROM .* AS .*' ${df} 2>/dev/null | sed -n 's/^.* AS //p')
+  starget=''
 
-    img=${target}
-    stages=$(grep -E 'FROM .* AS .*' ${df} 2>/dev/null | sed -n 's/^.* AS //p')
-    starget=''
-
-    case "$action" in
-      help|'') ##print this usage information
-          echo -e "\033[1mDocker Extentions:\033[0m doc [\033[34;1mactions\033[0m]"
-          document ${BASH_SOURCE}
-          echo ""
-          return
-        ;;
-      set) #[key] [value]#Set rc defaults such as: repo, user
-          key=$target
-          shift
-          value=$@
-          sit $key $value
-        ;;
-      sit) #[key] [values]#Set/Get rc for the current context (alias to docrc)
-          key=$target
-          shift
-          value=$@
-          docrc ${target} $key $value
-        ;;
-      edit|new) #[name]#open Dockerfile in current context, create new one if not present
-          if [ -f ${df} ];then
-            $EDITOR ${df}
-          else
-            cat > ${df} << EOF
+  case "$action" in
+    help|'') ##print this usage information
+        echo -e "\033[1mDocker Extentions:\033[0m doc [\033[34;1mactions\033[0m]"
+        document ${BASH_SOURCE}
+        echo ""
+      ;;
+    set) #[key] [value]#Set rc defaults such as: repo, user
+        sit ${1} ${2}
+      ;;
+    sit) #[key] [value]#Set/Get rc for the current context (alias to docrc)
+        docrc ${1} ${2}
+      ;;
+    edit|new) #[name]#open Dockerfile in current context, create new one if not present
+        if [ -f ${df} ];then
+          $EDITOR ${df}
+        else
+          cat > ${df} << EOF
 FROM ${repo}centos:6
 USER ${user-root}
 
@@ -171,122 +163,109 @@ RUN \\
 
 ENTRYPOINT /bin/bash
 EOF
-            $EDITOR ${df}
-          fi
-          return
-        ;;
-      list) ##list Dockerfiles in current context
-          cd ${path} && ls -1 */Dockerfile *.df 2>/dev/null | sed 's/\.df//;s/\/Dockerfile//'
-          return
-        ;;
-      img|build|make) #[name]#Create docker image
-          if [ -f ${df} ];then
-            while read stage
-            do
-              if [ -n "${stage}" ];then
-                if [[ -n "${start}" && "${stage}" != "${start}" ]];then
-                  continue
-                fi
-                echo -en "\033[32;1mSTAGE: ${stage}\033[0m "
-                starget="--target ${stage}"
-                target="${img}/${stage}"
-                #FIXME: .dockerignore can't exclude files from other stages :-(
-                #include=$(cd ${path}/;sed -n "/FROM .* AS ${stage}\$/,/FROM .* AS / {s/ [^ ]*\$//;s~/[^/]*\$~~;s/ *\(COPY\|ADD\) //p}" ${df} | tr $'\n' '|')
-                #$(cd ${path}/;ls -1d * | grep -Ev "^(${include}Dockerfile)\$" > .dockerignore)
+          $EDITOR ${df}
+        fi
+      ;;
+    list) ##list Dockerfiles in current context
+        echo "$(cd ${path} && ls -1 */Dockerfile *.df 2>/dev/null | sed 's/\.df//;s/\/Dockerfile//')"
+      ;;
+    img|build|make) #[name]#Create docker image
+        if [ -f ${df} ];then
+          while read stage
+          do
+            if [ -n "${stage}" ];then
+              if [[ -n "${start}" && "${stage}" != "${start}" ]];then
+                continue
               fi
+              echo -en "\033[32;1mSTAGE: ${stage}\033[0m "
+              starget="--target ${stage}"
+              target="${img}/${stage}"
+            fi
 
-              echo -e "\033[32mbuilding ${target}:${version} image\033[0m"
-              eval docker build \
-                ${starget} -t ${repo}${target}:${version} \
-                -f ${df} \
-                ${path}/
-              #rm ${path}/.dockerignore
-              #echo -e "\033[32mpush ${target}:${version} image\033[0m"
-              #docker push ${repo}${target}:${version}
-                 
-            done < <(echo "${stages}")
-          else
-            echo -e "\033[33mERROR\033[0m: no such target: ${target}:${version}"
-            return 1
-          fi
-        ;;
-      run|dry|gui) #[application]#run a temporary container locally, running gui app, or display the command
-          if [ -f ${df} ];then
-            volumes=$(docrc ${target} 'volumes' | sed "s/~/${HOME//\//\\/}/" | sed '/^$/d;s/^/-v /')
-            cwd=$(docrc ${target} 'cwd')
-            if [ -n "${stages}" ];then
-              target=${img}/$(echo "${stages}" | tail -n 1)
-            fi
-          else
-            volumes=""
-            echo -e "\033[34mWARN\033[0m: no dockerfile: ${df} (${target}:${version}), attempting to continue anyway"
-          fi
-          cwd=${cwd:-/root}
-          display=''
-          dry=''
-          after='return'
-          if [[ "${action}" == "dry" ]];then
-            echo -e "\033[33mentering ${target}:${version}\033[0m (dry)"
-            dry="echo"
-            after=''
-          else
-            if [[ "${action}" == "gui" ]];then
-              if [ -n "${start}" ];then
-                echo -e "\033[33mexecuting app \"${start}\" in ${target}:${version}\033[0m"
-                start="-c \"${start}\"" #FIXME
-              else
-                echo -e "\033[33mentering ${target}:${version} with X11 forwarded\033[0m"
-              fi
-              display="-e DISPLAY=host.docker.internal:0"
-              xhost + 127.0.0.1
-              open -a XQuartz #Mac OSX only
-              socat TCP-LISTEN:6000,reuseaddr,fork UNIX-CLIENT:\"$DISPLAY\" &
-              pid=$!
-              after="kill $pid"
-            else
-              echo -e "\033[33mentering ${target}:${version}\033[0m"
-            fi
-          fi
-          $dry docker run --privileged=true -it --rm ${volumes} \
-            -h ${target} \
-            --name ${target} \
-            -w ${cwd} \
-            -P \
-            ${display} \
-            ${repo}${target}:${version} /bin/bash ${start}
-          #"--privileged=true" for loop devices and mounting an iso
-          $after
-          return
-        ;;
-      pull|push) ##pull/push image to repo
-          if [ -f ${df} ];then
-            docker ${action} ${repo}${target}:${version}
-          else
-            echo -e "\033[33mERROR\033[0m: no such target: ${target}:${version}"
-            return 1
-          fi
-        ;;
-      clean) ##remove exited containers and dangling images
-          docker rm -v $(docker ps -a -q -f status=exited)
-          docker rmi $(docker images -q -f dangling=true)
-        ;;
-      cleanvol) ##remove dangling volumes (dangerous)
-          docker volume rm $(docker volume ls -q -f dangling=true)
-        ;;
-      context|ctx|go) #[$context|$dockerfile|$action]#context handling
-          doc_context $@
-          return
-        ;;
-      *)
-          echo -e "\033[33mERROR\033[0m: invalid action ${action}"
+            echo -e "\033[32mbuilding ${target}:${version} image\033[0m"
+            eval docker build \
+              ${starget} -t ${repo}${target}:${version} \
+              -f ${df} \
+              ${path}/
+
+          done < <(echo "${stages}")
+        else
+          echo -e "\033[33mERROR\033[0m: no such target: ${target}:${version}"
           return 1
-        ;;
-    esac
-    shift
-    [ -n "$1" ]
-  do
-    continue
-  done
+        fi
+      ;;
+    run|dry|gui) #[application]#run a temporary container locally, running gui app, or display the command
+        if [ -f ${df} ];then
+          volumes=$(docrc images.${target}.volumes | sed "s/~/${HOME//\//\\/}/" | sed '/^$/d;s/^/-v /')
+          cwd=$(docrc images.${target}.cwd)
+          if [ -n "${stages}" ];then
+            target=${img}/$(echo "${stages}" | tail -n 1)
+          fi
+        else
+          volumes=""
+          echo -e "\033[34mWARN\033[0m: no dockerfile: ${df} (${target}:${version}), attempting to continue anyway"
+        fi
+        cwd=${cwd:-/root}
+        display=''
+        dry=''
+        after=''
+        if [[ "${action}" == "dry" ]];then
+          echo -e "\033[33mentering ${target}:${version}\033[0m (dry)"
+          dry="echo"
+        else
+          if [[ "${action}" == "gui" ]];then
+            if [ -n "${start}" ];then
+              echo -e "\033[33mexecuting app \"${start}\" in ${target}:${version}\033[0m"
+              start="-c \"${start}\"" #FIXME
+            else
+              echo -e "\033[33mentering ${target}:${version} with X11 forwarded\033[0m"
+            fi
+            display="-e DISPLAY=host.docker.internal:0"
+            case "$(uname -s)" in
+              Darwin) #Mac
+                  xhost + 127.0.0.1
+                  open -a XQuartz
+                  socat TCP-LISTEN:6000,reuseaddr,fork UNIX-CLIENT:\"$DISPLAY\" &
+                ;;
+            esac
+            pid=$!
+            after="kill $pid"
+          else
+            echo -e "\033[33mentering ${target}:${version}\033[0m"
+          fi
+        fi
+        $dry docker run --privileged=true -it --rm ${volumes} \
+          -h ${target} \
+          --name ${target} \
+          -w ${cwd} \
+          -P \
+          ${display} \
+          ${repo}${target}:${version} /bin/bash ${start}
+        #"--privileged=true" for loop devices and mounting an iso
+        $after
+      ;;
+    pull|push) ##pull/push image to repo
+        if [ -f ${df} ];then
+          docker ${action} ${repo}${target}:${version}
+        else
+          echo -e "\033[33mERROR\033[0m: no such target: ${target}:${version}"
+          return 1
+        fi
+      ;;
+    clean) ##remove exited containers and dangling images
+        docker rm -v $(docker ps -a -q -f status=exited)
+        docker rmi $(docker images -q -f dangling=true)
+      ;;
+    cleanvol) ##remove dangling volumes (dangerous)
+        docker volume rm $(docker volume ls -q -f dangling=true)
+      ;;
+    context|ctx|go) #[$context|$dockerfile|$action]#context handling
+        doc_context $@
+      ;;
+    *)
+        echo -e "\033[33mERROR\033[0m: invalid action ${action}"
+      ;;
+  esac
 }
 
 ##Context Actions (context|ctx|go):
