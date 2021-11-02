@@ -91,12 +91,13 @@ git push
 git push origin <branch>
 
 #personal ignore list:
-config --global -e
+git config --global core.excludesfile ~/.gitignore
+
+git config --global -e
 #============== Begin =================
 [core]
   excludesfile = /home/<user>/.gitignore
 #============== End =================
-
 
 #Hooks: https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks
   .git/hooks/*.sample

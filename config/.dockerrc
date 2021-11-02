@@ -256,7 +256,7 @@ EOF
           -P \
           ${display} \
           ${repo}${img}:${version} ${start}
-        log $?
+        debug "docker run status: $?"
         #"--privileged=true" for loop devices and mounting an iso
         $after
       ;;

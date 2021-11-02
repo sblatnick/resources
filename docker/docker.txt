@@ -91,6 +91,11 @@
     #preserve color from terminal:
     docker run -it -e "TERM=xterm-256color" centos:7 command
 
+    #get info about an object
+    docker inspect
+    #get info on images
+    docker image inspect
+
   #Dockerfiles:
     #DECLARATIONS:
     ENTRYPOINT #binary to run
