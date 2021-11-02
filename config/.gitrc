@@ -915,3 +915,7 @@ function git() {
   fi
   gitex "$@"
 }
+
+function config() {
+  wgit="git --git-dir=${HOME}/.cfg/ --work-tree=${HOME}" gitex "$@"
+}
