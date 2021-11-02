@@ -3,7 +3,7 @@
 export DOC_CONFIG=~/.dockerrc
 use ${DOC_CONFIG}
 shopt -s expand_aliases extglob
-DEBUG=true
+#DEBUG=true
 
 #----------------------------------FUNCTIONS-----------------------------------#
 
@@ -28,9 +28,9 @@ function docrc() {
   fi
 
   key=$1
-  value=$2
+  shift
 
-  result=$(SIT_TMP=${rc} sit ${key} ${value})
+  result=$(SIT_TMP=${rc} sit ${key} $@)
   if [ $? -gt 0 ];then
     return 1
   fi
@@ -130,6 +130,7 @@ function docker_extentions() {
       df=${path}/${target}.df
     elif [ -f ${path}/${target}/Dockerfile ];then
       df=${path}/${target}/Dockerfile
+      path=${path}/${target}
     else
       df=${path}/${target}.df
     fi
@@ -196,7 +197,7 @@ EOF
 
             echo -e "\033[32mbuilding ${target}:${version} image\033[0m"
             eval docker build \
-              ${starget} -t ${repo}${target}:${version} \
+              ${starget} -t ${repo}${img}:${version} \
               -f ${df} \
               ${path}/
 
@@ -212,7 +213,7 @@ EOF
           cwd=$(docrc images.${target}.cwd)
         else
           volumes=""
-          echo -e "\033[34mWARN\033[0m: no dockerfile: ${df} (${target}:${version}), attempting to continue anyway"
+          repo=""
         fi
         cwd=${cwd:-/root}
         display=''
@@ -254,6 +255,7 @@ EOF
           -P \
           ${display} \
           ${repo}${img}:${version} ${start}
+        log $?
         #"--privileged=true" for loop devices and mounting an iso
         $after
       ;;
