@@ -8,6 +8,7 @@ set -o pipefail
 PID=$$
 
 #-----------------------------------LOGGING------------------------------------#
+DEBUG=false
 
 function error() {
   >&2 echo -e "$(date +'%F %T') \033[31mERROR\033[0m: $@"
@@ -18,6 +19,11 @@ function log() {
 }
 function warn() {
   >&2 echo -e "$(date +'%F %T')  \033[33;1mWARN\033[0m: $@"
+}
+function debug() {
+  if [[ "${DEBUG}" == "true" ]];then
+    echo -e "$(date +'%F %T')   \033[32mDEBUG\033[0m: $@"
+  fi
 }
 function run() {
   echo -e "$(date +'%F %T')   \033[0;1m$@\033[0m"

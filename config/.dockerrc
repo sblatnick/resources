@@ -3,6 +3,7 @@
 export DOC_CONFIG=~/.dockerrc
 use ${DOC_CONFIG}
 shopt -s expand_aliases extglob
+DEBUG=true
 
 #----------------------------------FUNCTIONS-----------------------------------#
 
@@ -104,32 +105,43 @@ function docker_extentions() {
 
   #load defaults
   context=$(sit 'current')
-  repo=$(coalesce "$(sit 'repo')" "$(docrc 'repo')" '')
-  user=$(coalesce "$(sit 'user')" "$(docrc 'user')" 'root')
+  repo=$(coalesce "$(docrc 'repo')" "$(sit 'repo')" '')
+  user=$(coalesce "$(docrc 'user')" "$(sit 'user')" 'root')
   path=$(sit contexts[current].path)
+
+  debug "context=${context}"
+  debug "repo=${repo}"
+  debug "user=${user}"
+  debug "path=${path}"
 
   #------------------------------------MAIN--------------------------------------#
   action=$1
   shift
   target=${1%%:*}
   start=$2
-  version=${1/$target/}
-  version=${version#:}
-  version=${version:=0.1}
+  if [ -n "${target}" ];then
+    version=${1/$target/}
+    version=${version#:}
+    version=${version:=latest}
 
-  if [ -f ${path}/${target} ];then
-    df=${path}/${target}
-  elif [ -f ${path}/${target}.df ];then
-    df=${path}/${target}.df
-  elif [ -f ${path}/${target}/Dockerfile ];then
-    df=${path}/${target}/Dockerfile
-  else
-    df=${path}/${target}.df
+    if [ -f ${path}/${target} ];then
+      df=${path}/${target}
+    elif [ -f ${path}/${target}.df ];then
+      df=${path}/${target}.df
+    elif [ -f ${path}/${target}/Dockerfile ];then
+      df=${path}/${target}/Dockerfile
+    else
+      df=${path}/${target}.df
+    fi
+
+    img=$(coalesce "$(docrc images.${target}.alias)" "${target}")
+    stages=$(grep -E 'FROM .* AS .*' ${df} 2>/dev/null | sed -n 's/^.* AS //p')
+    starget=''
+
+    debug "target=${target}"
+    debug "img=${img}"
+    debug "version=${version}"
   fi
-
-  img=${target}
-  stages=$(grep -E 'FROM .* AS .*' ${df} 2>/dev/null | sed -n 's/^.* AS //p')
-  starget=''
 
   case "$action" in
     help|'') ##print this usage information
@@ -198,9 +210,6 @@ EOF
         if [ -f ${df} ];then
           volumes=$(docrc images.${target}.volumes | sed "s/~/${HOME//\//\\/}/" | sed '/^$/d;s/^/-v /')
           cwd=$(docrc images.${target}.cwd)
-          if [ -n "${stages}" ];then
-            target=${img}/$(echo "${stages}" | tail -n 1)
-          fi
         else
           volumes=""
           echo -e "\033[34mWARN\033[0m: no dockerfile: ${df} (${target}:${version}), attempting to continue anyway"
@@ -234,21 +243,25 @@ EOF
             echo -e "\033[33mentering ${target}:${version}\033[0m"
           fi
         fi
-        $dry docker run --privileged=true -it --rm ${volumes} \
+        $dry docker run \
+          --privileged=true \
+          -it \
+          --rm ${volumes} \
+          --entrypoint bash \
           -h ${target} \
           --name ${target} \
           -w ${cwd} \
           -P \
           ${display} \
-          ${repo}${target}:${version} /bin/bash ${start}
+          ${repo}${img}:${version} ${start}
         #"--privileged=true" for loop devices and mounting an iso
         $after
       ;;
     pull|push) ##pull/push image to repo
         if [ -f ${df} ];then
-          docker ${action} ${repo}${target}:${version}
+          docker ${action} ${repo}${img}:${version}
         else
-          echo -e "\033[33mERROR\033[0m: no such target: ${target}:${version}"
+          echo -e "\033[33mERROR\033[0m: no such image: ${img}:${version}"
           return 1
         fi
       ;;
