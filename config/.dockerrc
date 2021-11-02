@@ -184,6 +184,7 @@ EOF
       ;;
     img|build|make) #[name]#Create docker image
         if [ -f ${df} ];then
+          buildargs=$(docrc images.${target}.buildarg | sed '/^$/d;s/^/--build-arg /')
           while read stage
           do
             if [ -n "${stage}" ];then
@@ -197,7 +198,7 @@ EOF
 
             echo -e "\033[32mbuilding ${target}:${version} image\033[0m"
             eval docker build \
-              ${starget} -t ${repo}${img}:${version} \
+              ${starget} ${buildargs} -t ${repo}${img}:${version} \
               -f ${df} \
               ${path}/
 
