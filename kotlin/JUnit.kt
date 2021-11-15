@@ -9,4 +9,9 @@ class ExampleTest {
         assertAnalyzerBin("trivy")
         assertCommandOutput("trivy -v", """^Version: [\d\.]+$""".toRegex())
     }
+    fun testLog() {
+        val example = Example()
+        LogWatcher.getLogger(example.javaClass)
+        LogWatcher.assertLog("Text in log4j")
+    }
 }

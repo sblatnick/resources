@@ -48,7 +48,7 @@ class Kotlin {
       }
 
     //Variable # of Parameters:
-      fun printAll(vararg messages: String) {                            // 1
+      fun printAll(vararg messages: String) {
         for (m in messages) println(m)
       }
       printAll("Hello", "Hallo", "Salut", "Hola")
@@ -56,6 +56,10 @@ class Kotlin {
     //Multiple returned variables ("Destructuring Declarations"):
       val (_, emailAddress) = getUser()
       //_ tells the compiler not to warn about unused variable
+      val map = mapOf("Alice" to 21, "Bob" to 25)
+      for ((name, age) in map) {
+        println("$name is $age years old")          
+      }
 
     //Functions as parameters: combine()
       fun <T, R> Collection<T>.fold(

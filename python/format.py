@@ -8,3 +8,6 @@
     for k, v in os.environ.items():
       s.write(f'export {k}={v}')
     s.write('"""')
+
+#Passing in variables to a string:
+  "Number %d string %s object reference %r" % (index, string, self)
