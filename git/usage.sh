@@ -55,6 +55,8 @@
     git checkout --track origin/release2013_q1_01
     #See which remote is being tracked:
     git branch -vv
+    git branch -vv | grep -o "\[.*${BRANCH}\]"
+    git branch -vv | grep -o "\[.*\]"
     #Change remote: (source: http://stackoverflow.com/questions/4878249/how-do-i-change-the-remote-a-git-branch-is-tracking)
     git branch branch_name -u your_new_remote/branch_name
     #vs copy but not tracking:
@@ -63,6 +65,12 @@
     git branch --set-upstream localbranch upstream/remotebranch
     #(source: http://stackoverflow.com/questions/520650/how-do-you-make-an-existing-git-branch-track-a-remote-branch)
 
+  #Changing remotes and tracking:
+    git remote rename origin upstream
+    git remote add origin https://github.com/example.git
+    git fetch origin
+    #now tracking upstream: git branch -vv
+    git branch master -u origin/master
   #show branches:
   git branch
   #show all branches (local and remote):
