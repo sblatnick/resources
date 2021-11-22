@@ -218,7 +218,7 @@ EOF
         fi
         cwd=${cwd:-/root}
         display=''
-        dry=''
+        dry='show'
         after=''
         if [[ "${action}" == "dry" ]];then
           echo -e "\033[33mentering ${target}:${version}\033[0m (dry)"
@@ -245,13 +245,15 @@ EOF
             echo -e "\033[33mentering ${target}:${version}\033[0m"
           fi
         fi
+        name=${target##*/}
+        name=${name%%:*}
         $dry docker run \
           --privileged=true \
           -it \
           --rm ${volumes} \
           --entrypoint bash \
-          -h ${target} \
-          --name ${target} \
+          -h ${name} \
+          --name ${name} \
           -w ${cwd} \
           -P \
           ${display} \
