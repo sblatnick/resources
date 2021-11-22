@@ -197,7 +197,7 @@ EOF
             fi
 
             echo -e "\033[32mbuilding ${target}:${version} image\033[0m"
-            eval docker build \
+            eval show docker build \
               ${starget} ${buildargs} -t ${repo}${img}:${version} \
               -f ${df} \
               ${path}/
@@ -264,18 +264,18 @@ EOF
       ;;
     pull|push) ##pull/push image to repo
         if [ -f ${df} ];then
-          docker ${action} ${repo}${img}:${version}
+          show docker ${action} ${repo}${img}:${version}
         else
           echo -e "\033[33mERROR\033[0m: no such image: ${img}:${version}"
           return 1
         fi
       ;;
     clean) ##remove exited containers and dangling images
-        docker rm -v $(docker ps -a -q -f status=exited)
-        docker rmi $(docker images -q -f dangling=true)
+        show docker rm -v $(docker ps -a -q -f status=exited)
+        show docker rmi $(docker images -q -f dangling=true)
       ;;
     cleanvol) ##remove dangling volumes (dangerous)
-        docker volume rm $(docker volume ls -q -f dangling=true)
+        show docker volume rm $(docker volume ls -q -f dangling=true)
       ;;
     context|ctx|go) #[$context|$dockerfile|$action]#context handling
         doc_context $@
