@@ -1,0 +1,16 @@
+#!/bin/bash
+source ~/.bashrc #source main bashrc so we can add to the environment outside of repo
+source ${BASH_SOURCE%/path/*}/config/bashrc
+
+REQUEST=$1
+shift
+
+case "${REQUEST}" in
+  GET|POST|DELETE|PUT)
+    ;;
+  *)
+      error "Unsupported request: ${REQUEST}"
+    ;;
+esac
+
+curl -n -X $REQUEST --silent "${JIRA}/$@" | python -mjson.tool

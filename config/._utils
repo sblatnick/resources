@@ -56,7 +56,7 @@ function coalesce() {
 function pipe() {
   if [ -t 0 ];then
     if [ "$#" -lt 1 ];then
-      echo -e "Usage: stdin | ${BIN-pipe} [lines|file]"
+      echo -e "Usage: stdin | ${BIN-pipe} ${PARAM}[lines|file]"
       return
     else
       result=""
@@ -105,6 +105,12 @@ function pipe() {
 
 function chomp() {
   BIN='chomp' pipe $@ | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+}
+
+function join() {
+  ARG=$1
+  shift
+  BIN='join' PARAM='[delimiter] ' pipe $@ | sed ":a;N;\$!ba;s/\n/${ARG//\//\\/}/g"
 }
 
 function min() {
