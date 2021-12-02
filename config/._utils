@@ -307,15 +307,19 @@ function tmpdir() {
   export tmp=${TMP-/tmp}/util-${PID}
   OWD=$OLDPWD
   CWD=$PWD
-  echo -e "\033[34mtmpdir: ${tmp}\033[0m"
-  mkdir -p ${tmp}
+  if [ -d ${tmp} ];then
+    return
+  else
+    debug "tmpdir: ${tmp}"
+    mkdir -p ${tmp}
+  fi
   function cleanup_tmpdir() {
     local call=$1
     if [[ 'NULL' == "${call}" ]];then
       if [ -f ${tmp}/save ];then
-        echo -e "\033[34mtmpdir retained: ${tmp}\033[0m"
+        warn "tmpdir retained: ${tmp}"
       else
-        echo -e "\033[34mcleanup: ${tmp}\033[0m"
+        debug "cleanup: ${tmp}"
         rm -rf ${tmp} >/dev/null 2>&1
       fi
       trap - RETURN SIGINT
@@ -324,7 +328,7 @@ function tmpdir() {
       OLDPWD=$OWD
     fi
   }
-  trap "call=\$(caller | cut -d' ' -f2); cleanup_tmpdir \$call" RETURN
+  trap "call=\$(caller | cut -d' ' -f2); cleanup_tmpdir \$call" RETURN EXIT
   trap "cleanup_tmpdir NULL" SIGINT
 }
 

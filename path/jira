@@ -6,11 +6,18 @@ REQUEST=$1
 shift
 
 case "${REQUEST}" in
-  GET|POST|DELETE|PUT)
+  POST)
+      if [ ! -f ${1} ];then
+        error "No json file at '$1'"
+      fi
+      json="-H 'Content-Type: application/json' -d '@${1}'"
+      shift
+    ;;
+  GET|DELETE|PUT)
     ;;
   *)
       error "Unsupported request: ${REQUEST}"
     ;;
 esac
 
-curl -n -X $REQUEST --silent "${JIRA}/$@" | python -mjson.tool
+eval curl -n -X $REQUEST $json --silent "${JIRA}/$@" | python -mjson.tool
