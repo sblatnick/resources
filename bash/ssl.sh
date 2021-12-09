@@ -6,7 +6,7 @@
   #create private key:
   openssl genrsa -out /etc/service/id.key 4096
   #self sign and generate CA.crt:
-  openssl req -subj "/C=US/ST=Utah/L=Salt Lake City/CN=$(hostname)" -x509 -new -nodes -key /etc/service/id.key -sha256 -days 1024 -out /etc/service/CA.crt
+  openssl req -subj "/C=US/ST=My State/L=My City/CN=$(hostname)" -x509 -new -nodes -key /etc/service/id.key -sha256 -days 1024 -out /etc/service/CA.crt
   #as root start the server:
   thin start --ssl --ssl-key-file /etc/id.key --ssl-cert-file /etc/service/CA.crt -C /etc/service/service.yml
   #test CA:
@@ -74,3 +74,28 @@ keytool -list -keystore cacerts -storepass changeme
   cat encryped.txt | openssl rsautl -decrypt -inkey ~/.ssh/id_rsa
 
   #source: https://unix.stackexchange.com/questions/328689/how-to-encrypt-a-string-with-my-ssh-pubkey
+
+#Authenticate using a Smart Card:
+
+  #Pre-reqs:
+  sudo apt install libpcsclite1 pcscd pcsc-tools cackey libnss3-tools
+
+  #Enable/start service:
+  sudo systemctl enable pcscd
+  sudo systemctl start pcscd
+
+  #Test the CAC card can be read:
+  pcsc_scan
+
+  #Add cert to chrome-based browsers
+    #CLOSE browser first
+    #cd into your home directory, ~ doesn't work for this command
+    modutil -dbdir sql:~/.pki/nssdb/ -add "CAC Module" -libfile /usr/lib/pkcs11/libcackey.so
+      Module "CAC Module" added to database.
+    #Check the module was added:
+    modutil -dbdir sql:.pki/nssdb/ -list
+
+  #Insert card into reader
+  #Open login page
+  #Enter pin
+  #TODO: missing CA?
