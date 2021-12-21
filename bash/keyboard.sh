@@ -45,6 +45,10 @@ xkb_keymap {
       Name:    Shift + End Key
       Command: xdotool key Shift+End
     Set shortcut to the power key
+
+  #~/.xmodmap
+    keycode 207 = End NoSymbol End
+
 #::::::::::::::::::::RAPOO MOUSE MAP::::::::::::::::::::
 #!/bin/bash
 echo '
@@ -149,3 +153,7 @@ KeyRelease event, serial 40, synthetic NO, window 0x3e00001,
   state 0x1, keycode 21 (keysym 0x2b, plus), same_screen YES,
   XLookupString gives 1 bytes: (2b) "+"
   XFilterEvent returns: False
+
+sudo showkey
+  keycode 114 press
+  keycode 114 release

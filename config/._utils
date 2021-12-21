@@ -56,7 +56,11 @@ function coalesce() {
 function pipe() {
   if [ -t 0 ];then
     if [ "$#" -lt 1 ];then
-      echo -e "Usage: stdin | ${BIN-pipe} ${PARAM}[lines|file]"
+      if [ -z "${USAGE}" ];then
+        echo -e "Usage: ${USAGE}"
+      else
+        echo -e "Usage: stdin | ${BIN-pipe} ${PARAM}[lines|file]"
+      fi
       return
     else
       result=""
@@ -65,7 +69,7 @@ function pipe() {
           if [[ "line" == "${TYPE-line}" ]];then
             while IFS=$'\n' read pipe
             do
-              ${ACTION-echo} "$pipe"
+              eval ${ACTION-echo} "$pipe"
             done < $1
           else
             while IFS=$'\n' read pipe
@@ -75,7 +79,7 @@ function pipe() {
           fi
         else
           if [[ "line" == "${TYPE-line}" ]];then
-            ${ACTION-echo} "$1"
+            eval ${ACTION-echo} "$1"
           else
             result="${result}${1}"
           fi
@@ -83,22 +87,30 @@ function pipe() {
         shift
       done
       if [ -n "${result}" ];then
-        ${ACTION-echo} "${result}"
+        eval ${ACTION-echo} "${result}"
       fi
     fi
   else
     if [[ "line" == "${TYPE-line}" ]];then
-      while IFS=$'\n' read pipe
-      do
-        ${ACTION-echo} "$pipe"
-      done
+      if [[ "false" == "${HEADER-false}" ]];then
+        while IFS=$'\n' read pipe
+        do
+          eval ${ACTION-echo} "$pipe"
+        done
+      else
+        while IFS=$'\n' read pipe
+        do
+          echo -e "$pipe"
+          eval ${ACTION-echo} "$pipe" | sed 's/^/  /'
+        done
+      fi
     else
       result=""
       while IFS=$'\n' read pipe
       do
         result="${result}${pipe}"
       done
-      ${ACTION-echo} "${result}"
+      eval ${ACTION-echo} "${result}"
     fi
   fi
 }
@@ -174,6 +186,27 @@ function has() {
   done
   return $ret
 }
+
+function grepper() {
+  HEADER='true' USAGE='filelist | grepper [search]' BIN='grepper' ACTION="ag --color --numbers '$@'" pipe
+}
+
+function _opener() {
+  USAGE='filelist | opener [search]' BIN='opener' ACTION="geany" pipe
+}
+function opener() {
+  if [ -t 0 ];then
+    if [ "$#" -lt 1 ];then
+      echo -e "Usage: filelist | opener [search]"
+    else
+      ag -l $@ | _opener
+    fi
+  else
+    _opener
+  fi
+}
+#geany grep: open geany for all files that have the pattern in the contents
+alias gg='opener'
 
 function insert() {
   if [ "$#" -lt 3 ];then
