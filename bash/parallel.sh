@@ -264,3 +264,86 @@ echo "Finishing..."
 cat /dev/shm/${PID}.thread.* > results.csv
 echo "DONE: see results.csv"
 cleanup
+
+
+#Clean/concise backgrounding with cleanup traps:
+  LOG='/tmp'
+  SERVICE_VERSION='0.1'
+  REPO='repo.intra.net'
+
+  function check() {
+    if [ ${1} -gt 0 ];then
+      echo "check returned ${1}"
+      if [ -f "${2}" ];then
+        cat ${2}
+      fi
+      exit 1
+    fi
+  }
+  function build() {
+    local image=$1
+    trap 'test -n "${docker_id}" && echo "Stopping ${image}:${SERVICE_VERSION}" && docker stop ${docker_id}' KILL EXIT
+
+    echo "Building ${image}:${SERVICE_VERSION}"
+    DOCKER_BUILDKIT=1 docker build \
+      --build-arg SERVICE_VERSION \
+      --secret id=password,env=PWD \
+      -t ${REPO}/${image}:${SERVICE_VERSION} \
+      -f docker/${image}.Dockerfile \
+      .
+    check $?
+
+    if [ -f ${PWD}/test/${image}.py ];then
+      echo "Starting ${image}:${SERVICE_VERSION}"
+      local docker_id=$(
+        docker run \
+          --entrypoint bash \
+          -d -it --rm \
+          ${REPO}/${image}:${SERVICE_VERSION}
+      )
+
+      echo "Testing ${image}:${SERVICE_VERSION}"
+      docker run \
+        --rm \
+        -v ${PWD}/test/util.py:/opt/test/util.py \
+        -v ${PWD}/test/${image}.py:/opt/test/test_${image}.py \
+        -v /var/run/docker.sock:/var/run/docker.sock:ro \
+        testinfra:1.0 \
+        --hosts=docker://${docker_id} > ${LOG}/${image}.log
+      check $? ${LOG}/${image}.log
+    else
+      echo "WARN: no tests for container ${image}"
+    fi
+
+    echo "Pushing ${REPO}/${image}:${SERVICE_VERSION}"
+    docker push ${REPO}/${image}:${SERVICE_VERSION}
+    echo "${image}:${SERVICE_VERSION} completed"
+  }
+
+  #Dependencies:
+  build base
+  build node
+  build tomcat
+
+  #Analyzers:
+  build web &
+  build foo &
+  build bar &
+  build baz &
+
+  echo "waiting..."
+  trap 'kill $(jobs -p) 2>/dev/null' EXIT
+  for job in $(jobs -p)
+  do
+    wait $job
+    check $?
+  done
+
+  echo "Print logs..."
+  for log in ${LOG}/*.log
+  do
+    echo ${log%.log}
+    cat ${log} | sed 's/^/  /'
+  done
+
+  echo "DONE"

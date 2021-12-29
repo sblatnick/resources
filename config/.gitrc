@@ -64,6 +64,9 @@ function bash_prompt()
   if [ -n "$($wgit status --porcelain 2>/dev/null)" ]; then
     dirty='*'
   fi
+  if [ -x /usr/libexec/vte-urlencode-cwd ];then
+    printf "\033]7;file://%s%s\033\\" "${HOSTNAME}" "$(/usr/libexec/vte-urlencode-cwd)"
+  fi
   PS1="\w \[\033[32m\]$BRANCH\[\033[36m\]$dirty\[\033[0m\]\[\033[${SC-0}m\]\$\[\033[0m\] "
 }
 PROMPT_COMMAND=bash_prompt

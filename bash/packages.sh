@@ -17,6 +17,7 @@
   yum whatprovides package
   rpm -ql tomcat           #show installed files
   rpm -qR tomcat           #find dependencies
+  rpm -q --whatrequires tomcat
   rpm -qpR tomcat.rpm      # -p means from the package file
   rpm -qip packagename.rpm #show information about the package not installed like signature
   rpm -qf log4j.properties #find rpm package that installed the file

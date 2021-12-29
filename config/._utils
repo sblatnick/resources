@@ -56,7 +56,7 @@ function coalesce() {
 function pipe() {
   if [ -t 0 ];then
     if [ "$#" -lt 1 ];then
-      if [ -z "${USAGE}" ];then
+      if [ -n "${USAGE}" ];then
         echo -e "Usage: ${USAGE}"
       else
         echo -e "Usage: stdin | ${BIN-pipe} ${PARAM}[lines|file]"
