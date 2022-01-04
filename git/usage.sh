@@ -234,6 +234,15 @@
     #as opposed to taking what you have and merging:
     git pull --rebase origin branch
 
+  #fatal error on fast forward:
+  $ git pull origin <branch>
+    fatal: Not possible to fast-forward, aborting.
+  $ git pull origin <branch> --rebase
+  #or add merges missing in this branch before pulling:
+  git log ${BRANCH}..master --grep Merge | grep -Po 'Merge in .* from [^\s]*' | cut -d' ' -f5 #cut assumes no spaces in branch names
+    branch1
+  git merge branch1 #local merge == `git pull . branch1`
+
 #filter-branch - alter history:
 
   #remove large file from commit history (DANGEROUS):

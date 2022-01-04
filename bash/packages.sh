@@ -166,6 +166,7 @@
   #Check for security remediation:
   yum install --downloadonly --downloaddir=./ tomcat
   rpm -pq --changelog tomcat-7.0.76-3.el7_4.noarch.rpm | head
+  rpm -q --changelog tomcat | grep CVE-XXXX-XXXXX
 
   #get repo urls for importing elsewhere:
   grep baseurl /etc/yum.repos.d/*
@@ -229,6 +230,11 @@
     #(keep running until all the dependencies are met)
     make
     sudo make install
+
+  #pin noninstalled package so it won't try to install with upgrades:
+    sudo apt-mark hold nodejs-doc
+    #undo:
+    sudo apt-mark unhold nodejs-doc
 
 #TinyCore Linux:
   tce #install packages

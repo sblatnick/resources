@@ -68,6 +68,14 @@ function bash_prompt()
     printf "\033]7;file://%s%s\033\\" "${HOSTNAME}" "$(/usr/libexec/vte-urlencode-cwd)"
   fi
   PS1="\w \[\033[32m\]$BRANCH\[\033[36m\]$dirty\[\033[0m\]\[\033[${SC-0}m\]\$\[\033[0m\] "
+  if [ -z "${TERM_NAME}" ];then
+    top=$($wgit rev-parse --show-toplevel 2>/dev/null)
+    if [ -z "${top}" ];then
+      echo -en "\033]0;${PWD##*/}\a"
+    else
+      echo -en "\033]0;${top##*/}\a"
+    fi
+  fi
 }
 PROMPT_COMMAND=bash_prompt
 

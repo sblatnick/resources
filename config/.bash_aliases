@@ -102,10 +102,14 @@ function passed() {
 }
 
 function name() {
-  if [ -z "$1" ]; then
-    tty -s <&1 && echo -en "\033]0;${PWD##*/}\a"
-  else
-    tty -s <&1 && echo -en "\033]0;${1}\a"
+  if [ -t 0 ];then
+    if [ -z "$1" ]; then
+      TERM_NAME=${PWD##*/}
+    else
+      TERM_NAME=${1}
+    fi
+    export TERM_NAME
+    echo -en "\033]0;${TERM_NAME}\a"
   fi
 }
 
