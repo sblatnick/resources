@@ -256,6 +256,11 @@
     ifconfig eth1 100.64.0.128 netmask 255.255.255.0
   $ backup
 
+#Alpine Linux in memory:
+  apk update
+  apk upgrade
+  apk add bash
+
 #::::::::::::::::::::MAC::::::::::::::::::::
 
 #Homebrew:

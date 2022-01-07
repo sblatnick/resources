@@ -216,15 +216,18 @@ function gitex() {
         $wgit checkout -b ${branch}
         return $?
       ;;
-    rs) #[rm] [pattern]#remote branch listing, rm to delete local tracked branch
+    rs) #[rm] [pattern]#remote branch listing, rm to delete local branches
         shift
-        local branches=$(git --no-pager branch --format '%(refname:lstrip=1)' | sed 's/^heads/local/')$'\n'$($wgit --no-pager branch -r --format '%(refname:lstrip=2)')
+        local branches=$($wgit --no-pager branch --format '%(refname:lstrip=1)' | sed 's/^heads/local/')$'\n'$($wgit --no-pager branch -r --format '%(refname:lstrip=2)')
         local IFS=$'\n'
         if [[ "$1" == "rm" ]];then
           local delete='true'
+          remotes=(local)
           shift
+        else
+          remotes=(local $(git remote))
         fi
-        for remote in local $(git remote)
+        for remote in ${remotes[@]}
         do
           echo -e "\033[32m${remote}\033[0m"
           if [ -n "$1" ];then

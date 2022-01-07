@@ -136,3 +136,25 @@
 
       docker tag centos:8 ${MASTER}:5000/centos:8
       docker push ${MASTER}:5000/centos:8
+
+  #Renew k3s certs:
+    #ssh to ${MASTER}
+    #backup certs:
+    tar -czvf /var/lib/rancher/k3s/server/tls-$(date +'%Y-%m-%d').tar.gz /var/lib/rancher/k3s/server/tls
+    #restart k3s:
+    systemctl restart k3s
+    #test:
+    kubectl get pods -A
+    #Update cert on your client using: /etc/rancher/k3s/k3s.yaml
+
+    #CA stays the same, just the user crt and key
+    #.kube/config can store them as:
+    #  client-certificate-data/client-key-data base64 encoded inline, or
+    #  client-certificate/client-key with a path to the file
+    - name: me
+      user:
+        client-certificate: cert/me.crt
+        client-key: cert/me.key
+
+    #decode:
+    echo $data | base64 -d > cert/me.crt

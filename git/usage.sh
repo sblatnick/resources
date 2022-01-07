@@ -243,6 +243,12 @@
     branch1
   git merge branch1 #local merge == `git pull . branch1`
 
+  #Try updating the desired branch and merging manually:
+  git co master #co part of gitex
+  git pull
+  git co ${BRANCH}
+  git merge master #local merge
+
 #filter-branch - alter history:
 
   #remove large file from commit history (DANGEROUS):

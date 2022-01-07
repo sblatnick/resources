@@ -95,13 +95,16 @@ function pipe() {
       if [[ "false" == "${HEADER-false}" ]];then
         while IFS=$'\n' read pipe
         do
-          eval ${ACTION-echo} "$pipe"
+          eval ${ACTION-echo} "${pipe}"
         done
       else
         while IFS=$'\n' read pipe
         do
-          echo -e "$pipe"
-          eval ${ACTION-echo} "$pipe" | sed 's/^/  /'
+          output=$(eval ${ACTION-echo} "${pipe}")
+          if [ -n "${output}" ];then
+            echo -e "\033[32m${pipe}\033[0m"
+            echo "${output}" | sed 's/^/  /'
+          fi
         done
       fi
     else
@@ -187,8 +190,23 @@ function has() {
   return $ret
 }
 
+#Example: files search1 | files search2 | grepper search3
 function grepper() {
   HEADER='true' USAGE='filelist | grepper [search]' BIN='grepper' ACTION="ag --color --numbers '$@'" pipe
+}
+
+function files() {
+  if [ -t 0 ];then
+    if [ "$#" -lt 1 ];then
+      echo -e "Usage: filelist | files [search]"
+      echo -e "  List files containing the search term"
+    else
+      ag -l $@
+    fi
+  else
+    #Use grep instead of ag here so piping doesn't break the eval on single files:
+    USAGE='filelist | files [search]' BIN='files' ACTION="grep -l --color=never $@" pipe
+  fi
 }
 
 function _opener() {
