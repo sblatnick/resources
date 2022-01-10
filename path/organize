@@ -83,6 +83,15 @@ do
     esac
 
     case "${extension}" in
+      heic|HEIC) #picture
+          printf "\033[32m%-75s\033[0m %-75s \033[33m%s\033[0m\n" "${old}" "${old%.*}.jpg" "convert to jpg"
+          ${dry} mogrify -format jpg ${old}
+          extension='jpg'
+          old="${old%.*}.jpg"
+        ;;
+    esac
+
+    case "${extension}" in
       mp4|mov|mpg|mot|mts|jpg|jpeg|tif|tiff|img|gif|psd|xcf|avi|3gp|MOD) #video/picture
           status="pictures by ${status}"
           new="${destination}/${when} ${filename}.${extension}"
