@@ -1,2 +1,4 @@
 #!/bin/bash
 python -mjson.tool $1
+#each line a different object:
+#  python -mjson.tool --json-lines

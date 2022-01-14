@@ -26,6 +26,12 @@
   wget -q https://registry.hub.docker.com/v1/repositories/debian/tags -O -  | sed -e 's/[][]//g' -e 's/"//g' -e 's/ //g' | tr '}' '\n'  | awk -F: '{print $3}'
   #source: https://stackoverflow.com/questions/28320134/how-to-list-all-tags-for-a-docker-image-on-a-remote-registry
 
+  #search docker hub:
+  docker search [term]
+
+  #private registry image listing:
+  https://repo.intra.net/v2/_catalog
+
 #Dockerfile - blueprint to create an image
 
   #Helpful for adding yum repos to image based on an existing machine:

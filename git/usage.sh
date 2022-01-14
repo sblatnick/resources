@@ -375,6 +375,9 @@
   #find all authors and sort by commit counts:
   git --no-pager log | grep 'Author' | sort | uniq -c | sort -nr
 
+  #find branches containing sha:
+  git --no-pager branch -a --contains $sha
+
 #revision references:
 
   git show sha

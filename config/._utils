@@ -226,6 +226,17 @@ function opener() {
 #geany grep: open geany for all files that have the pattern in the contents
 alias gg='opener'
 
+function each() {
+  action=$1
+  shift
+  if [[ -z "${action}" ]];then
+    echo -e "Usage: lines | each [action] [file]"
+  else
+    file=$1
+    BIN='each' ACTION="${action}" pipe ${file}
+  fi
+}
+
 function insert() {
   if [ "$#" -lt 3 ];then
     echo -e "Usage: insert [line number] [text] [file]"

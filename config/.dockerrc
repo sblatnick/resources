@@ -10,11 +10,7 @@ shopt -s expand_aliases extglob
 function doc_ctx() {
   private
   sit 'current' "${1}" >/dev/null 2>&1
-  path=$(sit contexts[current].path)
-  echo -e "\033[33musing & entering\033[0m \033[32m${context}\033[0m (${path})"
-  if [ "${path}" != "null" ];then
-    cd ${path}
-  fi
+  echo -e "\033[33musing\033[0m \033[32m${context}\033[0m"
 }
 function docrc() {
   if [ "$#" -lt 1 ];then
