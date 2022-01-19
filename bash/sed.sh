@@ -348,6 +348,9 @@ sed -i '/^start$/,/^end$/ {s/search/replace/;s/one/two/}' test.txt
   #Testing:
   sed -n '0,/^menuentry/!{/^menuentry/,/}/ {s|Linux.*)|Linux Recovery|;s|linux16 /vmlinuz|linux16 /rescue/vmlinuz|;s|initrd16 /initramfs|initrd16 /rescue/initramfs|;p}}' /boot/grub2/grub.cfg
 
+#Print first match trimmed of xml tags:
+  sed -n "/ *<\/*version>/{s///pg;q}" pom.xml
+
 #print values of a variable without the variable name:
   sed -n 's/^hosts=//p' test.conf
   #lower case:
