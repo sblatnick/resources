@@ -22,37 +22,45 @@ git remote set-url --push origin no_push
 git remote add all git@yorktown:bin.git
 git remote set-url --add all git@shanghai:bin.git
 
-#custom alias:
-git config --global alias.rev 'checkout --'
-#custom program:
-git config --global alias.modified '!git-modified'
-#remove custom alias/program:
-git config --global --unset alias.modified
+#CONFIG:
+  #Remove:
+    git config --global --unset pull.ff
+  #Get:
+    git config --global pull.ff
+  #List:
+  git config --global --list
 
-#alias helper to pull then push:
-git config --global alias.wash '!branch=$(git rev-parse --abbrev-ref HEAD);git pull origin $branch;if [ -n "$(git status --porcelain)" ];then echo -e "\033[33munmerged changes\033[0m";else git push origin $branch;fi'
+  #custom alias:
+    git config --global alias.rev 'checkout --'
+  #custom program:
+    git config --global alias.modified '!git-modified'
+  #remove custom alias/program:
+    git config --global --unset alias.modified
 
-#alias helper to unapply a stash:
-git config --global alias.stash-unapply '!git stash show -p | git apply -R'
-git stash-unapply
+  #alias helper to pull then push:
+    git config --global alias.wash '!branch=$(git rev-parse --abbrev-ref HEAD);git pull origin $branch;if [ -n "$(git status --porcelain)" ];then echo -e "\033[33munmerged changes\033[0m";else git push origin $branch;fi'
 
-#other helpful aliases:
-git config --global alias.tut '!$EDITOR ~/projects/resources/git/usage.sh' #load usage guide in your editor
-#mac:
-git config --global alias.tut '!open -a "$EDITOR" ~/projects/resources/git/usage.sh'
+  #alias helper to unapply a stash:
+    git config --global alias.stash-unapply '!git stash show -p | git apply -R'
+    git stash-unapply
 
-#change your name/email:
-git config --global user.name "<first> <last>"
-git config --global user.email "<email>"
+  #other helpful aliases:
+    git config --global alias.tut '!$EDITOR ~/projects/resources/git/usage.sh' #load usage guide in your editor
+  #mac:
+    git config --global alias.tut '!open -a "$EDITOR" ~/projects/resources/git/usage.sh'
 
-#set pager, changing tab length:
-git config --global core.pager 'less -x2'
+  #change your name/email:
+    git config --global user.name "<first> <last>"
+    git config --global user.email "<email>"
 
-#allow simple (instead of "matching") git push/pull without specifying a remote and branch:
-git config --global push.default simple
+  #set pager, changing tab length:
+    git config --global core.pager 'less -x2'
 
-#colorful output:
-git config --global -e
+  #allow simple (instead of "matching") git push/pull without specifying a remote and branch:
+    git config --global push.default simple
+
+  #colorful output:
+    git config --global -e
 #============== Begin =================
 [color]
         diff = auto

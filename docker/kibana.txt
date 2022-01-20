@@ -1,0 +1,4 @@
+
+Kubernetes stdout Log aggregation/searching
+
+Visualize Elasticsearch data

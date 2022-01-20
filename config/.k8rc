@@ -273,7 +273,9 @@ alias k='kate'
 alias k8='kate'
 alias kc='kate'
 
-
+alias kd='k describe pod'
+alias ks='k get pod'
+alias kg='k go'
 
 
 
