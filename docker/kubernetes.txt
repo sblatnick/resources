@@ -182,6 +182,9 @@ Example arguments:
     kubectl logs my-pod -c my-container
     kubectl logs my-pod -c my-container --follow
 
+    #previous logs (terminated pods):
+    kubectl logs -p -c my-container my-pod
+
     #Large logs:
       # Display only the most recent 20 lines of output in pod nginx
       kubectl logs --tail=20 nginx

@@ -26,7 +26,7 @@ function kate_containers() {
   for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.initContainers[*].name}" 2>/dev/null)
   do
     local state=$(echo ${JSON} | jq -r ".status.initContainerStatuses[] | select(.name == \"${container}\") | [.state | keys[]] | @tsv" 2>/dev/null)
-    printf "  \033[36;1m%-10s\033[0m %s\n" "${container}" "${state}"
+    [[ ${action} != 'do' ]] && printf "  \033[36;1m%-10s\033[0m %s\n" "${container}" "${state}"
     if [[ "${state}" == "running" ]];then
       ((found++))
       where=${container}
@@ -35,15 +35,20 @@ function kate_containers() {
   for container in $(kubectl -n ${namespace} get pod ${pod} -o=jsonpath="{.spec.containers[*].name}" 2>/dev/null)
   do
     local state=$(echo ${JSON} | jq -r ".status.containerStatuses[] | select(.name == \"${container}\") | [.state | keys[]] | @tsv" 2>/dev/null)
-    printf "  \033[34;1m%-10s\033[0m %s\n" "${container}" "${state}"
+    [[ ${action} != 'do' ]] && printf "  \033[34;1m%-10s\033[0m %s\n" "${container}" "${state}"
     if [[ "${state}" == "running" ]];then
       ((found++))
       where=${container}
     fi
   done
   if [[ ${action} != 'noop' && ${found} -eq 1 ]];then
-    echo "Connecting to ${pod} ${where}"
-    kate_go "${action}" "${namespace}" "${pod}" "${where}"
+    if [[ ${action} == 'do' ]];then
+      shift 3
+      kate_do "${namespace}" "${pod}" "${where}" $@
+    else
+      echo "Connecting to ${pod} ${where}"
+      kate_go "${action}" "${namespace}" "${pod}" "${where}"
+    fi
   fi
 }
 
@@ -65,6 +70,15 @@ function kate_go() {
         kubectl -n ${namespace} exec -it -c ${container} ${pod} -- /bin/${shell}
       ;;
   esac
+}
+
+function kate_do() {
+  local namespace=$1
+  local pod=$2
+  local container=$3
+  shift 3
+
+  kubectl -n ${namespace} exec -it -c ${container} ${pod} -- /bin/bash -c $@
 }
 
 #----------------------------------COMPLETIONS-----------------------------------#
@@ -205,6 +219,23 @@ function kate_extentions() {
           kate_go "${action}" "${namespace}" "${pod}" "${container}" "${shell}"
         fi
       ;;
+    do) #[pod]#Run command on a specified pod
+        action=$1
+        shift
+        local IFS=$'\n'
+        if [ $# -lt 1 ]; then
+          #ignore openebs pvcs
+          for pod in $(kubectl -n ${namespace} get pod -o=name | sed 's~^pod/~~' | grep -v 'pvc')
+          do
+            echo -e "\033[32;1m${pod}\033[0m"
+            kate_containers "${namespace}" "${pod}"
+          done
+        else
+          pod=$1
+          shift
+          kate_containers "${namespace}" "${pod}" "${action}" $@
+        fi
+      ;;
     ex) ##Print usage information
         document ${BASH_SOURCE}
         echo ""
@@ -260,12 +291,18 @@ function kate() {
 function kl() {
   kate $@ | less
 }
-#kubectl/kate watch = KL
+#kubectl/kate watch = KW
 function kw() {
   while [ $? ]
   do
     kate $@
   done
+}
+function ks() {
+  kate get pod | grep "$1"
+}
+function kn() {
+  kate get pod -o=name | grep "$1"
 }
 
 #kube control = KC
@@ -274,7 +311,6 @@ alias k8='kate'
 alias kc='kate'
 
 alias kd='k describe pod'
-alias ks='k get pod'
 alias kg='k go'
 
 
