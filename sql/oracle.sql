@@ -31,7 +31,7 @@ ${ORACLE_HOME}/bin/sqlplus / as sysdba -- Connect from the command line
     machine
   from v$session
 
--- Locked sessions:
+-- Locked sessions: (source: http://www.dba-oracle.com/oracle_tips_locked_sessions.htm)
   column sid format a5;
   column serial format a5;
   column oracle_username format a10;
@@ -54,3 +54,18 @@ ${ORACLE_HOME}/bin/sqlplus / as sysdba -- Connect from the command line
     ao.object_id = lo.object_id
   and
     lo.session_id = sess.sid;
+
+  -- Kill locked sessions (untested):
+  spool run_nuke.sql
+
+  select
+    'alter system kill session '''||
+    sess.sid||', '||sess.serial#||';'
+  from
+    v$locked_object lo,
+    dba_objects     ao,
+    v$session       sess
+  where
+    ao.object_id = lo.object_id
+    and lo.session_id = sess.sid;
+

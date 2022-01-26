@@ -38,6 +38,16 @@ openssl x509 -req -days 3650 -in id.csr -signkey ~/.ssh/id_rsa -out id.pem
     #then download from their site using the signature
   #Method 2: look for the crt url within the browser cert details by clicking on the padlock
 
+#download CAs from website (source: https://unix.stackexchange.com/questions/368123/how-to-extract-the-root-ca-and-subordinate-ca-from-a-certificate-chain-in-linux) 
+openssl s_client -showcerts -verify 5 -connect website.com:443 < /dev/null | \
+  awk '/BEGIN/,/END/{ if(/BEGIN/){a++}; out="cert"a".pem"; print >out}'
+for cert in *.pem
+do
+  newname=$(openssl x509 -noout -subject -in $cert | sed -nE 's/.*CN ?= ?(.*)/\1/; s/[ ,.*]/_/g; s/__/_/g; s/_-_/-/; s/^_//g;p' | tr '[:upper:]' '[:lower:]').pem
+  echo "${newname}"
+  mv "${cert}" "${newname}"
+done
+
 #add CA to truststore:
   #Method 1: prepend to /etc/pki/tls/certs/ca-bundle.crt for curl to see it
     #It may be overwritten by future updates,

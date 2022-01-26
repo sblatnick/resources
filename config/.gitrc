@@ -241,7 +241,7 @@ function gitex() {
               echo "${branches}" | grep "$1" | sed -n "/${remote}\// s//  /p"
             fi
           else
-            echo "${branches}" | sed -n "/${remote}\// s//  /p"
+            echo "${branches}" | grep "^${remote}/" | sed -n "/${remote}\// s//  /p"
           fi
         done
       ;;

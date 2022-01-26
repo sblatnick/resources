@@ -275,6 +275,19 @@ function export_all() {
   done
 }
 
+
+function pathify() {
+  BIN='pathify' pipe $@ | \
+    tr '[:upper:]' '[:lower:]' | \
+    tr -d '!@#$%^&*()=+`\|<>,;?' | \
+    tr ' :' '_' | \
+    tr $'\n' '_' | \
+    sed 's/_$/\n/'
+}
+
+alias datetime="date +'%F %T'"
+alias today="date +'%F'"
+
 #--------------------------------DOCUMENTATION---------------------------------#
 
 function document() {
