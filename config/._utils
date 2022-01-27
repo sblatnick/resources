@@ -290,12 +290,28 @@ alias today="date +'%F'"
 
 #--------------------------------DOCUMENTATION---------------------------------#
 
+function document_header() {
+  echo ""
+  echo -e "  \033[1m${1}\033[0m"
+}
+function de() {
+  local var=${1}
+  shift
+  if [ -n "${2}" ];then
+    local param=${1}
+    shift
+  fi
+  local help=${1}
+
+  col=$(printf "\033[34;1m%s\033[0m %s" "${var}" "${param}")
+  printf "    %-60s %s\n" "${col}" "${help}"
+}
+
 function document() {
   grep -Eo '^##.*$' $1 |
   while read section
   do
-    echo ""
-    echo -e "  \033[1m${section#\#\#}\033[0m"
+    document_header "${section#\#\#}"
     sed -n "/^${section}\$/,/^\(##.*\|\}\)\$/ p" $1 | grep -Eo '[^ (]+\)\s+#.*$' | \
     while read help
     do
@@ -304,9 +320,7 @@ function document() {
       if [ -z "${params}" ];then
         params="$(grep -A 1 -F "${help}" $1 | tail -n 1 | grep 'trap' | grep -Eo '\[[^]]*\]' | tr $'\n' ' ')"
       fi
-      col=$(printf "\033[34;1m%s\033[0m %s" "${help%%)*#*}" "${params}")
-      printf "    %-60s %s\n" "${col}" "${help##*#}"
-      #printf "    \033[34;1m%-15s\033[0m %s\n" "${help%%)*#*}" "${help#*#}"
+      de "${help%%)*#*}" "${params}" "${help##*#}"
     done
   done
 }

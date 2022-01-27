@@ -5,15 +5,25 @@ source ${BASH_SOURCE%/path/*}/config/bashrc
 REQUEST=$1
 shift
 
+##Main
 case "${REQUEST}" in
-  POST)
+  help|h|'') ##This help documentation
+      document ${BASH_SOURCE}
+      document_header "Environment Variables"
+      de "JIRA" "API endpoint"
+      document_header "Examples"
+      de "${0##*/}" "GET issue/PROJECT-001" "Retrieve issue"
+      echo ""
+      exit
+    ;;
+  POST) #[json file]#request against jira
       if [ ! -f ${1} ];then
         error "No json file at '$1'"
       fi
       json="-H 'Content-Type: application/json' -d '@${1}'"
       shift
     ;;
-  GET|DELETE|PUT)
+  GET|DELETE|PUT) ##requests against jira
     ;;
   *)
       error "Unsupported request: ${REQUEST}"
