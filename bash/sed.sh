@@ -388,7 +388,7 @@ sed '2{/pattern/! i\insert
 }' test.cfg
 
 #Add root to AllowGroups if not present:
-sed '/AllowGroups /{/ root /! s/AllowGroups /AllowGroups root /}' /etc/ssh/sshd_config
+sed -i '/AllowGroups /{/ root /! s/AllowGroups /AllowGroups root /}' /etc/ssh/sshd_config
 
 #print only if the block has a match:
   sed 'H;/--START--/h;/--END--/!d;x;/match/!d'

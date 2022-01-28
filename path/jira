@@ -8,6 +8,7 @@ shift
 ##Main
 case "${REQUEST}" in
   help|h|'') ##This help documentation
+      document_title "Jira Tools" "method" "json file" "api path"
       document ${BASH_SOURCE}
       document_header "Environment Variables"
       de "JIRA" "API endpoint"

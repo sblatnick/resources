@@ -23,10 +23,19 @@ function extract()
 
 function search()
 {
+  if [ -n "${WHERE}" ];then
+    local OWD=$OLDPWD
+    cd ${WHERE}
+  fi
   pattern=$1
   shift
-  find -L . -type d | sed 's/$/\//' | ag ${pattern}
-  find -L . -type f | ag ${pattern}
+  find -L . -type d | sed 's/$/\//' | ag ${pattern} | sed 's/^\.\///'
+  find -L . -type f | ag ${pattern} | sed 's/^\.\///'
+
+  if [ -n "${WHERE}" ];then
+    cd - >/dev/null
+    OLDPWD=$OWD
+  fi
 }
 
 function jag()

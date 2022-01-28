@@ -252,6 +252,26 @@ function insert() {
 }' ${file}
 }
 
+function append() {
+  if [ "$#" -lt 2 ];then
+    BIN='append' document_title "Append to file if not found" "file" "text"
+    return
+  fi
+  local file=$1
+  local text=$2
+  sed -n "/^${text//\//\\/}\$/q;\$a\\${text//\//\\/}" ${file} >> .gitignore
+}
+
+function rmline() {
+  if [ "$#" -lt 2 ];then
+    BIN='rmline' document_title "Remove line from file" "file" "text"
+    return
+  fi
+  local file=$1
+  local text=$2
+  sed -i "/^${text//\//\\/}\$/d" ${file}
+}
+
 function stack() {
   pid=${1-$$}
   if [[ $pid -eq $$ ]];then
@@ -290,6 +310,19 @@ alias today="date +'%F'"
 
 #--------------------------------DOCUMENTATION---------------------------------#
 
+function document_title() {
+  local description=$1
+  local bin=${BIN-${0##*/}}
+  shift
+  local params=""
+  while [ -n "$1" ]
+  do
+    params+=$(printf "[\033[34;1m%s\033[0m] " "${1}")
+    shift
+  done
+  printf "\033[1m%s:\033[0m %s %s" "${description}" "${bin}" "${params}"
+  echo ""
+}
 function document_header() {
   echo ""
   echo -e "  \033[1m${1}\033[0m"

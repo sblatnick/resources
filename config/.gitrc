@@ -69,11 +69,11 @@ function bash_prompt()
   fi
   PS1="\w \[\033[32m\]$BRANCH\[\033[36m\]$dirty\[\033[0m\]\[\033[${SC-0}m\]\$\[\033[0m\] "
   if [ -z "${TERM_NAME}" ];then
-    top=$($wgit rev-parse --show-toplevel 2>/dev/null)
-    if [ -z "${top}" ];then
+    TOPLEVEL=$($wgit rev-parse --show-toplevel 2>/dev/null)
+    if [ -z "${TOPLEVEL}" ];then
       echo -en "\033]0;${PWD##*/}\a"
     else
-      echo -en "\033]0;${top##*/}\a"
+      echo -en "\033]0;${TOPLEVEL##*/}\a"
     fi
   fi
 }
@@ -140,7 +140,7 @@ function gitex() {
         git ex
       ;;
     ex) ##print this usage information
-        echo -e "\033[1mExtended Git Usage:\033[0m git [\033[34;1mactions\033[0m]"
+        BIN='git' document_title "Extended Git Usage" "actions"
         document ${BASH_SOURCE}
         echo ""
       ;;
@@ -441,6 +441,9 @@ function gitex() {
             shift
           done
         fi
+      ;;
+    ignore|follow) #[file|pattern]#Ignore untracked files or assume unchanged tracked files
+        gitex_ignore $@
       ;;
     amend) #[sha]#amend an old commit message
         shift
@@ -816,6 +819,52 @@ function gitex_subtree()
 
   cd - >/dev/null
   OLDPWD=$OWD
+}
+
+##Ignore Actions:
+function gitex_ignore()
+{
+  local action=$1
+  shift
+  if [ -z "${1}" ]; then
+    local action=''
+  fi
+
+  while
+    local pattern=${1}
+    case "${action}" in
+      '') ##list ignored (default)
+          echo -e "\033[32massume-unchanged\033[0m"
+          git -C ${TOPLEVEL} ls-files -v | sed -n '/^[a-z] / s//  /p'
+          echo -e "\033[32mgitignore\033[0m"
+          for gitignore in $(WHERE=${TOPLEVEL} search .gitignore)
+          do
+            echo -e "  \033[34m${gitignore}\033[0m"
+            cat ${TOPLEVEL}/${gitignore} | sed 's/^/      /'
+          done
+        ;;
+      ignore) #[file|pattern]#add to ignore/unfollow
+          $wgit ls-files --error-unmatch "${pattern}" >/dev/null 2>&1
+          if [ $? -eq 0 ];then #tracked
+            git -C ${TOPLEVEL} update-index --assume-unchanged ${pattern}
+          else #not tracked
+            echo append ${TOPLEVEL}/.gitignore "${pattern}"
+          fi
+        ;;
+      follow) #[file|pattern]#remove from ignore or follow
+          $wgit ls-files --error-unmatch "${pattern}" >/dev/null 2>&1
+          if [ $? -eq 0 ];then #tracked
+            git -C ${TOPLEVEL} update-index --no-assume-unchanged ${pattern}
+          else #not tracked
+            rmline ${TOPLEVEL}/.gitignore "${pattern}"
+          fi
+        ;;
+    esac
+    shift
+    [ -n "$1" ]
+  do
+    continue
+  done
 }
 
 function gitex_svn_migrate()
