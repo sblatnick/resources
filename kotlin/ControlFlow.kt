@@ -23,8 +23,8 @@
         println("Yummy, it's a $cake cake!")
     }
     //map key/value:
-    for ((name, age) in map) {                                      // 2
-      println("$name is $age years old")          
+    for ((name, age) in map) {
+      println("$name is $age years old")
     }
 
   //forEach:

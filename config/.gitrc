@@ -274,7 +274,7 @@ function gitex() {
         #git-svn repo?
         if [ -z "${url}" ];then
           branch=$($wgit rev-parse --abbrev-ref HEAD)
-          $wgit push origin $branch --tags
+          $wgit push origin $branch --tags --force-with-lease
           return $?
         else
           $wgit svn dcommit
@@ -848,7 +848,7 @@ function gitex_ignore()
           if [ $? -eq 0 ];then #tracked
             git -C ${TOPLEVEL} update-index --assume-unchanged ${pattern}
           else #not tracked
-            echo append ${TOPLEVEL}/.gitignore "${pattern}"
+            append .gitignore "${pattern}"
           fi
         ;;
       follow) #[file|pattern]#remove from ignore or follow
@@ -856,7 +856,7 @@ function gitex_ignore()
           if [ $? -eq 0 ];then #tracked
             git -C ${TOPLEVEL} update-index --no-assume-unchanged ${pattern}
           else #not tracked
-            rmline ${TOPLEVEL}/.gitignore "${pattern}"
+            rmline .gitignore "${pattern}"
           fi
         ;;
     esac
