@@ -187,8 +187,5 @@ git config --global -e
     #Enter password one last time
 
   #https credentials:
-    #~/.netrc
-      machine domain.com login <user_name> password <password>
-    #once updated in the netrc, it will prompt/update next pull?
     #~/.git-credentials 
       https://<user_name>:<base64 password>@domain.com

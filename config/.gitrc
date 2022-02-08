@@ -518,22 +518,31 @@ function gitex() {
 function gitex_action() {
   local ACTION=$1
   shift
-  local ARGS=$@
-
+  if [[ -n "$@" && -f "$@" ]];then
+    local args=$(<$@)
+  else
+    local args=$@
+  fi
   local OWD=$OLDPWD
   local start=$(pwd)
 
   for repo in $(echo ${!current})
   do
+    set -a
     repo=${repo//\~/$HOME}
     cd ${repo}
     repo=${repo##*/}
+    local toplevel=$($wgit rev-parse --show-toplevel 2>/dev/null)
     local branch=$($wgit rev-parse --abbrev-ref HEAD)
+
     local dirty=''
     if [ -n "$($wgit status --porcelain)" ]; then
       local dirty='*'
     fi
     local output="\033[34;1m${repo}\033[0m \033[32;1m$branch\033[36m$dirty\033[0m"
+
+    set +a
+    ARGS=$(echo "${args}" | sed 's/"/\\\"/g;s/.*/echo "&"/e')
 
     case "${ACTION}" in
       list) ##list repos and branches in current context
@@ -585,10 +594,9 @@ function gitex_action() {
             fi
           fi
         ;;
-      with) ##eval on repos in the current context replacing REPO
+      with) #[file|args]#eval on repos in the current context
           echo -e "${output}"
-          local LARGS=${ARGS//REPO/$repo}
-          eval "$LARGS"
+          eval "$ARGS"
           if [ "$?" -eq 130 ];then #SIGINT
             cd ${start}
             return
@@ -605,6 +613,10 @@ function gitex_action() {
   cd $start
   OLDPWD=$OWD
 }
+##  Variables (any others must be escaped):
+# $repo) ##
+# $branch) ##
+# $toplevel) ##
 
 function gitex_add_repo_to_context() {
   set +e

@@ -141,6 +141,8 @@
   git pull origin branch2
   #copy the branch to remote:
   git push origin antiAbuse03
+  #merge with a remote branch not checked out:
+  git push origin my_branch:remote_branch
 
   #get all updates, even from remote branches on secondary sources (in case of tracking problems):
   git fetch --all
