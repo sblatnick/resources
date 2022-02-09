@@ -1,0 +1,1260 @@
+source: https://en.wikipedia.org/wiki/List_of_Unicode_characters
+
+Box Drawing
+  ─	━	│	┃	┄	┅	┆	┇	┈	┉	┊	┋	┌	┍	┎	┏
+  ┐	┑	┒	┓	└	┕	┖	┗	┘	┙	┚	┛	├	┝	┞	┟
+  ┠	┡	┢	┣	┤	┥	┦	┧	┨	┩	┪	┫	┬	┭	┮	┯
+  ┰	┱	┲	┳	┴	┵	┶	┷	┸	┹	┺	┻	┼	┽	┾	┿
+  ╀	╁	╂	╃	╄	╅	╆	╇	╈	╉	╊	╋	╌	╍	╎	╏
+  ═	║	╒	╓	╔	╕	╖	╗	╘	╙	╚	╛	╜	╝	╞	╟
+  ╠	╡	╢	╣	╤	╥	╦	╧	╨	╩	╪	╫	╬	╭	╮	╯
+  ╰	╱	╲	╳	╴	╵	╶	╷	╸	╹	╺	╻	╼	╽	╾	╿
+
+  ┌─┬┐  ╔═╦╗  ╓─╥╖  ╒═╤╕
+  │ ││  ║ ║║  ║ ║║  │ ││
+  ├─┼┤  ╠═╬╣  ╟─╫╢  ╞═╪╡
+  └─┴┘  ╚═╩╝  ╙─╨╜  ╘═╧╛
+  ┌───────────────────┐
+  │  ╔═══╗ Some Text  │▒
+  │  ╚═╦═╝ in the box │▒
+  ╞═╤══╩══╤═══════════╡▒
+  │ ├──┬──┤           │▒
+  │ └──┴──┘           │▒
+  └───────────────────┘▒
+   ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+
+  ├
+  │
+  └
+  ─
+
+Block Elements
+  ▀	Upper half block
+  ▁	Lower one eighth block
+  ▂	Lower one quarter block
+  ▃	Lower three eighths block
+  ▄	Lower half block
+  ▅	Lower five eighths block
+  ▆	Lower three quarters block
+  ▇	Lower seven eighths block
+  █	Full block
+  ▉	Left seven eighths block
+  ▊	Left three quarters block
+  ▋	Left five eighths block
+  ▌	Left half block
+  ▍	Left three eighths block
+  ▎	Left one quarter block
+  ▏	Left one eighth block
+  ▐	Right half block
+  ░	Light shade
+  ▒	Medium shade
+  ▓	Dark shade
+  ▔	Upper one eighth block
+  ▕	Right one eighth block
+  ▖	Quadrant lower left
+  ▗	Quadrant lower right
+  ▘	Quadrant upper left
+  ▙	Quadrant upper left and lower left and lower right
+  ▚	Quadrant upper left and lower right
+  ▛	Quadrant upper left and upper right and lower left
+  ▜	Quadrant upper left and upper right and lower right
+  ▝	Quadrant upper right
+  ▞	Quadrant upper right and lower left
+  ▟	Quadrant upper right and lower left and lower right
+
+Geometric Shapes
+  ■	Black square
+  □	White square
+  ▢	White square with rounded corners
+  ▣	White square containing small black square
+  ▤	Square with horizontal fill
+  ▥	Square with vertical fill
+  ▦	Square with orthogonal crosshatch fill
+  ▧	Square with upper left to lower right fill
+  ▨	Square with upper right to lower left fill
+  ▩	Square with diagonal crosshatch fill
+  ▪	Black small square
+  ▫	White small square
+  ▬	Black rectangle
+  ▭	White rectangle
+  ▮	Black vertical rectangle
+  ▯	White vertical rectangle
+  ▰	Black parallelogram
+  ▱	White parallelogram
+  ▲	Black up-pointing triangle
+  △	White up-pointing triangle
+  ▴	Black up-pointing small triangle
+  ▵	White up-pointing small triangle
+  ▶	Black right-pointing triangle
+  ▷	White right-pointing triangle
+  ▸	Black right-pointing small triangle
+  ▹	White right-pointing small triangle
+  ►	Black right-pointing pointer
+  ▻	White right-pointing pointer
+  ▼	Black down-pointing triangle
+  ▽	White down-pointing triangle
+  ▾	Black down-pointing small triangle
+  ▿	White down-pointing small triangle
+  ◀	Black left-pointing triangle
+  ◁	White left-pointing triangle
+  ◂	Black left-pointing small triangle
+  ◃	White left-pointing small triangle
+  ◄	Black left-pointing pointer
+  ◅	White left-pointing pointer
+  ◆	Black diamond
+  ◇	White diamond
+  ◈	White diamond containing small black diamond
+  ◉	Fisheye
+  ◊	Lozenge
+  ○	White circle
+  ◌	Dotted circle
+  ◍	Circle with vertical fill
+  ◎	Bullseye
+  ●	Black circle
+  ◐	Circle with left half black
+  ◑	Circle with right half black
+  ◒	Circle with lower half black
+  ◓	Circle with upper half black
+  ◔	Circle with upper right quadrant black
+  ◕	Circle with all but upper left quadrant black
+  ◖	Left half circle black
+  ◗	Right half black circle
+  ◘	Inverse bullet
+  ◙	Inverse white circle
+  ◚	Upper half inverse white circle
+  ◛	Lower half inverse white circle
+  ◜	Upper left quadrant circular arc
+  ◝	Upper right quadrant circular arc
+  ◞	Lower right quadrant circular arc
+  ◟	Lower left quadrant circular arc
+  ◠	Upper half circle
+  ◡	Lower half circle
+  ◢	Black lower right triangle
+  ◣	Black lower left triangle
+  ◤	Black upper left triangle
+  ◥	Black upper right triangle
+  ◦	White bullet
+  ◧	Square with left half black
+  ◨	Square with right half black
+  ◩	Square with upper left diagonal half black
+  ◪	Square with lower right diagonal half black
+  ◫	White square with vertical bisecting line
+  ◬	White up-pointing triangle with dot
+  ◭	Up-pointing triangle with left half black
+  ◮	Up-pointing triangle with right half black
+  ◯	Large circle
+  ◰	White square with upper left quadrant
+  ◱	White square with lower left quadrant
+  ◲	White square with lower right quadrant
+  ◳	White square with upper right quadrant
+  ◴	White circle with upper left quadrant
+  ◵	White circle with lower left quadrant
+  ◶	White circle with lower right quadrant
+  ◷	White circle with upper right quadrant
+  ◸	Upper left triangle
+  ◹	Upper right triangle
+  ◺	Lower-left triangle
+  ◻	White medium square
+  ◼	Black medium square
+  ◽	White medium small square
+  ◾	Black medium small square
+  ◿	Lower right triangle
+
+Miscellaneous Symbols
+  ☀	☁	☂	☃	☄	★	☆	☇	☈	☉	☊	☋	☌	☍	☎	☏
+  ☐	☑	☒	☓	☔	☕	☖	☗	☘	☙	☚	☛	☜	☝	☞	☟
+  ☠	☡	☢	☣	☤	☥	☦	☧	☨	☩	☪	☫	☬	☭	☮	☯
+  ☰	☱	☲	☳	☴	☵	☶	☷	☸	☹	☺	☻	☼	☽	☾	☿
+  ♀	♁	♂	♃	♄	♅	♆	♇	♈	♉	♊	♋	♌	♍	♎	♏
+  ♐	♑	♒	♓	♔	♕	♖	♗	♘	♙	♚	♛	♜	♝	♞	♟
+  ♠	♡	♢	♣	♤	♥	♦	♧	♨	♩	♪	♫	♬	♭	♮	♯
+  ♰	♱	♲	♳	♴	♵	♶	♷	♸	♹	♺	♻	♼	♽	♾	♿
+  ⚀	⚁	⚂	⚃	⚄	⚅	⚆	⚇	⚈	⚉	⚊	⚋	⚌	⚍	⚎	⚏
+  ⚐	⚑	⚒	⚓	⚔	⚕	⚖	⚗	⚘	⚙	⚚	⚛	⚜	⚝	⚞	⚟
+  ⚠	⚡	⚢	⚣	⚤	⚥	⚦	⚧	⚨	⚩	⚪	⚫	⚬	⚭	⚮	⚯
+  ⚰	⚱	⚲	⚳	⚴	⚵	⚶	⚷	⚸	⚹	⚺	⚻	⚼	⚽	⚾	⚿
+  ⛀	⛁	⛂	⛃	⛄	⛅	⛆	⛇	⛈	⛉	⛊	⛋	⛌	⛍	⛎	⛏
+  ⛐	⛑	⛒	⛓	⛔	⛕	⛖	⛗	⛘	⛙	⛚	⛛	⛜	⛝	⛞	⛟
+  ⛠	⛡	⛢	⛣	⛤	⛥	⛦	⛧	⛨	⛩	⛪	⛫	⛬	⛭	⛮	⛯
+  ⛰	⛱	⛲	⛳	⛴	⛵	⛶	⛷	⛸	⛹	⛺	⛻	⛼	⛽	⛾	⛿
+
+General Punctuation
+  ‐	
+  ‑‒	–	—	―	‖	‗	‘	’	‚	‛	“	”	„	‟
+  †	‡	•	‣	․	‥	…	‧	
+  ‰	‱	′	″	‴	‵	‶	‷	‸	‹	›	※	‼	‽	‾	‿
+  ⁀	⁁	⁂	⁃	⁄	⁅	⁆	⁇	⁈	⁉	⁊	⁋	⁌	⁍	⁎	⁏
+  ⁐	⁑	⁒	⁓	⁔	⁕	⁖	⁗	⁘	⁙	⁚	⁛	⁜	⁝	⁞
+  ƒ×
+
+Superscripts and Subscripts
+  ⁰	ⁱ			⁴	⁵	⁶	⁷	⁸	⁹	⁺	⁻	⁼	⁽	⁾	ⁿ
+  ₀	₁	₂	₃	₄	₅	₆	₇	₈	₉	₊	₋	₌	₍	₎	
+  ₐ	ₑ	ₒ	ₓ	ₔ	ₕ	ₖ	ₗ	ₘ	ₙ	ₚ	ₛ	ₜ
+
+Currency Symbols
+  ₠	₡	₢	₣	₤	₥	₦	₧	₨	₩	₪	₫	€	₭	₮	₯
+  ₰	₱	₲	₳	₴	₵	₶	₷	₸	₹	₺	₻	₼	₽	₾	₿
+
+Letterlike Symbols
+  ℀	℁	ℂ	℃	℄	℅	℆	ℇ	℈	℉	ℊ	ℋ	ℌ	ℍ	ℎ	ℏ
+  ℐ	ℑ	ℒ	ℓ	℔	ℕ	№	℗	℘	ℙ	ℚ	ℛ	ℜ	ℝ	℞	℟
+  ℠	℡	™	℣	ℤ	℥	Ω	℧	ℨ	℩	K	Å	ℬ	ℭ	℮	ℯ
+  ℰ	ℱ	Ⅎ	ℳ	ℴ	ℵ	ℶ	ℷ	ℸ	ℹ	℺	℻	ℼ	ℽ	ℾ	ℿ
+  ⅀	⅁	⅂	⅃	⅄	ⅅ	ⅆ	ⅇ	ⅈ	ⅉ	⅊	⅋	⅌	⅍	ⅎ	⅏
+
+Number Forms
+  ⅐	⅑	⅒	⅓	⅔	⅕	⅖	⅗	⅘	⅙	⅚	⅛	⅜	⅝	⅞	⅟
+  Ⅰ	Ⅱ	Ⅲ	Ⅳ	Ⅴ	Ⅵ	Ⅶ	Ⅷ	Ⅸ	Ⅹ	Ⅺ	Ⅻ	Ⅼ	Ⅽ	Ⅾ	Ⅿ
+  ⅰ	ⅱ	ⅲ	ⅳ	ⅴ	ⅵ	ⅶ	ⅷ	ⅸ	ⅹ	ⅺ	ⅻ	ⅼ	ⅽ	ⅾ	ⅿ
+  ↀ	ↁ	ↂ	Ↄ	ↄ	ↅ	ↆ	ↇ	ↈ	↉	↊	↋
+
+Arrows
+  ←	↑	→	↓	↔	↕	↖	↗	↘	↙	↚	↛	↜	↝	↞	↟
+  ↠	↡	↢	↣	↤	↥	↦	↧	↨	↩	↪	↫	↬	↭	↮	↯
+  ↰	↱	↲	↳	↴	↵	↶	↷	↸	↹	↺	↻	↼	↽	↾	↿
+  ⇀	⇁	⇂	⇃	⇄	⇅	⇆	⇇	⇈	⇉	⇊	⇋	⇌	⇍	⇎	⇏
+  ⇐	⇑	⇒	⇓	⇔	⇕	⇖	⇗	⇘	⇙	⇚	⇛	⇜	⇝	⇞	⇟
+  ⇠	⇡	⇢	⇣	⇤	⇥	⇦	⇧	⇨	⇩	⇪	⇫	⇬	⇭	⇮	⇯
+  ⇰	⇱	⇲	⇳	⇴	⇵	⇶	⇷	⇸	⇹	⇺	⇻	⇼	⇽	⇾	⇿
+
+Mathematical Operators
+  ∀	∁	∂	∃	∄	∅	∆	∇	∈	∉	∊	∋	∌	∍	∎	∏
+  ∐	∑	−	∓	∔	∕	∖	∗	∘	∙	√	∛	∜	∝	∞	∟
+  ∠	∡	∢	∣	∤	∥	∦	∧	∨	∩	∪	∫	∬	∭	∮	∯
+  ∰	∱	∲	∳	∴	∵	∶	∷	∸	∹	∺	∻	∼	∽	∾	∿
+  ≀	≁	≂	≃	≄	≅	≆	≇	≈	≉	≊	≋	≌	≍	≎	≏
+  ≐	≑	≒	≓	≔	≕	≖	≗	≘	≙	≚	≛	≜	≝	≞	≟
+  ≠	≡	≢	≣	≤	≥	≦	≧	≨	≩	≪	≫	≬	≭	≮	≯
+  ≰	≱	≲	≳	≴	≵	≶	≷	≸	≹	≺	≻	≼	≽	≾	≿
+  ⊀	⊁	⊂	⊃	⊄	⊅	⊆	⊇	⊈	⊉	⊊	⊋	⊌	⊍	⊎	⊏
+  ⊐	⊑	⊒	⊓	⊔	⊕	⊖	⊗	⊘	⊙	⊚	⊛	⊜	⊝	⊞	⊟
+  ⊠	⊡	⊢	⊣	⊤	⊥	⊦	⊧	⊨	⊩	⊪	⊫	⊬	⊭	⊮	⊯
+  ⊰	⊱	⊲	⊳	⊴	⊵	⊶	⊷	⊸	⊹	⊺	⊻	⊼	⊽	⊾	⊿
+  ⋀	⋁	⋂	⋃	⋄	⋅	⋆	⋇	⋈	⋉	⋊	⋋	⋌	⋍	⋎	⋏
+  ⋐	⋑	⋒	⋓	⋔	⋕	⋖	⋗	⋘	⋙	⋚	⋛	⋜	⋝	⋞	⋟
+  ⋠	⋡	⋢	⋣	⋤	⋥	⋦	⋧	⋨	⋩	⋪	⋫	⋬	⋭	⋮	⋯
+  ⋰	⋱	⋲	⋳	⋴	⋵	⋶	⋷	⋸	⋹	⋺	⋻	⋼	⋽	⋾	⋿
+
+Miscellaneous Technical
+  ⌀	⌁	⌂	⌃	⌄	⌅	⌆	⌇	⌈	⌉	⌊	⌋	⌌	⌍	⌎	⌏
+  ⌐	⌑	⌒	⌓	⌔	⌕	⌖	⌗	⌘	⌙	⌚	⌛	⌜	⌝	⌞	⌟
+  ⌠	⌡	⌢	⌣	⌤	⌥	⌦	⌧	⌨	〈	〉	⌫	⌬	⌭	⌮	⌯
+  ⌰	⌱	⌲	⌳	⌴	⌵	⌶	⌷	⌸	⌹	⌺	⌻	⌼	⌽	⌾	⌿
+  ⍀	⍁	⍂	⍃	⍄	⍅	⍆	⍇	⍈	⍉	⍊	⍋	⍌	⍍	⍎	⍏
+  ⍐	⍑	⍒	⍓	⍔	⍕	⍖	⍗	⍘	⍙	⍚	⍛	⍜	⍝	⍞	⍟
+  ⍠	⍡	⍢	⍣	⍤	⍥	⍦	⍧	⍨	⍩	⍪	⍫	⍬	⍭	⍮	⍯
+  ⍰	⍱	⍲	⍳	⍴	⍵	⍶	⍷	⍸	⍹	⍺	⍻	⍼	⍽	⍾	⍿
+  ⎀	⎁	⎂	⎃	⎄	⎅	⎆	⎇	⎈	⎉	⎊	⎋	⎌	⎍	⎎	⎏
+  ⎐	⎑	⎒	⎓	⎔	⎕	⎖	⎗	⎘	⎙	⎚	⎛	⎜	⎝	⎞	⎟
+  ⎠	⎡	⎢	⎣	⎤	⎥	⎦	⎧	⎨	⎩	⎪	⎫	⎬	⎭	⎮	⎯
+  ⎰	⎱	⎲	⎳	⎴	⎵	⎶	⎷	⎸	⎹	⎺	⎻	⎼	⎽	⎾	⎿
+  ⏀	⏁	⏂	⏃	⏄	⏅	⏆	⏇	⏈	⏉	⏊	⏋	⏌	⏍	⏎	⏏
+  ⏐	⏑	⏒	⏓	⏔	⏕	⏖	⏗	⏘	⏙	⏚	⏛	⏜	⏝	⏞	⏟
+  ⏠	⏡	⏢	⏣	⏤	⏥	⏦	⏧	⏨	⏩	⏪	⏫	⏬	⏭	⏮	⏯
+  ⏰	⏱	⏲	⏳	⏴	⏵	⏶	⏷	⏸	⏹	⏺	⏻	⏼	⏽	⏾	⏿
+
+Enclosed Alphanumerics
+  ①	②	③	④	⑤	⑥	⑦	⑧	⑨	⑩	⑪	⑫	⑬	⑭	⑮	⑯
+  ⑰	⑱	⑲	⑳	⑴	⑵	⑶	⑷	⑸	⑹	⑺	⑻	⑼	⑽	⑾	⑿
+  ⒀	⒁	⒂	⒃	⒄	⒅	⒆	⒇	⒈	⒉	⒊	⒋	⒌	⒍	⒎	⒏
+  ⒐	⒑	⒒	⒓	⒔	⒕	⒖	⒗	⒘	⒙	⒚	⒛	⒜	⒝	⒞	⒟
+  ⒠	⒡	⒢	⒣	⒤	⒥	⒦	⒧	⒨	⒩	⒪	⒫	⒬	⒭	⒮	⒯
+  ⒰	⒱	⒲	⒳	⒴	⒵	Ⓐ	Ⓑ	Ⓒ	Ⓓ	Ⓔ	Ⓕ	Ⓖ	Ⓗ	Ⓘ	Ⓙ
+  Ⓚ	Ⓛ	Ⓜ	Ⓝ	Ⓞ	Ⓟ	Ⓠ	Ⓡ	Ⓢ	Ⓣ	Ⓤ	Ⓥ	Ⓦ	Ⓧ	Ⓨ	Ⓩ
+  ⓐ	ⓑ	ⓒ	ⓓ	ⓔ	ⓕ	ⓖ	ⓗ	ⓘ	ⓙ	ⓚ	ⓛ	ⓜ	ⓝ	ⓞ	ⓟ
+  ⓠ	ⓡ	ⓢ	ⓣ	ⓤ	ⓥ	ⓦ	ⓧ	ⓨ	ⓩ	⓪	⓫	⓬	⓭	⓮	⓯
+  ⓰	⓱	⓲	⓳	⓴	⓵	⓶	⓷	⓸	⓹	⓺	⓻	⓼	⓽	⓾	⓿
+
+Unicode symbols
+  –	En dash 
+  —	Em dash 
+  ―	Horizontal bar 
+  ‗	Double low line 
+  ‘	Left single quotation mark 
+  ’	Right single quotation mark 
+  ‚	Single low-9 quotation mark 
+  ‛	Single high-reversed-9 quotation mark 
+  “	Left double quotation mark 
+  ”	Right double quotation mark 
+  „	Double low-9 quotation mark 
+  †	Dagger 
+  ‡	Double dagger 
+  •	Bullet 
+  …	Horizontal ellipsis 
+  ‰	Per mille sign 
+  ′	Prime 
+  ″	Double prime 
+  ‹	Single left-pointing angle quotation mark 
+  ›	Single right-pointing angle quotation mark 
+  ‼	Double exclamation mark 
+  ‾	Overline 
+  ⁄	Fraction slash 
+  ⁊	Tironian et sign 
+
+Spacing modifier letters
+  ʰ Modifier Letter Small H	·
+  ʱ Modifier Letter Small H with hook
+  ʲ Modifier Letter Small J
+  ʳ Modifier Letter Small R
+  ʴ Modifier Letter Small Turned R
+  ʵ Modifier Letter Small Turned R with hook
+  ʶ Modifier Letter Small Capital Inverted R
+  ʷ Modifier Letter Small W
+  ʸ Modifier Letter Small Y
+  ʹ Modifier Letter Prime
+  ʺ Modifier Letter Double Prime
+  ʻ Modifier Letter Turned Comma in Sami
+  ʼ Modifier Letter Apostrophe in ISO/IEC 8859-7
+  ʽ Modifier Letter Reversed Comma 
+  ʾ Modifier Letter Right Half Ring	·
+  ʿ Modifier Letter Left Half Ring
+  ˀ Modifier Letter Glottal Stop
+  ˁ Modifier Letter Reversed Glottal Stop
+  ˂ Modifier Letter Left Arrowhead
+  ˃ Modifier Letter Right Arrowhead
+  ˄ Modifier Letter Up Arrowhead
+  ˅ Modifier Letter Down Arrowhead
+  ˆ Modifier Letter Circumflex Accent in WGL4
+  ˇ Caron 
+  ˈ Modifier Letter Vertical Line	·
+  ˉ Modifier Letter Macron in WGL4
+  ˊ Modifier Letter Acute Accent	·
+  ˋ Modifier Letter Grave Accent
+  ˌ Modifier Letter Low Vertical Line
+  ˍ Modifier Letter Low Macron
+  ˎ Modifier Letter Low Grave Accent
+  ˏ Modifier Letter Low Acute Accent
+  ː Modifier Letter Triangular Colon
+  ˑ Modifier Letter Half Triangular Colon
+  ˒ Modifier Letter Centered Right Half Ring
+  ˓ Modifier Letter Centered Left Half Ring
+  ˔ Modifier Letter Up Tack
+  ˕ Modifier Letter Down Tack
+  ˖ Modifier Letter Plus Sign in WGL4 (?)
+  ˗ Modifier Letter Minus Sign	·
+  ˘ Breve in WGL4
+  ˙ Dot Above 
+  ˚ Ring Above 
+  ˛ Ogonek 
+  ˜ Small Tilde 
+  ˝ Double Acute Accent 
+  ˞ Modifier Letter Rhotic Hook	·
+  ˟ Modifier Letter Cross Accent for Swedish dictionary use
+  ˠ Modifier Letter Small Gamma	·
+  ˡ Modifier Letter Small L
+  ˢ Modifier Letter Small S
+  ˣ Modifier Letter Small X
+  ˤ Modifier Letter Small Reversed Glottal Stop
+  ˥ Modifier Letter Extra-High Tone Bar
+  ˦ Modifier Letter High Tone Bar
+  ˧ Modifier Letter Mid Tone Bar
+  ˨ Modifier Letter Low Tone Bar
+  ˩ Modifier Letter Extra-Low Tone Bar
+  ˪ Modifier Letter Yin Departing Tone Mark
+  ˫ Modifier Letter Yang Departing Tone Mark
+  ˬ Modifier Letter Voicing
+  ˭ Modifier Letter Unaspirated
+  ˮ Modifier Letter Double Apostrophe for Nenets
+  ˯ Modifier Letter Low Down Arrowhead	·
+  ˰ Modifier Letter Low Up Arrowhead
+  ˱ Modifier Letter Low Left Arrowhead
+  ˲ Modifier Letter Low Right Arrowhead
+  ˳ Modifier Letter Low Ring
+  ˴ Modifier Letter Middle Grave Accent
+  ˵ Modifier Letter Middle Double Grave Accent
+  ˶ Modifier Letter Middle Double Acute Accent
+  ˷ Modifier Letter Low Tilde
+  ˸ Modifier Letter Raised Colon
+  ˹ Modifier Letter Begin High Tone
+  ˺ Modifier Letter End High Tone
+  ˻ Modifier Letter Begin Low Tone
+  ˼ Modifier Letter End Low Tone
+  ˽ Modifier Letter Shelf
+  ˾ Modifier Letter Open Shelf
+  ˿ Modifier Letter Low Left Arrow
+
+Greek and Coptic
+  Ͱ Greek Capital Letter Heta	·
+  ͱ Greek Small Letter Heta
+  Ͳ Greek Capital Letter Archaic Sampi
+  ͳ Greek Small Letter Archaic Sampi
+  ʹ Greek Numeral Sign 
+  ͵ Greek Lower Numeral Sign 
+  Ͷ Greek Capital Letter Pamphylian Digamma	·
+  ͷ Greek Small Letter Pamphylian Digamma
+  ͺ Greek Ypogegrammeni 
+  ͻ Greek Small Reversed Lunate Sigma Symbol	·
+  ͼ Greek Small Dotted Lunate Sigma Symbol
+  ͽ Greek Small Reversed Dotted Lunate Sigma Symbol
+  ; Greek Question Mark 
+  Ϳ Greek Capital Letter Yot	·
+  ΄ Greek acute accent (tonos) 
+  ΅ Greek diaeresis with acute accent 
+  Ά Greek Capital Letter A with acute accent 
+  · Greek Ano Teleia 
+  Έ Greek Capital Letter Epsilon with acute accent 
+  Ή Greek Capital Letter Eta with acute accent 
+  Ί Greek Capital Letter Iota with acute accent 
+  Ό Greek Capital Letter Omicron with acute accent 
+  Ύ Greek Capital Letter Upsilon with acute accent 
+  Ώ Greek Capital Letter Omega with acute accent 
+  ΐ Greek Small Letter Iota with diaeresis and acute accent 
+  Α Greek Capital Letter Alpha 
+  Β Greek Capital Letter Beta 
+  Γ Greek Capital Letter Gamma 
+  Δ Greek Capital Letter Delta 
+  Ε Greek Capital Letter Epsilon 
+  Ζ Greek Capital Letter Zeta 
+  Η Greek Capital Letter Eta 
+  Θ Greek Capital Letter Theta 
+  Ι Greek Capital Letter Iota 
+  Κ Greek Capital Letter Kappa 
+  Λ Greek Capital Letter Lambda 
+  Μ Greek Capital Letter Mu 
+  Ν Greek Capital Letter Nu 
+  Ξ Greek Capital Letter Xi 
+  Ο Greek Capital Letter Omicron 
+  Π Greek Capital Letter Pi 
+  Ρ Greek Capital Letter Rho 
+  Σ Greek Capital Letter Sigma 
+  Τ Greek Capital Letter Tau 
+  Υ Greek Capital Letter Upsilon 
+  Φ Greek Capital Letter Phi 
+  Χ Greek Capital Letter Chi 
+  Ψ Greek Capital Letter Psi 
+  Ω Greek Capital Letter Omega 
+  Ϊ Greek Capital Letter Iota with diaeresis 
+  Ϋ Greek Capital Letter Upsilon with diaeresis 
+  ά Greek Small Letter Alpha with acute accent 
+  έ Greek Small Letter Epsilon with acute accent 
+  ή Greek Small Letter Eta with acute accent 
+  ί Greek Small Letter Iota with acute accent 
+  ΰ Greek Small Letter Upsilon with diaeresis and acute accent 
+  α Greek Small Letter Alpha 
+  β Greek Small Letter Beta 
+  γ Greek Small Letter Gamma 
+  δ Greek Small Letter Delta 
+  ε Greek Small Letter Epsilon 
+  ζ Greek Small Letter Zeta 
+  η Greek Small Letter Eta 
+  θ Greek Small Letter Theta 
+  ι Greek Small Letter Iota 
+  κ Greek Small Letter Kappa 
+  λ Greek Small Letter Lambda 
+  μ Greek Small Letter Mu 
+  ν Greek Small Letter Nu 
+  ξ Greek Small Letter Xi 
+  ο Greek Small Letter Omicron 
+  π Greek Small Letter Pi 
+  ρ Greek Small Letter Rho 
+  ς Greek Small Letter Final Sigma 
+  σ Greek Small Letter Sigma 
+  τ Greek Small Letter Tau 
+  υ Greek Small Letter Upsilon 
+  φ Greek Small Letter Phi 
+  χ Greek Small Letter Chi 
+  ψ Greek Small Letter Psi 
+  ω Greek Small Letter Omega 
+  ϊ Greek Small Letter Iota with diaeresis 
+  ϋ Greek Small Letter Upsilon with diaeresis 
+  ό Greek Small Letter Omicron with acute accent 
+  ύ Greek Small Letter Upsilon with acute accent 
+  ώ Greek Small Letter Omega with acute accent 
+  Ϗ Greek Capital Kai Symbol	·
+  ϐ Greek Beta Symbol	·
+  ϑ Greek Theta Symbol
+  ϒ Greek Upsilon with hook Symbol
+  ϓ Greek Upsilon with acute and hook Symbol
+  ϔ Greek Upsilon with diaeresis and hook Symbol
+  ϕ Greek Phi Symbol
+  ϖ Greek Pi Symbol
+  ϗ Greek Kai Symbol 
+  Ϙ Greek Letter Qoppa	·
+  ϙ Greek Small Letter Qoppa
+  Ϛ Greek Letter Stigma 
+  ϛ Greek Small Letter Stigma 
+  Ϝ Greek Letter Digamma 
+  ϝ Greek Small Letter Digamma 
+  Ϟ Greek Letter Koppa 
+  ϟ Greek Small Letter Koppa 
+  Ϡ Greek Letter Sampi 
+  ϡ Greek Small Letter Sampi 
+  Ϣ Coptic Capital Letter Shei	·
+  ϣ Coptic Small Letter Shei
+  Ϥ Coptic Capital Letter Fei
+  ϥ Coptic Small Letter Fei
+  Ϧ Coptic Capital Letter Khei
+  ϧ Coptic Small Letter Khei
+  Ϩ Coptic Capital Letter Hori
+  ϩ Coptic Small Letter Hori
+  Ϫ Coptic Capital Letter Gangia
+  ϫ Coptic Small Letter Gangia
+  Ϭ Coptic Capital Letter Shima
+  ϭ Coptic Small Letter Shima
+  Ϯ Coptic Capital Letter Dei
+  ϯ Coptic Small Letter Dei
+  ϰ Greek Kappa Symbol
+  ϱ Greek Rho Symbol
+  ϲ Greek Lunate Sigma Symbol
+  ϳ Greek Letter Yot
+  ϴ Greek Capital Theta Symbol
+  ϵ Greek Lunate Epsilon Symbol
+  ϶ Greek Reversed Lunate Epsilon Symbol
+  Ϸ Greek Capital Sho
+  ϸ Greek Small Letter Sho
+  Ϲ Greek Capital Lunate Sigma Symbol
+  Ϻ Greek Capital San
+  ϻ Greek Small Letter San
+  ϼ Greek Rho with stroke Symbol
+  Ͻ Greek Capital Reversed Lunate Sigma Symbol
+  Ͼ Greek Capital Dotted Lunate Sigma Symbol
+  Ͽ Greek Capital Reversed Dotted Lunate Sigma Symbol
+
+Greek Extended[1][2]
+  ἀ	ἁ	ἂ	ἃ	ἄ	ἅ	ἆ	ἇ	Ἀ	Ἁ	Ἂ	Ἃ	Ἄ	Ἅ	Ἆ	Ἇ
+  ἐ	ἑ	ἒ	ἓ	ἔ	ἕ			Ἐ	Ἑ	Ἒ	Ἓ	Ἔ	Ἕ		
+  ἠ	ἡ	ἢ	ἣ	ἤ	ἥ	ἦ	ἧ	Ἠ	Ἡ	Ἢ	Ἣ	Ἤ	Ἥ	Ἦ	Ἧ
+  ἰ	ἱ	ἲ	ἳ	ἴ	ἵ	ἶ	ἷ	Ἰ	Ἱ	Ἲ	Ἳ	Ἴ	Ἵ	Ἶ	Ἷ
+  ὀ	ὁ	ὂ	ὃ	ὄ	ὅ			Ὀ	Ὁ	Ὂ	Ὃ	Ὄ	Ὅ		
+  ὐ	ὑ	ὒ	ὓ	ὔ	ὕ	ὖ	ὗ		Ὑ		Ὓ		Ὕ		Ὗ
+  ὠ	ὡ	ὢ	ὣ	ὤ	ὥ	ὦ	ὧ	Ὠ	Ὡ	Ὢ	Ὣ	Ὤ	Ὥ	Ὦ	Ὧ
+  ὰ	ά	ὲ	έ	ὴ	ή	ὶ	ί	ὸ	ό	ὺ	ύ	ὼ	ώ		
+  ᾀ	ᾁ	ᾂ	ᾃ	ᾄ	ᾅ	ᾆ	ᾇ	ᾈ	ᾉ	ᾊ	ᾋ	ᾌ	ᾍ	ᾎ	ᾏ
+  ᾐ	ᾑ	ᾒ	ᾓ	ᾔ	ᾕ	ᾖ	ᾗ	ᾘ	ᾙ	ᾚ	ᾛ	ᾜ	ᾝ	ᾞ	ᾟ
+  ᾠ	ᾡ	ᾢ	ᾣ	ᾤ	ᾥ	ᾦ	ᾧ	ᾨ	ᾩ	ᾪ	ᾫ	ᾬ	ᾭ	ᾮ	ᾯ
+  ᾰ	ᾱ	ᾲ	ᾳ	ᾴ		ᾶ	ᾷ	Ᾰ	Ᾱ	Ὰ	Ά	ᾼ	᾽	ι	᾿
+  ῀	῁	ῂ	ῃ	ῄ		ῆ	ῇ	Ὲ	Έ	Ὴ	Ή	ῌ	῍	῎	῏
+  ῐ	ῑ	ῒ	ΐ			ῖ	ῗ	Ῐ	Ῑ	Ὶ	Ί		῝	῞	῟
+  ῠ	ῡ	ῢ	ΰ	ῤ	ῥ	ῦ	ῧ	Ῠ	Ῡ	Ὺ	Ύ	Ῥ	῭	΅	`
+      ῲ	ῳ	ῴ		ῶ	ῷ	Ὸ	Ό	Ὼ	Ώ	ῼ	´	῾
+
+Cyrillic
+  Ѐ	Cyrillic Capital Letter Ie with grave 
+  Ё	Cyrillic Capital Letter Io 
+  Ђ	Cyrillic Capital Letter Dje 
+  Ѓ	Cyrillic Capital Letter Gje 
+  Є	Cyrillic Capital Letter Ukrainian Ie 
+  Ѕ	Cyrillic Capital Letter Dze 
+  І	Cyrillic Capital Letter Byelorussian-Ukrainian I 
+  Ї	Cyrillic Capital Letter Yi 
+  Ј	Cyrillic Capital Letter Je 
+  Љ	Cyrillic Capital Letter Lje 
+  Њ	Cyrillic Capital Letter Nje 
+  Ћ	Cyrillic Capital Letter Tshe 
+  Ќ	Cyrillic Capital Letter Kje 
+  Ѝ	Cyrillic Capital Letter I with grave 
+  Ў	Cyrillic Capital Letter Short U 
+  Џ	Cyrillic Capital Letter Dzhe 
+  А	Cyrillic Capital Letter A 
+  Б	Cyrillic Capital Letter Be 
+  В	Cyrillic Capital Letter Ve 
+  Г	Cyrillic Capital Letter Ghe 
+  Д	Cyrillic Capital Letter De 
+  Е	Cyrillic Capital Letter Ie 
+  Ж	Cyrillic Capital Letter Zhe 
+  З	Cyrillic Capital Letter Ze 
+  И	Cyrillic Capital Letter I 
+  Й	Cyrillic Capital Letter Short I 
+  К	Cyrillic Capital Letter Ka 
+  Л	Cyrillic Capital Letter El 
+  М	Cyrillic Capital Letter Em 
+  Н	Cyrillic Capital Letter En 
+  О	Cyrillic Capital Letter O 
+  П	Cyrillic Capital Letter Pe 
+  Р	Cyrillic Capital Letter Er 
+  С	Cyrillic Capital Letter Es 
+  Т	Cyrillic Capital Letter Te 
+  У	Cyrillic Capital Letter U 
+  Ф	Cyrillic Capital Letter Ef 
+  Х	Cyrillic Capital Letter Ha 
+  Ц	Cyrillic Capital Letter Tse 
+  Ч	Cyrillic Capital Letter Che 
+  Ш	Cyrillic Capital Letter Sha 
+  Щ	Cyrillic Capital Letter Shcha 
+  Ъ	Cyrillic Capital Letter Hard Sign 
+  Ы	Cyrillic Capital Letter Yeru 
+  Ь	Cyrillic Capital Letter Soft Sign 
+  Э	Cyrillic Capital Letter E 
+  Ю	Cyrillic Capital Letter Yu 
+  Я	Cyrillic Capital Letter Ya 
+  а	Cyrillic Small Letter A 
+  б	Cyrillic Small Letter Be 
+  в	Cyrillic Small Letter Ve 
+  г	Cyrillic Small Letter Ghe 
+  д	Cyrillic Small Letter De 
+  е	Cyrillic Small Letter Ie 
+  ж	Cyrillic Small Letter Zhe 
+  з	Cyrillic Small Letter Ze 
+  и	Cyrillic Small Letter I 
+  й	Cyrillic Small Letter Short I 
+  к	Cyrillic Small Letter Ka 
+  л	Cyrillic Small Letter El 
+  м	Cyrillic Small Letter Em 
+  н	Cyrillic Small Letter En 
+  о	Cyrillic Small Letter O 
+  п	Cyrillic Small Letter Pe 
+  р	Cyrillic Small Letter Er 
+  с	Cyrillic Small Letter Es 
+  т	Cyrillic Small Letter Te 
+  у	Cyrillic Small Letter U 
+  ф	Cyrillic Small Letter Ef 
+  х	Cyrillic Small Letter Ha 
+  ц	Cyrillic Small Letter Tse 
+  ч	Cyrillic Small Letter Che 
+  ш	Cyrillic Small Letter Sha 
+  щ	Cyrillic Small Letter Shcha 
+  ъ	Cyrillic Small Letter Hard Sign 
+  ы	Cyrillic Small Letter Yeru 
+  ь	Cyrillic Small Letter Soft Sign 
+  э	Cyrillic Small Letter E 
+  ю	Cyrillic Small Letter Yu 
+  я	Cyrillic Small Letter Ya 
+  ѐ	Cyrillic Small Letter Ie with grave 
+  ё	Cyrillic Small Letter Io 
+  ђ	Cyrillic Small Letter Dje 
+  ѓ	Cyrillic Small Letter Gje 
+  є	Cyrillic Small Letter Ukrainian Ie 
+  ѕ	Cyrillic Small Letter Dze 
+  і	Cyrillic Small Letter Byelorussian-Ukrainian I 
+  ї	Cyrillic Small Letter Yi 
+  ј	Cyrillic Small Letter Je 
+  љ	Cyrillic Small Letter Lje 
+  њ	Cyrillic Small Letter Nje 
+  ћ	Cyrillic Small Letter Tshe 
+  ќ	Cyrillic Small Letter Kje 
+  ѝ	Cyrillic Small Letter I with grave 
+  ў	Cyrillic Small Letter Short U 
+  џ	Cyrillic Small Letter Dzhe 
+  Ѡ	Cyrillic Capital Letter Omega	·
+  ѡ	Cyrillic Small Letter Omega
+  Ѣ	Cyrillic Capital Letter Yat
+  ѣ	Cyrillic Small Letter Yat
+  Ѥ	Cyrillic Capital Letter Iotified E
+  ѥ	Cyrillic Small Letter Iotified E
+  Ѧ	Cyrillic Capital Letter Little Yus
+  ѧ	Cyrillic Small Letter Little Yus
+  Ѩ	Cyrillic Capital Letter Iotified Little Yus
+  ѩ	Cyrillic Small Letter Iotified Little Yus
+  Ѫ	Cyrillic Capital Letter Big Yus
+  ѫ	Cyrillic Small Letter Big Yus
+  Ѭ	Cyrillic Capital Letter Iotified Big Yus
+  ѭ	Cyrillic Small Letter Iotified Big Yus
+  Ѯ	Cyrillic Capital Letter Ksi
+  ѯ	Cyrillic Small Letter Ksi
+  Ѱ	Cyrillic Capital Letter Psi
+  ѱ	Cyrillic Small Letter Psi
+  Ѳ	Cyrillic Capital Letter Fita
+  ѳ	Cyrillic Small Letter Fita
+  Ѵ	Cyrillic Capital Letter Izhitsa
+  ѵ	Cyrillic Small Letter Izhitsa
+  Ѷ	Cyrillic Capital Letter Izhitsa with double grave accent
+  ѷ	Cyrillic Small Letter Izhitsa with double grave accent
+  Ѹ	Cyrillic Capital Letter Uk
+  ѹ	Cyrillic Small Letter Uk
+  Ѻ	Cyrillic Capital Letter Round Omega
+  ѻ	Cyrillic Small Letter Round Omega
+  Ѽ	Cyrillic Capital Letter Omega with Titlo
+  ѽ	Cyrillic Small Letter Omega with Titlo
+  Ѿ	Cyrillic Capital Letter Ot
+  ѿ	Cyrillic Small Letter Ot
+  Ҁ	Cyrillic Capital Letter Koppa
+  ҁ	Cyrillic Small Letter Koppa
+  ҂	Cyrillic Thousands Sign
+   ҃	Combining Cyrillic Titlo
+   ҄	Combining Cyrillic Palatalization
+   ҅	Combining Cyrillic Dasia Pneumata
+   ҆	Combining Cyrillic Psili Pneumata
+   ҇	Combining Cyrillic Pokrytie
+   ҈	Combining Cyrillic Hundred Thousands Sign
+   ҉	Combining Cyrillic Millions Sign
+  Ҋ	Cyrillic Capital Letter Short I with tail
+  ҋ	Cyrillic Small Letter Short I with tail
+  Ҍ	Cyrillic Capital Letter Semisoft Sign
+  ҍ	Cyrillic Small Letter Semisoft Sign
+  Ҏ	Cyrillic Capital Letter Er with tick
+  ҏ	Cyrillic Small Letter Er with tick
+  Ґ	Cyrillic Capital Letter Ghe with upturn 
+  ґ	Cyrillic Small Letter Ghe with upturn 
+  Ғ	Cyrillic Capital Letter Ghe with stroke 
+  ғ	Cyrillic Small Letter Ghe with stroke 
+  Ҕ	Cyrillic Capital Letter Ghe with middle hook 
+  ҕ	Cyrillic Small Letter Ghe with middle hook 
+  Җ	Cyrillic Capital Letter Zhe with descender 
+  җ	Cyrillic Small Letter Zhe with descender 
+  Ҙ	Cyrillic Capital Letter Ze with descender 
+  ҙ	Cyrillic Small Letter Ze with descender 
+  Қ	Cyrillic Capital Letter Ka with descender 
+  қ	Cyrillic Small Letter Ka with descender 
+  Ҝ	Cyrillic Capital Letter Ka with vertical stroke 
+  ҝ	Cyrillic Small Letter Ka with vertical stroke 
+  Ҟ	Cyrillic Capital Letter Ka with stroke 
+  ҟ	Cyrillic Small Letter Ka with stroke 
+  Ҡ	Cyrillic Capital Letter Bashkir Ka 
+  ҡ	Cyrillic Small Letter Bashkir Ka 
+  Ң	Cyrillic Capital Letter En with descender 
+  ң	Cyrillic Small Letter En with descender 
+  Ҥ	Cyrillic Capital Ligature En Ghe 
+  ҥ	Cyrillic Small Ligature En Ghe 
+  Ҧ	Cyrillic Capital Letter Pe with middle hook 
+  ҧ	Cyrillic Small Letter Pe with middle hook 
+  Ҩ	Cyrillic Capital Letter Abkhazian Ha 
+  ҩ	Cyrillic Small Letter Abkhazian Ha 
+  Ҫ	Cyrillic Capital Letter Es with descender 
+  ҫ	Cyrillic Small Letter Es with descender 
+  Ҭ	Cyrillic Capital Letter Te with descender 
+  ҭ	Cyrillic Small Letter Te with descender 
+  Ү	Cyrillic Capital Letter Straight U 
+  ү	Cyrillic Small Letter Straight U 
+  Ұ	Cyrillic Capital Letter Straight U with stroke 
+  ұ	Cyrillic Small Letter Straight U with stroke 
+  Ҳ	Cyrillic Capital Letter Ha with descender 
+  ҳ	Cyrillic Small Letter Ha with descender 
+  Ҵ	Cyrillic Capital Ligature Te Tse 
+  ҵ	Cyrillic Small Ligature Te Tse 
+  Ҷ	Cyrillic Capital Letter Che with descender 
+  ҷ	Cyrillic Small Letter Che with descender 
+  Ҹ	Cyrillic Capital Letter Che with vertical stroke 
+  ҹ	Cyrillic Small Letter Che with vertical stroke 
+  Һ	Cyrillic Capital Letter Shha 
+  һ	Cyrillic Small Letter Shha 
+  Ҽ	Cyrillic Capital Letter Abkhazian Che 
+  ҽ	Cyrillic Small Letter Abkhazian Che 
+  Ҿ	Cyrillic Capital Letter Abkhazian Che with descender 
+  ҿ	Cyrillic Small Letter Abkhazian Che with descender 
+  Ӏ	Cyrillic Letter Palochka 
+  Ӂ	Cyrillic Capital Letter Zhe with breve 
+  ӂ	Cyrillic Small Letter Zhe with breve 
+  Ӄ	Cyrillic Capital Letter Ka with hook 
+  ӄ	Cyrillic Small Letter Ka with hook 
+  Ӆ	Cyrillic Capital Letter El with tail	·
+  ӆ	Cyrillic Small Letter El with tail
+  Ӈ	Cyrillic Capital Letter En with hook 
+  ӈ	Cyrillic Small Letter En with hook 
+  Ӊ	Cyrillic Capital Letter En with tail	·
+  ӊ	Cyrillic Small Letter En with tail
+  Ӌ	Cyrillic Capital Letter Khakassian Che 
+  ӌ	Cyrillic Small Letter Khakassian Che 
+  Ӎ	Cyrillic Capital Letter Em with tail	·
+  ӎ	Cyrillic Small Letter Em with tail
+  ӏ	Cyrillic Small Letter Palochka
+  Ӑ	Cyrillic Capital Letter A with breve 
+  ӑ	Cyrillic Small Letter A with breve 
+  Ӓ	Cyrillic Capital Letter A with diaeresis 
+  ӓ	Cyrillic Small Letter A with diaeresis 
+  Ӕ	Cyrillic Capital Ligature A Ie 
+  ӕ	Cyrillic Small Ligature A Ie 
+  Ӗ	Cyrillic Capital Letter Ie with breve 
+  ӗ	Cyrillic Small Letter Ie with breve 
+  Ә	Cyrillic Capital Letter Schwa 
+  ә	Cyrillic Small Letter Schwa 
+  Ӛ	Cyrillic Capital Letter Schwa with diaeresis 
+  ӛ	Cyrillic Small Letter Schwa with diaeresis 
+  Ӝ	Cyrillic Capital Letter Zhe with diaeresis 
+  ӝ	Cyrillic Small Letter Zhe with diaeresis 
+  Ӟ	Cyrillic Capital Letter Ze with diaeresis 
+  ӟ	Cyrillic Small Letter Ze with diaeresis 
+  Ӡ	Cyrillic Capital Letter Abkhazian Dze 
+  ӡ	Cyrillic Small Letter Abkhazian Dze 
+  Ӣ	Cyrillic Capital Letter I with macron 
+  ӣ	Cyrillic Small Letter I with macron 
+  Ӥ	Cyrillic Capital Letter I with diaeresis 
+  ӥ	Cyrillic Small Letter I with diaeresis 
+  Ӧ	Cyrillic Capital Letter O with diaeresis 
+  ӧ	Cyrillic Small Letter O with diaeresis 
+  Ө	Cyrillic Capital Letter Barred O 
+  ө	Cyrillic Small Letter Barred O 
+  Ӫ	Cyrillic Capital Letter Barred O with diaeresis 
+  ӫ	Cyrillic Small Letter Barred O with diaeresis 
+  Ӭ	Cyrillic Capital Letter E with diaeresis	·
+  ӭ	Cyrillic Small Letter E with diaeresis
+  Ӯ	Cyrillic Capital Letter U with macron 
+  ӯ	Cyrillic Small Letter U with macron 
+  Ӱ	Cyrillic Capital Letter U with diaeresis 
+  ӱ	Cyrillic Small Letter U with diaeresis 
+  Ӳ	Cyrillic Capital Letter U with double acute 
+  ӳ	Cyrillic Small Letter U with double acute 
+  Ӵ	Cyrillic Capital Letter Che with diaeresis 
+  ӵ	Cyrillic Small Letter Che with diaeresis 
+  Ӷ	Cyrillic Capital Letter Ghe with descender	·
+  ӷ	Cyrillic Small Letter Ghe with descender
+  Ӹ	Cyrillic Capital Letter Yeru with diaeresis 
+  ӹ	Cyrillic Small Letter Yeru with diaeresis 
+  Ӻ	Cyrillic Capital Letter Ghe with stroke and hook	·
+  ӻ	Cyrillic Small Letter Ghe with stroke and hook
+  Ӽ	Cyrillic Capital Letter Ha with hook
+  ӽ	Cyrillic Small Letter Ha with hook
+  Ӿ	Cyrillic Capital Letter Ha with stroke
+  ӿ	Cyrillic Small Letter Ha with stroke
+
+Latin-1 Supplement
+  ¡ &iexcl;	Inverted Exclamation Mark 
+  ¢ &cent;	Cent sign 
+  £ &pound;	Pound sign 
+  ¤ &curren;	Currency sign 
+  ¥ &yen;	Yen sign 
+  ¦ &brvbar;	Broken bar 
+  § &sect;	Section sign 
+  ¨ &uml;	Diaeresis (Umlaut) 
+  © &copy;	Copyright sign 
+  ª &ordf;	Feminine Ordinal Indicator 
+  « &laquo;	Left-pointing double angle quotation mark 
+  ¬ &not;	Not sign 
+  ® &reg;	Registered sign 
+  ¯ &macr;	Macron 
+  ° &deg;	Degree sign 
+  ± &plusmn;	Plus–minus sign 
+  ² &sup2;	Superscript two 
+  ³ &sup3;	Superscript three 
+  ´ &acute;	Acute accent 
+  µ &micro;	Micro sign 
+  ¶ &para;	Pilcrow sign 
+  · &middot;	Middle dot 
+  ¸ &cedil;	Cedilla 
+  ¹ &sup1;	Superscript one 
+  º &ordm;	Masculine ordinal indicator 
+  » &raquo;	Right-pointing double angle quotation mark 
+  ¼ &frac14;	Vulgar fraction one quarter 
+  ½ &frac12;	Vulgar fraction one half 
+  ¾ &frac34;	Vulgar fraction three quarters 
+  ¿ &iquest;	Inverted Question Mark
+  × &times;	Multiplication sign
+  ÷ &divide;	Division sign 
+
+  À &Agrave;	Latin Capital Letter A with grave 
+  Á &Aacute;	Latin Capital letter A with acute 
+  Â &Acirc;	Latin Capital letter A with circumflex 
+  Ã &Atilde;	Latin Capital letter A with tilde 
+  Ä &Auml;	Latin Capital letter A with diaeresis 
+  Å &Aring;	Latin Capital letter A with ring above 
+  Æ &AElig;	Latin Capital letter Æ 
+  Ç &Ccedil;	Latin Capital letter C with cedilla 
+  È &Egrave;	Latin Capital letter E with grave 
+  É &Eacute;	Latin Capital letter E with acute 
+  Ê &Ecirc;	Latin Capital letter E with circumflex 
+  Ë &Euml;	Latin Capital letter E with diaeresis 
+  Ì &Igrave;	Latin Capital letter I with grave 
+  Í &Iacute;	Latin Capital letter I with acute 
+  Î &Icirc;	Latin Capital letter I with circumflex 
+  Ï &Iuml;	Latin Capital letter I with diaeresis 
+  Ð &ETH;	Latin Capital letter Eth 
+  Ñ &Ntilde;	Latin Capital letter N with tilde 
+  Ò &Ograve;	Latin Capital letter O with grave 
+  Ó &Oacute;	Latin Capital letter O with acute 
+  Ô &Ocirc;	Latin Capital letter O with circumflex 
+  Õ &Otilde;	Latin Capital letter O with tilde 
+  Ö &Ouml;	Latin Capital letter O with diaeresis 
+  Ø &Oslash;	Latin Capital letter O with stroke 
+  Ù &Ugrave;	Latin Capital letter U with grave 
+  Ú &Uacute;	Latin Capital letter U with acute 
+  Û &Ucirc;	Latin Capital Letter U with circumflex 
+  Ü &Uuml;	Latin Capital Letter U with diaeresis 
+  Ý &Yacute;	Latin Capital Letter Y with acute 
+  Þ &THORN;	Latin Capital Letter Thorn 
+  ß &szlig;	Latin Small Letter sharp S 
+  à &agrave;	Latin Small Letter A with grave 
+  á &aacute;	Latin Small Letter A with acute 
+  â &acirc;	Latin Small Letter A with circumflex 
+  ã &atilde;	Latin Small Letter A with tilde 
+  ä &auml;	Latin Small Letter A with diaeresis 
+  å &aring;	Latin Small Letter A with ring above 
+  æ &aelig;	Latin Small Letter Æ 
+  ç &ccedil;	Latin Small Letter C with cedilla 
+  è &egrave;	Latin Small Letter E with grave 
+  é &eacute;	Latin Small Letter E with acute 
+  ê &ecirc;	Latin Small Letter E with circumflex 
+  ë &euml;	Latin Small Letter E with diaeresis 
+  ì &igrave;	Latin Small Letter I with grave 
+  í &iacute;	Latin Small Letter I with acute 
+  î &icirc;	Latin Small Letter I with circumflex 
+  ï &iuml;	Latin Small Letter I with diaeresis 
+  ð &eth;	Latin Small Letter Eth 
+  ñ &ntilde;	Latin Small Letter N with tilde 
+  ò &ograve;	Latin Small Letter O with grave 
+  ó &oacute;	Latin Small Letter O with acute 
+  ô &ocirc;	Latin Small Letter O with circumflex 
+  õ &otilde;	Latin Small Letter O with tilde 
+  ö &ouml;	Latin Small Letter O with diaeresis 
+  ø &oslash;	Latin Small Letter O with stroke 
+  ù &ugrave;	Latin Small Letter U with grave 
+  ú &uacute;	Latin Small Letter U with acute 
+  û &ucirc;	Latin Small Letter U with circumflex 
+  ü &uuml;	Latin Small Letter U with diaeresis 
+  ý &yacute;	Latin Small Letter Y with acute 
+  þ &thorn;	Latin Small Letter Thorn 
+  ÿ &yuml;	Latin Small Letter Y with diaeresis 
+
+Latin Extended-A
+  Ā &Amacr;	Latin Capital Letter A with macron 
+  ā &amacr;	Latin Small Letter A with macron 
+  Ă &Abreve;	Latin Capital Letter A with breve 
+  ă &abreve;	Latin Small Letter A with breve 
+  Ą &Aogon;	Latin Capital Letter A with ogonek 
+  ą &aogon;	Latin Small Letter A with ogonek 
+  Ć &Cacute;	Latin Capital Letter C with acute 
+  ć &cacute;	Latin Small Letter C with acute 
+  Ĉ &Ccirc;	Latin Capital Letter C with circumflex 
+  ĉ &ccirc;	Latin Small Letter C with circumflex 
+  Ċ &Cdot;	Latin Capital Letter C with dot above 
+  ċ &cdot;	Latin Small Letter C with dot above 
+  Č &Ccaron;	Latin Capital Letter C with caron 
+  č &ccaron;	Latin Small Letter C with caron 
+  Ď &Dcaron;	Latin Capital Letter D with caron 
+  ď &dcaron;	Latin Small Letter D with caron 
+  Đ &Dstrok;	Latin Capital Letter D with stroke 
+  đ &dstrok;	Latin Small Letter D with stroke 
+  Ē &Emacr;	Latin Capital Letter E with macron 
+  ē &emacr;	Latin Small Letter E with macron 
+  Ĕ &Ebreve;	Latin Capital Letter E with breve 
+  ĕ &ebreve;	Latin Small Letter E with breve 
+  Ė &Edot;	Latin Capital Letter E with dot above 
+  ė &edot;	Latin Small Letter E with dot above 
+  Ę &Eogon;	Latin Capital Letter E with ogonek 
+  ę &eogon;	Latin Small Letter E with ogonek 
+  Ě &Ecaron;	Latin Capital Letter E with caron 
+  ě &ecaron;	Latin Small Letter E with caron 
+  Ĝ &Gcirc;	Latin Capital Letter G with circumflex 
+  ĝ &gcirc;	Latin Small Letter G with circumflex 
+  Ğ &Gbreve;	Latin Capital Letter G with breve 
+  ğ &gbreve;	Latin Small Letter G with breve 
+  Ġ &Gdot;	Latin Capital Letter G with dot above 
+  ġ &gdot;	Latin Small Letter G with dot above 
+  Ģ &Gcedil;	Latin Capital Letter G with cedilla 
+  ģ 	Latin Small Letter G with cedilla 
+  Ĥ &Hcirc;	Latin Capital Letter H with circumflex 
+  ĥ &hcirc;	Latin Small Letter H with circumflex 
+  Ħ &Hstrok;	Latin Capital Letter H with stroke 
+  ħ &hstrok;	Latin Small Letter H with stroke 
+  Ĩ &Itilde;	Latin Capital Letter I with tilde 
+  ĩ &itilde;	Latin Small Letter I with tilde 
+  Ī &Imacr;	Latin Capital Letter I with macron 
+  ī &imacr;	Latin Small Letter I with macron 
+  Ĭ &Ibreve;	Latin Capital Letter I with breve 
+  ĭ &ibreve;	Latin Small Letter I with breve 
+  Į &Iogon;	Latin Capital Letter I with ogonek 
+  į &iogon;	Latin Small Letter I with ogonek 
+  İ &Idot;	Latin Capital Letter I with dot above 
+  ı &inodot;	Latin Small Letter dotless I 
+  Ĳ &IJlig;	Latin Capital Ligature IJ 
+  ĳ &ijlig;	Latin Small Ligature IJ 
+  Ĵ &Jcirc;	Latin Capital Letter J with circumflex 
+  ĵ &jcirc;	Latin Small Letter J with circumflex 
+  Ķ &Kcedil;	Latin Capital Letter K with cedilla 
+  ķ &kcedil;	Latin Small Letter K with cedilla 
+  ĸ 	Latin Small Letter Kra 
+  Ĺ &Lacute;	Latin Capital Letter L with acute 
+  ĺ &lacute;	Latin Small Letter L with acute 
+  Ļ &Lcedil;	Latin Capital Letter L with cedilla 
+  ļ &lcedil;	Latin Small Letter L with cedilla 
+  Ľ &Lcaron;	Latin Capital Letter L with caron 
+  ľ &lcaron;	Latin Small Letter L with caron 
+  Ŀ 	Latin Capital Letter L with middle dot 
+  ŀ 	Latin Small Letter L with middle dot 
+  Ł &Lstrok;	Latin Capital Letter L with stroke 
+  ł &lstrok;	Latin Small Letter L with stroke 
+  Ń &Nacute;	Latin Capital Letter N with acute 
+  ń &nacute;	Latin Small Letter N with acute 
+  Ņ &Ncedil;	Latin Capital Letter N with cedilla 
+  ņ &ncedil;	Latin Small Letter N with cedilla 
+  Ň &Ncaron;	Latin Capital Letter N with caron 
+  ň &ncaron;	Latin Small Letter N with caron 
+  ŉ Latin Small Letter N preceded by apostrophe 
+  Ŋ &ENG;	Latin Capital Letter Eng 
+  ŋ &eng;	Latin Small Letter Eng 
+  Ō &Omacr;	Latin Capital Letter O with macron 
+  ō &omacr;	Latin Small Letter O with macron 
+  Ŏ &Obreve;	Latin Capital Letter O with breve 
+  ŏ &obreve;	Latin Small Letter O with breve 
+  Ő &Odblac;	Latin Capital Letter O with double acute 
+  ő &odblac;	Latin Small Letter O with double acute 
+  Œ &OElig;	Latin Capital Ligature OE 
+  œ &oelig;	Latin Small Ligature OE 
+  Ŕ &Racute;	Latin Capital Letter R with acute 
+  ŕ &racute;	Latin Small Letter R with acute 
+  Ŗ &Rcedil;	Latin Capital Letter R with cedilla 
+  ŗ &rcedil;	Latin Small Letter R with cedilla 
+  Ř &Rcaron;	Latin Capital Letter R with caron 
+  ř &rcaron;	Latin Small Letter R with caron 
+  Ś &Sacute;	Latin Capital Letter S with acute 
+  ś &sacute;	Latin Small Letter S with acute 
+  Ŝ &Scirc;	Latin Capital Letter S with circumflex 
+  ŝ &scirc;	Latin Small Letter S with circumflex 
+  Ş &Scedil;	Latin Capital Letter S with cedilla 
+  ş &scedil;	Latin Small Letter S with cedilla 
+  Š &Scaron;	Latin Capital Letter S with caron 
+  š &scaron;	Latin Small Letter S with caron 
+  Ţ &Tcedil;	Latin Capital Letter T with cedilla 
+  ţ &tcedil;	Latin Small Letter T with cedilla 
+  Ť &Tcaron;	Latin Capital Letter T with caron 
+  ť &tcaron;	Latin Small Letter T with caron 
+  Ŧ &Tstrok;	Latin Capital Letter T with stroke 
+  ŧ &tstrok;	Latin Small Letter T with stroke 
+  Ũ &Utilde;	Latin Capital Letter U with tilde 
+  ũ &utilde;	Latin Small Letter U with tilde 
+  Ū &Umacr;	Latin Capital Letter U with macron 
+  ū &umacr;	Latin Small Letter U with macron 
+  Ŭ &Ubreve;	Latin Capital Letter U with breve 
+  ŭ &ubreve;	Latin Small Letter U with breve 
+  Ů &Uring;	Latin Capital Letter U with ring above 
+  ů &uring;	Latin Small Letter U with ring above 
+  Ű &Udblac;	Latin Capital Letter U with double acute 
+  ű &udblac;	Latin Small Letter U with double acute 
+  Ų &Uogon;	Latin Capital Letter U with ogonek 
+  ų &uogon;	Latin Small Letter U with ogonek 
+  Ŵ &Wcirc;	Latin Capital Letter W with circumflex 
+  ŵ &wcirc;	Latin Small Letter W with circumflex 
+  Ŷ &Ycirc;	Latin Capital Letter Y with circumflex 
+  ŷ &ycirc;	Latin Small Letter Y with circumflex 
+  Ÿ &Yuml;	Latin Capital Letter Y with diaeresis 
+  Ź &Zacute;	Latin Capital Letter Z with acute 
+  ź &zacute;	Latin Small Letter Z with acute 
+  Ż &Zdot;	Latin Capital Letter Z with dot above 
+  ż &zdot;	Latin Small Letter Z with dot above 
+  Ž &Zcaron;	Latin Capital Letter Z with caron 
+  ž &zcaron;	Latin Small Letter Z with caron 
+  ſ 	Latin Small Letter long S 
+
+Latin Extended-B
+  ƀ Latin Small Letter B with stroke	·
+  Ɓ Latin Capital Letter B with hook
+  Ƃ Latin Capital Letter B with top bar
+  ƃ Latin Small Letter B with top bar
+  Ƅ Latin Capital Letter Tone Six
+  ƅ Latin Small Letter Tone Six
+  Ɔ Latin Capital Letter Open O
+  Ƈ Latin Capital Letter C with hook
+  ƈ Latin Small Letter C with hook
+  Ɖ Latin Capital Letter African D
+  Ɗ Latin Capital Letter D with hook
+  Ƌ Latin Capital Letter D with top bar
+  ƌ Latin Small Letter D with top bar
+  ƍ Latin Small Letter Turned Delta
+  Ǝ Latin Capital Letter Reversed E
+  Ə Latin Capital Letter Schwa for Azerbaijani
+  Ɛ Latin Capital Letter Open E	·
+  Ƒ Latin Capital Letter F with hook
+  ƒ Latin Small Letter F with hook in WGL4
+  Ɠ Latin Capital Letter G with hook	·
+  Ɣ Latin Capital Letter Gamma
+  ƕ Latin Small Letter HV
+  Ɩ Latin Capital Letter Iota
+  Ɨ Latin Capital Letter I with stroke
+  Ƙ Latin Capital Letter K with hook
+  ƙ Latin Small Letter K with hook
+  ƚ Latin Small Letter L with bar
+  ƛ Latin Small Letter Lambda with stroke
+  Ɯ Latin Capital Letter Turned M
+  Ɲ Latin Capital Letter N with left hook
+  ƞ Latin Small Letter N with long right leg
+  Ɵ Latin Capital Letter O with middle tilde
+  Ơ Latin Capital Letter O with horn
+  ơ Latin Small Letter O with horn
+  Ƣ Latin Capital Letter OI (= Latin Capital Letter Gha)
+  ƣ Latin Small Letter OI (= Latin Small Letter Gha)
+  Ƥ Latin Capital Letter P with hook
+  ƥ Latin Small Letter P with hook
+  Ʀ Latin Letter YR
+  Ƨ Latin Capital Letter Tone Two
+  ƨ Latin Small Letter Tone Two
+  Ʃ Latin Capital Letter Esh
+  ƪ Latin Letter Reversed Esh Loop
+  ƫ Latin Small Letter T with palatal hook
+  Ƭ Latin Capital Letter T with hook
+  ƭ Latin Small Letter T with hook
+  Ʈ Latin Capital Letter T with retroflex hook
+  Ư Latin Capital Letter U with horn
+  ư Latin Small Letter U with horn
+  Ʊ Latin Capital Letter Upsilon
+  Ʋ Latin Capital Letter V with hook
+  Ƴ Latin Capital Letter Y with hook
+  ƴ Latin Small Letter Y with hook
+  Ƶ Latin Capital Letter Z with stroke
+  ƶ Latin Small Letter Z with stroke
+  Ʒ Latin Capital Letter Ezh for Sami
+  Ƹ Latin Capital Letter Ezh reversed	·
+  ƹ Latin Small Letter Ezh reversed
+  ƺ Latin Small Letter Ezh with tail
+  ƻ Latin Letter Two with stroke
+  Ƽ Latin Capital Letter Tone Five
+  ƽ Latin Small Letter Tone Five
+  ƾ Latin Letter Inverted Glottal Stop with stroke
+  ƿ Latin Letter Wynn
+African clicks
+  ǀ Latin Letter Dental Click
+  ǁ Latin Letter Lateral Click
+  ǂ Latin Letter Alveolar Click
+  ǃ Latin Letter Retroflex Click
+Croatian
+  Ǆ Latin Capital Letter DZ with caron
+  ǅ Latin Capital Letter D with Small Letter Z with caron
+  ǆ Latin Small Letter DZ with caron
+  Ǉ Latin Capital Letter LJ
+  ǈ Latin Capital Letter L with Small Letter J
+  ǉ Latin Small Letter LJ
+  Ǌ Latin Capital Letter NJ
+  ǋ Latin Capital Letter N with Small Letter J
+  ǌ Latin Small Letter NJ
+Pinyin
+  Ǎ Latin Capital Letter A with caron
+  ǎ Latin Small Letter A with caron
+  Ǐ Latin Capital Letter I with caron
+  ǐ Latin Small Letter I with caron
+  Ǒ Latin Capital Letter O with caron
+  ǒ Latin Small Letter O with caron
+  Ǔ Latin Capital Letter U with caron
+  ǔ Latin Small Letter U with caron
+  Ǖ Latin Capital Letter U with diaeresis and macron
+  ǖ Latin Small Letter U with diaeresis and macron
+  Ǘ Latin Capital Letter U with diaeresis and acute
+  ǘ Latin Small Letter U with diaeresis and acute
+  Ǚ Latin Capital Letter U with diaeresis and caron
+  ǚ Latin Small Letter U with diaeresis and caron
+  Ǜ Latin Capital Letter U with diaeresis and grave
+  ǜ Latin Small Letter U with diaeresis and grave
+Phonetic
+  ǝ Latin Small Letter Turned E
+  Ǟ Latin Capital Letter A with diaeresis and macron for Sami
+  ǟ Latin Small Letter A with diaeresis and macron 
+  Ǡ Latin Capital Letter A with dot above and macron 
+  ǡ Latin Small Letter A with dot above and macron 
+  Ǣ Latin Capital Letter Æ with macron 
+  ǣ Latin Small Letter Æ with macron 
+  Ǥ Latin Capital Letter G with stroke 
+  ǥ Latin Small Letter G with stroke 
+  Ǧ Latin Capital Letter G with caron 
+  ǧ Latin Small Letter G with caron 
+  Ǩ Latin Capital Letter K with caron 
+  ǩ Latin Small Letter K with caron 
+  Ǫ Latin Capital Letter O with ogonek 
+  ǫ Latin Small Letter O with ogonek 
+  Ǭ Latin Capital Letter O with ogonek and macron 
+  ǭ Latin Small Letter O with ogonek and macron 
+  Ǯ Latin Capital Letter Ezh with caron 
+  ǯ Latin Small Letter Ezh with caron 
+  ǰ Latin Small Letter J with caron	·
+  Ǳ Latin Capital Letter DZ
+  ǲ Latin Capital Letter D with Small Letter Z
+  ǳ Latin Small Letter DZ
+  Ǵ Latin Capital Letter G with acute
+  ǵ Latin Small Letter G with acute
+  Ƕ Latin Capital Letter Hwair
+  Ƿ Latin Capital Letter Wynn
+  Ǹ Latin Capital Letter N with grave
+  ǹ Latin Small Letter N with grave
+  Ǻ Latin Capital Letter A with ring above and acute in WGL4
+  ǻ Latin Small Letter A with ring above and acute 
+  Ǽ Latin Capital Letter Æ with acute 
+  ǽ Latin Small Letter Æ with acute 
+  Ǿ Latin Capital Letter O with stroke and acute 
+  ǿ Latin Small Letter O with stroke and acute 
+Slovenian & Croatian
+  Ȁ Latin Capital Letter A with double grave	·
+  ȁ Latin Small Letter A with double grave
+  Ȃ Latin Capital Letter A with inverted breve
+  ȃ Latin Small Letter A with inverted breve
+  Ȅ Latin Capital Letter E with double grave
+  ȅ Latin Small Letter E with double grave
+  Ȇ Latin Capital Letter E with inverted breve
+  ȇ Latin Small Letter E with inverted breve
+  Ȉ Latin Capital Letter I with double grave
+  ȉ Latin Small Letter I with double grave
+  Ȋ Latin Capital Letter I with inverted breve
+  ȋ Latin Small Letter I with inverted breve
+  Ȍ Latin Capital Letter O with double grave
+  ȍ Latin Small Letter O with double grave
+  Ȏ Latin Capital Letter O with inverted breve
+  ȏ Latin Small Letter O with inverted breve
+  Ȑ Latin Capital Letter R with double grave
+  ȑ Latin Small Letter R with double grave
+  Ȓ Latin Capital Letter R with inverted breve
+  ȓ Latin Small Letter R with inverted breve
+  Ȕ Latin Capital Letter U with double grave
+  ȕ Latin Small Letter U with double grave
+  Ȗ Latin Capital Letter U with inverted breve
+  ȗ Latin Small Letter U with inverted breve
+Romanian
+  Ș Latin Capital Letter S with comma below for Romanian
+  ș Latin Small Letter S with comma below 
+  Ț Latin Capital Letter T with comma below 
+  ț Latin Small Letter T with comma below 
+Miscellaneous
+  Ȝ Latin Capital Letter Yogh	·
+  ȝ Latin Small Letter Yogh
+  Ȟ Latin Capital Letter H with caron for Finnish Romani, Scots
+  ȟ Latin Small Letter H with caron 
+  Ƞ Latin Capital Letter N with long right leg	·
+  ȡ Latin Small Letter D with curl
+  Ȣ Latin Capital Letter OU
+  ȣ Latin Small Letter OU
+  Ȥ Latin Capital Letter Z with hook
+  ȥ Latin Small Letter Z with hook
+  Ȧ Latin Capital Letter A with dot above
+  ȧ Latin Small Letter A with dot above
+  Ȩ Latin Capital Letter E with cedilla
+  ȩ Latin Small Letter E with cedilla
+Livonian
+  Ȫ Latin Capital Letter O with diaeresis and macron
+  ȫ Latin Small Letter O with diaeresis and macron
+  Ȭ Latin Capital Letter O with tilde and macron
+  ȭ Latin Small Letter O with tilde and macron
+  Ȯ Latin Capital Letter O with dot above
+  ȯ Latin Small Letter O with dot above
+  Ȱ Latin Capital Letter O with dot above and macron
+  ȱ Latin Small Letter O with dot above and macron
+  Ȳ Latin Capital Letter Y with macron
+  ȳ Latin Small Letter Y with macron
+Sinology	
+  ȴ Latin Small Letter L with curl
+  ȵ Latin Small Letter N with curl
+  ȶ Latin Small Letter T with curl
+Miscellaneous	
+  ȷ Latin Small Letter Dotless J
+  ȸ Latin Small Letter DB Digraph
+  ȹ Latin Small Letter QP Digraph
+  Ⱥ Latin Capital Letter A with stroke
+  Ȼ Latin Capital Letter C with stroke
+  ȼ Latin Small Letter C with stroke
+  Ƚ Latin Capital Letter L with bar
+  Ⱦ Latin Capital Letter T with diagonal stroke
+  ȿ Latin Small Letter S with swash tail
+  ɀ Latin Small Letter Z with swash tail
+  Ɂ Latin Capital Letter Glottal Stop
+  ɂ Latin Small Letter Glottal Stop
+  Ƀ Latin Capital Letter B with stroke
+  Ʉ Latin Capital Letter U bar
+  Ʌ Latin Capital Letter Turned V
+  Ɇ Latin Capital Letter E with stroke
+  ɇ Latin Small Letter E with stroke
+  Ɉ Latin Capital Letter J with stroke
+  ɉ Latin Small Letter J with stroke
+  Ɋ Latin Capital Letter Q with hook tail
+  ɋ Latin Small Letter Q with hook tail
+  Ɍ Latin Capital Letter R with stroke
+  ɍ Latin Small Letter R with stroke
+  Ɏ Latin Capital Letter Y with stroke
+  ɏ Latin Small Letter Y with stroke
+
+Latin Extended Additional
+  Ḃ	Latin Capital Letter B with dot above ISO 8859-14
+  ḃ	Latin Small Letter B with dot above 
+  Ḋ	Latin Capital Letter D with dot above 
+  ḋ	Latin Small Letter D with dot above 
+  Ḟ	Latin Capital Letter F with dot above 
+  ḟ	Latin Small Letter F with dot above 
+  Ṁ	Latin Capital Letter M with dot above 
+  ṁ	Latin Small Letter M with dot above 
+  Ṗ	Latin Capital Letter P with dot above 
+  ṗ	Latin Small Letter P with dot above 
+  Ṡ	Latin Capital Letter S with dot above 
+  ṡ	Latin Small Letter S with dot above 
+  Ṫ	Latin Capital Letter T with dot above 
+  ṫ	Latin Small Letter T with dot above 
+  Ẁ	Latin Capital Letter W with grave in WGL4
+  ẁ	Latin Small Letter W with grave 
+  Ẃ	Latin Capital Letter W with acute 
+  ẃ	Latin Small Letter W with acute 
+  Ẅ	Latin Capital Letter W with diaeresis 
+  ẅ	Latin Small Letter W with diaeresis 
+  ẛ	Latin Small Letter Long S with dot above for Fraktur, Irish Gaelic, Old English
+  Ỳ	Latin Capital Letter Y with grave in WGL4
+  ỳ	Latin Small Letter Y with grave
