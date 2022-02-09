@@ -27,13 +27,18 @@ function debug() {
 }
 function run() {
   echo -e "$(date +'%F %T')   \033[0;1m$@\033[0m"
-  $@ 2>&1 | tr '\r' '\n' | sed -u 's/^/  /'
+  eval $@ 2>&1 | tr '\r' '\n' | sed -u 's/^/  /'
   return $?
 }
 function show() {
   echo -e "\033[0;1m$@\033[0m"
-  $@
+  eval $@
   return $?
+}
+function exp() {
+  set -a
+  eval $@
+  set +a
 }
 
 #------------------------------------UTILS-------------------------------------#
@@ -120,6 +125,14 @@ function pipe() {
 
 function chomp() {
   BIN='chomp' pipe $@ | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+}
+
+function indent() {
+  BIN='indent' pipe $@ | sed -u 's/^/  /'
+}
+
+function evaluator() {
+  BIN='evaluator' pipe $@ | sed 's/"/\\\"/g;s/.*/echo "&"/e'
 }
 
 function join() {
