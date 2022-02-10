@@ -83,6 +83,7 @@
     docker exec -it ${NAME} bash #connect to a running container
     docker run -it centos:7 bash #create centos7 container and enter it via bash
     docker build -t dev-base:0.1 . #create image from docker file
+    docker build --no-cache -t dev-base:0.1 . #force rebuild without cache
     cat Dockerfile.webapp | docker build -t webapp:0.1 - #build image from stdin
     docker stop ${NAME} #kill container
 

@@ -216,7 +216,7 @@ function gitex() {
         $wgit checkout -b ${branch}
         return $?
       ;;
-    rs) #[rm] [pattern]#remote branch listing, rm to delete local branches
+    ls|rs) #[rm] [pattern]#remote branch listing, rm to delete local branches
         shift
         local branches=$($wgit --no-pager branch --format '%(refname:lstrip=1)' | sed 's/^heads/local/')$'\n'$($wgit --no-pager branch -r --format '%(refname:lstrip=2)')
         local IFS=$'\n'
@@ -324,6 +324,18 @@ function gitex() {
       ;;
     tags) ##
         $wgit --no-pager log --tags --simplify-by-decoration --pretty="format:%ai %d"
+      ;;
+    retag) #[tag]#Delete and recreate tag both local and remote
+        shift
+        tag=$1
+        if [ -z "${tag}" ];then
+          git tags
+          return $?
+        fi
+        $wgit tag -d ${tag}
+        $wgit push origin :refs/tags/${tag}
+        $wgit tag ${tag}
+        $wgit push origin tag ${tag}
       ;;
     peek) #[branch] [file]#Look at other branches without switching
         shift

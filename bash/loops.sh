@@ -1,5 +1,9 @@
 #::::::::::::::::::::LOOPS::::::::::::::::::::
 
+#Quick path check when which isn't available:
+  bin=ls
+  for path in ${PATH//:/ }; do if [ -f $path/$bin ];then echo found $path/$bin;fi;done
+
 #WHILE
   while read f
   do

@@ -26,13 +26,15 @@ function debug() {
   fi
 }
 function run() {
-  echo -e "$(date +'%F %T')   \033[0;1m$@\033[0m"
-  eval $@ 2>&1 | tr '\r' '\n' | sed -u 's/^/  /'
+  interpreted=$(echo "$@" | evaluator)
+  echo -e "$(date +'%F %T')   \033[0;1m${interpreted}\033[0m"
+  eval "${interpreted}" 2>&1 | tr '\r' '\n' | sed -u 's/^/  /'
   return $?
 }
 function show() {
-  echo -e "\033[0;1m$@\033[0m"
-  eval $@
+  interpreted=$(echo "$@" | evaluator)
+  echo -e "\033[0;1m${interpreted}\033[0m"
+  eval "${interpreted}"
   return $?
 }
 function exp() {
@@ -308,6 +310,36 @@ function export_all() {
   done
 }
 
+function hide() {
+  local full=${1%/}
+  local name=${full##*/}
+  local path=${full%%$name}
+  local old=${path}${name}
+  local new=${path}.${name}
+  if [[ -f ${old} ]] || [[ -d ${old} ]];then
+    echo "hiding to ${new}"
+    mv ${old} ${new}
+  else
+    echo "no such file or directory: ${old}"
+  fi
+}
+
+function unhide() {
+  local full=${1%/}
+  local name=${full##*/}
+  local shown=${name#.}
+  local path=${full%%$name}
+  local old=${path}${name}
+  local new=${path}${shown}
+  if [[ "${name}" == "${shown}" ]];then
+    echo "not currently hidden: ${old}"
+  elif [[ -f ${old} ]] || [[ -d ${old} ]];then
+    echo "unhiding to ${new}"
+    mv ${old} ${new}
+  else
+    echo "no such file or directory: ${old}"
+  fi
+}
 
 function pathify() {
   BIN='pathify' pipe $@ | \
