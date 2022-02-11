@@ -349,6 +349,15 @@ function pathify() {
     tr $'\n' '_' | \
     sed 's/_$/\n/'
 }
+function extension() {
+  filename=${1##*/}
+  case ${filename} in
+    *.tar.*)
+        subext='tar.'
+      ;;
+  esac
+  echo "${subext}${filename%%*.}"
+}
 
 alias datetime="date +'%F %T'"
 alias today="date +'%F'"
