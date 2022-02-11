@@ -356,7 +356,7 @@ function extension() {
         subext='tar.'
       ;;
   esac
-  echo "${subext}${filename%%*.}"
+  echo "${subext}${filename##*.}"
 }
 
 alias datetime="date +'%F %T'"
