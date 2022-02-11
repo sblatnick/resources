@@ -95,8 +95,12 @@ function gitex() {
     echo -e "\033[33mgitex first run...\033[0m"
 
     echo "  set pager, changing tab length"
-      #Always use pager -+F source: https://stackoverflow.com/questions/12352049/always-use-the-pager-for-git-diff
-      $wgit config --global core.pager 'less -cx2 -+F'
+      #Always use pager -cx2 -+F source: https://stackoverflow.com/questions/12352049/always-use-the-pager-for-git-diff
+      # -c  = clear screen
+      # -F  = exit if one screen
+      # -+F = always use
+      # -x  = tab stops number of spaces
+      $wgit config --global core.pager 'less -x2'
 
     echo "  allow simple push/pull"
       $wgit config --global push.default simple # tracking ?

@@ -39,7 +39,7 @@ function show() {
 }
 function exp() {
   set -a
-  eval $@
+  eval "$@"
   set +a
 }
 
