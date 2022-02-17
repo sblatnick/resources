@@ -100,7 +100,9 @@ function gitex() {
       # -F  = exit if one screen
       # -+F = always use
       # -x  = tab stops number of spaces
-      $wgit config --global core.pager 'less -x2'
+      $wgit config --global core.pager 'less -cx2 -+F'
+      $wgit config --global pager.branch false
+      $wgit config --global pager.tag false
 
     echo "  allow simple push/pull"
       $wgit config --global push.default simple # tracking ?
@@ -125,6 +127,9 @@ function gitex() {
       $wgit config --global color.status.changed green
       $wgit config --global color.status.untracked cyan
 
+    echo "  enable nodiff..."
+      $wgit config --global diff.nodiff.command true
+
     #echo "  setup aliases..."
 
     touch ${GITEX_CONFIG}
@@ -141,7 +146,7 @@ function gitex() {
           return
         fi
         echo ""
-        git ex
+        gitex ex
       ;;
     ex) ##print this usage information
         BIN='git' document_title "Extended Git Usage" "actions"
@@ -193,7 +198,7 @@ function gitex() {
         url=$($wgit config --get svn-remote.svn.url)
         if [ -n "${url}" ];then
           echo -e "\033[33mcheckout svn branch ${branch}\033[0m"
-          git svn co ${branch}
+          gitex svn co ${branch}
           return $?
         fi
 
@@ -207,7 +212,7 @@ function gitex() {
         #find remote branch
         for remote in $($wgit remote)
         do
-          git rev-parse --abbrev-ref ${remote}/${branch} >/dev/null 2>&1
+          $wgit rev-parse --abbrev-ref ${remote}/${branch} >/dev/null 2>&1
           if [ $? -eq 0 ];then
             echo -e "\033[33mtrack remote branch ${remote}/${branch}\033[0m"
             $wgit checkout --track ${remote}/${branch}
@@ -303,7 +308,7 @@ function gitex() {
         fi
       ;;
     wash) ##pull and push
-        git pull
+        gitex pull
         if [[ "$?" -gt 0 ]];then
           echo -e "\033[33merror pulling\033[0m"
           return 1
@@ -311,7 +316,7 @@ function gitex() {
           echo -e "\033[33munmerged changes\033[0m"
           return 1
         else
-          git push
+          gitex push
           return $?
         fi
       ;;
@@ -326,14 +331,14 @@ function gitex() {
           $wgit --no-pager show --color ${sha} -- $@ | sed 's/^/  /'
         done | $wless -x2 -RS #eval $($wgit config --get core.pager)
       ;;
-    tags) ##
+    tags) ##list tags with information
         $wgit --no-pager log --tags --simplify-by-decoration --pretty="format:%ai %d"
       ;;
     retag) #[tag]#Delete and recreate tag both local and remote
         shift
         tag=$1
         if [ -z "${tag}" ];then
-          git tags
+          gitex tags
           return $?
         fi
         $wgit tag -d ${tag}
@@ -461,6 +466,10 @@ function gitex() {
     ignore|follow) #[file|pattern]#Ignore untracked files or assume unchanged tracked files
         gitex_ignore $@
       ;;
+    nodiff) #[action] [file]#Add/Remove files from being seen by diff
+        shift
+        gitex_nodiff $@
+      ;;
     amend) #[sha]#amend an old commit message
         shift
         local sha=$1
@@ -525,7 +534,7 @@ function gitex() {
         gitex_svn $@
       ;;
     *|'')
-        $wgit "$@"
+        $wgit $@
       ;;
   esac
 }
@@ -590,7 +599,7 @@ function gitex_action() {
           if [ -n "$($wgit status --porcelain)" ]; then
             echo -e "${output}"
             if [ -z "${ARGS}" ];then
-              git modified
+              gitex modified
               continue
             fi
             eval "git $ARGS 2>&1"
@@ -695,7 +704,7 @@ function gitex_context()
   repos=$(echo "${!current}" | sed '/^$/d')
   repo=$(echo "$repos" | sed 's/^.*\///' | tr $'\n' '|')
 
-  case "$action" in
+  case "${action}" in
     list|get) ##list contexts (default)
         for ctx in ${contexts}
         do
@@ -811,7 +820,7 @@ function gitex_subtree()
         local branch=${1:-master}
         shift
         trap - ERR
-        git subtree add -P ${path} ${url} ${branch} --squash
+        $wgit subtree add -P ${path} ${url} ${branch} --squash
         echo "${path}=${url},${branch}" >> ${GITEX_SUBTREE}
       ;;
     remove) #[repo]#remove subtree repo
@@ -823,7 +832,7 @@ function gitex_subtree()
               for line in $(cat ${GITEX_SUBTREE})
               do
                 local name=${line%%=*}
-                git sub update "${name##*/}"
+                gitex sub update "${name##*/}"
               done
             ;;
           *)
@@ -833,7 +842,7 @@ function gitex_subtree()
               local repo=${repo%,*}
               local branch=${line##*,}
               echo -e "updating \033[34;1m${name##*/}\033[0m ${repo} \033[32;1m${branch}\033[0m"
-              git subtree pull --prefix ${name} "${repo}" "${branch}" --squash
+              $wgit subtree pull --prefix ${name} "${repo}" "${branch}" --squash
             ;;
         esac
       ;;
@@ -863,7 +872,7 @@ function gitex_ignore()
     case "${action}" in
       '') ##list ignored (default)
           echo -e "\033[32massume-unchanged\033[0m"
-          git -C ${TOPLEVEL} ls-files -v | sed -n '/^[a-z] / s//  /p'
+          $wgit -C ${TOPLEVEL} ls-files -v | sed -n '/^[a-z] / s//  /p'
           echo -e "\033[32mgitignore\033[0m"
           for gitignore in $(WHERE=${TOPLEVEL} search .gitignore)
           do
@@ -874,7 +883,7 @@ function gitex_ignore()
       ignore) #[file|pattern]#add to ignore/unfollow
           $wgit ls-files --error-unmatch "${pattern}" >/dev/null 2>&1
           if [ $? -eq 0 ];then #tracked
-            git -C ${TOPLEVEL} update-index --assume-unchanged ${pattern}
+            $wgit -C ${TOPLEVEL} update-index --assume-unchanged ${pattern}
           else #not tracked
             append .gitignore "${pattern}"
           fi
@@ -882,7 +891,7 @@ function gitex_ignore()
       follow) #[file|pattern]#remove from ignore or follow
           $wgit ls-files --error-unmatch "${pattern}" >/dev/null 2>&1
           if [ $? -eq 0 ];then #tracked
-            git -C ${TOPLEVEL} update-index --no-assume-unchanged ${pattern}
+            $wgit -C ${TOPLEVEL} update-index --no-assume-unchanged ${pattern}
           else #not tracked
             rmline .gitignore "${pattern}"
           fi
@@ -893,6 +902,74 @@ function gitex_ignore()
   do
     continue
   done
+}
+
+##NoDiff Actions (nodiff):
+function gitex_nodiff()
+{
+  if [ $# -lt 1 ]; then
+    local action='list'
+  else
+    local action=$1
+    shift
+  fi
+
+  local attributes=$($wgit --no-pager config --local -l --show-origin | grep -Pom 1 '^file:[^\s]+' | sed "s|^file:||;s|config\$|info/attributes|;s|^.git|${TOPLEVEL}/.git|")
+
+  case "${action}" in
+    list|get) ##list diff excluded files
+        if [ -f ${attributes} ];then
+          cat ${attributes} | sed 's/ diff=nodiff$//'
+        fi
+      ;;
+    add) #[files]#add file(s) to exclude from diff
+        if [ -n "$1" ];then
+          while [ -n "$1" ]
+          do
+            if [ -f $1 ];then
+              local top=$($wgit rev-parse --show-toplevel)
+              local file=$(readlink -f ${PWD}/$1)
+              local normalized=${file##$top}
+              echo -e "\033[32mAdding file:\033[0m ${normalized}"
+              touch ${attributes}
+              append ${attributes} "${normalized} diff=nodiff"
+            else
+              echo -e "\033[33mAdding pattern:\033[0m $1"
+              touch ${attributes}
+              append ${attributes} "${1} diff=nodiff"
+            fi
+            shift
+          done
+        else
+          echo -e "\033[31mNo files specified\033[0m"
+        fi
+      ;;
+    remove|rm) #[files]#delete file(s) to exclude from diff
+        if [ -n "$1" ];then
+          while [ -n "$1" ]
+          do
+            if [ -f $1 ];then
+              local top=$($wgit rev-parse --show-toplevel)
+              local file=$(readlink -f ${PWD}/$1)
+              local normalized=${file##$top}
+              echo -e "\033[32mRemoving file:\033[0m ${normalized}"
+              rmline ${attributes} "${normalized} diff=nodiff"
+            else
+              echo -e "\033[33mRemoving pattern:\033[0m $1"
+              touch ${attributes}
+              rmline ${attributes} "${1} diff=nodiff"
+            fi
+            shift
+          done
+        else
+          echo -e "\033[31mNothing specified\033[0m"
+        fi
+      ;;
+    *)
+        echo -e "\033[31mInvalid nodiff action:\033[0m ${action}"
+        return 1
+      ;;
+  esac
 }
 
 function gitex_svn_migrate()
@@ -943,10 +1020,10 @@ function gitex_svn()
 
         revision=$(svn log --stop-on-copy ${url}/${repo##*/}/branches/${branch} | egrep "r[0-9]+" | head -1 | cut -d' ' -f1)
         echo -e "\033[32mFetching ${branch} from ${revision}\033[0m"
-        git svn fetch -r ${revision#r} #${url}/${repo##*/}
+        $wgit svn fetch -r ${revision#r} #${url}/${repo##*/}
 
-        git branch ${branch} origin/${branch}
-        git checkout ${branch}
+        $wgit branch ${branch} origin/${branch}
+        $wgit checkout ${branch}
       ;;
     migrate) #[svn://branches/name/subdir]#Cross-branch clone sub-directory with history
         trap "echo 'Usage: git svn migrate [url]';return 1" ERR
@@ -978,7 +1055,7 @@ function gitex_svn()
             do
               $wgit add $file
             done
-            git commit -m "fixed merge"
+            $wgit commit -m "fixed merge"
           fi
         done
         mv -v ${tmp}/${earliest} ${start}/${base}
@@ -1008,5 +1085,5 @@ function git() {
 }
 
 function config() {
-  wgit="git --git-dir=${HOME}/.cfg/ --work-tree=${HOME}" gitex "$@"
+  wgit="$(which git) --git-dir=${HOME}/.cfg/ --work-tree=${HOME}" gitex "$@"
 }

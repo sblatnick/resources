@@ -103,6 +103,14 @@
     #get info on images
     docker image inspect
 
+    #Run docker image in a container connecting to the one running on your box:
+      docker run -it --rm -v ${PWD}/:/tmp/ -v /var/run/docker.sock:/var/run/docker.sock --entrypoint sh -h docker --name docker -P docker:20.10
+
+    #Run pytest sanity testing:
+      DOCKER_ID=$(docker run --entrypoint bash -d -it --rm myimage:latest)
+      py.test -p no:cacheprovider --hosts=docker://$DOCKER_ID test/test_container.py
+      docker stop $DOCKER_ID
+
   #Dockerfiles:
     #DECLARATIONS:
     ENTRYPOINT #binary to run

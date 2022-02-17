@@ -35,6 +35,11 @@
   #skip file(s):
   git diff -- . ':(exclude)example.json' ':(exclude)example2.json'
 
+  #always exclude files (persisted):
+    #enable:
+      git config --global diff.nodiff.command true
+    #source: https://gist.github.com/Kirkkt/b86d453b14f2dab78e09
+
   #create patch named after the current directory on desktop for upload to crucible, etc:
   git show --unified=1000 $sha > ~/Desktop/${PWD##*/}.patch
 

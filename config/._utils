@@ -274,7 +274,9 @@ function append() {
   fi
   local file=$1
   local text=$2
-  sed -n "/^${text//\//\\/}\$/q;\$a\\${text//\//\\/}" ${file} >> .gitignore
+  if ! grep -q "^${text}\$" ${file} 2>/dev/null; then
+    echo "${text}" >> ${file}
+  fi
 }
 
 function rmline() {

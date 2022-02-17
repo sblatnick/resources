@@ -8,7 +8,11 @@
 ${ORACLE_HOME}/bin/sqlplus / as sysdba -- Connect from the command line
 
 -- NAVIGATION --
-  SELECT table_name, owner FROM user_tables;
+  SELECT table_name FROM user_tables;
+
+-- DROP ALL TABLES -- (source: https://stackoverflow.com/questions/1690404/how-to-drop-all-user-tables)
+  SELECT 'drop table '||table_name||' cascade constraints;' FROM user_tables;
+  drop sequence id_sequence;
 
 -- FORMAT TABLE VIEW --
   SET linesize 310;
@@ -60,7 +64,7 @@ ${ORACLE_HOME}/bin/sqlplus / as sysdba -- Connect from the command line
 
   select
     'alter system kill session '''||
-    sess.sid||', '||sess.serial#||';'
+    sess.sid||','||sess.serial#||''';'
   from
     v$locked_object lo,
     dba_objects     ao,
