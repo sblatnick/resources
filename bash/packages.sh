@@ -196,7 +196,52 @@
     apt-get install -y software-properties-common
     add-apt-repository 'deb http://site.example.com/debian distribution component1 component2 component3'
     #find the keys you need for Debian on: https://ftp-master.debian.org/keys.html
+    #old apt-key method:
     wget -qO - https://ftp-master.debian.org/keys/release-10.asc | sudo apt-key add -
+    #apt-key is being deprecated.  You may get this warning when reloading in Synaptic:
+      W: https://packagecloud.io/slacktechnologies/slack/debian/dists/jessie/InRelease: Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details.
+    #new add key (doesn't work for slack):
+      #store key:
+      wget -O- https://slack.com/gpg/slack_pubkey_20210901.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/slack.gpg
+      #configure apt to use the key:
+      sudo vi /etc/apt/sources.list.d/slack.list
+        -deb https://packagecloud.io/slacktechnologies/slack/debian/ jessie main
+        +deb [signed-by=/usr/share/keyrings/slack.gpg] https://packagecloud.io/slacktechnologies/slack/debian/ jessie main
+    #slack uses debsig-verify:
+      #Error from Synaptic:
+        An error occurred during the signature verification.
+        The repository is not updated and the previous index files will be used.
+        GPG error: https://packagecloud.io/slacktechnologies/slack/debian jessie InRelease:
+        The following signatures couldn't be verified because the public key is not available:
+        NO_PUBKEY C6ABDCF64DB9A0B2
+        Failed to fetch https://packagecloud.io/slacktechnologies/slack/debian/dists/jessie/InRelease
+        The following signatures couldn't be verified because the public key is not available:
+        NO_PUBKEY C6ABDCF64DB9A0B2
+        Some index files failed to download.
+        They have been ignored, or old ones used instead.
+      sudo apt install debsig-verify
+      wget https://slack.com/gpg/slack_pubkey_20210901.gpg
+      sudo mkdir -p /usr/share/debsig/keyrings/C13BC8A2F6C6FFD4
+      sudo mkdir -p /etc/debsig/policies/C13BC8A2F6C6FFD4
+      sudo touch /usr/share/debsig/keyrings/C13BC8A2F6C6FFD4/debsig.gpg
+      sudo gpg --no-default-keyring --keyring /usr/share/debsig/keyrings/C13BC8A2F6C6FFD4/debsig.gpg --import slack_pubkey_20210901.gpg
+      sudo vi /etc/debsig/policies/C13BC8A2F6C6FFD4/slack.pol
+        <?xml version="1.0"?>
+        <!DOCTYPE Policy SYSTEM "https://www.debian.org/debsig/1.0/policy.dtd">
+        <Policy xmlns="https://www.debian.org/debsig/1.0/">
+         <Origin Name="Slack" id="C13BC8A2F6C6FFD4" Description="Slack"/>
+         <Selection>
+         <Required Type="origin" File="debsig.gpg" id="C13BC8A2F6C6FFD4"/>
+         </Selection>
+         <Verification>
+         <Required Type="origin" File="debsig.gpg" id="C13BC8A2F6C6FFD4"/>
+         </Verification>
+        </Policy>
+      #Clean up old:
+      sudo rm /etc/apt/sources.list.d/slack.list
+      #Download deb from: https://slack.com/downloads/instructions/ubuntu
+      #Install using GDebi
+
 
   #install custom java:
   sudo update-alternatives --install /usr/bin/java java /opt/jre1.7.0_40/bin/java 1
@@ -235,6 +280,10 @@
     sudo apt-mark hold nodejs-doc
     #undo:
     sudo apt-mark unhold nodejs-doc
+
+    #libnode72:i386 error:
+      E: /var/cache/apt/archives/libnode72_12.22.9~dfsg-1_i386.deb: trying to overwrite '/usr/share/systemtap/tapset/node.stp', which is also in package nodejs 16.14.0-deb-1nodesource1
+    #remove node-lodash package
 
 #TinyCore Linux:
   tce #install packages

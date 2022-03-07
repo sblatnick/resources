@@ -90,6 +90,8 @@ alias tac="tail -r"
 tar -czvf archive.tar.gz ./directory
 #decompress:
 tar -zxvf filename.tgz
+#zip files:
+zip file.zip file1 file2 file3
 #delete file from jar/zip:
 zip -d file.jar path/to/file.txt
 #add file:
@@ -299,3 +301,13 @@ Increase indent on inline comments:
 
 #download a whole playlist and convert the audio into mp3:
 youtube-dl -x -f bestaudio[ext=m4a] --audio-format mp3 https://www.youtube.com/playlist?list=OLAK5uy_m6XppHGJtFY4ISTqrGEuYDiRrBJVEnveQ
+
+
+#::::::::::::::::::::WINDOWS REGISTRY::::::::::::::::::::
+
+#Install:
+  sudo apt install libhivex-bin
+#Read edition of OS:
+  hivexget /media/$USER/volume/Windows/System32/config/SOFTWARE 'Microsoft\Windows NT\CurrentVersion'
+#Get Product Activation Key:
+  sudo strings /sys/firmware/acpi/tables/MSDM | tail -1

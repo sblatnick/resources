@@ -256,6 +256,18 @@
   git co ${BRANCH}
   git merge master #local merge
 
+#merge status: (source: https://stackoverflow.com/questions/226976/how-can-i-know-if-a-branch-has-been-already-merged-into-master)
+  #lists branches merged into master
+    git branch --merged master
+    git branch -r --merged master #remote branches only
+    git branch -a --merged master #gets all local and remote branches
+  #lists branches that have not been merged
+    git branch --no-merged
+    git branch -r --no-merged master #remote branches only
+    git branch -a --no-merged master #gets all local and remote branches
+  #lists branches merged into HEAD (i.e. tip of current branch)
+    git branch --merged
+
 #filter-branch - alter history:
 
   #remove large file from commit history (DANGEROUS):
@@ -310,6 +322,11 @@
 
   #add untracked files
   git add filename
+  #force add previously ignored:
+  git add -f filename
+  #force add file ignored by another repo using config bare repo:
+  config update-index --add workspace.xml
+
   #commit all changes to the local repo:
   git commit -a -m "<message>"
 

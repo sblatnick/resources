@@ -364,6 +364,25 @@ function extension() {
 alias datetime="date +'%F %T'"
 alias today="date +'%F'"
 
+function older() {
+  if [ "$#" -lt 2 ];then
+    echo -e "Usage: older [time] [file]"
+    return 1
+  fi
+  age=$(date --date="$1 ago" +%s)
+  last=$(stat -c '%Y' $2 2>/dev/null)
+  if [ -z "${last}" ];then
+    echo -e "  no such file: '$2'"
+    return 0
+  elif [ ${last} -lt ${age} ];then
+    echo -e "  '$2' is older than '$1' ago"
+    return 0
+  else
+    echo -e "  '$2' is less than '$1' ago"
+    return 1
+  fi
+}
+
 #--------------------------------DOCUMENTATION---------------------------------#
 
 function document_title() {

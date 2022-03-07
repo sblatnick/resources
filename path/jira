@@ -31,4 +31,14 @@ case "${REQUEST}" in
     ;;
 esac
 
-eval curl -n -X $REQUEST $json --silent "${JIRA}/$@" | python -mjson.tool
+response=$(eval curl -n -X $REQUEST $json --silent "${JIRA}/$@")
+if [ $? -gt 0 ];then
+  warn "error response"
+  echo "${response}"
+else
+  echo "${response}" | python -mjson.tool
+  if [ $? -gt 0 ];then
+    warn "JSON not found in response"
+    echo "${response}"
+  fi
+fi

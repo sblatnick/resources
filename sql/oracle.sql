@@ -21,6 +21,9 @@ ${ORACLE_HOME}/bin/sqlplus / as sysdba -- Connect from the command line
   -- specific column width:
   column NAME format a25;
 
+-- Sequences
+  select my_sequence.currval from DUAL;
+
 -- Active sessions:
   select
     sid,

@@ -227,31 +227,34 @@ function gitex() {
       ;;
     ls|rs) #[rm] [pattern]#remote branch listing, rm to delete local branches
         shift
-        local branches=$($wgit --no-pager branch --format '%(refname:lstrip=1)' | sed 's/^heads/local/')$'\n'$($wgit --no-pager branch -r --format '%(refname:lstrip=2)')
+        local lb=$($wgit --no-pager branch --format '%(refname:lstrip=1)' | sed 's/^heads/local/')
+        local rb=$($wgit --no-pager branch -r --format '%(refname:lstrip=2)')
         local IFS=$'\n'
         if [[ "$1" == "rm" ]];then
           local delete='true'
-          remotes=(local)
           shift
-        else
-          remotes=(local $(git remote))
         fi
-        for remote in ${remotes[@]}
+
+        echo -e "\033[32mlocal\033[0m"
+        local remote=local
+        if [ -n "$1" ];then
+          if [[ "${delete}" == 'true' ]];then
+            for branch in $(echo "${lb}" | grep "$1" | sed -n "/${remote}\// s///p")
+            do
+              echo -e "  \033[31mdeleting\033[0m ${branch}"
+              $wgit branch -D ${branch}
+            done
+          else
+            echo "${lb}" | grep "$1" | sed -n "/${remote}\// s//  /p"
+          fi
+        else
+          echo "${lb}" | sed -n "/${remote}\// s//  /p"
+        fi
+
+        for remote in $($wgit remote)
         do
           echo -e "\033[32m${remote}\033[0m"
-          if [ -n "$1" ];then
-            if [[ "${delete}" == 'true' ]];then
-              for branch in $(echo "${branches}" | grep "^local/" | grep "$1" | sed -n "/${remote}\// s///p")
-              do
-                echo -e "  \033[31mdeleting\033[0m ${branch}"
-                $wgit branch -D ${branch}
-              done
-            else
-              echo "${branches}" | grep "$1" | sed -n "/${remote}\// s//  /p"
-            fi
-          else
-            echo "${branches}" | grep "^${remote}/" | sed -n "/${remote}\// s//  /p"
-          fi
+          echo "${rb}" | sed -n "/${remote}\// s//  /p"
         done
       ;;
     modified|edit|ed) ##open dirty files in $EDITOR
@@ -333,6 +336,7 @@ function gitex() {
       ;;
     tags) ##list tags with information
         $wgit --no-pager log --tags --simplify-by-decoration --pretty="format:%ai %d"
+        echo ""
       ;;
     retag) #[tag]#Delete and recreate tag both local and remote
         shift
@@ -917,7 +921,7 @@ function gitex_nodiff()
   local attributes=$($wgit --no-pager config --local -l --show-origin | grep -Pom 1 '^file:[^\s]+' | sed "s|^file:||;s|config\$|info/attributes|;s|^.git|${TOPLEVEL}/.git|")
 
   case "${action}" in
-    list|get) ##list diff excluded files
+    list|get) ##list diff excluded files (default)
         if [ -f ${attributes} ];then
           cat ${attributes} | sed 's/ diff=nodiff$//'
         fi

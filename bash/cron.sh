@@ -43,5 +43,4 @@ crontab -e
 #note: must be evenly divisible by 60 to be a consistent interval:
 #  */25 = 0,25,50 or 25 minutes + 25 minutes + 10 minutes
 
-
 #source: https://stackoverflow.com/questions/12786410/run-cron-job-every-n-minutes-plus-offset

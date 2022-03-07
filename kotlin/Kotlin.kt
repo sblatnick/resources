@@ -341,5 +341,7 @@ class Kotlin {
       object.also {
         example(it)
       }
+    //join:
+    Table.columns.joinToString(", ") { "R.$it as $it" }
 }
 
