@@ -227,7 +227,7 @@ function gitex() {
       ;;
     ls|rs) #[rm] [pattern]#remote branch listing, rm to delete local branches
         shift
-        local lb=$($wgit --no-pager branch --format '%(refname:lstrip=1)' | sed 's/^heads/local/')
+        local lb=$($wgit --no-pager branch --format '%(refname:lstrip=1)' | sed -n "/^heads\// s//  /p")
         local rb=$($wgit --no-pager branch -r --format '%(refname:lstrip=2)')
         local IFS=$'\n'
         if [[ "$1" == "rm" ]];then
@@ -239,22 +239,36 @@ function gitex() {
         local remote=local
         if [ -n "$1" ];then
           if [[ "${delete}" == 'true' ]];then
-            for branch in $(echo "${lb}" | grep "$1" | sed -n "/${remote}\// s///p")
+            for branch in $(echo "${lb}" | grep "$1")
             do
               echo -e "  \033[31mdeleting\033[0m ${branch}"
               $wgit branch -D ${branch}
             done
           else
-            echo "${lb}" | grep "$1" | sed -n "/${remote}\// s//  /p"
+            echo "${lb}" | grep "$1"
           fi
+          return
         else
-          echo "${lb}" | sed -n "/${remote}\// s//  /p"
+          #local branches...
+          local lbs=$(echo "${lb}" | grep -v "  ${BRANCH}\$")
+          local rbs=""
+          for remote in $($wgit remote)
+          do
+            local rbs="${rbs}"$'\n'$(echo "${rb}" | sed -n "/${remote}\// s//  /p")
+          done
+          #current:
+          echo -e "  \033[36m${BRANCH}\033[0m"
+          #tracked:
+          echo -e "\033[34m$(echo "${rbs}"$'\n'"${lbs}" | sort | uniq -d)\033[0m"
+          #uniq:
+          echo "${rbs}"$'\n'"${rbs}"$'\n'"${lbs}" | sort | uniq -u
         fi
 
         for remote in $($wgit remote)
         do
-          echo -e "\033[32m${remote}\033[0m"
-          echo "${rb}" | sed -n "/${remote}\// s//  /p"
+          echo -e "\033[32m${remote}\033[0m\033[0m"
+          local this=$(echo "${rb}" | sed -n "/${remote}\// s//  /p")
+          echo "${lb}"$'\n'"${lb}"$'\n'"${this}" | sort | uniq -u
         done
       ;;
     modified|edit|ed) ##open dirty files in $EDITOR

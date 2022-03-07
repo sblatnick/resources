@@ -168,6 +168,70 @@ function maxlen() {
   BIN='maxlen' ACTION='len' pipe $@ | sort -n | tail -n 1
 }
 
+function _color() {
+  case ${COLOR} in
+    *bold*|*thick*)
+        local bold=';1'
+      ;;
+  esac
+
+  case ${COLOR} in
+    *cyan*|*bluegreen*)
+        local code=36${bold}
+      ;;
+    *pink*)
+        local code="38;5;198${bold}"
+      ;;
+    *highlight*)
+        local code="48;5;228;38;5;0${bold}"
+      ;;
+    *black*)
+        local code=30${bold}
+      ;;
+    *red*|*blood*)
+        local code=31${bold}
+      ;;
+    *green*)
+        local code=32${bold}
+      ;;
+    *yellow*)
+        local code=33${bold}
+      ;;
+    *blue*)
+        local code=34${bold}
+      ;;
+    *magenta*|*purple*)
+        local code=35${bold}
+      ;;
+    *gray*)
+        local code=37${bold}
+      ;;
+    ''|*white*)
+        local code=0${bold}
+      ;;
+    bold)
+        local code='0;1'
+      ;;
+    *) #passthrough
+        local code="${COLOR}"
+      ;;
+  esac
+
+  echo -e "\033[${code}m$@\033[0m"
+}
+
+function color() {
+  if [ -t 0 ];then
+    echo -e "Usage: stdin | color [color]"
+    if [ "$#" -lt 1 ];then
+      echo -e "\033[31mpipe required to colorize\033[0m"
+      return 1
+    fi
+  else
+    COLOR="$@" BIN='color' ACTION="_color" pipe
+  fi
+}
+
 function big() {
   du -sx * 2>/dev/null | sort -r -n | head
 }
