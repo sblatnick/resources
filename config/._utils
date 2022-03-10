@@ -490,7 +490,7 @@ function document() {
       params=${help#*#}
       params=${params%%#*}
       if [ -z "${params}" ];then
-        params="$(grep -A 1 -F "${help}" $1 | tail -n 1 | grep 'trap' | grep -Eo '\[[^]]*\]' | tr $'\n' ' ')"
+        params="$(grep -A 1 -F -- "${help}" $1 | tail -n 1 | grep 'trap' | grep -Eo '\[[^]]*\]' | tr $'\n' ' ')"
       fi
       de "${help%%)*#*}" "${params}" "${help##*#}"
     done

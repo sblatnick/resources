@@ -226,84 +226,8 @@ function gitex() {
         $wgit checkout -b ${branch}
         return $?
       ;;
-    ls|rs) #[rm] [pattern]#remote branch listing, rm to delete local branches
-        shift
-        local lb=$($wgit --no-pager branch --format '%(refname:lstrip=1)' | sed -n "/^heads\// s//  /p")
-        local rb=$($wgit --no-pager branch -r --format '%(refname:lstrip=2)')
-        local IFS=$'\n'
-        if [[ "$1" == "rm" ]];then
-          local delete='true'
-          shift
-        fi
-
-        echo -e "\033[32mlocal\033[0m"
-        local remote=local
-        if [ -n "$1" ];then
-          if [[ "${delete}" == 'true' ]];then
-            for branch in $(echo "${lb}" | grep "$1")
-            do
-              echo -e "  \033[31mdeleting\033[0m ${branch}"
-              $wgit branch -D ${branch}
-            done
-          else
-            echo "${lb}" | grep "$1"
-          fi
-          return
-        else
-          #local branches...
-          local lbs=$(echo "${lb}" | grep -v "  ${BRANCH}\$")
-          local rbs=""
-          for remote in $($wgit remote)
-          do
-            local rbs="${rbs}"$'\n'$(echo "${rb}" | sed -n "/${remote}\// s//  /p")
-          done
-          #current:
-            local merged=$($wgit branch --merged $MASTER | grep -q '^*' && echo ';1')
-            echo -e "  \033[36${merged}m${BRANCH}\033[0m"
-          #tracked:
-            local tracked=$(echo "${rbs}"$'\n'"${lbs}" | sort | uniq -d)
-            local merged=$($wgit branch --merged $MASTER | grep -v '^*')
-            #merged:
-            local output=$(echo "${tracked}"$'\n'"${merged}" | sort | uniq -d)
-            if [ -n "${output}" ];then
-              echo -e "\033[34;1m${output}\033[0m"
-            fi
-            #no-merged:
-            local output=$(echo "${merged}"$'\n'"${merged}"$'\n'"${tracked}" | sort | uniq -u)
-            if [ -n "${output}" ];then
-              echo -e "\033[34m${output}\033[0m"
-            fi
-          #unique:
-            local unique=$(echo "${rbs}"$'\n'"${rbs}"$'\n'"${lbs}" | sort | uniq -u)
-            #merged:
-            local output=$(echo "${unique}"$'\n'"${merged}" | sort | uniq -d)
-            if [ -n "${output}" ];then
-              echo -e "\033[0;1m${output}\033[0m"
-            fi
-            #no-merged:
-            local output=$(echo "${merged}"$'\n'"${merged}"$'\n'"${unique}" | sort | uniq -u)
-            if [ -n "${output}" ];then
-              echo -e "${output}"
-            fi
-        fi
-
-        for remote in $($wgit remote)
-        do
-          echo -e "\033[32m${remote}\033[0m\033[0m"
-          local this=$(echo "${rb}" | sed -n "/${remote}\// s//  /p")
-          local rmerged=$($wgit branch -r --merged $MASTER | sed -n "/${remote}\// s///p")
-          local ronly=$(echo "${lb}"$'\n'"${lb}"$'\n'"${this}" | sort | uniq -u)
-          #merged:
-          local output=$(echo "${ronly}"$'\n'"${rmerged}" | sort | uniq -d)
-          if [ -n "${output}" ];then
-            echo -e "\033[0;1m${output}\033[0m"
-          fi
-          #no-merged:
-          local output=$(echo "${rmerged}"$'\n'"${rmerged}"$'\n'"${ronly}" | sort | uniq -u)
-          if [ -n "${output}" ];then
-            echo -e "${output}"
-          fi
-        done
+    ls|rs) #[options] [pattern]#remote branch listing
+        gitex_list $@
       ;;
     modified|edit|ed) ##open dirty files in $EDITOR
         dir=$(pwd)
@@ -839,6 +763,100 @@ $(echo "${!ctx}" | sed '/^$/d')
 \"" >> ${GITEX_CONFIG}
   done
   echo "" >> ${GITEX_CONFIG}
+}
+
+##List Actions (ls|rs):
+function gitex_list()
+{
+  action=$1
+  shift
+
+  local lb=$($wgit --no-pager branch --format '%(refname:lstrip=1)' | sed -n "/^heads\// s//  /p")
+  local rb=$($wgit --no-pager branch -r --format '%(refname:lstrip=2)')
+  local IFS=$'\n'
+  while [ -n "$1" ]; do
+    case "$1" in
+      rm) #[pattern]#delete local branches
+          local delete='true'
+        ;;
+      -v|--verbose) ##show diff between unmerged local branches and master branch
+          local verbose='true'
+        ;;
+      *) ##pattern match on local branches (dry run rm)
+          break
+        ;;
+    esac
+    shift
+  done
+
+  echo -e "\033[32mlocal\033[0m"
+  local remote=local
+  if [ -n "$1" ];then
+    if [[ "${delete}" == 'true' ]];then
+      for branch in $(echo "${lb}" | grep "$1")
+      do
+        echo -e "  \033[31mdeleting\033[0m ${branch}"
+        $wgit branch -D ${branch}
+      done
+    else
+      echo "${lb}" | grep "$1"
+    fi
+    return
+  else
+    #local branches...
+    local lbs=$(echo "${lb}" | grep -v "  ${BRANCH}\$")
+    local rbs=""
+    for remote in $($wgit remote)
+    do
+      local rbs="${rbs}"$'\n'$(echo "${rb}" | sed -n "/${remote}\// s//  /p")
+    done
+    #current:
+      local merged=$($wgit branch --merged $MASTER | grep -q '^*' && echo ';1')
+      echo -e "  \033[36${merged}m${BRANCH}\033[0m"
+    #tracked:
+      local tracked=$(echo "${rbs}"$'\n'"${lbs}" | sort | uniq -d)
+      local merged=$($wgit branch --merged $MASTER | grep -v '^*')
+      #merged:
+      local output=$(echo "${tracked}"$'\n'"${merged}" | sort | uniq -d)
+      if [ -n "${output}" ];then
+        echo -e "\033[34;1m${output}\033[0m"
+      fi
+      #no-merged:
+      local output=$(echo "${merged}"$'\n'"${merged}"$'\n'"${tracked}" | sort | uniq -u)
+      if [ -n "${output}" ];then
+        echo -e "\033[34m${output}\033[0m"
+      fi
+    #unique:
+      local unique=$(echo "${rbs}"$'\n'"${rbs}"$'\n'"${lbs}" | sort | uniq -u)
+      #merged:
+      local output=$(echo "${unique}"$'\n'"${merged}" | sort | uniq -d)
+      if [ -n "${output}" ];then
+        echo -e "\033[0;1m${output}\033[0m"
+      fi
+      #no-merged:
+      local output=$(echo "${merged}"$'\n'"${merged}"$'\n'"${unique}" | sort | uniq -u)
+      if [ -n "${output}" ];then
+        echo -e "${output}"
+      fi
+  fi
+
+  for remote in $($wgit remote)
+  do
+    echo -e "\033[32m${remote}\033[0m\033[0m"
+    local this=$(echo "${rb}" | sed -n "/${remote}\// s//  /p")
+    local rmerged=$($wgit branch -r --merged $MASTER | sed -n "/${remote}\// s///p")
+    local ronly=$(echo "${lb}"$'\n'"${lb}"$'\n'"${this}" | sort | uniq -u)
+    #merged:
+    local output=$(echo "${ronly}"$'\n'"${rmerged}" | sort | uniq -d)
+    if [ -n "${output}" ];then
+      echo -e "\033[0;1m${output}\033[0m"
+    fi
+    #no-merged:
+    local output=$(echo "${rmerged}"$'\n'"${rmerged}"$'\n'"${ronly}" | sort | uniq -u)
+    if [ -n "${output}" ];then
+      echo -e "${output}"
+    fi
+  done
 }
 
 ##Subtree Actions (sub|tree):
