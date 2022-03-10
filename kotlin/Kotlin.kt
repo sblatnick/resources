@@ -73,6 +73,8 @@ class Kotlin {
         return accumulator
       }
 
+    //Scope Function (see below)
+
   //Lambda:
   items.fold(0, { 
     //parameters ->
@@ -312,6 +314,51 @@ class Kotlin {
   //   logic(customName) || logic(it)
   //   return last expression
   // }
+    //Create your own:
+      fun ClassName.run(): ReturnType? {
+        return ReturnType()
+      }
+
+    //Example 1: extend RequestParameters
+      companion object {
+        fun RequestParameters.mapMyObjects(): List<MyObject> {
+          @Suppress("UNCHECKED_CAST")
+          return this.getValues("myObjects").mapNotNull {
+            if (it.toIntOrNull() != null) {
+              DB.findById(MyObjectTable, it.toLongOrNull()) { name ->
+                listOf(MyObject(name))
+              }
+            } else {
+              val regex = Regex(it)
+              MyObject.getAllMyObjectNames().filter { name ->
+                name.matches(regex)
+              }.map { name ->
+                listOf(MyObject(name))
+              }
+            }
+          }.flatten() as List<MyObject>
+        }
+      }
+      //Usage:
+      val myObjects = parameters.mapMyObjects()
+
+    //Example 2: find value within object using a function
+      fun <A> addListQueryDescription(
+        queryDescriptions: MutableList<String>,
+        listData: List<A>?,
+        listDataName: String,
+        getListItemValue: (A) -> String
+      ) {
+          if (listData == null) {
+              queryDescriptions.add("$listDataName matched a provided regular expression.")
+          } else if (listData.size == 1) {
+              queryDescriptions.add("$listDataName is ${getListItemValue(listData[0])}")
+          } else if (listData.isNotEmpty()) {
+              queryDescriptions.add("$listDataName is one of ${listData.joinToString(", ") { getListItemValue(it) }}")
+          }
+      }
+      //Usage:
+      addListQueryDescription(queryDescriptions, serviceComponents, "Service Component") { it.name }
 
     //let:
       val empty = "example".let {

@@ -60,6 +60,7 @@ function bash_prompt()
 {
   export SIT_CURRENT='NULL' #ensure the terminal has a separate sit context
   export BRANCH=$($wgit rev-parse --abbrev-ref HEAD 2>/dev/null | sed 's~^\(heads\|tags\|remotes\)/~~')
+  export MASTER=$($wgit config init.defaultBranch)
   dirty=''
   if [ -n "$($wgit status --porcelain 2>/dev/null)" ]; then
     dirty='*'
@@ -257,18 +258,51 @@ function gitex() {
             local rbs="${rbs}"$'\n'$(echo "${rb}" | sed -n "/${remote}\// s//  /p")
           done
           #current:
-          echo -e "  \033[36m${BRANCH}\033[0m"
+            local merged=$($wgit branch --merged $MASTER | grep -q '^*' && echo ';1')
+            echo -e "  \033[36${merged}m${BRANCH}\033[0m"
           #tracked:
-          echo -e "\033[34m$(echo "${rbs}"$'\n'"${lbs}" | sort | uniq -d)\033[0m"
-          #uniq:
-          echo "${rbs}"$'\n'"${rbs}"$'\n'"${lbs}" | sort | uniq -u
+            local tracked=$(echo "${rbs}"$'\n'"${lbs}" | sort | uniq -d)
+            local merged=$($wgit branch --merged $MASTER | grep -v '^*')
+            #merged:
+            local output=$(echo "${tracked}"$'\n'"${merged}" | sort | uniq -d)
+            if [ -n "${output}" ];then
+              echo -e "\033[34;1m${output}\033[0m"
+            fi
+            #no-merged:
+            local output=$(echo "${merged}"$'\n'"${merged}"$'\n'"${tracked}" | sort | uniq -u)
+            if [ -n "${output}" ];then
+              echo -e "\033[34m${output}\033[0m"
+            fi
+          #unique:
+            local unique=$(echo "${rbs}"$'\n'"${rbs}"$'\n'"${lbs}" | sort | uniq -u)
+            #merged:
+            local output=$(echo "${unique}"$'\n'"${merged}" | sort | uniq -d)
+            if [ -n "${output}" ];then
+              echo -e "\033[0;1m${output}\033[0m"
+            fi
+            #no-merged:
+            local output=$(echo "${merged}"$'\n'"${merged}"$'\n'"${unique}" | sort | uniq -u)
+            if [ -n "${output}" ];then
+              echo -e "${output}"
+            fi
         fi
 
         for remote in $($wgit remote)
         do
           echo -e "\033[32m${remote}\033[0m\033[0m"
           local this=$(echo "${rb}" | sed -n "/${remote}\// s//  /p")
-          echo "${lb}"$'\n'"${lb}"$'\n'"${this}" | sort | uniq -u
+          local rmerged=$($wgit branch -r --merged $MASTER | sed -n "/${remote}\// s///p")
+          local ronly=$(echo "${lb}"$'\n'"${lb}"$'\n'"${this}" | sort | uniq -u)
+          #merged:
+          local output=$(echo "${ronly}"$'\n'"${rmerged}" | sort | uniq -d)
+          if [ -n "${output}" ];then
+            echo -e "\033[0;1m${output}\033[0m"
+          fi
+          #no-merged:
+          local output=$(echo "${rmerged}"$'\n'"${rmerged}"$'\n'"${ronly}" | sort | uniq -u)
+          if [ -n "${output}" ];then
+            echo -e "${output}"
+          fi
         done
       ;;
     modified|edit|ed) ##open dirty files in $EDITOR
@@ -351,6 +385,10 @@ function gitex() {
     tags) ##list tags with information
         $wgit --no-pager log --tags --simplify-by-decoration --pretty="format:%ai %d"
         echo ""
+      ;;
+    remaster) ##change the default/master branch to the current
+        echo -e "\033[32mswitched master from '${MASTER}' to '${BRANCH}'\033[0m"
+        $wgit config init.defaultBranch ${BRANCH}
       ;;
     retag) #[tag]#Delete and recreate tag both local and remote
         shift

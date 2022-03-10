@@ -296,7 +296,7 @@ function opener() {
     if [ "$#" -lt 1 ];then
       echo -e "Usage: filelist | opener [search]"
     else
-      ag -l $@ | _opener
+      ag -l "$@" | _opener
     fi
   else
     _opener

@@ -21,6 +21,9 @@ ${ORACLE_HOME}/bin/sqlplus / as sysdba -- Connect from the command line
   -- specific column width:
   column NAME format a25;
 
+  -- revert formatting:
+  column NAME CLEAR;
+
 -- Sequences
   select my_sequence.currval from DUAL;
 
@@ -76,3 +79,5 @@ ${ORACLE_HOME}/bin/sqlplus / as sysdba -- Connect from the command line
     ao.object_id = lo.object_id
     and lo.session_id = sess.sid;
 
+--LIMIT in Oracle:
+  FETCH FIRST 1 ROWS ONLY
