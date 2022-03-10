@@ -306,6 +306,14 @@ function gitex() {
           $wgit --no-pager show --color ${sha} -- $@ | sed 's/^/  /'
         done | $wless -x2 -RS #eval $($wgit config --get core.pager)
       ;;
+    biff) #[branch]#show branch diff between [branch|current] and master
+        shift
+        local branch=$1
+        if [ -z "${branch}" ];then
+          local branch=${BRANCH}
+        fi
+        $wgit diff $MASTER...${branch}
+      ;;
     tags) ##list tags with information
         $wgit --no-pager log --tags --simplify-by-decoration --pretty="format:%ai %d"
         echo ""
@@ -779,7 +787,7 @@ function gitex_list()
       rm) #[pattern]#delete local branches
           local delete='true'
         ;;
-      -v|--verbose) ##show diff between unmerged local branches and master branch
+      -v|--verbose) ##show diff status between unmerged local branches and master branch
           local verbose='true'
         ;;
       *) ##pattern match on local branches (dry run rm)
@@ -824,7 +832,13 @@ function gitex_list()
       #no-merged:
       local output=$(echo "${merged}"$'\n'"${merged}"$'\n'"${tracked}" | sort | uniq -u)
       if [ -n "${output}" ];then
-        echo -e "\033[34m${output}\033[0m"
+        for branch in ${output}
+        do
+          echo -e "\033[34m${branch}\033[0m"
+          if [[ "${verbose}" == 'true' ]];then
+            $wgit --no-pager diff --name-status $MASTER...${branch#  } | sed 's/^/    /'
+          fi
+        done
       fi
     #unique:
       local unique=$(echo "${rbs}"$'\n'"${rbs}"$'\n'"${lbs}" | sort | uniq -u)
@@ -836,7 +850,13 @@ function gitex_list()
       #no-merged:
       local output=$(echo "${merged}"$'\n'"${merged}"$'\n'"${unique}" | sort | uniq -u)
       if [ -n "${output}" ];then
-        echo -e "${output}"
+        for branch in ${output}
+        do
+          echo -e "${branch}"
+          if [[ "${verbose}" == 'true' ]];then
+            $wgit --no-pager diff --name-status $MASTER...${branch#  } | sed 's/^/    /'
+          fi
+        done
       fi
   fi
 
