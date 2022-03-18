@@ -253,6 +253,21 @@ class Kotlin {
             user.name = "second"
         }
       //vetoable = handler callback before update
+
+      //Allow lazy loading on a rw property
+        var property: Property?
+          get() = loadProperty()
+          set(value) {
+              propertyCache = null
+              id = value?.id
+          }
+        private var propertyCache: Property? = null
+        fun loadProperty(): Property? {
+            if(propertyCache != null) {
+                propertyCache = Property(id)
+            }
+            return propertyCache
+        }
     //Map to another property
       var delegatedToMember: Int by this::memberInt
       var delegatedToTopLevel: Int by ::topLevelInt
