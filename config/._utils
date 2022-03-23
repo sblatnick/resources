@@ -229,6 +229,11 @@ function _color() {
 
   echo -e "\033[${code}m$@\033[0m"
 }
+function _colorize() {
+  local COLOR="$1"
+  shift
+  COLOR="${COLOR}" _color "$@"
+}
 
 function color() {
   if [ -t 0 ];then
@@ -241,6 +246,33 @@ function color() {
     COLOR="$@" BIN='color' ACTION="_color" pipe
   fi
 }
+function _aliasing() {
+  while [ -n "$1" ]; do
+    alias $1="_colorize $1"
+    shift
+  done
+}
+function _aliases() {
+  while [ -n "$1" ]; do
+    _aliasing $1
+    _aliasing bold$1
+    shift
+  done
+}
+_aliasing \
+  bold \
+  highlight
+_aliases \
+  green \
+  yellow \
+  red \
+  blue \
+  cyan \
+  pink \
+  black \
+  magenta \
+  purple \
+  gray
 
 function big() {
   du -sx * 2>/dev/null | sort -r -n | head

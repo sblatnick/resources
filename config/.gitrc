@@ -89,6 +89,8 @@ function pgit() {
 ##Main:
 function gitex() {
   local TIMESTAMP=false
+  local BRANCH=$($wgit rev-parse --abbrev-ref HEAD 2>/dev/null | sed 's~^\(heads\|tags\|remotes\)/~~')
+  local MASTER=$($wgit config init.defaultBranch)
   #------------------------------------SETUP-------------------------------------#
 
   if [ -f ${GITEX_CONFIG} ];then
@@ -320,8 +322,36 @@ function gitex() {
         echo ""
       ;;
     remaster) ##change the default/master branch to the current
-        echo -e "\033[32mswitched master from '${MASTER}' to '${BRANCH}'\033[0m"
-        $wgit config init.defaultBranch ${BRANCH}
+        if [[ "${MASTER}" == "${BRANCH}" ]];then
+          warn "master already set to the current branch"
+        else
+          green "\033[32mswitched master from '${MASTER}' to '${BRANCH}'\033[0m"
+          $wgit config init.defaultBranch ${BRANCH}
+        fi
+      ;;
+    latest) ##switch to latest master branch and pull in the latest
+        $wgit fetch
+        local branches=$($wgit --no-pager branch -r --format '%(refname:lstrip=2)' | sed 's/^[^\/]*\///' | sort -V | grep "${MASTER%%/*}")
+        if [ -z "${branches}" ];then
+          if [[ "${MASTER}" == "${BRANCH}" ]];then
+            error "${MASTER} branch doesn't exist"
+          else
+            warn "${MASTER} branch doesn't exist, setting master"
+            gitex remaster
+            gitex latest
+          fi
+          return
+        fi
+        local latest=$(echo "${branches}" | tail -n 1)
+        if [[ "${MASTER}" == "${latest}" ]];then
+          warn "latest already checked out"
+        else
+          green "switching to ${latest}"
+          gitex co ${latest}
+          gitex remaster
+        fi
+        yellow "pulling latest"
+        gitex pull
       ;;
     retag) #[tag]#Delete and recreate tag both local and remote
         shift
