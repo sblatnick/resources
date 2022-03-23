@@ -88,6 +88,7 @@ function pgit() {
 
 ##Main:
 function gitex() {
+  local TIMESTAMP=false
   #------------------------------------SETUP-------------------------------------#
 
   if [ -f ${GITEX_CONFIG} ];then
@@ -796,6 +797,11 @@ function gitex_list()
     esac
     shift
   done
+  #sanity check master branch locally exists as configured:
+  $wgit rev-parse --abbrev-ref ${MASTER} >/dev/null 2>&1
+  if [ $? -ne 0 ];then
+    warn "${MASTER} branch doesn't exist"
+  fi
 
   echo -e "\033[32mlocal\033[0m"
   local remote=local
@@ -819,11 +825,11 @@ function gitex_list()
       local rbs="${rbs}"$'\n'$(echo "${rb}" | sed -n "/${remote}\// s//  /p")
     done
     #current:
-      local merged=$($wgit branch --merged $MASTER | grep -q '^*' && echo ';1')
+      local merged=$($wgit branch --merged ${MASTER} 2>/dev/null | grep -q '^*' && echo ';1')
       echo -e "  \033[36${merged}m${BRANCH}\033[0m"
     #tracked:
       local tracked=$(echo "${rbs}"$'\n'"${lbs}" | sort | uniq -d)
-      local merged=$($wgit branch --merged $MASTER | grep -v '^*')
+      local merged=$($wgit branch --merged ${MASTER} 2>/dev/null | grep -v '^*')
       #merged:
       local output=$(echo "${tracked}"$'\n'"${merged}" | sort | uniq -d)
       if [ -n "${output}" ];then
@@ -836,7 +842,7 @@ function gitex_list()
         do
           echo -e "\033[34m${branch}\033[0m"
           if [[ "${verbose}" == 'true' ]];then
-            $wgit --no-pager diff --name-status $MASTER...${branch#  } | sed 's/^/    /'
+            $wgit --no-pager diff --name-status ${MASTER}...${branch#  } 2>/dev/null | sed 's/^/    /'
           fi
         done
       fi
@@ -854,7 +860,7 @@ function gitex_list()
         do
           echo -e "${branch}"
           if [[ "${verbose}" == 'true' ]];then
-            $wgit --no-pager diff --name-status $MASTER...${branch#  } | sed 's/^/    /'
+            $wgit --no-pager diff --name-status ${MASTER}...${branch#  } 2>/dev/null | sed 's/^/    /'
           fi
         done
       fi
@@ -864,7 +870,7 @@ function gitex_list()
   do
     echo -e "\033[32m${remote}\033[0m\033[0m"
     local this=$(echo "${rb}" | sed -n "/${remote}\// s//  /p")
-    local rmerged=$($wgit branch -r --merged $MASTER | sed -n "/${remote}\// s///p")
+    local rmerged=$($wgit branch -r --merged ${MASTER} 2>/dev/null | sed -n "/${remote}\// s///p")
     local ronly=$(echo "${lb}"$'\n'"${lb}"$'\n'"${this}" | sort | uniq -u)
     #merged:
     local output=$(echo "${ronly}"$'\n'"${rmerged}" | sort | uniq -d)

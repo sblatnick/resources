@@ -21,6 +21,7 @@
         check("02", "01", ">")
         check("abc", "abc", "==")
         check("2", "2", "==")
+        //last expression in a lambda is the return value
     }
     fun String.compareVersions(that: String): Int {
         val delimiter = "[._-]".toRegex()

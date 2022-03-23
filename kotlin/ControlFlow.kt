@@ -16,6 +16,44 @@
     else -> 42
   }
 
+  //Example:
+  trackedSeverities.forEach { severity ->
+      val count = currentTracked.count { it.severity == severity }
+      when (severity) {
+          Severity.HIGH -> high = count
+          Severity.MEDIUM -> medium = count
+          Severity.LOW -> low = count
+          Severity.UNKNOWN -> unknown = count
+      }
+  }
+  //Example normalize params:
+    import org.slf4j.Logger
+    import org.slf4j.LoggerFactory
+
+    class GitBranch(val id: String?, val sha: String?, val author: String?, isMaster: Boolean?) {
+      companion object {
+        val log: Logger = LoggerFactory.getLogger(javaClass)
+
+        fun parse(value: Object): GitBranch {
+          val properties = listOf("id", "sha", "author", "isMaster")
+          var found = mutableListOf<Any>()
+          properties.forEach { property ->
+              val current = when (property) {
+                  "isMaster" -> value.getBoolean(property)
+                  else -> value.getString(property)?.ifEmpty { null }
+              }
+              if(current == null) {
+                  log.warn("No $property property ${value.toString()}")
+              }
+              else {
+                  found.add(current)
+              }
+          }
+          return GitBranch(found[0] as String, found[1] as String, found[2] as String, found[3] as Boolean)
+        }
+      }
+    }
+
 //Loops:
   //for
     val cakes = listOf("carrot", "cheese", "chocolate")

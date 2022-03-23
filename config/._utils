@@ -9,25 +9,35 @@ PID=$$
 
 #-----------------------------------LOGGING------------------------------------#
 DEBUG=false
+TIMESTAMP=true
+
+function ts() {
+  if [[ "${TIMESTAMP}" == "true" ]];then
+    local spaces=$1
+    printf "%*s" $((-19 - spaces)) "$(date +'%F %T')"
+  else
+    echo -e ""
+  fi
+}
 
 function error() {
-  >&2 echo -e "$(date +'%F %T') \033[31mERROR\033[0m: $@"
+  >&2 echo -e "$(ts 1)\033[31mERROR\033[0m: $@"
   exit 1
 }
 function log() {
-  echo -e "$(date +'%F %T')   \033[0;1mLOG\033[0m: $@"
+  echo -e "$(ts 3)\033[0;1mLOG\033[0m: $@"
 }
 function warn() {
-  >&2 echo -e "$(date +'%F %T')  \033[33;1mWARN\033[0m: $@"
+  >&2 echo -e "$(ts 2)\033[33;1mWARN\033[0m: $@"
 }
 function debug() {
   if [[ "${DEBUG}" == "true" ]];then
-    echo -e "$(date +'%F %T')   \033[32mDEBUG\033[0m: $@"
+    echo -e "$(ts 3)\033[32mDEBUG\033[0m: $@"
   fi
 }
 function run() {
   interpreted=$(echo "$@" | evaluator)
-  echo -e "$(date +'%F %T')   \033[0;1m${interpreted}\033[0m"
+  echo -e "$(ts 3)\033[0;1m${interpreted}\033[0m"
   eval "${interpreted}" 2>&1 | tr '\r' '\n' | sed -u 's/^/  /'
   return $?
 }
