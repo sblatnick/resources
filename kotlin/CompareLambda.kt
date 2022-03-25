@@ -1,4 +1,7 @@
-
+//Bug in semantic version differences
+//May as well just compare strings
+//Look at Version.kt instead
+//Keeping this example to show extending String and using lambdas
 
     @Test
     fun testVersions() {

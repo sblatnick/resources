@@ -36,6 +36,21 @@
     val value = map["key"] //or null if key doesn't exist
     map.getValue("key")    //or default, which is 3, or without defaults NoSuchElementException
 
+//Unique Map by Merge:
+   companion object {
+      fun merge(objects: List<Object>): Object {
+        require(objects.isNotEmpty()) { "Cannot merge empty list." }
+
+        val id = objects[0].id
+        val property = objects[0].property
+        val last = objects.maxOf { it.timestamp }
+        val urls = objects.flatMap { it.urls }.distinct()
+        //... etc
+        return Object(id, property, last, urls)
+      }
+  }
+  val unique = objects.groupBy { it.id }.map { Object.merge(it.value) }
+
 //Collection Functions
   //filter:
     val numbers = listOf(1, -2, 3, -4, 5, -6)

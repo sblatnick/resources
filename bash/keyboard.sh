@@ -35,6 +35,7 @@ xkb_keymap {
     General => When the power button is pressed: Do nothing
 
     sudo vi /etc/systemd/logind.conf
+      HandlePowerKey=ignore
     reboot
 
     System => Preferences => Hardware => Keyboad Shortcuts
