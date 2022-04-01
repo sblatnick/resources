@@ -86,7 +86,7 @@ function pipe() {
           if [[ "line" == "${TYPE-line}" ]];then
             while IFS=$'\n' read pipe
             do
-              eval ${ACTION-echo} "$pipe"
+              ${EVAL-eval} ${ACTION-echo} "$pipe"
             done < $1
           else
             while IFS=$'\n' read pipe
@@ -96,7 +96,7 @@ function pipe() {
           fi
         else
           if [[ "line" == "${TYPE-line}" ]];then
-            eval ${ACTION-echo} "$1"
+            ${EVAL-eval} ${ACTION-echo} "$1"
           else
             result="${result}${1}"
           fi
@@ -104,7 +104,7 @@ function pipe() {
         shift
       done
       if [ -n "${result}" ];then
-        eval ${ACTION-echo} "${result}"
+        ${EVAL-eval} ${ACTION-echo} "${result}"
       fi
     fi
   else
@@ -112,12 +112,12 @@ function pipe() {
       if [[ "false" == "${HEADER-false}" ]];then
         while IFS=$'\n' read pipe
         do
-          eval ${ACTION-echo} "${pipe}"
+          ${EVAL-eval} ${ACTION-echo} "${pipe}"
         done
       else
         while IFS=$'\n' read pipe
         do
-          output=$(eval ${ACTION-echo} "${pipe}")
+          output=$(${EVAL-eval} ${ACTION-echo} "${pipe}")
           if [ -n "${output}" ];then
             echo -e "\033[32m${pipe}\033[0m"
             echo "${output}" | sed 's/^/  /'
@@ -130,7 +130,7 @@ function pipe() {
       do
         result="${result}${pipe}"
       done
-      eval ${ACTION-echo} "${result}"
+      ${EVAL-eval} ${ACTION-echo} "${result}"
     fi
   fi
 }
@@ -140,7 +140,7 @@ function chomp() {
 }
 
 function indent() {
-  BIN='indent' pipe $@ | sed -u 's/^/  /'
+  BIN='indent' EVAL='' pipe $@ | sed -u 's/^/  /'
 }
 
 function evaluator() {
@@ -489,6 +489,25 @@ function older() {
   fi
 }
 
+function first_nonopt() {
+  while [ -n "$1" ]
+  do
+    case "$1" in
+      --*)
+          shift
+        ;;
+      -*)
+          shift
+          shift
+        ;;
+      *)
+          break
+        ;;
+    esac
+  done
+  echo $1
+}
+
 #--------------------------------DOCUMENTATION---------------------------------#
 
 function document_title() {
@@ -638,4 +657,55 @@ function tmpdir() {
 function tmpsave() {
   echo -e "\033[34mretain tmpdir: ${tmp}\033[0m"
   touch ${tmp}/save
+}
+
+#---------------------------------VERSIONING-----------------------------------#
+
+function get_var() {
+  sed -n "s/^\s*${1}\s*=\s*['\"]*\([^'\"]*\)['\"]*\s*$/\1/p" $2
+}
+function set_var() {
+  sed -i "s/^\(\s*${1}\s*=\s*['\"]*\)\([^'\"]*\)\(['\"]*\s*\)$/\1${2}\3/" $3
+}
+function inc_var() {
+  local current=$(get_var "$1" $2)
+  #Ensure idempotence:
+  cd ${2%/*}
+  git --no-pager diff ${2##*/} | grep -q $1
+  if [[ $? -eq 0 ]];then
+    red "already incremented to ${current}"
+    return 1
+  fi
+  local iter=${current##*.}
+  local base=${current%.*}
+  ((iter++))
+  local new=${base}.${iter}
+  echo "${current} incremented to ${new}"
+  set_var "$1" "${new}" $2
+}
+function set_tag() {
+  local tag=$1
+  local file=$2
+  #Ensure idempotence:
+  grep -q "${tag}" ${file}
+  if [[ $? -eq 0 ]];then
+    red "already set to ${tag}"
+    return 1
+  fi
+  local old=$(grep -Pom 1 "${tag%:*}:[\d\.]*" ${file})
+  if [[ -z "${old}" ]];then
+    red "tag ${tag%:*} not found"
+    return 1
+  fi
+
+  echo -e "${old} updated to ${tag}"
+  sed -i "s/${old}/${tag}/" ${file}
+}
+function next_version() {
+  local current=$1
+  local iter=${current##*.}
+  local base=${current%.*}
+  ((iter++))
+  local new=${base}.${iter}
+  echo "${new}"
 }

@@ -143,6 +143,27 @@ function gitex() {
   #------------------------------------MAIN--------------------------------------#
   actions=$(sed -n "/^##Group Actions:\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/).*$//' | tr $'\n' '|' | sed 's/|$//')
 
+  #ignore options
+  local OPTS=()
+  while [ -n "$1" ]
+  do
+    case "$1" in
+      --*)
+          OPTS+=($1)
+          shift
+        ;;
+      -*)
+          OPTS+=($1)
+          shift
+          OPTS+=($1)
+          shift
+        ;;
+      *)
+          break
+        ;;
+    esac
+  done
+
   case "$1" in
     help)
         $wgit $@
@@ -553,7 +574,7 @@ function gitex() {
         gitex_svn $@
       ;;
     *|'')
-        $wgit "$@"
+        $wgit ${OPTS[@]} "$@"
       ;;
   esac
 }
@@ -569,6 +590,7 @@ function gitex_action() {
   fi
   local OWD=$OLDPWD
   local start=$(pwd)
+  local options="-c color.diff=always -c color.branch=always -c color.status=always --no-pager"
 
   for repo in $(echo ${!current})
   do
@@ -598,7 +620,7 @@ function gitex_action() {
         ;;
       do) ##exec git on repos in the current context
           echo -e "${output}"
-          eval "git $ARGS 2>&1"
+          eval "git ${options} $ARGS 2>&1" | sed 's/^/  /'
           if [ "$?" -eq 130 ];then #SIGINT
             cd ${start}
             return
@@ -607,7 +629,7 @@ function gitex_action() {
       dob) ##exec git on repos in the current context of the same branch as the CWD
           if [ "$GITEX_BRANCH" == "$branch" ]; then
             echo -e "${output}"
-            eval "git $ARGS 2>&1"
+            eval "git ${options} $ARGS 2>&1" | sed 's/^/  /'
             if [ "$?" -eq 130 ];then #SIGINT
               cd ${start}
               return
@@ -621,7 +643,7 @@ function gitex_action() {
               gitex modified
               continue
             fi
-            eval "git $ARGS 2>&1"
+            eval "git ${options} $ARGS 2>&1" | sed 's/^/  /'
             if [ "$?" -eq 130 ];then #SIGINT
               cd ${start}
               return
@@ -631,7 +653,7 @@ function gitex_action() {
       mob) ##exec git on dirty repos in the current context of the same branch as the CWD
           if [[ "$GITEX_BRANCH" == "$branch" && -n "$($wgit status --porcelain)" ]]; then
             echo -e "${output}"
-            eval "git $ARGS 2>&1"
+            eval "git ${options} $ARGS 2>&1" | sed 's/^/  /'
             if [ "$?" -eq 130 ];then #SIGINT
               cd ${start}
               return

@@ -299,8 +299,17 @@ Increase indent on inline comments:
 
 #::::::::::::::::::::YOUTUBE DOWNLOAD::::::::::::::::::::
 
+youtube-dl https://www.youtube.com/watch?v=XXXXX
+
+#install:
+  sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
+  sudo chmod a+rx /usr/local/bin/youtube-dl
+
 #download a whole playlist and convert the audio into mp3:
-youtube-dl -x -f bestaudio[ext=m4a] --audio-format mp3 https://www.youtube.com/playlist?list=OLAK5uy_m6XppHGJtFY4ISTqrGEuYDiRrBJVEnveQ
+  youtube-dl -x -f bestaudio[ext=m4a] --audio-format mp3 https://www.youtube.com/playlist?list=OLAK5uy_m6XppHGJtFY4ISTqrGEuYDiRrBJVEnveQ
+
+#ERROR: unable to download video data: HTTP Error 403: Forbidden
+  youtube-dl --rm-cache-dir
 
 
 #::::::::::::::::::::WINDOWS REGISTRY::::::::::::::::::::
