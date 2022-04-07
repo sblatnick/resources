@@ -126,12 +126,21 @@ fun main() {
 
     //Functions:
     enum class Color(val rgb: Int) {
+      WHITE(0xFFFFFF),
       RED(0xFF0000),
       GREEN(0x00FF00),
       BLUE(0x0000FF),
       YELLOW(0xFFFF00);
 
       fun containsRed() = (this.rgb and 0xFF0000 != 0)
+
+      companion object {
+        //Access from java/jsp without calling Companion:
+        @JvmStatic fun descending():Array<Color> = values().reversedArray()
+
+        fun fromOptionalColor(color: Int?): Color? = if (color == null) null else values().firstOrNull { c -> color == c.rgb }
+        fun fromColor(color: Int, defaultColor: Color = WHITE): Color = fromOptionalColor(color) ?: defaultColor
+      }
     }
 
     fun main() {

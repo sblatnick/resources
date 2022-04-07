@@ -1,0 +1,15 @@
+{
+  "fields": {
+    "project": {
+      "key": "PROJECT"
+    },
+    "summary": "Testing Jira Creation",
+    "description": "Ignore me",
+    "issuetype": {
+      "name": "Bug"
+    },
+    "customfield_10001": {
+      "value": "Critical"
+    }
+  }
+}

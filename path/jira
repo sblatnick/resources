@@ -2,6 +2,7 @@
 source ~/.bashrc #source main bashrc so we can add to the environment outside of repo
 source ${BASH_SOURCE%/path/*}/config/bashrc
 
+TIMESTAMP=false
 REQUEST=$1
 shift
 
@@ -14,31 +15,38 @@ case "${REQUEST}" in
       de "JIRA" "API endpoint"
       document_header "Examples"
       de "${0##*/}" "GET issue/PROJECT-001" "Retrieve issue"
+      de "${0##*/}" "POST create.json issue" "Create new issue"
+      de "${0##*/}" "POST block.json issue/PROJECT-001/transitions" "Block issue"
+      de "${0##*/}" "PUT fields.json issue/PROJECT-001" "Set fields"
       echo ""
       exit
     ;;
-  POST) #[json file]#request against jira
+  POST|PUT) #[json file]#request against jira
       if [ ! -f ${1} ];then
         error "No json file at '$1'"
       fi
       json="-H 'Content-Type: application/json' -d '@${1}'"
       shift
     ;;
-  GET|DELETE|PUT) ##requests against jira
+  GET|DELETE) ##requests against jira
     ;;
   *)
       error "Unsupported request: ${REQUEST}"
     ;;
 esac
 
-response=$(eval curl -n -X $REQUEST $json --silent "${JIRA}/$@")
+tmpdir
+response=${tmp}/response.json
+
+code=$(eval curl -o ${response} -w "%{http_code}" -n -X $REQUEST $json --silent "${JIRA}/$@")
 if [ $? -gt 0 ];then
   warn "error response"
-  echo "${response}"
+  cat ${response}
 else
-  echo "${response}" | python -mjson.tool
+  echo "STATUS: ${code}"
+  cat ${response} | python -mjson.tool
   if [ $? -gt 0 ];then
     warn "JSON not found in response"
-    echo "${response}"
+    cat ${response}
   fi
 fi
