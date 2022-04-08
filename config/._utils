@@ -139,6 +139,46 @@ function chomp() {
   BIN='chomp' pipe $@ | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
 }
 
+function _col() {
+  local TIMESTAMP=false
+  local arg=$1
+  shift
+  local range=${arg#-}
+  local start=${range%%-*}
+  if [[ "${start}" == "last" ]];then
+    echo "$@" | awk '{print $NF}'
+    return
+  fi
+  case ${start} in
+    +([0-9]))
+      ;;
+    *)
+        warn "invalid arg: '${arg}'"
+        echo -e "Usage: ${USAGE}"
+        return 1
+      ;;
+  esac
+  local end=${range##$start-}
+  if [[ "${arg}" != "${range}" ]];then #negative start
+    if [[ "${start}" == "${end}" ]];then #start with no end
+      echo "$@" | awk "{print \$(NF-$((start-1)))}"
+      return
+    fi
+    local start="(NF-$((start-1)))"
+  fi
+  if [[ "${end}" != "${end#-}" ]];then #negative end
+    local end="\$(NF-$end)"
+  fi
+  if [[ "${end}" == "last" ]];then
+    local end=NF
+  fi
+  #echo "'$start' to '$end'"
+  echo "$@" | awk "{for (i=${start}; i<=${end:-NF}; i++) printf \$i \" \"}" | sed 's/ *$//'
+}
+function col() {
+  USAGE='lines | col [number|range|last]' BIN='col' ACTION="_col $1" pipe
+}
+
 function indent() {
   BIN='indent' EVAL='' pipe $@ | sed -u 's/^/  /'
 }
@@ -162,7 +202,7 @@ function max() {
 }
 
 function len() {
-  expr length $@
+  expr length "$@"
 }
 
 #line count:
@@ -175,7 +215,7 @@ function minlen() {
 }
 
 function maxlen() {
-  BIN='maxlen' ACTION='len' pipe $@ | sort -n | tail -n 1
+  BIN='maxlen' EVAL='' ACTION='len' pipe $@ | sort -n | tail -n 1
 }
 
 function _color() {

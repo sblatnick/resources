@@ -186,6 +186,24 @@ function kate_extentions() {
         shift
         kubectl -n ${namespace} delete $@
       ;;
+    clean) ##Delete any unhealthy pods
+        shift
+        local IFS=$'\n'
+        local pods=$(kubectl -n ${namespace} get pod)
+        local wide=$(echo "${pods}" | maxlen)
+        for pod in $pods
+        do
+          local stat=$(echo "${pod}" | col 3)
+          case $stat in
+            CrashLoopBackOff|Error)
+                local status=$(red "deleting...")
+                local name=$(echo "${pod}" | col 1)
+                kubectl -n ${namespace} delete pod/${name}
+              ;;
+          esac
+          printf "%*s %b\n" -$wide "$pod" "$status"
+        done
+      ;;
     kill) ##Alias to delete --grace-period 0 --force
         shift
         kubectl -n ${namespace} delete $@ --grace-period 0 --force
