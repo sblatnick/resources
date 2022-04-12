@@ -1,0 +1,80 @@
+#!/usr/bin/perl
+use strict;
+use experimental qw(switch);
+
+$| = 1;
+
+if(@ARGV==0) {
+  print STDOUT qq~
+Pretty Print virtually any ascii
+
+  OPTIONS
+    -f       File
+
+~;
+  exit 0;
+}
+
+my $file;
+my $indent = 0;
+
+while(my $arg = shift @ARGV) {
+  given($arg) {
+    when(/^(-f|--file)$/) { $file = shift @ARGV; }
+    default {
+      print STDOUT qq~Unknown parameter: "$arg"\n~;
+      exit 1;
+    }
+  }
+}
+
+undef $/;
+open(FILE, "<", $file) or die qq~Could not find "$file"~;
+my $contents;
+my $output;
+
+while (<FILE>)
+{
+  $contents = $_;
+  $contents =~ s/,\s*/,\n/sg;
+  $contents =~ s/\n\n+/\n/sg;
+  $contents =~ s/([\(\)\[\]\{\}])/\n$1\n/sg;
+}
+close(FILE);
+$/ = "\n";
+
+open(LINES, "<", \$contents) or die qq~Could not analyze by line~;
+open(OUTPUT, ">", \$output) or die qq~Could not write to variable~;
+while (<LINES>)
+{
+  my $line = $_;
+  chomp($line);
+  $indent-- if($line =~ /^[\)\]\}]$/);
+  if($line ne "") {
+    print OUTPUT ("  " x $indent) . $line . "\n";
+  }
+  $indent++ if($line =~ /^[\(\[\{]$/);
+  #$block = /^\s*\w+\(/i .. /\);?\s*$/i
+
+}
+close(LINES);
+close(OUTPUT);
+
+undef $/;
+open(REFLOW, "<", \$output) or die qq~Could not reflow lines~;
+while (<REFLOW>)
+{
+  $contents = $_;
+  $contents =~ s/\[\n\s*\]/[]\n/sg;
+  $contents =~ s/\(\n\s*\)/()\n/sg;
+  $contents =~ s/\{\n\s*\}/{}\n/sg;
+
+  $contents =~ s/([=:])\n\s*([\(\[\{])/$1$2/sg;
+
+  $contents =~ s/([\]\)\}])\n\s*,/$1,\n/sg;
+  $contents =~ s/\n\n+/\n/sg;
+}
+$/ = "\n";
+close(REFLOW);
+
+print "$contents";

@@ -38,7 +38,7 @@
         print "$1\n";
     }
   }
-  $/ = "n"; #Read file line by line again from here on
+  $/ = "\n"; #Read file line by line again from here on
 
 
 #Concat files to a 400 file
