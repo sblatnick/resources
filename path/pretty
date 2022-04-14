@@ -12,8 +12,8 @@ my $contents;
 while (<>)
 {
   $contents = $_;
-  #Newlines:
-  $contents =~ s/[\n\r]/ /sg;
+  #Whitespace consolidation:
+  $contents =~ s/[\n\r ]+/\n/sg;
 
   #HTML:
   $contents =~ s/(<[\/\w].*[\w]>)/\n$1\n/sg;
@@ -21,8 +21,11 @@ while (<>)
   #Trailing commas:
   $contents =~ s/\s*,\s*/,\n/sg;
 
-  #Bracket isolation:
-  $contents =~ s/\s*([\(\)\[\]\{\}])\s*/\n$1\n/sg;
+  #Bracket/quote isolation:
+  $contents =~ s/\s*([\(\)\[\]\{\}"'>])\s*/\n$1\n/sg;
+  $contents =~ s/\s*</\n</sg;
+  $contents =~ s/<(\/?\w+)\n>/<$1>/sg;
+
 }
 $/ = "\n";
 
@@ -34,13 +37,11 @@ while (<LINES>)
 {
   my $line = $_;
   chomp($line);
-  $indent-- if($line =~ /^[\)\]\}]$/ or $line =~ /^<\/\w.*\w>$/);
+  $indent-- if($line =~ /^[\)\]\}]$/ or $line =~ /^<\/|>$/);
   if($line ne "") {
     print OUTPUT ("  " x $indent) . $line . "\n";
   }
-  $indent++ if($line =~ /^[\(\[\{]$/ or $line =~ /^<\w.*\w>$/);
-  #$block = /^\s*\w+\(/i .. /\);?\s*$/i
-
+  $indent++ if($line =~ /^[\(\[\{]$/ or $line =~ /^<|>$/);
 }
 close(LINES);
 close(OUTPUT);
@@ -51,18 +52,24 @@ open(REFLOW, "<", \$output) or die qq~Could not reflow lines~;
 while (<REFLOW>)
 {
   $contents = $_;
-  #Consolidate empty brackets
+  #Consolidate empty brackets/quotes:
   $contents =~ s/\[\n\s*\]/[]\n/sg;
   $contents =~ s/\(\n\s*\)/()\n/sg;
   $contents =~ s/\{\n\s*\}/{}\n/sg;
+  $contents =~ s/"\n\s*"/""\n/sg;
+  $contents =~ s/'\n\s*'/''\n/sg;
 
-  #Empty brackets on the same line as assignment
-  $contents =~ s/([=:])\n\s*([\(\[\{])/$1$2/sg;
-  #comma on same line as ], ), }
-  $contents =~ s/([\]\)\}])\n\s*,/$1,\n/sg;
+  #Empty brackets/quotes on the same line as assignment
+  $contents =~ s/([=:])\n\s*([\(\[\{][\)\]\}])/$1$2/sg;
+  $contents =~ s/([=:])\n\s*(""|'')/$1$2/sg;
+  #comma on same line as bracket/quotes
+  $contents =~ s/([\]\)\}'"])\n\s*,/$1,\n/sg;
 
   #Remove blank lines:
   $contents =~ s/\n\n+/\n/sg;
+
+  #Remove excessive word isolation:
+  $contents =~ s/(\w+)\n(?! *[\(\)\[\]\{\}"'>])/$1 /sig;
 }
 $/ = "\n";
 close(REFLOW);
