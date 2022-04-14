@@ -2,47 +2,24 @@
 use strict;
 use experimental qw(switch);
 
-$| = 1;
-
-if(@ARGV==0) {
-  print STDOUT qq~
-Pretty Print virtually any ascii
-
-  OPTIONS
-    -f       File
-
-~;
-  exit 0;
-}
-
-my $file;
-my $indent = 0;
-
-while(my $arg = shift @ARGV) {
-  given($arg) {
-    when(/^(-f|--file)$/) { $file = shift @ARGV; }
-    default {
-      print STDOUT qq~Unknown parameter: "$arg"\n~;
-      exit 1;
-    }
-  }
-}
-
-undef $/;
-open(FILE, "<", $file) or die qq~Could not find "$file"~;
 my $contents;
 my $output;
 
-while (<FILE>)
+undef $/;
+my $contents;
+
+#All together:
+while (<>)
 {
   $contents = $_;
   $contents =~ s/,\s*/,\n/sg;
   $contents =~ s/\n\n+/\n/sg;
   $contents =~ s/([\(\)\[\]\{\}])/\n$1\n/sg;
 }
-close(FILE);
 $/ = "\n";
 
+#By line:
+my $indent = 0;
 open(LINES, "<", \$contents) or die qq~Could not analyze by line~;
 open(OUTPUT, ">", \$output) or die qq~Could not write to variable~;
 while (<LINES>)
@@ -60,18 +37,23 @@ while (<LINES>)
 close(LINES);
 close(OUTPUT);
 
+#All together:
 undef $/;
 open(REFLOW, "<", \$output) or die qq~Could not reflow lines~;
 while (<REFLOW>)
 {
   $contents = $_;
+  #Consolidate empty [], (), {}
   $contents =~ s/\[\n\s*\]/[]\n/sg;
   $contents =~ s/\(\n\s*\)/()\n/sg;
   $contents =~ s/\{\n\s*\}/{}\n/sg;
 
+  #Empty on the same line as =, :
   $contents =~ s/([=:])\n\s*([\(\[\{])/$1$2/sg;
-
+  #comma on same line as ], ), }
   $contents =~ s/([\]\)\}])\n\s*,/$1,\n/sg;
+
+  #remove blank lines:
   $contents =~ s/\n\n+/\n/sg;
 }
 $/ = "\n";

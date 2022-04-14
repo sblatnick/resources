@@ -12,7 +12,7 @@ my $ref=tie *FH,"File::Tail",(name=>"$file",interval=>1,maxinterval=>1);
 while (<FH>) {
   my $line = $_;
   $line =~ s/.*VerboseDBI.*//g;
-  if($line != "") {
+  if($line ne "") {
     print "$line\n";
   }
 }

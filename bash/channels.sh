@@ -66,6 +66,11 @@ scp $src $dst 2>&1 | sed "s/^/:: ${BASH_COMMAND} :: args: $src, $dst :: /"
   exec 1>log.out 2>&1
 #same as before, but output to CLI too:
   exec 1> >(tee log.out) 2>&1
+  #without bash:
+  echo "hello world" 2>&1 | tee log.out
+  #verbose option without bash:
+  verbose=/dev/stdout #quiet: verbose=/dev/null
+  echo "hello world" 2>&1 | tee log.out >$verbose
 #prepend date to log, but not stdout:
   exec 1> >(while read line;do echo "[$(date +'%Y%m%d%H%M%S')] ${line}" >> log.out;echo "${line}";done) 2>&1
 #roll logs and log to two files and stdout:
