@@ -38,11 +38,11 @@ while (<LINES>)
 {
   my $line = $_;
   chomp($line);
-  $indent-- if($line =~ /^[\)\]\}]$|^<\/|>$/);
+  $indent-- if($line =~ /^[\)\]\}>]$|^<\//);
   if($line ne "") {
     print OUTPUT ("  " x $indent) . $line . "\n";
   }
-  $indent++ if($line =~ /^[\(\[\{]$|^<|>$/);
+  $indent++ if($line =~ /^[\(\[\{>]$|^<(?!\/)/);
 }
 close(LINES);
 close(OUTPUT);
@@ -62,9 +62,9 @@ while (<REFLOW>)
 
   #Brackets/quotes on the same line as assignment
   $contents =~ s/([=:])\n\s*([\(\[\{"'\w])/$1$2/sg;
-  #comma on same line as bracket/quotes
+  #Comma on same line as bracket/quotes
   $contents =~ s/([\]\)\}'"])\n\s*,/$1,\n/sg;
-  #name on same line as opening bracket
+  #Name on same line as opening bracket
   $contents =~ s/(?<=\w)\s+([\[\(\{])\n/$1\n/sg;
 
   #Remove excessive word isolation:
@@ -77,6 +77,7 @@ while (<REFLOW>)
   #Consolidate single attributes/parameters:
   $contents =~ s/"\s+(\w{1,50})\s+"/"$1"/sg;
   $contents =~ s/'\s+(\w{1,50})\s+'/'$1'/sg;
+  $contents =~ s/>\s+(\w{1,50})\s+</>$1</sg;
   $contents =~ s/\{\s+(\w{1,50})\s+\}/{$1}/sg;
   $contents =~ s/\[\s+(\w{1,50})\s+\]/[$1]/sg;
   $contents =~ s/\(\s+(\w{1,50})\s+\)/($1)/sg;
