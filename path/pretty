@@ -72,7 +72,7 @@ while (<REFLOW>)
 
   #Remove blank lines and excessive whitespace:
   $contents =~ s/\s+\n/\n/sg;
-  $contents =~ s/(?<=\w)[ \t]+/ /sg;
+  $contents =~ s/(?<!\s)[ \t]+/ /sg;
 
   #Consolidate single attributes/parameters:
   $contents =~ s/"\s+(\w{1,50})\s+"/"$1"/sg;
@@ -81,7 +81,9 @@ while (<REFLOW>)
   $contents =~ s/\{\s+(\w{1,50})\s+\}/{$1}/sg;
   $contents =~ s/\[\s+(\w{1,50})\s+\]/[$1]/sg;
   $contents =~ s/\(\s+(\w{1,50})\s+\)/($1)/sg;
+  #Drop HTML property below:
   $contents =~ s/(<\w+) (\w+=["']\w+["'])(\s+)/$1$3$2$3/sig;
+  #Place "> together:
   $contents =~ s/\s+(['"])(\s+)>/$2$1>/sig;
 }
 $/ = "\n";
