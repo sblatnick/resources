@@ -8,24 +8,60 @@ my $output;
 undef $/;
 my $contents;
 
-#Split entities by line:
+sub separate {
+  my $start = $_[1];
+  my $end = $_[2];
+
+  my @words;
+  #while($_[0] =~ /$start([^\n]+)$end/g) {
+  while($_[0] =~ /$start(.+)$end/g) {
+    push @words, $1;
+  }
+  for my $old (@words) {
+    my $new = $old;
+    $new =~ s/\s+/\n/g;
+    #print "old: '$old' vs new: '$new'\n";
+    if($old ne $new) {
+      $_[0] =~ s/$start$old$end/$start$new$end/;
+    }
+  }
+}
+
+#Expansion:
 while (<>)
 {
   $contents = $_;
-  #Whitespace consolidation:
-  $contents =~ s/[\n\r ]+/\n/sg;
 
-  #HTML:
-  $contents =~ s/(<[\/\w].*[\w]>)/\n$1\n/sg;
-
-  #Trailing commas:
-  $contents =~ s/\s*,\s*/,\n/sg;
-
-  #Bracket/quote isolation:
-  $contents =~ s/\s*([\(\)\[\]\{\}"'>])\s*/\n$1\n/sg;
-  $contents =~ s/\s*</\n</sg;
-  $contents =~ s/<(\/?\w+)\n>/<$1>/sg;
-
+  #Isolation:
+    #HTML entities:
+      $contents =~ s/(<[^>]+>)/\n$1\n/sg;
+      separate($contents, "\n<", ">\n");           #attributes
+      $contents =~ s/(<[^ ]+ +)/$1\n/sg;           #first attribute again
+      $contents =~ s/(["'])>\n/\n$1\n>/sg;         #closing
+      $contents =~ s/\/>\n/\n\/>/sg;               #closing
+      $contents =~ s/\n([^\/<\s]+)>/\n$1\n>/sg;    #closing
+    #quoted words:
+      $contents =~ s/"([^"\n]+)"\s*/"\n$1\n"\n/sg;
+      $contents =~ s/'([^'\n]+)'\s*/'\n$1\n'\n/sg;
+      separate($contents, "\"\n", "\n\"\n");
+      separate($contents, "'\n", "\n'\n");
+    #quoted within html
+      $contents =~ s/(?<=[=:])(["'])/$1\n/sg;
+      $contents =~ s/(["'])>\n/\n$1\n>\n/sg;
+    #open:
+      $contents =~ s/([\(\[\{>])\s*/$1\n/sg;       #brackets
+    #close:
+      $contents =~ s/([\)\]\}])\s*/\n$1\n/sg;      #brackets
+    #trailing commas:
+      $contents =~ s/\s*,\s*/\n,\n/sg;
+  #Consolidatation:
+    #brackets:
+      $contents =~ s/\[\s*\]/[]\n/sg;
+      $contents =~ s/\(\s*\)/()\n/sg;
+      $contents =~ s/\{\s*\}/{}\n/sg;
+    #quotes:
+      $contents =~ s/"\s*"/""\n/sg;
+      $contents =~ s/'\s*'/''\n/sg;
 }
 $/ = "\n";
 
@@ -38,11 +74,11 @@ while (<LINES>)
 {
   my $line = $_;
   chomp($line);
-  $indent-- if($line =~ /^[\)\]\}>]$|^<\//);
+  $indent-- if($line =~ /^["'\)\]\}>]$|^\/>$|^<\//);
   if($line ne "") {
     print OUTPUT ("  " x $indent) . $line . "\n";
   }
-  $indent++ if($line =~ /^[\(\[\{>]$|^<(?!\/)/);
+  $indent++ if($line =~ /(?<=.)["'\(\[\{]$|<(?!\/)|^>$/);
 }
 close(LINES);
 close(OUTPUT);
@@ -53,38 +89,33 @@ open(REFLOW, "<", \$output) or die qq~Could not reflow lines~;
 while (<REFLOW>)
 {
   $contents = $_;
-  #Consolidate empty brackets/quotes:
-  $contents =~ s/\[\n\s*\]/[]\n/sg;
-  $contents =~ s/\(\n\s*\)/()\n/sg;
-  $contents =~ s/\{\n\s*\}/{}\n/sg;
-  $contents =~ s/"\n\s*"/""\n/sg;
-  $contents =~ s/'\n\s*'/''\n/sg;
 
-  #Brackets/quotes on the same line as assignment
-  $contents =~ s/([=:])\n\s*([\(\[\{"'\w])/$1$2/sg;
-  #Comma on same line as bracket/quotes
-  $contents =~ s/([\]\)\}'"])\n\s*,/$1,\n/sg;
-  #Name on same line as opening bracket
-  $contents =~ s/(?<=\w)\s+([\[\(\{])\n/$1\n/sg;
 
-  #Remove excessive word isolation:
-  $contents =~ s/([\w-]+)\n(?! *[\(\)\[\]\{\}"'>])/$1 /sig;
+  #~ #Brackets/quotes on the same line as assignment
+  #~ $contents =~ s/([=:])\n\s*([\(\[\{"'\w])/$1$2/sg;
+  #~ #Comma on same line as bracket/quotes
+  #~ $contents =~ s/([\]\)\}'"])\n\s*,/$1,\n/sg;
+  #~ #Name on same line as opening bracket
+  #~ $contents =~ s/(?<=\w)\s+([\[\(\{])\n/$1\n/sg;
 
-  #Remove blank lines and excessive whitespace:
-  $contents =~ s/\s+\n/\n/sg;
-  $contents =~ s/(?<!\s)[ \t]+/ /sg;
+  #~ #Remove excessive word isolation:
+  #~ $contents =~ s/([\w-]+)\n(?! *[\(\)\[\]\{\}"'>])/$1 /sig;
 
-  #Consolidate single attributes/parameters:
-  $contents =~ s/"\s+(\w{1,50})\s+"/"$1"/sg;
-  $contents =~ s/'\s+(\w{1,50})\s+'/'$1'/sg;
-  $contents =~ s/>\s+(\w{1,50})\s+</>$1</sg;
-  $contents =~ s/\{\s+(\w{1,50})\s+\}/{$1}/sg;
-  $contents =~ s/\[\s+(\w{1,50})\s+\]/[$1]/sg;
-  $contents =~ s/\(\s+(\w{1,50})\s+\)/($1)/sg;
-  #Drop HTML property below:
-  $contents =~ s/(<\w+) (\w+=["']\w+["'])(\s+)/$1$3$2$3/sig;
-  #Place "> together:
-  $contents =~ s/\s+(['"])(\s+)>/$2$1>/sig;
+  #~ #Remove blank lines and excessive whitespace:
+  #~ $contents =~ s/\s+\n/\n/sg;
+  #~ $contents =~ s/(?<!\s)[ \t]+/ /sg;
+
+  #~ #Consolidate single attributes/parameters:
+  #~ $contents =~ s/"\s+(\w{1,50})\s+"/"$1"/sg;
+  #~ $contents =~ s/'\s+(\w{1,50})\s+'/'$1'/sg;
+  #~ $contents =~ s/>\s+(\w{1,50})\s+</>$1</sg;
+  #~ $contents =~ s/\{\s+(\w{1,50})\s+\}/{$1}/sg;
+  #~ $contents =~ s/\[\s+(\w{1,50})\s+\]/[$1]/sg;
+  #~ $contents =~ s/\(\s+(\w{1,50})\s+\)/($1)/sg;
+  #~ #Drop HTML property below:
+  #~ $contents =~ s/(<\w+) (\w+=["']\w+["'])(\s+)/$1$3$2$3/sig;
+  #~ #Place " and > together:
+  #~ $contents =~ s/\s+(['"])(\s+)>/$2$1>/sig;
 }
 $/ = "\n";
 close(REFLOW);

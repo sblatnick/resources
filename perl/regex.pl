@@ -47,12 +47,22 @@ $arg =~ s[(?x)                    # free spacing mode, ignore whitespace and all
 ][ $1.($2 // '\\{') ]eg;            # if so, then insert a backslash
 
 
+=head
+  words:
+    (?:one|two|3)   match any
+    ((?!one).)*     don't match any, capturing
+    (?:(?!:one).)*  don't match any, no capturing
+  metacharacter classes:
+    \d              digit
+    \s              space or tab
+    \w              word or number or _ [a-zA-Z0-9_]
 
-  #match words:
-    (?:one|two|3)
+  lookahead/lookbehind (source: https://stackoverflow.com/questions/2973436/regex-lookahead-lookbehind-and-atomic-groups)
+    bar(?=bar)      finds the 1st bar ("bar" which has "bar" after it)
+    bar(?!bar)      finds the 2nd bar ("bar" which does not have "bar" after it)
+    (?<=foo)bar     finds the 1st bar ("bar" which has "foo" before it)
+    (?<!foo)bar     finds the 2nd bar ("bar" which does not have "foo" before it)
 
-  #metacharacter classes:
-    \d #digit
-    \s #space or tab
-    \w #word or number or _ [a-zA-Z0-9_]
-
+  atomic groups:
+    (?>foo)         matches the first possible greedy match and disables backtracking
+=cut
