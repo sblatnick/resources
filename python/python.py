@@ -343,3 +343,29 @@ def caesarCipher(s, k):
 
 
 
+#__init__.py attempts to modify scope of imports:
+
+  #!/usr/bin/env python
+  import os, sys, importlib
+
+  base = os.path.dirname(__file__)
+  sys.path.append(base)
+
+  for script in os.listdir(base):
+    if script == '__init__.py' or script[-3:] != '.py':
+      continue
+    print("importing %s" % script[:-3])
+    module = importlib.import_module(script[:-3])
+    base = importlib.import_module(base.split("/")[-1])
+    #from script[:-3] import *
+    symbols = [name for name in module.__dict__ if not name.startswith('_')]
+    for symbol in symbols:
+      print("  %s" % symbol)
+      attr = getattr(module, symbol)
+      print(attr)
+      #setattr(base, symbol, getattr(module, symbol))
+      globals()[symbol] = attr
+    #globals().update({name: module.__dict__[name] for name in symbols})
+    #__import__(script[:-3], locals(), globals())
+    #__import__(script[:-3], fromlist=symbols)
+  del module
