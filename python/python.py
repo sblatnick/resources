@@ -199,6 +199,9 @@ def caesarCipher(s, k):
   thisdict["year"] = 2018
   thisdict.update({"year": 2020})
 
+  #change key:
+  thisdict[new_key] = thisdict.pop(old_key)
+
   #remove
   thisdict.pop("model")
   del thisdict["model"]

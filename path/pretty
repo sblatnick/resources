@@ -19,6 +19,7 @@ sub separate {
   }
   for my $old (@words) {
     my $new = $old;
+    $old =~ s/([\(\)\[\]\{\}\.\^\$\*\+\?\\\|])/\\$1/g;
     $new =~ s/\s+/\n/g;
     #print "old: '$old' vs new: '$new'\n";
     if($old ne $new) {
@@ -75,10 +76,12 @@ while (<LINES>)
   my $line = $_;
   chomp($line);
   $indent-- if($line =~ /^["'\)\]\}>]$|^\/>$|^<\//);
+  $indent = 0 if($indent < 0); #min
   if($line ne "") {
     print OUTPUT ("  " x $indent) . $line . "\n";
   }
   $indent++ if($line =~ /(?<=.)["'\(\[\{]$|<(?!\/)|^>$/);
+  $indent = 20 if($indent > 20); #max
 }
 close(LINES);
 close(OUTPUT);
