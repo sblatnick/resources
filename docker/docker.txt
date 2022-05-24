@@ -114,6 +114,31 @@
       py.test -p no:cacheprovider --hosts=docker://$DOCKER_ID test/test_container.py
       docker stop $DOCKER_ID
 
+  #Building other architectures:
+    #Create additional building image for building in parallel:
+      docker buildx create --use
+    #List building images:
+      docker buildx ls
+    #Build for arm64 (Mac's m1 chips):
+      docker buildx build --platform linux/amd64,linux/arm64 -t my_image .
+    #Fix "Invalid ELF" (source: https://vikaspogu.dev/posts/docker-buildx-setup/):
+      docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    #Install qemu emulators (re-run at each reboot):
+      docker run -it --rm --privileged tonistiigi/binfmt --install all
+
+    #Use `--load` (shorthand for `-o type=docker`) to import to your local docker so you can use it without pushing
+    #Does not support multi-platform yet!
+      DOCKER_BUILDKIT=1 DOCKER_CLI_EXPERIMENTAL=enabled \
+      docker buildx build \
+        --platform linux/amd64 \
+        -t ${REPO_URL}/${image}:${SERVICE_VERSION} \
+        -t ${REPO_URL}/${image}:latest \
+        --load \
+        -f Dockerfile \
+        .
+      docker tag ${REPO_URL}/${image}:${SERVICE_VERSION} ${image}:latest
+    #Use --push to push during build
+
   #Dockerfiles:
     #DECLARATIONS:
     ENTRYPOINT #binary to run

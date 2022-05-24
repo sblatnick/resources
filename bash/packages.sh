@@ -267,6 +267,13 @@
 
   #check package version:
     dpkg -l packageName
+  #list files installed from package:
+    dpkg -L packageName
+  #list files that would be installed from package (requires apt-file):
+    apt-file update #update details
+    apt-file list packageName
+  #list files a deb file would install:
+    dpkg -c package.deb
 
   #compile ffmpeg for mp4 aac audio (psp/ipod, patent issues?) DIDN'T WORK?!
     apt-get source ffmpeg
@@ -655,22 +662,4 @@ mock -r epel-6-x86_64 --resultdir ./ rebuild kernel-2.6.32-696.30.1.el6.src.rpm
     config_opts['files']['etc/profile.d/environment.sh'] = """
     export BUILD_ID=0
     """
-
-#::::::::::::::::::::PYTHON PIP::::::::::::::::::::
-
-pip install package
-
-pip install cqlsh #Cassandra Query Language Shell
-pip install 'cqlsh>=5.0.1' --force-reinstall
-
-  #On mac:
-  sudo easy_install pip
-  sudo python -m pip install packages
-  sudo python -m pip install -r requirements.txt
-
-  #requirements file example:
-    requests==2.21.0
-    scp==0.13.2
-    pexpect
-    pyyaml
 

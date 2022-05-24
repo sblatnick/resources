@@ -1140,6 +1140,9 @@ Misc
   ⁉️ Exclamation Question Mark	U+2049, U+FE0F
   ❓ Red Question Mark	U+2753
   ❔ White Question Mark	U+2754
+  ⍰ Boxed question mark
+  ⸮ Reversed question mark
+  ¿ Upside down question mark
   ❕ White Exclamation Mark	U+2755
   ❗ Red Exclamation Mark	U+2757
   💱 Currency Exchange	U+1F4B1
@@ -1188,7 +1191,7 @@ Misc
   🆑 CL Button	U+1F191
   🆒 Cool Button	U+1F192
   🆓 Free Button	U+1F193
-  ℹ️ Information	U+2139, U+FE0F
+  ℹ️ Information	U+2139, U+FE0F 🛈 (circled)
   🆔 ID Button	U+1F194
   Ⓜ️ Circled M	U+24C2, U+FE0F
   🆕 New Button	U+1F195
