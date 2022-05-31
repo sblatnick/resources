@@ -95,6 +95,12 @@
   #older version of git to delete remote branch:
   git push origin :branch
 
+  #remote deleted and can't re-push?
+  git push
+    ! [rejected] feature/mybranch -> feature/mybranch (stale info)
+    error: failed to push some refs to 'https://repo.intra.net/myrepo.git'
+  git remote prune origin
+
   #rename both local and remote branch:
   git branch -m new_branch
   git push origin -u new_branch
@@ -362,6 +368,8 @@
   git log --branches --date='format:%Y-%m-%d %T' --format="%cd %Cblue%h%Creset %s"
 
   #find branch name from 6 digit sha:
+  git name-rev --name-only <commit>
+  #all branches containing that commit:
   git branch -a --contains <commit>
 
   #fix last commit message:

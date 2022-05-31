@@ -89,6 +89,15 @@
   height: 26px;
 }
 
+.toolbar-extensions {
+  height: 26px !important;
+}
+
+.button-toolbar {
+  height: 26px;
+  overflow: hidden;
+}
+
 /* Reduce toolbar size for horizontal menu */
 :-webkit-any(.native, .maximized).horizontal-menu#browser:not(.tabs-top) .toolbar.toolbar-addressbar {
   padding-left: 267px;
