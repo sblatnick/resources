@@ -1,0 +1,23 @@
+#!/bin/bash
+source ${BASH_SOURCE%/path/*}/config/bashrc
+
+last=()
+
+sort | \
+while IFS=$'\n' read pipe
+do
+  IFS=' ' read -ra columns <<< "${pipe}"
+  for i in ${!columns[@]}
+  do
+    col=${columns[$i]}
+    if [[ "${last[$i]}" != "${col}" ]];then
+      printf "%*s%s\n" $((2 * i)) "" "${col}"
+      for j in $(seq $i ${#columns[@]})
+      do
+        last[$j]=""
+      done
+    fi
+    last[$i]=$col
+  done
+done
+

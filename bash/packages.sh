@@ -187,6 +187,12 @@
   rpm --import http://example.repo.com/yum/centos/7_latest/os/x86_64/RPM-GPG-KEY-CentOS-7
   yum clean all
 
+  #enable just for install:
+    yum \
+      --enablerepo=epel
+      --setopt=epel.module_hotfixes=true
+      install ruby
+
 #debian:
   apt-get install package
   apt-cache search package

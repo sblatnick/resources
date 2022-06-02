@@ -35,3 +35,8 @@
     <settingsSecurity>
       <master>{jSMOWnoPFgsHVpMvz5VrIt5kRbzGpI8u+9EF1iFQyJQ=}</master>
     </settingsSecurity>
+
+#See dependency tree:
+  mvn dependency:tree -Dverbose
+  mvn dependency:tree -Dverbose -Dincludes=:spring*::
+
