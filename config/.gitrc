@@ -410,6 +410,22 @@ function gitex() {
           return $?
         fi
       ;;
+    snapback) #[file] [sha]#Update file to version in sha
+        shift
+        if [ -n "$1" ];then
+          file=$1
+          shift
+          if [ -n "$1" ];then
+            sha=$1
+            $wgit --no-pager show ${sha}:$file > ${file}
+          else
+            $wgit log --oneline ${file}
+          fi
+        else
+          echo -e "\033[31mNo file specified\033[0m"
+          return 1
+        fi
+      ;;
     generate|gen) #[files]#generate a consolidated diff
         shift
         local branch=$($wgit rev-parse --abbrev-ref HEAD)
@@ -476,7 +492,7 @@ function gitex() {
             else
               $wgit --no-pager show --color ${sha}:$file | sed 's/^/  /'
             fi
-          done | $wless -x2 -S #eval $($wgit config --get core.pager)
+          done | $wless -R -x2 -S #eval $($wgit config --get core.pager)
         else
           echo -e "\033[31mNo file specified\033[0m"
           return 1

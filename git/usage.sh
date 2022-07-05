@@ -247,6 +247,9 @@
     #as opposed to taking what you have and merging:
     git pull --rebase origin branch
 
+    #switch trunk of feature branch:
+    git rebase --onto newMaster oldMaster feature/branch
+
   #fatal error on fast forward:
   $ git pull origin <branch>
     fatal: Not possible to fast-forward, aborting.

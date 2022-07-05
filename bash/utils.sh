@@ -96,6 +96,8 @@ zip file.zip file1 file2 file3
 zip -d file.jar path/to/file.txt
 #add file:
 gzip -dc archive.tar.gz | tar -r internal/path/to/.external/path/to/file.txt | gzip > archive_new.tar.gz –
+#list contents:
+unzip -l file.jar
 
 #::::::::::::::::::::REGEX SEARCH/REPLACE::::::::::::::::::::
 
