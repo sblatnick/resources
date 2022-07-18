@@ -236,6 +236,7 @@ Example arguments:
     kubectl get pv -o jsonpath='{range.items[?(@.status.phase=="Released")]}{.metadata.name}{"\n"}{end}' #get all persistent volumes with released claims
     kubectl get pod -o jsonpath='{range.items[*]}{.metadata.name}{"\n"}{end}' #get all pod names
     kubectl get pod -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{range @.status.containerStatuses[*]}{"  "}{.imageID}{"\n"}{end}{"\n"}{end}' #get pods with image ids indented
+    kubectl delete pod --field-selector=status.phase!=Running #delete non-running pods
 
       -o --output             output format
         name                  print resource names

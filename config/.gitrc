@@ -867,6 +867,9 @@ function gitex_list()
       rm) #[pattern]#delete local branches
           local delete='true'
         ;;
+      purge) ##delete merged local-only branches (local white and bold)
+          local purge='true'
+        ;;
       -v|--verbose) ##show diff status between unmerged local branches and master branch
           local verbose='true'
         ;;
@@ -930,7 +933,15 @@ function gitex_list()
       #merged:
       local output=$(echo "${unique}"$'\n'"${merged}" | sort | uniq -d)
       if [ -n "${output}" ];then
-        echo -e "\033[0;1m${output}\033[0m"
+        if [[ "${purge}" == 'true' ]];then
+          for branch in ${output}
+          do
+            result=$($wgit branch -d ${branch#  })
+            echo -e "\033[0;1m${branch}\033[0m \033[33m${result}\033[0m"
+          done
+        else
+          echo -e "\033[0;1m${output}\033[0m"
+        fi
       fi
       #no-merged:
       local output=$(echo "${merged}"$'\n'"${merged}"$'\n'"${unique}" | sort | uniq -u)
@@ -962,6 +973,9 @@ function gitex_list()
       echo -e "${output}"
     fi
   done
+##  Legend:
+# blue) ##local branch tracking remote
+# bold) ##merged with $MASTER
 }
 
 ##Subtree Actions (sub|tree):
