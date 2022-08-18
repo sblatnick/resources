@@ -12,6 +12,10 @@
   #test CA:
   curl --cacert CA.crt https://127.0.0.1/
 
+#create self-signed testing cert in pem (for nexus):
+  openssl req -new -newkey rsa:4096 -nodes -keyout nexus.key -out nexus.csr
+  openssl x509 -req -sha256 -days 365 -in nexus.csr -signkey nexus.key -out nexus.pem
+
 #create cert request from ssh key:
 openssl req -new -key ~/.ssh/id_rsa -out id.csr
 #self-sign cert:

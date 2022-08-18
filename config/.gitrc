@@ -915,7 +915,14 @@ function gitex_list()
       #merged:
       local output=$(echo "${tracked}"$'\n'"${merged}" | sort | uniq -d)
       if [ -n "${output}" ];then
-        echo -e "\033[34;1m${output}\033[0m"
+        for branch in ${output}
+        do
+          if [[ "${MASTER}" == "${branch#  }" ]];then
+            echo -e "\033[34;1m${branch}\033[0m (master)"
+          else
+            echo -e "\033[34;1m${branch}\033[0m"
+          fi
+        done
       fi
       #no-merged:
       local output=$(echo "${merged}"$'\n'"${merged}"$'\n'"${tracked}" | sort | uniq -u)

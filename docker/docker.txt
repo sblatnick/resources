@@ -90,6 +90,15 @@
     cat Dockerfile.webapp | docker build -t webapp:0.1 - #build image from stdin
     docker stop ${NAME} #kill container
 
+    #Add another port to a previously running container:
+      docker stop --time=120 nexus
+      docker commit nexus nexus01
+      docker rm nexus
+      docker run -d -p 8081:8081 -p 8082:8082 --add-host host.docker.internal:host-gateway -v nexus-data:/nexus-data --name nexus nexus01
+
+    #Add host reachable from container (linux):
+      --add-host host.docker.internal:host-gateway
+
     #Run util script and clean up:
     docker run -i --rm \
       -v ${WORK:-~/workspace}:/root/work:cached \

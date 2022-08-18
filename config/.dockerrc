@@ -347,9 +347,13 @@ function doc_context()
         sit contexts[current] delete
         sit 'current' ""
       ;;
-    *)
-        echo -e "\033[31mInvalid context action:\033[0m $1"
-        return 1
+    log|attach) #[daemon]#Attach to the daemon and it's stdout
+        echo -e "\033[33mAttempting to attach to daemon \033[0m $1"
+        docker attach $1
+      ;;
+    *) #[daemon] [shell]#Connect to a daemon by name
+        echo -e "\033[33mAttempting to connect to daemon \033[0m $1 using ${2-bash}"
+        docker exec -it $1 ${2-bash}
       ;;
   esac
 }

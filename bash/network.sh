@@ -11,6 +11,9 @@
     nc -l ${port}
     nc -l localhost ${port}
       nc: Address already in use #shows if a service is using the port
+  #Talk to yourself:
+    nc -l -q -1 -p 8089
+    nc localhost 8089
   #Find hosts on network:
     nmap -sn 192.168.0.0/24 | grep -Po 'scan report for .*$' | cut -d' ' -f5-
   #Find hosts listening to 8080:

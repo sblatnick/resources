@@ -36,6 +36,10 @@
     val value = map["key"] //or null if key doesn't exist
     map.getValue("key")    //or default, which is 3, or without defaults NoSuchElementException
 
+  //transform to Map<id, name>:
+    .map { Object(it) }
+    .groupBy({ it.id }, { it.name })
+
 //Unique Map by Merge:
    companion object {
       fun merge(objects: List<Object>): Object {
