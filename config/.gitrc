@@ -253,10 +253,19 @@ function gitex() {
     ls|rs) #[options] [pattern]#remote branch listing
         gitex_list $@
       ;;
-    modified|edit|ed) ##open dirty files in $EDITOR
+    modified) ##open dirty files in $EDITOR
         dir=$(pwd)
         local IFS=$'\n'
         files=$($wgit status -s)
+        for file in $files
+        do
+          $EDITOR $dir/${file##* }
+        done
+      ;;
+    edit|ed) ##open conflicting files in $EDITOR
+        dir=$(pwd)
+        local IFS=$'\n'
+        files=$($wgit status -s | grep '^UU ')
         for file in $files
         do
           $EDITOR $dir/${file##* }
