@@ -16,45 +16,13 @@
 .bookmark-bar button img.folder-icon, .bookmark-bar button svg.folder-icon {
   display: none;
 }
-
 .bookmark-bar button img + span, .bookmark-bar button svg + span, .bookmark-bar button img + input, .bookmark-bar button svg + input {
   margin-left: 0px;
 }
 
-/*
-#vivaldi-tooltip .tooltip img {
-  width: 400%;
-}
-*/
-
 .tabs-right ~ #vivaldi-tooltip .tooltip .tab-group {
   box-shadow: 5px 5px;
 }
-#vivaldi-tooltip .tooltip .tab-group .tooltip-item:hover {
-  border: 3px solid orange !important;
-}
-#vivaldi-tooltip .tooltip .tab-group .tooltip-item:active, #vivaldi-tooltip .tooltip .tab-group .tooltip-item.active, #vivaldi-tooltip .last-active {
-  border: 3px solid red !important;
-}
-
-/* Move close button over favicon */
-.linux:not(.alt) #tabs-container .close {
-  position: absolute;
-  left: 6px;
-}
-.close, .close:hover {
-  background-color: rgba(0, 0, 0, 1.0);
-}
-
-.linux:not(.alt) #tabs-container .close {
-  position: relative;
-  left: 0px;
-}
-
-/* Hide 2-level tab favicon/close */
-/*#tabs-container .favicon, #tabs-container .close {
-  display: none;
-}*/
 
 /*Source: https://www.reddit.com/r/vivaldibrowser/comments/6yaxc5/refinement_move_the_vivaldi_button_to_the/ */
 /* Remove header */
@@ -64,7 +32,7 @@
 
 /* Keep Vivaldi button */
 :-webkit-any(.native, .maximized)#browser .vivaldi  {
-  z-index: 1;
+  z-index: 5;
   top: 5px !important;
 }
 
