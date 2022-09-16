@@ -194,6 +194,9 @@ chkconfig iptables off
   dig +trace domain.com
   host -t mx domain.com nameserver-local.com
 
+#Look up any ips of hosts with ssh connections:
+  nmap -p22 -n 192.168.1.1/24
+
 #RBL (Real-time-blacklist DNS) lookup:
   #reverse the IP digits:
     107.181.132.237 => 237.132.181.107

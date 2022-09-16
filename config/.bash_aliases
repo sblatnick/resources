@@ -30,8 +30,10 @@ function binder() {
 binder c1 25
 binder c2 26
 binder c3 27
-binder elite 14 steve
-binder tc 22 tc
+binder elite 20 steve
+binder asus 17 steve
+binder tc 29 tc
+
 
 function proxy() {
   ssh -b ${BINDER} root@192.168.0.27 -D 1313

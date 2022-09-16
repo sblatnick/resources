@@ -30,6 +30,9 @@ function log() {
 function warn() {
   >&2 echo -e "$(ts 2)\033[33;1mWARN\033[0m: $@"
 }
+function info() {
+  >&2 echo -e "$(ts 2)\033[36;1mINFO\033[0m: $@"
+}
 function debug() {
   if [[ "${DEBUG}" == "true" ]];then
     echo -e "$(ts 3)\033[32mDEBUG\033[0m: $@"
@@ -179,6 +182,29 @@ function col() {
   USAGE='lines | col [number|range|last]' BIN='col' ACTION="_col $1" pipe
 }
 
+function _swap() {
+  if [ "$#" -lt 1 ];then
+    echo -e "Usage: ${USAGE}"
+    return
+  fi
+  local old=$1
+  shift
+  local new=$1
+  shift
+  IFS=' ' read -ra LINE <<< "$@"
+  local o=${LINE[$old]}
+  local n=${LINE[$new]}
+  LINE[$old]=$n
+  LINE[$new]=$o
+  for i in "${!LINE[@]}"; do
+    printf "%s " ${LINE[$i]}
+  done
+  printf "\n"
+}
+function swap() {
+  USAGE='lines | swap [col] [col]' BIN='col' ACTION="_swap $1 $2" pipe | sed 's/ *$//'
+}
+
 function indent() {
   BIN='indent' EVAL='' pipe $@ | sed -u 's/^/  /'
 }
@@ -313,6 +339,10 @@ _aliases \
   magenta \
   purple \
   gray
+
+function pag() {
+  ag --passthrough "$@"
+}
 
 function big() {
   du -sx * 2>/dev/null | sort -r -n | head
@@ -702,10 +732,10 @@ function tmpsave() {
 #---------------------------------VERSIONING-----------------------------------#
 
 function get_var() {
-  sed -n "s/^\s*${1}\s*=\s*['\"]*\([^'\"]*\)['\"]*\s*$/\1/p" $2
+  sed -n "s/^.*${1}\s*[=:]\s*['\"]*\([^'\"]*\)['\"]*\s*$/\1/p" $2
 }
 function set_var() {
-  sed -i "s/^\(\s*${1}\s*=\s*['\"]*\)\([^'\"]*\)\(['\"]*\s*\)$/\1${2}\3/" $3
+  sed -i "s/^\(.*${1}\s*[=:]\s*['\"]*\)\([^'\"]*\)\(['\"]*\s*\)$/\1${2}\3/" $3
 }
 function inc_var() {
   local current=$(get_var "$1" $2)
@@ -713,14 +743,14 @@ function inc_var() {
   cd ${2%/*}
   git --no-pager diff ${2##*/} | grep -q $1
   if [[ $? -eq 0 ]];then
-    red "already incremented to ${current}"
+    red "already incremented to ${current} (${2##*/})"
     return 1
   fi
   local iter=${current##*.}
   local base=${current%.*}
   ((iter++))
   local new=${base}.${iter}
-  echo "${current} incremented to ${new}"
+  echo "${current} incremented to ${new} (${2##*/})"
   set_var "$1" "${new}" $2
 }
 function set_tag() {

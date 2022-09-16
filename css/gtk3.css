@@ -10,10 +10,11 @@
  * Inspect CSS:
  *
  *   1. sudo apt-get install libgtk-3-dev
- *   2. #enable Ctrl-Shift-D:
+ *   2. Open Inspector:
  *      gsettings set org.gtk.Settings.Debug enable-inspector-keybinding true
- *      #or via command line:
  *      GTK_DEBUG=interactive tilix
+ *      (For tilix or caja, open Properties/Settings so the keyboard shortcut isn't blocked)
+ *      Ctrl-Shift-I
  *
  * Resources:
  *   https://developer.gnome.org/gtk3/stable/chap-css-properties.html

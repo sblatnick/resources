@@ -33,6 +33,7 @@ curl -q -X POST -H "Content-Type: application/json" -d "@${DATA}" https://${DEST
     -D #dump headers into file
     -D - #dump headers into stdout
     -o #dump response contents to file (no headers)
+    -w "%{http_code}" #HTTP status code
 
 #curl: (60) Peer's Certificate issuer is not recognized.
   #Download public cert:

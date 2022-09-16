@@ -86,9 +86,47 @@ function pgit() {
   $wgit $@ 2>&1 | sed 's/^/  /'
 }
 
-##Main:
+function _check_git() {
+  toplevel=$($wgit rev-parse --show-toplevel)
+  if [ -z "${toplevel}" ];then
+    return 1
+  else
+    return 0
+  fi
+}
+
+##Global:
 function gitex() {
   local TIMESTAMP=false
+
+  #ignore options
+  local OPTS=()
+  while [ -n "$1" ]
+  do
+    case "$1" in
+      --*)
+          OPTS+=($1)
+          shift
+        ;;
+      -C)
+          OWD=${OLDPWD}
+          CWD=${PWD}
+          cd $2
+          shift
+          shift
+        ;;
+      -*)
+          OPTS+=($1)
+          shift
+          OPTS+=($1)
+          shift
+        ;;
+      *)
+          break
+        ;;
+    esac
+  done
+
   local BRANCH=$($wgit rev-parse --abbrev-ref HEAD 2>/dev/null | sed 's~^\(heads\|tags\|remotes\)/~~')
   local MASTER=$($wgit config init.defaultBranch)
   #------------------------------------SETUP-------------------------------------#
@@ -143,27 +181,6 @@ function gitex() {
   #------------------------------------MAIN--------------------------------------#
   actions=$(sed -n "/^##Group Actions:\$/,/^\}\$/ p" $BASH_SOURCE | grep -Eo '[^ (]+\)\s+#.*$' | sed 's/).*$//' | tr $'\n' '|' | sed 's/|$//')
 
-  #ignore options
-  local OPTS=()
-  while [ -n "$1" ]
-  do
-    case "$1" in
-      --*)
-          OPTS+=($1)
-          shift
-        ;;
-      -*)
-          OPTS+=($1)
-          shift
-          OPTS+=($1)
-          shift
-        ;;
-      *)
-          break
-        ;;
-    esac
-  done
-
   case "$1" in
     help)
         $wgit $@
@@ -172,12 +189,38 @@ function gitex() {
         fi
         echo ""
         gitex ex
+        return
       ;;
     ex) ##print this usage information
         BIN='git' document_title "Extended Git Usage" "actions"
         document ${BASH_SOURCE}
         echo ""
+        return
       ;;
+    @(${actions}))
+        export GITEX_BRANCH=$(set +e;$wgit rev-parse --abbrev-ref HEAD 2>/dev/null;set -e)
+        gitex_action $@
+        return
+      ;;
+    context|ctx|go) #[$context|$repo|$action]#context handling
+        shift
+        gitex_context $@
+        return
+      ;;
+    top|up) ##cd to toplevel
+        cd $($wgit rev-parse --show-toplevel)
+      ;;
+    tut) ##open tutorial in $EDITOR
+        ${EDITOR-geany} ${RESOURCES}/git/usage.sh
+        return
+      ;;
+    *)
+        _check_git || return 1
+      ;;
+  esac
+
+##Repo:
+  case "$1" in
     com|cam|cc) #[message]#alias to commit -a -m
         shift
         if [ -n "$@" ];then
@@ -582,20 +625,6 @@ function gitex() {
         ' HEAD
         #Use literal \t because of escaping issues
       ;;
-    @(${actions}))
-        export GITEX_BRANCH=$(set +e;$wgit rev-parse --abbrev-ref HEAD 2>/dev/null;set -e)
-        gitex_action $@
-      ;;
-    context|ctx|go) #[$context|$repo|$action]#context handling
-        shift
-        gitex_context $@
-      ;;
-    top|up) ##cd to toplevel
-        cd $($wgit rev-parse --show-toplevel)
-      ;;
-    tut) ##open tutorial in $EDITOR
-        ${EDITOR-geany} ${RESOURCES}/git/usage.sh
-      ;;
     rev) #[path|file]#revert file(s) to HEAD, or all if none given
         shift
         files=$@
@@ -613,6 +642,10 @@ function gitex() {
         $wgit ${OPTS[@]} "$@"
       ;;
   esac
+
+  if [ -n "${CWD}" ];then
+    cd ${CWD}
+  fi
 }
 
 ##Group Actions:

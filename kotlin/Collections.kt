@@ -68,6 +68,19 @@
     val doubled = numbers.map { x -> x * 2 }
     val tripled = numbers.map { it * 3 }
 
+  //convert list to map:
+    private val ages by lazy {
+        userNames.map {
+            it to getAge(it)
+        }.toMap()
+    }
+    //alternatively:
+    private val ages by lazy {
+        userNames.associateWith {
+            getAge(it)
+        }.toMap()
+    }
+
   //matchers:
     //any: true if at least one element matches
       numbers.any{ it < 0 }
