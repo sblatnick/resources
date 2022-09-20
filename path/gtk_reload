@@ -1,0 +1,9 @@
+#!/bin/bash
+#source: https://askubuntu.com/questions/151513/reload-gtk-3-0-theme
+key=org.mate.interface
+
+theme=$(gsettings get $key gtk-theme)
+echo "Found theme: $theme"
+gsettings set $key gtk-theme ''
+echo "Resetting..."
+gsettings set $key gtk-theme $theme
