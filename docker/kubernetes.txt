@@ -367,6 +367,9 @@ Example arguments:
 
     #opens editor for editing yaml state used currently:
     kubectl edit deployment/my-deployment
+      #IMPORTANT NOTE ON EDIT:
+      #  You will get permission denied if you try to edit a pod deployed by a deployment.
+      #  Edit the deployment instead.
 
     #patch:
     kubectl patch deployment my-deployment --patch "$(cat patch.yaml)"
