@@ -39,13 +39,13 @@ function debug() {
   fi
 }
 function run() {
-  interpreted=$(echo "$@" | evaluator)
+  interpreted=$(echo "$@" | evaluator 2>/dev/null)
   echo -e "$(ts 3)\033[0;1m${interpreted}\033[0m"
   eval "${interpreted}" 2>&1 | tr '\r' '\n' | sed -u 's/^/  /'
   return $?
 }
 function show() {
-  interpreted=$(echo "$@" | evaluator)
+  interpreted=$(echo "$@" | evaluator 2>/dev/null)
   echo -e "\033[0;1m${interpreted}\033[0m"
   eval "${interpreted}"
   return $?

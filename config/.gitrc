@@ -209,10 +209,13 @@ function gitex() {
       ;;
     top|up) ##cd to toplevel
         cd $($wgit rev-parse --show-toplevel)
+        return
       ;;
     tut) ##open tutorial in $EDITOR
         ${EDITOR-geany} ${RESOURCES}/git/usage.sh
         return
+      ;;
+    clone)
       ;;
     *)
         _check_git || return 1
@@ -410,7 +413,8 @@ function gitex() {
           return
         fi
         $wgit fetch
-        local branches=$($wgit --no-pager branch -r --format '%(refname:lstrip=2)' | sed 's/^[^\/]*\///' | sort -V | grep "${MASTER%%/*}")
+        #Retain major version from master:
+        local branches=$($wgit --no-pager branch -r --format '%(refname:lstrip=2)' | sed 's/^[^\/]*\///' | sort -V | grep "${MASTER%%.*}")
         if [ -z "${branches}" ];then
           if [[ "${MASTER}" == "${BRANCH}" ]];then
             error "${MASTER} branch doesn't exist"

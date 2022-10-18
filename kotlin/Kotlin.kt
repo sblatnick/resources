@@ -58,7 +58,7 @@ class Kotlin {
       //_ tells the compiler not to warn about unused variable
       val map = mapOf("Alice" to 21, "Bob" to 25)
       for ((name, age) in map) {
-        println("$name is $age years old")          
+        println("$name is $age years old")
       }
 
     //Functions as parameters: combine()
@@ -71,6 +71,11 @@ class Kotlin {
           accumulator = combine(accumulator, element)
         }
         return accumulator
+      }
+
+    //Default function as a parameter:
+      fun getPercent(numerator: Int, denominator: Int, round: (x: Double) -> Double = ::floor): Double {
+          return round((numerator.toDouble() / denominator.toDouble()) * 100)
       }
 
     //Scope Function (see below)

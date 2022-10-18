@@ -336,6 +336,15 @@ done
 
 #Resource: http://steve-parker.org/sh/sh.shtml
 
+#Use regex to find if string in array (doesn't handle spaces):
+  if [[ " ${array[*]} " =~ " ${value} " ]]; then
+    # whatever you want to do when array contains value
+  fi
+
+  if [[ ! " ${array[*]} " =~ " ${value} " ]]; then
+    # whatever you want to do when array doesn't contain value
+  fi
+  #source: https://stackoverflow.com/questions/3685970/check-if-a-bash-array-contains-a-value
 
 #::::::::::::::::::::GLOBBING::::::::::::::::::::
 
