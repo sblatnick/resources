@@ -1,5 +1,7 @@
 #!/bin/bash
 
+tmp=/dev/shm/ytmp3.$$
+
 case "$(uname -s)" in
   Darwin) #Mac
       echo -e "\033[31munsupported OS for this script\033[0m"
@@ -18,12 +20,13 @@ if [ -z "${url}" ];then
   exit
 fi
 
-result=$(youtube-dl -f 251 ${url})
+youtube-dl -f 251 ${url} 1> >(tee $tmp) 2>&1
+result=$(<$tmp)
 webm=$(echo -e "${result}" | grep -Po 'Destination: .*$' | cut -d' ' -f2-)
 ffmpeg -i "${webm}" -vn -ab 128k -ar 44100 -y "${webm%-*}.mp3"
 if [ $? -gt 0 ];then
   echo -e "ERROR converting video"
   exit
 fi
-rm -f "${webm}"
+rm -f "${webm}" $tmp
 echo -e "Output: '${webm%-*}.mp3'"

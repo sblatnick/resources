@@ -1,0 +1,9 @@
+#!/bin/bash
+
+window=$(xdotool search --pid $(pgrep keepassxc$) --limit 1)
+if xwininfo -id $window | grep -q "Map State: IsViewable"; then
+  xdotool windowminimize $window
+else
+  tray=$(xdotool search --pid $(pgrep keepassxc$) | tail -n 1)
+  xdotool click --window $tray 1
+fi

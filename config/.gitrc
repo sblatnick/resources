@@ -433,8 +433,13 @@ function gitex() {
           gitex co ${latest}
           gitex remaster
         fi
-        yellow "pulling latest"
+        yellow "pulling latest ${MASTER}"
         gitex pull
+        local release=${MASTER/dev/release}
+        if [[ "${release}" != "${MASTER}" ]];then
+          yellow "pulling latest ${release}"
+          gitex pull origin ${release}
+        fi
       ;;
     retag) #[tag]#Delete and recreate tag both local and remote
         shift
