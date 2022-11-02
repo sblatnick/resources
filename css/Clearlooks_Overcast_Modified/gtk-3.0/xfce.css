@@ -1,0 +1,17 @@
+.xfce4-panel {
+background-color: @theme_selected_bg_color;
+}
+
+.xfce4-panel button {
+}
+
+.xfce4-panel button:hover {
+background: #a1a1a1;
+border-radius: 2px;
+}
+
+.xfce4-panel button:active {
+background: #cdcdcd;
+
+}
+

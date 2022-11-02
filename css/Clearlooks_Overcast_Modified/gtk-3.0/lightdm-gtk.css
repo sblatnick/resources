@@ -1,0 +1,71 @@
+/************************
+ * LightDM GTK+ Greeter *
+ ************************/
+
+#panel_window {
+  color: black;
+}
+
+#panel_window menubar,
+#panel_window separator {
+  color: black;
+}
+
+#panel_window separator {
+  padding: 0 4px;
+}
+
+#panel_window separator:first-child {
+  padding: 0 8px;
+}
+
+#panel_window menubar > menuitem {
+  color: black;
+}
+
+#panel_window menubar > menuitem:hover {
+  color: black;
+}
+
+#panel_window menubar > menuitem:disabled label {
+  color: black;
+}
+
+#login_window {
+  margin: 8px;
+  border-radius: 4px;
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.16), 0 3px 3px rgba(0, 0, 0, 0.23), inset 0 1px rgba(255, 255, 255, 0.1);
+  background-color: transparent;
+}
+
+#shutdown_dialog,
+#restart_dialog {
+  margin: 8px;
+  border-radius: 4px;
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.16), 0 3px 3px rgba(0, 0, 0, 0.23), inset 0 1px rgba(255, 255, 255, 0.1);
+}
+
+#content_frame {
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #444444;
+}
+
+#buttonbox_frame {
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-top: 24px;
+}
+
+#buttonbox_frame button {
+  margin: -16px;
+}
+
+#greeter_infobar {
+  font-size: small;
+  background-color: #444444;
+  padding: 4px;
+  border-radius: 4px;
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.16), 0 3px 3px rgba(0, 0, 0, 0.23), inset 0 1px rgba(255, 255, 255, 0.1);
+}
