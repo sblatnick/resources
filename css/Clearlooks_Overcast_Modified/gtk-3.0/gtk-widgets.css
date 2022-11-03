@@ -439,7 +439,7 @@ undershoot.right {
 
 entry {
     border-style: solid;
-    padding: 2px;
+    padding: 0px;
     color: @entry_text_color;
     background-color: @theme_base_color;
 }
@@ -861,8 +861,8 @@ scrolledwindow viewport.frame {
  ***********/
 
 button {
-    min-height: 12px;
-    min-width: 12px;
+    min-height: 8px;
+    min-width: 8px;
 }
 
 button,
@@ -875,7 +875,7 @@ button.menuitem.menubar,
 .titlebar .linked.raised button:backdrop,
 .titlebar .linked.raised button:focus:hover,
 .titlebar .linked.raised button:focus:hover:active {
-    padding: 5px 5px 6px; /* larger values makes the button arrow smaller*/
+    padding: 0px; /* larger values makes the button arrow smaller*/
 }
 
 toolbar.inline-toolbar button,
@@ -940,7 +940,7 @@ toolbar.horizontal combobox button.combo:hover {
 }
 
 image {
-    margin: -10px 0px;
+    margin: 0px 0px;
 }
 button image {
     margin: 0px 0px;
