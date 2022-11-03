@@ -7,3 +7,6 @@ echo "Found theme: $theme"
 gsettings set $key gtk-theme ''
 echo "Resetting..."
 gsettings set $key gtk-theme $theme
+
+#make sure the panel refreshes so the clock isn't stopped:
+killall mate-panel
