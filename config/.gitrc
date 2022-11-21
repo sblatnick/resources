@@ -453,7 +453,7 @@ function gitex() {
         $wgit tag ${tag}
         $wgit push origin tag ${tag}
       ;;
-    peek) #[branch] [file]#Look at other branches without switching
+    peek) #[branch/sha] [file]#Look at other branches without switching
         shift
         branch=$1
         shift

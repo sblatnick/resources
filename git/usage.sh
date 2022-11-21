@@ -16,6 +16,22 @@
 #create repo:
   git init
   git init --bare #usefull for when you want no working copy for a server to trigger autodeploy
+  #Example:
+    mkdir ~/.cfg && cd ~/.cfg
+    git init --bare
+    alias config="git --git-dir=${HOME}/.cfg/ --work-tree=${HOME}"
+    config add ~/.gitconfig
+    config commit -a -m "Added ~/.gitconfig"
+    #~/.cfg/config should look like:
+      [core]
+          repositoryformatversion = 0
+          filemode = true
+          bare = true
+      [status]
+          showUntrackedFiles = no
+    #get a working copy by cloning:
+      cd ~/
+      git clone ~/.cfg cfg
 
 #diff
   #setup meld as a diff tool:

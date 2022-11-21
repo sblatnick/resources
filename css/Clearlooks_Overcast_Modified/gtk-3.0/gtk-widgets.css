@@ -4176,6 +4176,12 @@ dialog.background dialog-vbox.vertical .vertical {
   margin: -7px -10px;
 }
 
+#GeanyMainWindow #notebook3 entry image.right {
+    padding: 0;
+    margin: -10px -6px -10px 0;
+    font-size: 3px;
+}
+
 /* caja */
 #statusbar-noborder {
   margin: 0px -10px;
