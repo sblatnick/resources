@@ -1,0 +1,45 @@
+#!/bin/bash
+source ~/.bashrc #source main bashrc so we can add to the environment outside of repo
+source ${BASH_SOURCE%/path/*}/config/bashrc
+
+TIMESTAMP=false
+REQUEST=$1
+ENDPOINT=''
+ARGS=''
+shift
+
+##Main
+case "${REQUEST}" in
+  help|h|'') ##This help documentation
+      document_title "Bitbucket Client" "method" "api path"
+      document ${BASH_SOURCE}
+      document_header "Environment Variables"
+      de "BITBUCKET" "API endpoint"
+      document_header "Examples"
+      de "${0##*/}" "GET /projects/EXAMPLE/repos/example/raw/test_folder/falsePositives.json" "Retrieve file"
+      echo ""
+      exit
+    ;;
+  GET) #[path] [args]#requests against bitbucket
+      ENDPOINT=$1
+      ARGS=$2
+    ;;
+  *)
+      error "Unsupported request: ${REQUEST}"
+    ;;
+esac
+
+tmpdir
+response=${tmp}/response.json
+code=$(eval curl -L -o ${response} -w "%{http_code}" -n -X $REQUEST --silent "${BITBUCKET}/mvc/${ENDPOINT}${ARGS}")
+if [ $? -gt 0 ];then
+  warn "error response"
+  cat ${response}
+else
+  echo "STATUS: ${code}"
+  cat ${response} | python -mjson.tool
+  if [ $? -gt 0 ];then
+    warn "JSON not found in response"
+    cat ${response}
+  fi
+fi

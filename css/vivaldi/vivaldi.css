@@ -24,6 +24,11 @@
   box-shadow: 5px 5px;
 }
 
+/* Show separators */
+.color-behind-tabs-off .bookmark-bar button .separator {
+    border-left: 1px solid var(--colorBorder);
+}
+
 /*Source: https://www.reddit.com/r/vivaldibrowser/comments/6yaxc5/refinement_move_the_vivaldi_button_to_the/ */
 /* Remove header */
 :-webkit-any(.native, .maximized)#browser #header {
@@ -33,7 +38,9 @@
 /* Keep Vivaldi button */
 :-webkit-any(.native, .maximized)#browser .vivaldi  {
   z-index: 5;
-  top: 5px !important;
+  top: 0px !important;
+  height: 18px;
+  width: 18px;
 }
 
 /* Keep horizontal menu */
@@ -41,12 +48,10 @@
   position: absolute;
 }
 
-:-webkit-any(.native, .maximized)#browser .vivaldi {
-  top: 0px !important;
-}
-
 .toolbar-mainbar {
   height: 26px;
+  position: static;
+  border-bottom: 1px solid var(--colorBorder);
 }
 
 .toolbar.toolbar-droptarget.toolbar-mainbar.toolbar-large {

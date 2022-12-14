@@ -204,7 +204,7 @@ EOF
           return 1
         fi
       ;;
-    run|dry|gui) #[application]#run a temporary container locally, running gui app, or display the command
+    run|dry|gui|su) #[application]#run a temporary container locally, running gui app, or display the command
         if [ -f ${df} ];then
           volumes=$(docrc images.${target}.volumes | sed "s/~/${HOME//\//\\/}/" | sed '/^$/d;s/^/-v /')
           cwd=$(docrc images.${target}.cwd)
@@ -241,6 +241,11 @@ EOF
             echo -e "\033[33mentering ${target}:${version}\033[0m"
           fi
         fi
+        if [[ "${action}" == "su" ]];then
+          who="-u 0"
+        else
+          who=${who-}
+        fi
         name=${target##*/}
         name=${name%%:*}
         $dry docker run \
@@ -248,6 +253,7 @@ EOF
           -it \
           --rm ${volumes} \
           --entrypoint bash \
+          ${who} \
           -h ${name} \
           --name ${name} \
           -w ${cwd} \

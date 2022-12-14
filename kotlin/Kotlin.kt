@@ -81,17 +81,82 @@ class Kotlin {
     //Scope Function (see below)
 
   //Lambda:
-  items.fold(0, { 
-    //parameters ->
-    acc: Int, i: Int ->
-    //contents
-    print("acc = $acc, i = $i, ") 
-    val result = acc + i
-    println("result = $result")
-    //last expression in a lambda is the return value:
-    result
-  })
+    val check = { left: String, right: String, expected: String ->
+        val cmp = when(left.compareVersions(right)) {
+            -1 -> "<"
+            0 -> "=="
+            1 -> ">"
+            else -> "?"
+        }
+        assertEquals(expected, cmp, "found: '$left' $cmp '$right'")
+    }
+    //use:
+    check("v1.9", "v1.10", "<")
+    
+    items.fold(0, { 
+      //parameters ->
+      acc: Int, i: Int ->
+      //contents
+      print("acc = $acc, i = $i, ") 
+      val result = acc + i
+      println("result = $result")
+      //last expression in a lambda is the return value:
+      result
+    })
 
+  //Act on each function/lambda at run-time:
+    fun matches(candidate: Candidate, vulnerability: Vulnerability): Boolean {
+      val parent = listOf(
+        { candidate.operatingSystem?.let { it == "rhel" } },
+        { (candidate.repository?.any { it.name.endsWith("/linux") } == true) }
+      ).any { it() == true }
+      var fixedVersion: Version? = listOf(
+        {
+          candidate.operatingSystem?.majorVersion?.let { majorVersion ->
+            vulnerability.affectedVersions.firstOrNull { it.version.major == majorVersion }
+          }
+        },
+        {
+          vulnerability.affectedVersions.filter {
+            it.isRedhat
+          }.maxByOrNull {
+            it.versionDate
+          }
+        }
+      ).firstNotNullOfOrNull { it() }
+      val criteria = listOf(
+        { candidate.materials.any {it.type == MaterialType.PACKAGE && vulnerability.packages.contains(it.name) } },
+          {
+            with(candidate) {
+              fixedVersion == null ||
+              fixedVersion.versionDate > (listOf(latestImage) + latestImage.ancestor).minOf { it.createdAt }
+            }
+        }
+      )
+      return parent && criteria.all { it() }
+    }
+
+  //if the last parameter of a function is a function,
+  //then a lambda expression passed as the corresponding argument can be
+  //placed outside the parentheses
+    example.any({ it.count > 0 })
+    example.any { it.count > 0 }
+  //inline functions:
+    inline fun <T> lock(lock: Lock, body: () -> T): T { ... }
+  //non-local returns is only used in loops (located in a lambda, but exiting the enclosing function):
+    fun hasZeros(ints: List<Int>): Boolean {
+        ints.forEach {
+            if (it == 0) return true // returns from hasZeros
+        }
+        return false
+    }
+  //prevent non-local returns with crossinline:
+    inline fun f(crossinline body: () -> Unit) {
+        val f = object: Runnable {
+            override fun run() = body()
+        }
+        // ...
+    }
 
   //Infix = member functions on single parameter, without . and ()
     fun main() {

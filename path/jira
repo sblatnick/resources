@@ -4,6 +4,8 @@ source ${BASH_SOURCE%/path/*}/config/bashrc
 
 TIMESTAMP=false
 REQUEST=$1
+ENDPOINT=''
+ARGS=''
 shift
 
 ##Main
@@ -15,11 +17,19 @@ case "${REQUEST}" in
       de "JIRA" "API endpoint"
       document_header "Examples"
       de "${0##*/}" "GET issue/PROJECT-001" "Retrieve issue"
+      de "${0##*/}" "jql 'issueKey%20%21%3D%20%22PROJECT-001%22'" "JQL Search"
       de "${0##*/}" "POST create.json issue" "Create new issue"
       de "${0##*/}" "POST block.json issue/PROJECT-001/transitions" "Block issue"
       de "${0##*/}" "PUT fields.json issue/PROJECT-001" "Set fields"
       echo ""
       exit
+    ;;
+  jql|search) #[query]#Search jira with JQL
+      REQUEST='GET'
+      fields='customfield_19704%2Ccreated%2Cduedate%2Cissuelinks%2Clabels%2Ccomponents%2Ccomment%2Cchangelog%2Cproject%2Cissuetype%2Csummary%2Cdescription%2Ccustomfield_20711%2Ccustomfield_20710%2Cstatus%2Cresolution%2Ccustomfield_20720%2Ccustomfield_20721%2Cproject%2Cissuetype%2Csummary%2Cdescription%2Ccustomfield_20711%2Ccustomfield_20710%2Cstatus%2Cresolution%2Ccustomfield_20720%2Ccustomfield_20721'
+      ARGS="?startAt=0\&maxResults=200\&fields=$fields\&jql=$1"
+      shift
+      ENDPOINT='search'
     ;;
   POST|PUT) #[json file]#request against jira
       if [ ! -f ${1} ];then
@@ -27,8 +37,10 @@ case "${REQUEST}" in
       fi
       json="-H 'Content-Type: application/json' -d '@${1}'"
       shift
+      ENDPOINT=$@
     ;;
   GET|DELETE) ##requests against jira
+      ENDPOINT=$@
     ;;
   *)
       error "Unsupported request: ${REQUEST}"
@@ -37,13 +49,13 @@ esac
 
 tmpdir
 response=${tmp}/response.json
-
-code=$(eval curl -o ${response} -w "%{http_code}" -n -X $REQUEST $json --silent "${JIRA}/$@")
+code=$(eval curl -o ${response} -w "%{http_code}" -n -X $REQUEST $json --silent "${JIRA}/${ENDPOINT}${ARGS}")
 if [ $? -gt 0 ];then
   warn "error response"
   cat ${response}
 else
   echo "STATUS: ${code}"
+  echo "Issues: $(jq '.issues | length' ${response})"
   cat ${response} | python -mjson.tool
   if [ $? -gt 0 ];then
     warn "JSON not found in response"
