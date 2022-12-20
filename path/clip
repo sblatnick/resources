@@ -21,7 +21,7 @@ case "${action}" in
   set) #[number]#set current clipboard
       echo -n $2 > $clipboard
       copyq copy - < $($0 get)
-      $0 show
+      #$0 show
       exit
     ;;
   get) ##get current clipboard file

@@ -59,3 +59,22 @@ eql 0 (abc vs abc)
 eql 0 (2 vs 2)
 
 
+//compareValuesBy Examples:
+  //vararg:
+  fun compareLengthThenString(a: String, b: String): Int =
+    compareValuesBy(a, b, { it.length }, { it })
+
+  //table sorting by column selected:
+  data class Row(val table: Example, val orderColumn: Int) : Comparable<Row> {
+        override fun compareTo(other: Row) = compareValuesBy(this, other) { row ->
+            with(row) {
+                when(orderColumn) {
+                    0 -> table.identifier
+                    1 -> table.title
+                    2 -> table.source
+                    3 -> table.project
+                    else -> throw IllegalArgumentException("Not a valid sort column: $orderColumn")
+                }
+            }
+        }
+    }
