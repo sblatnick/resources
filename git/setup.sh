@@ -4,6 +4,9 @@
 git clone https://github.com/geany/geany.git
 git clone git@github.com:geany/geany.git
 
+#only clone one branch with no history:
+git clone -b branch --single-branch --depth 1 <repo_url>
+
 #shallow copy subdirectory contents: (disabled for github)
 git archive --remote=<repo_url> <branch> <path> | tar xvf -=
 

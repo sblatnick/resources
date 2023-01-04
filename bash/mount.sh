@@ -20,6 +20,17 @@
     -f #force
     -l #lazy
 
+#repair usb drive that wasn't unmounted:
+  umount /dev/sdb
+  sudo fsck /dev/sdb #follow prompts
+
+  sudo fsck -N /dev/sdb #dry run
+  sudo fsck -y /dev/sdb #print errors found
+  sudo fsck -y /dev/sdb #fix all errors
+
+#Change usb drive label:
+  sudo mlabel -i /dev/sdb ::<label>
+
 #simulate a full device:
   ln -s /dev/full /users_clone/connected-qaenv03
 #"mount" directory

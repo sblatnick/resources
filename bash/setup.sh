@@ -30,6 +30,39 @@
   # 3. set provider for the framebuffer:
     xrandr --setprovideroutputsource 1 0
 
+  #ERROR updating kernel?
+    #Errors when installing:
+      Setting up linux-headers-6.0.0-6-amd64 (6.0.12-1) ...
+      /etc/kernel/header_postinst.d/dkms:
+      dkms: running auto installation service for kernel 6.0.0-6-amd64:Sign command: /usr/lib/linux-kbuild-6.0/scripts/sign-file
+      Signing key: /var/lib/dkms/mok.key
+      Public certificate (MOK): /var/lib/dkms/mok.pub
+
+      Building module:
+      Cleaning build area...
+      make -j16 KERNELRELEASE=6.0.0-6-amd64 all INCLUDEDIR=/lib/modules/6.0.0-6-amd64/build/include KVERSION=6.0.0-6-amd64 DKMS_BUILD=1...(bad exit status: 2)
+      Error! Bad return status for module build on kernel: 6.0.0-6-amd64 (x86_64)
+      Consult /var/lib/dkms/evdi/1.9.1/build/make.log for more information.
+      Error! One or more modules failed to install during autoinstall.
+      Refer to previous errors for more information.
+       failed!
+      run-parts: /etc/kernel/header_postinst.d/dkms exited with return code 11
+      Failed to process /etc/kernel/header_postinst.d at /var/lib/dpkg/info/linux-headers-6.0.0-6-amd64.postinst line 11.
+      dpkg: error processing package linux-headers-6.0.0-6-amd64 (--configure):
+       installed linux-headers-6.0.0-6-amd64 package post-installation script subprocess returned error exit status 1
+      dpkg: dependency problems prevent configuration of linux-headers-amd64:
+       linux-headers-amd64 depends on linux-headers-6.0.0-6-amd64 (= 6.0.12-1); however:
+        Package linux-headers-6.0.0-6-amd64 is not configured yet.
+
+      dpkg: error processing package linux-headers-amd64 (--configure):
+       dependency problems - leaving unconfigured
+    #evdi is referring to displaylink here
+
+    #Fix: The above displaylink script doesn't support 6.0 kernels,
+    # so you need to uninstall displaylink and reconfigure the failed kernel:
+      sudo /opt/displaylink/displaylink-installer.sh uninstall
+      sudo dpkg --configure --pending
+
 #modeline:
   cvt 1920 1080
     # 1920x1080 59.96 Hz (CVT 2.07M9) hsync: 67.16 kHz; pclk: 173.00 MHz
