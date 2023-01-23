@@ -12,6 +12,7 @@ origin less grep diff ag git
 
 ls --color >/dev/null 2>&1 && alias ls='ls --color=auto' || alias ls='ls -G'
 alias ll='ls -l'
+alias lh='ls -lh'
 which ggrep >/dev/null 2>&1 && alias grep='ggrep --color=auto' || alias grep='grep --color=auto'
 alias less='less -SRi' #add N for line numbers, use `less -+S` to re-enable wrapping
 alias resource="trap - RETURN;source ${BASHRC};" #unset trap from tmpdir
@@ -33,7 +34,7 @@ binder c3 27
 binder elite 20 steve
 binder asus 17 steve
 binder tc 29 tc
-
+binder xeon 22 steve
 
 function proxy() {
   ssh -b ${BINDER} root@192.168.0.27 -D 1313
