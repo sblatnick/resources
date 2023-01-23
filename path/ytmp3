@@ -20,10 +20,10 @@ if [ -z "${url}" ];then
   exit
 fi
 
-youtube-dl -f 251 ${url} 1> >(tee $tmp) 2>&1
+yt-dlp -f 251 ${url} 1> >(tee $tmp) 2>&1
 result=$(<$tmp)
 webm=$(echo -e "${result}" | grep -Po 'Destination: .*$' | cut -d' ' -f2-)
-ffmpeg -i "${webm}" -vn -ab 128k -ar 44100 -y "${webm%-*}.mp3"
+ffmpeg -i "${webm}" -vn -ab 128k -ar 44100 -y "${webm% [*}.mp3"
 if [ $? -gt 0 ];then
   echo -e "ERROR converting video"
   exit
