@@ -139,6 +139,11 @@
     val descending = shuffled.sortedDescending()
     val descendingBy = shuffled.sortedByDescending { abs(it)  }
 
+  //sorting by map key occurance:
+    val sortedByCount = myMap.groupingBy { it.first() }.eachCount().let { counts ->
+      myMap.sortedByDescending { counts[it.first()] }
+    }
+
   //zip = merging
     val A = listOf("a", "b", "c")
     val B = listOf(1, 2, 3, 4)

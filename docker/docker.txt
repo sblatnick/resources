@@ -58,6 +58,7 @@
     images #lists images you have
     docker container ls -a #list all containers
     volume ls #lists volumes
+    volume rm name #delete volume
     run ${ENTRYPOINT} ${PARAMETERS} #run an image
     exec
     cp ${SRC} ${DST} #copy from container

@@ -31,7 +31,7 @@ openssl x509 -req -days 3650 -in id.csr -signkey ~/.ssh/id_rsa -out id.pem
     openssl x509 -in id.crt -out id.pem -outform PEM
 
   #pem to crt:
-    openssl x509 -outform der -in your-cert.pem -out your-cert.crt
+    openssl x509 -text -in your-cert.pem -out your-cert.crt
 
 #test CA using curl (must be pem format or silently ignored):
   curl --cacert bin.pem -v  https://website.com:443/index.html
