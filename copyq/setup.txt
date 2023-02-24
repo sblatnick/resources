@@ -1,0 +1,5 @@
+1. Input Remapper:
+  (key-remapper is later renamed to input-remapper)
+  Place JSON:
+    cp input-remapper.json "~/.config/input-remapper/presets/SINO WEALTH Gaming KB /Cryo Keypad.json"
+2. Add clipboard_commands.ini into copyq scripts

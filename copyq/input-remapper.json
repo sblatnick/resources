@@ -1,0 +1,40 @@
+{
+    "mapping": {
+        "1,1,1": [
+            "Help",
+            "keyboard"
+        ],
+        "1,41,1": [
+            "KEY_F12",
+            "keyboard"
+        ],
+        "1,56,1": [
+            "modify(Control_L, key(c))",
+            "keyboard"
+        ],
+        "1,57,1": [
+            "modify(Control_L, key(v))",
+            "keyboard"
+        ],
+        "1,44,1": [
+            "modify(Control_L, key(KEY_UNDO))",
+            "keyboard"
+        ],
+        "1,46,1": [
+            "modify(Control_L, key(KEY_COPY))",
+            "keyboard"
+        ],
+        "1,45,1": [
+            "modify(Control_L, key(KEY_CUT))",
+            "keyboard"
+        ],
+        "1,48,1": [
+            "modify(Control_L, key(KEY_BOOKMARKS))",
+            "keyboard"
+        ],
+        "1,47,1": [
+            "modify(Control_L, key(KEY_PASTE))",
+            "keyboard"
+        ]
+    }
+}

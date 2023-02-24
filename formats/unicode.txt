@@ -28,6 +28,19 @@ Box Drawing
   └
   ─
 
+Boxed Elements https://www.w3.org/TR/xml-entity-names/023.html
+  ⍁⍂
+  ⌸⍯
+  ⍰⌺⌼⌻⍞⍠
+  ⍃⍄⍌⍓
+  ⍔⍍
+  ⍗⍐⍇⍈
+
+  ⌦⌧
+
+  ⏰⏱⏲⏳
+  ⏏ ⏯ ⏮ ⏭ ⏪⏩ ⏬⏫
+
 Block Elements
   ▀	Upper half block
   ▁	Lower one eighth block
