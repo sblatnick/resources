@@ -254,7 +254,6 @@ EOF
           --rm \
           -v ${HOME}:${HOME} \
           ${volumes} \
-          --entrypoint bash \
           ${who} \
           -h ${name} \
           --name ${name} \

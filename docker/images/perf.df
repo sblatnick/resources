@@ -1,7 +1,32 @@
 FROM rocky8:latest
 
-RUN \
-  wget https://github.com/tsenart/vegeta/releases/download/v12.8.4/vegeta_12.8.4_linux_amd64.tar.gz && \
-  tar -zxvf vegeta_12.8.4_linux_amd64.tar.gz
+ENV VEGETA_VERSION 12.8.4
+ENV GATLING_VERSION 3.9.0
+
+ENV GATLING_HOME /opt/gatling
+
+RUN <<EOT
+  echo "Install java17"
+    yum install -y java-17-openjdk
+EOT
+
+RUN <<EOT
+  echo "Install vegeta"
+    wget https://github.com/tsenart/vegeta/releases/download/v${VEGETA_VERSION}/vegeta_${VEGETA_VERSION}_linux_amd64.tar.gz
+    tar -zxvf vegeta_${VEGETA_VERSION}_linux_amd64.tar.gz
+    chown root:root vegeta
+    mv vegeta /usr/bin/
+EOT
+
+RUN <<EOT
+  echo "Install Gatling"
+    wget https://repo1.maven.org/maven2/io/gatling/highcharts/gatling-charts-highcharts-bundle/${GATLING_VERSION}/gatling-charts-highcharts-bundle-${GATLING_VERSION}-bundle.zip
+    unzip gatling-charts-highcharts-bundle-${GATLING_VERSION}-bundle.zip
+    mv gatling-charts-highcharts-bundle-${GATLING_VERSION} /opt/
+    ln -s /opt/gatling-charts-highcharts-bundle-${GATLING_VERSION}/ ${GATLING_HOME}
+    ln -s ${GATLING_HOME}/bin/recorder.sh /usr/bin/recorder
+    ln -s ${GATLING_HOME}/bin/gatling.sh /usr/bin/gatling
+    chmod a+x ${GATLING_HOME}/bin/{recorder,gatling}.sh
+EOT
 
 ENTRYPOINT /bin/bash

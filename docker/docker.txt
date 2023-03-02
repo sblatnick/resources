@@ -213,3 +213,6 @@
   .dockerignore
     CentOS7.iso
 
+#Best practices: https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
+  #Prefer COPY over ADD, which can extract tar from a URL
+
