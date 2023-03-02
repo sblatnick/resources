@@ -2,12 +2,18 @@ FROM rocky8:latest
 
 ENV VEGETA_VERSION 12.8.4
 ENV GATLING_VERSION 3.9.0
+ENV FORTIO_VERSION 1.52.0
 
 ENV GATLING_HOME /opt/gatling
 
 RUN <<EOT
   echo "Install java17"
     yum install -y java-17-openjdk
+EOT
+
+RUN <<EOT
+  echo "Install python"
+    yum install -y python39
 EOT
 
 RUN <<EOT
@@ -27,6 +33,30 @@ RUN <<EOT
     ln -s ${GATLING_HOME}/bin/recorder.sh /usr/bin/recorder
     ln -s ${GATLING_HOME}/bin/gatling.sh /usr/bin/gatling
     chmod a+x ${GATLING_HOME}/bin/{recorder,gatling}.sh
+EOT
+
+RUN <<EOT
+  echo "Install FortIO"
+    wget https://github.com/fortio/fortio/releases/download/v${FORTIO_VERSION}/fortio-${FORTIO_VERSION}-1.x86_64.rpm
+    rpm -ivh fortio-${FORTIO_VERSION}-1.x86_64.rpm
+EOT
+
+RUN <<EOT
+  echo "Install Locust"
+    pip3 install locust
+EOT
+
+RUN <<EOT
+  echo "Install k6"
+    yum install -y https://dl.k6.io/rpm/repo.rpm
+    yum install -y k6
+EOT
+
+RUN <<EOT
+  echo "Install Hey"
+    wget https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64
+    chmod a+x hey_linux_amd64
+    mv hey_linux_amd64 /usr/bin/hey
 EOT
 
 ENTRYPOINT /bin/bash
