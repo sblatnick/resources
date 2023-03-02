@@ -1,0 +1,7 @@
+FROM rocky8:latest
+
+RUN \
+  wget https://github.com/tsenart/vegeta/releases/download/v12.8.4/vegeta_12.8.4_linux_amd64.tar.gz && \
+  tar -zxvf vegeta_12.8.4_linux_amd64.tar.gz
+
+ENTRYPOINT /bin/bash

@@ -252,6 +252,7 @@ EOF
           --privileged=true \
           -it \
           --rm \
+          -v ${HOME}:${HOME} \
           ${volumes} \
           --entrypoint bash \
           ${who} \
