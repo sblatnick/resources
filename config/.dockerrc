@@ -157,7 +157,7 @@ function docker_extentions() {
           $EDITOR ${df}
         else
           cat > ${df} << EOF
-FROM ${repo}centos:6
+FROM ${repo}rockylinux:8
 USER ${user-root}
 
 RUN \\
@@ -206,13 +206,11 @@ EOF
       ;;
     run|dry|gui|su) #[application]#run a temporary container locally, running gui app, or display the command
         if [ -f ${df} ];then
-          volumes=$(docrc images.${target}.volumes | sed "s/~/${HOME//\//\\/}/" | sed '/^$/d;s/^/-v /')
-          cwd=$(docrc images.${target}.cwd)
+          volumes=$(docrc images.${target}.volumes | sed "s/~/${HOME//\//\\/}/g" | sed '/^$/d;s/^/-v /')
         else
           volumes=""
           repo=""
         fi
-        cwd=${cwd:-/root}
         display=''
         dry='show'
         after=''
@@ -243,20 +241,23 @@ EOF
         fi
         if [[ "${action}" == "su" ]];then
           who="-u 0"
+          cwd="-w /root"
         else
-          who=${who-}
+          who="-u $(id -u):$(id -g)"
+          cwd="-w $HOME"
         fi
         name=${target##*/}
         name=${name%%:*}
         $dry docker run \
           --privileged=true \
           -it \
-          --rm ${volumes} \
+          --rm \
+          ${volumes} \
           --entrypoint bash \
           ${who} \
           -h ${name} \
           --name ${name} \
-          -w ${cwd} \
+          ${cwd} \
           -P \
           ${display} \
           ${repo}${img}:${version} ${start}
