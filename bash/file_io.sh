@@ -43,15 +43,15 @@ contents=$(</tmp/filename)
   tee <oldFile newFile1 newFile2 >/dev/null
 
 #copy boot sector (rouphly)
-  dd if=/dev/hda of=WindowsXP.mbr bs=512 count=63
+  dd if=/dev/hda of=WindowsXP.mbr bs=512 count=63 status=progress
 #copy random data to dev null for testing:
-  dd if=/dev/random of=/dev/null bs=1K count=100
+  dd if=/dev/random of=/dev/null bs=1K count=100 status=progress
 #copy a whole disk drive
-  dd if=/dev/input of=/dev/output bs=32
+  dd if=/dev/input of=/dev/output bs=32 status=progress
 #write an image to a drive
-  dd bs=4M if=file.img of=/dev/sdb
+  dd bs=4M if=file.img of=/dev/sdb status=progress
 
-#Show dd progress:
+#Show dd progress (just add status=progress to the dd command instead):
   pkill -USR1 -n -x dd
   #find process id:
   pgrep -l '^dd$'

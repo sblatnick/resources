@@ -3,6 +3,7 @@ FROM rocky8:latest
 ENV VEGETA_VERSION 12.8.4
 ENV GATLING_VERSION 3.9.0
 ENV FORTIO_VERSION 1.52.0
+ENV JMETER_VERSION 5.5
 
 ENV GATLING_HOME /opt/gatling
 
@@ -57,6 +58,17 @@ RUN <<EOT
     wget https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64
     chmod a+x hey_linux_amd64
     mv hey_linux_amd64 /usr/bin/hey
+EOT
+
+RUN <<EOT
+  echo "Install JMeter"
+  wget https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-${JMETER_VERSION}.tgz
+  #TODO
+EOT
+
+RUN <<EOT
+  echo "Install Predator"
+  #TODO
 EOT
 
 ENTRYPOINT /bin/bash

@@ -10,8 +10,8 @@ function helmex_state() {
   export HELMEX_CONTEXT=$(kubectl config current-context)
   export HELMEX_HOME=$(sit "contexts.${HELMEX_CONTEXT}.path")
   if [[ "${HELMEX_HOME}" != 'null' ]];then
-    local ignore=$(cd ${HELMEX_HOME}; ls -1 */.helm-ignore 2>/dev/null | sed 's~/\.helm-ignore$~~')
-    local charts=$(cd ${HELMEX_HOME};ls -1 | sed 's/\.yaml$//' | sort -u)
+    local ignore=$(cd "${HELMEX_HOME}"; ls -1 */.helm-ignore 2>/dev/null | sed 's~/\.helm-ignore$~~')
+    local charts=$(cd "${HELMEX_HOME}";ls -1 | sed 's/\.yaml$//' | sort -u)
     export HELMEX_CHARTS=$(echo ${charts} ${ignore} | tr ' ' $'\n' | sort | uniq -u)
   else
     export HELMEX_CHARTS=''
@@ -154,7 +154,7 @@ function helm_action() {
     pull|custom|fetch) ##Customize a chart by pulling it in
         local OWD=$OLDPWD
         mkdir ${TMP=/tmp}/${chart}
-        cd ${TMP}/${chart}
+        cd "${TMP}/${chart}"
 
         local git_chart=''
         if [ -f ${HELMEX_HOME}/.git-helm ];then

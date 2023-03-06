@@ -176,7 +176,7 @@ EOF
         fi
       ;;
     list) ##list Dockerfiles in current context
-        echo "$(cd ${path} && ls -1 */Dockerfile *.df 2>/dev/null | sed 's/\.df//;s/\/Dockerfile//')"
+        echo "$(cd "${path}" && ls -1 */Dockerfile *.df 2>/dev/null | sed 's/\.df//;s/\/Dockerfile//')"
       ;;
     img|build|make) #[name]#Create docker image
         if [ -f ${df} ];then
@@ -325,7 +325,7 @@ function doc_context()
         path=$1
         if [ -n "${path}" ];then
           local OWD=$OLDPWD
-          cd ${path} 2>/dev/null
+          cd "${path}" 2>/dev/null
           if [ "$?" -eq 0 ];then
             path=$(pwd)
           else

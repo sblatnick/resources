@@ -111,7 +111,7 @@ function gitex() {
       -C)
           OWD=${OLDPWD}
           CWD=${PWD}
-          cd $2
+          cd "$2"
           shift
           shift
         ;;
@@ -208,7 +208,7 @@ function gitex() {
         return
       ;;
     top|up) ##cd to toplevel
-        cd $($wgit rev-parse --show-toplevel)
+        cd "$($wgit rev-parse --show-toplevel)"
         return
       ;;
     tut) ##open tutorial in $EDITOR
@@ -653,7 +653,7 @@ function gitex() {
   esac
 
   if [ -n "${CWD}" ];then
-    cd ${CWD}
+    cd "${CWD}"
   fi
 }
 
@@ -674,7 +674,7 @@ function gitex_action() {
   do
     set -a
     repo=${repo//\~/$HOME}
-    cd ${repo}
+    cd "${repo}"
     repo=${repo##*/}
     local toplevel=$($wgit rev-parse --show-toplevel 2>/dev/null)
     local branch=$($wgit rev-parse --abbrev-ref HEAD)
@@ -700,7 +700,7 @@ function gitex_action() {
           echo -e "${output}"
           eval "git ${options} $ARGS 2>&1" | sed 's/^/  /'
           if [ "$?" -eq 130 ];then #SIGINT
-            cd ${start}
+            cd "${start}"
             return
           fi
         ;;
@@ -709,7 +709,7 @@ function gitex_action() {
             echo -e "${output}"
             eval "git ${options} $ARGS 2>&1" | sed 's/^/  /'
             if [ "$?" -eq 130 ];then #SIGINT
-              cd ${start}
+              cd "${start}"
               return
             fi
           fi
@@ -723,7 +723,7 @@ function gitex_action() {
             fi
             eval "git ${options} $ARGS 2>&1" | sed 's/^/  /'
             if [ "$?" -eq 130 ];then #SIGINT
-              cd ${start}
+              cd "${start}"
               return
             fi
           fi
@@ -733,7 +733,7 @@ function gitex_action() {
             echo -e "${output}"
             eval "git ${options} $ARGS 2>&1" | sed 's/^/  /'
             if [ "$?" -eq 130 ];then #SIGINT
-              cd ${start}
+              cd "${start}"
               return
             fi
           fi
@@ -742,19 +742,19 @@ function gitex_action() {
           echo -e "${output}"
           eval "$ARGS"
           if [ "$?" -eq 130 ];then #SIGINT
-            cd ${start}
+            cd "${start}"
             return
           fi
         ;;
       *)
         echo -e "\033[31mInvalid action:\033[0m ${ACTION}"
-        cd $start
+        cd "$start"
         OLDPWD=$OWD
         return 1
         ;;
     esac
   done
-  cd $start
+  cd "$start"
   OLDPWD=$OWD
 }
 ##  Variables (any others must be escaped):
@@ -766,7 +766,7 @@ function gitex_add_repo_to_context() {
   set +e
   local repo=$1
   local OWD=$OLDPWD
-  cd ${repo}
+  cd "${repo}"
   if [[ "$?" -ne 0 ]];then
     return
   fi
@@ -792,7 +792,7 @@ function gitex_remove_repo_from_context() {
   set +e
   local repo=$1
   local OWD=$OLDPWD
-  cd ${repo} 2>/dev/null
+  cd "${repo}" 2>/dev/null
   if [[ "$?" -eq 0 ]];then
     repo=$(basename $($wgit rev-parse --show-toplevel 2>/dev/null) 2>/dev/null)
   fi
@@ -885,7 +885,7 @@ ${current}"
     @(${repo})) #[repo]#cd to this repo
         repo=$(grep -Em 1 "/${action}$" <<< "${repos}")
         echo -e "\033[33mentering\033[0m \033[32m${action}\033[0m"
-        cd ${repo//\~/$HOME}
+        cd "${repo//\~/$HOME}"
         return
       ;;
     *)
@@ -1048,7 +1048,7 @@ function gitex_subtree()
 
   local OWD=$OLDPWD
   local repo=$($wgit rev-parse --show-toplevel 2>/dev/null)
-  cd ${repo}
+  cd "${repo}"
   local GITEX_SUBTREE=${repo}/.git-subtree
 
   case "$action" in
@@ -1227,7 +1227,7 @@ function gitex_svn_migrate()
 {
   local url=$1
 
-  cd ${tmp}
+  cd "${tmp}"
   svn log --stop-on-copy ${url} | egrep "^(r[0-9]+|Create .* branch from .* branch)" | tail -2 > ${tmp}/data
   local revision=$(head -n 1 ${tmp}/data | cut -d' ' -f1)
   local revision=${revision#r}
@@ -1241,7 +1241,7 @@ function gitex_svn_migrate()
   $wgit svn clone -r ${revision} "${url}"
   mv ${base} ${base}-${branch}
   echo ${base}-${branch} >> ${tmp}/branches
-  cd ${base}-${branch}
+  cd "${base}-${branch}"
   $wgit svn fetch | sed 's/^/  /'
   $wgit svn rebase -l | sed 's/^/  /'
 
@@ -1294,7 +1294,7 @@ function gitex_svn()
 
         local earliest=$(tail -n1 ${tmp}/branches)
         echo -e "\033[32mCombine histories\033[0m into ${earliest}"
-        cd ${tmp}/${earliest}
+        cd "${tmp}/${earliest}"
         for repo in $(head -n-1 ${tmp}/branches | tac)
         do
           echo -e "  \033[32m${repo}\033[0m:"
@@ -1313,7 +1313,7 @@ function gitex_svn()
         #cp -rv ${tmp}/${earliest} ${start}/${base}
         echo -e "\033[32mDONE: ${base}\033[0m"
 
-        cd $start
+        cd "$start"
         OLDPWD=$OWD
       ;;
     push) ##alias to dcommit
