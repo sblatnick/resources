@@ -1,26 +1,26 @@
 
-clip = function(board) {
-  var content = ""
-  try {
-    copy()
-    content = str(clipboard())
-  } catch (e) { }
-
+clip_copy = function(board) {
+  copy()
+  var content = str(clipboard())
   var cb = new File("/dev/shm/clipboard" + board)
 
-  if (content.length == 0) {
-    if (!cb.openReadOnly()) {
-      abort()
-    }
-    content = cb.readAll()
-    //popup('clip copy', content)
-    copy(content)
-    paste()
-  } else {
-    //popup('clip write', content)
-    if (!cb.openWriteOnly() || cb.write(content) == -1) {
-      abort()
-    }
+  //popup('clip copy', content)
+  if (!cb.openWriteOnly() || cb.write(content) == -1) {
+    abort()
   }
+  cb.close()
+}
+
+clip_paste = function(board) {
+  var cb = new File("/dev/shm/clipboard" + board)
+
+  if (!cb.openReadOnly()) {
+    abort()
+  }
+  var content = cb.readAll()
+  //popup('clip paste', content)
+  copy(content)
+  paste()
+
   cb.close()
 }
