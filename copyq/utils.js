@@ -1,5 +1,6 @@
 
 clip_copy = function(board) {
+  var current = str(clipboard())
   copy()
   var content = str(clipboard())
   var cb = new File("/dev/shm/clipboard" + board)
@@ -9,9 +10,11 @@ clip_copy = function(board) {
     abort()
   }
   cb.close()
+  copy(current)
 }
 
 clip_paste = function(board) {
+  var current = str(clipboard())
   var cb = new File("/dev/shm/clipboard" + board)
 
   if (!cb.openReadOnly()) {
@@ -23,4 +26,5 @@ clip_paste = function(board) {
   paste()
 
   cb.close()
+  copy(current)
 }
