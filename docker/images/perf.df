@@ -8,16 +8,19 @@ ENV JMETER_VERSION 5.5
 ENV GATLING_HOME /opt/gatling
 
 RUN <<EOT
+  set -e
   echo "Install java17"
     yum install -y java-17-openjdk
 EOT
 
 RUN <<EOT
+  set -e
   echo "Install python"
     yum install -y python39
 EOT
 
 RUN <<EOT
+  set -e
   echo "Install vegeta"
     wget https://github.com/tsenart/vegeta/releases/download/v${VEGETA_VERSION}/vegeta_${VEGETA_VERSION}_linux_amd64.tar.gz
     tar -zxvf vegeta_${VEGETA_VERSION}_linux_amd64.tar.gz
@@ -26,6 +29,7 @@ RUN <<EOT
 EOT
 
 RUN <<EOT
+  set -e
   echo "Install Gatling"
     wget https://repo1.maven.org/maven2/io/gatling/highcharts/gatling-charts-highcharts-bundle/${GATLING_VERSION}/gatling-charts-highcharts-bundle-${GATLING_VERSION}-bundle.zip
     unzip gatling-charts-highcharts-bundle-${GATLING_VERSION}-bundle.zip
@@ -37,23 +41,27 @@ RUN <<EOT
 EOT
 
 RUN <<EOT
+  set -e
   echo "Install FortIO"
     wget https://github.com/fortio/fortio/releases/download/v${FORTIO_VERSION}/fortio-${FORTIO_VERSION}-1.x86_64.rpm
     rpm -ivh fortio-${FORTIO_VERSION}-1.x86_64.rpm
 EOT
 
 RUN <<EOT
+  set -e
   echo "Install Locust"
     pip3 install locust
 EOT
 
 RUN <<EOT
+  set -e
   echo "Install k6"
     yum install -y https://dl.k6.io/rpm/repo.rpm
     yum install -y k6
 EOT
 
 RUN <<EOT
+  set -e
   echo "Install Hey"
     wget https://hey-release.s3.us-east-2.amazonaws.com/hey_linux_amd64
     chmod a+x hey_linux_amd64
@@ -61,12 +69,14 @@ RUN <<EOT
 EOT
 
 RUN <<EOT
+  set -e
   echo "Install JMeter"
   wget https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-${JMETER_VERSION}.tgz
   #TODO
 EOT
 
 RUN <<EOT
+  set -e
   echo "Install Predator"
   #TODO
 EOT
