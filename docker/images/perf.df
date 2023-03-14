@@ -1,22 +1,19 @@
 FROM rocky8:latest
 
-ENV VEGETA_VERSION 12.8.4
-ENV GATLING_VERSION 3.9.0
-ENV FORTIO_VERSION 1.52.0
-ENV JMETER_VERSION 5.5
+ENV VEGETA_VERSION    12.8.4
+ENV GATLING_VERSION   3.9.0
+ENV FORTIO_VERSION    1.52.0
+ENV JMETER_VERSION    5.5
 
-ENV GATLING_HOME /opt/gatling
-
-RUN <<EOT
-  set -e
-  echo "Install java17"
-    yum install -y java-17-openjdk
-EOT
+ENV GATLING_HOME      /opt/gatling
+ENV JMETER_HOME       /opt/apache-jmeter
 
 RUN <<EOT
   set -e
-  echo "Install python"
-    yum install -y python39
+  echo "Install Pre-Requisites"
+    yum install -y \
+      java-17-openjdk \
+      python39
 EOT
 
 RUN <<EOT
@@ -71,14 +68,12 @@ EOT
 RUN <<EOT
   set -e
   echo "Install JMeter"
-  wget https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-${JMETER_VERSION}.tgz
-  #TODO
-EOT
-
-RUN <<EOT
-  set -e
-  echo "Install Predator"
-  #TODO
+    wget https://dlcdn.apache.org/jmeter/binaries/apache-jmeter-${JMETER_VERSION}.tgz
+    tar -zxvf apache-jmeter-${JMETER_VERSION}.tgz
+    mv apache-jmeter-${JMETER_VERSION} /opt/
+    ln -s /opt/apache-jmeter-${JMETER_VERSION}/ ${JMETER_HOME}
+    ln -s ${JMETER_HOME}/bin/jmeter /usr/bin/jmeter
+    ln -s ${JMETER_HOME}/bin/jmeter-server /usr/bin/jmeter-server
 EOT
 
 ENTRYPOINT /bin/bash
