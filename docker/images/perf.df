@@ -25,6 +25,7 @@ RUN <<EOT
     mv vegeta /usr/bin/
 EOT
 
+#FIXME: Should be installed as user, so root isn't required
 RUN <<EOT
   set -e
   echo "Install Gatling"
