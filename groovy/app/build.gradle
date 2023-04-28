@@ -1,0 +1,25 @@
+//IMPORTANT: Make sure this is in the app directory and not the repo root where gradlew is!
+
+plugins {
+  id("groovy")
+}
+
+repositories {
+  mavenCentral()
+  maven {
+    url 'https://repo.jenkins-ci.org/releases/'
+  }
+}
+
+dependencies {
+  /*
+    dependency methods:
+      implementation      was compile
+      runtimeOnly         was runtime
+      testImplementation  was testCompile
+      testRuntimeOnly     was testRuntime
+  */
+  testImplementation 'com.lesfurets:jenkins-pipeline-unit:1.17'
+}
+
+

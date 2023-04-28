@@ -187,6 +187,13 @@ set -Eeuxo pipefail
   #see: http://linuxcommand.org/lc3_man_pages/seth.html
   +H          #disable $! history substitution (helpful for regex not match word expressions: "(?!${value}),"
 
+#Export all variables:
+  set -a
+    IMAGE=trivy
+    BIN=/opt/trivy/trivy
+  set +a
+  #End export
+
 #::::::::::::::::::::GLOBAL VARIABLES::::::::::::::::::::
 #Internal Field Separator (See ARRAYS)
   IFS='

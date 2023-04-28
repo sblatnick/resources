@@ -1,6 +1,14 @@
 #!/bin/bash
 
 #::::::::::::::::::::SET::::::::::::::::::::
+
+#Export all variables:
+set -a
+  IMAGE=trivy
+  BIN=/opt/trivy/trivy
+set +a
+#End export
+
 #source: http://linuxcommand.org/lc3_man_pages/seth.html
 
 NAME

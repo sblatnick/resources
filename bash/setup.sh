@@ -8,6 +8,8 @@
 
   #UEFI doesn't see linux.  You have to put the efi file where it expects Windows.
 
+#Find JAVA_HOME:
+  JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
 
 #Zoom Video Chat Bug: sets volume to 100% on entering a conference.
   # 1. Update /etc/pulse/daemon.conf to have:

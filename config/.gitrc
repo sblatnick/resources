@@ -217,6 +217,9 @@ function gitex() {
       ;;
     clone)
       ;;
+    init)
+        #skip _check_git as not a git repo yet
+      ;;
     *)
         _check_git || return 1
       ;;
@@ -404,6 +407,21 @@ function gitex() {
           green "\033[32mswitched master from '${MASTER}' to '${BRANCH}'\033[0m"
           $wgit config init.defaultBranch ${BRANCH}
         fi
+      ;;
+    last) #[type]#log of last [oneline|medium|tag]
+        shift
+        type=${1-oneline}
+        case "${type}" in
+          -1|oneline)
+              $wgit --no-pager log --oneline -1
+            ;;
+          medium)
+              $wgit --no-pager log --pretty=medium -1
+            ;;
+          tag)
+              $wgit --no-pager log --tags --simplify-by-decoration --pretty="format:%ai %d%n" -1
+            ;;
+        esac
       ;;
     latest) ##switch to latest master branch and pull in the latest
         last=$(date +%s -r .git/FETCH_HEAD)
