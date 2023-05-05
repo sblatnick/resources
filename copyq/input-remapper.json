@@ -36,5 +36,26 @@
             "modify(Control_L, key(KEY_PASTE))",
             "keyboard"
         ]
+        ,
+        "1,30,1": [
+            "modify(Control_L, key(KEY_AGAIN))",
+            "keyboard"
+        ],
+        "1,31,1": [
+            "modify(Control_L, key(KEY_SAVE))",
+            "keyboard"
+        ],
+        "1,32,1": [
+            "modify(Control_L, key(KEY_DOCUMENTS))",
+            "keyboard"
+        ],
+        "1,33,1": [
+            "modify(Control_L, key(KEY_FIND))",
+            "keyboard"
+        ],
+        "1,34,1": [
+            "modify(Control_L, key(KEY_OPEN))",
+            "keyboard"
+        ]
     }
 }

@@ -28,12 +28,12 @@ BINDER=$(/usr/sbin/ifconfig 2>/dev/null | grep -Po 'inet 192\.[0-9\.]*' | cut -d
 function binder() {
   alias ${1}="ssh -b ${BINDER} ${3-root}@192.168.0.${2}"
 }
-binder c1 25
-binder c2 26
+binder c1 35
+binder c2 34
 binder c3 27
 binder elite 20 steve
 binder asus 17 steve
-binder tc 29 tc
+binder tc 15 tc
 binder xeon 22 steve
 
 function proxy() {

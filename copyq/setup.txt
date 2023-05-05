@@ -1,5 +1,54 @@
 1. Input Remapper:
   (key-remapper is later renamed to input-remapper)
   Place JSON:
-    cp input-remapper.json "~/.config/input-remapper/presets/SINO WEALTH Gaming KB /Cryo Keypad.json"
-2. Add clipboard_commands.ini into copyq scripts
+    cp input-remapper.json ~/.config/input-remapper/presets/SINO\ WEALTH\ Gaming\ KB\ /Cryo\ Keypad.json
+2. open input-remapper to reload config changes
+3. Add clipboard_commands.ini into copyq scripts
+
+
+Cryo Keypad settings
+cryo      scancode                                Notes
+  Esc       Help                                    Show window picker
+  F1
+  F2
+  F3
+  F4
+  F5
+
+  `         KEY_F12                                 Toggle tilix
+  1
+  2
+  3
+  4
+  5
+  6
+
+  Tab
+  q
+  w
+  e
+  r
+  t
+
+  CapsLock
+  a         modify(Control_L, key(KEY_AGAIN))
+  s         modify(Control_L, key(KEY_SAVE))        Paste Clipboard 1
+  d         modify(Control_L, key(KEY_DOCUMENTS))   Paste Clipboard 2
+  f         modify(Control_L, key(KEY_FIND))        Paste Clipboard 3
+  g         modify(Control_L, key(KEY_OPEN))        Paste Clipboard 4
+
+  Shift
+  z         modify(Control_L, key(KEY_UNDO))        Toggle CopyQ
+  x         modify(Control_L, key(KEY_CUT))         Copy Clipboard 1
+  c         modify(Control_L, key(KEY_COPY))        Copy Clipboard 2
+  v         modify(Control_L, key(KEY_PASTE))       Copy Clipboard 3
+  b         modify(Control_L, key(KEY_BOOKMARKS))   Copy Clipboard 4
+
+  Ctrl
+  Alt       modify(Control_L, key(c))               Copy
+  Space     modify(Control_L, key(v))               Paste
+
+  G1
+  G2
+  G3
+  G4
