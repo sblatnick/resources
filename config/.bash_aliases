@@ -26,11 +26,12 @@ alias nas='ssh $USER@nas'
 
 BINDER=$(/usr/sbin/ifconfig 2>/dev/null | grep -Po 'inet 192\.[0-9\.]*' | cut -d' ' -f2)
 function binder() {
-  alias ${1}="ssh -b ${BINDER} ${3-root}@192.168.0.${2}"
+  alias ${1}="ssh -b ${BINDER} ${4} ${3-root}@192.168.0.${2}"
 }
 binder c1 35
 binder c2 34
 binder c3 27
+binder c4 36 steve -X
 binder elite 20 steve
 binder asus 17 steve
 binder tc 15 tc

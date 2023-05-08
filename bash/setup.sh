@@ -137,3 +137,13 @@
       home-icon-visible
       volumes-visible
 
+  #Synaptic Repositories:
+    deb http://deb.debian.org/debian/ testing non-free-firmware non-free contrib main
+    deb-src http://deb.debian.org/debian/ testing non-free-firmware non-free contrib main
+    deb http://security.debian.org/debian-security/ testing-security main
+    deb-src http://security.debian.org/debian-security/ testing-security main
+    deb http://deb.debian.org/debian/ testing-updates contrib non-free main
+    deb-src http://deb.debian.org/debian/ testing-updates contrib non-free main
+    
+
+
