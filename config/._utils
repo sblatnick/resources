@@ -741,7 +741,7 @@ function inc_var() {
   local current=$(get_var "$1" $2)
   #Ensure idempotence:
   cd "${2%/*}"
-  git --no-pager diff ${2##*/} | grep -q $1
+  git --no-pager diff ${2##*/} | grep -Pq "$1 *="
   if [[ $? -eq 0 ]];then
     red "already incremented to ${current} (${2##*/})"
     return 1
