@@ -1,5 +1,17 @@
 #!/bin/bash
 
+#(NOT WORKING with ext4) auto-mount usb drives as user:
+  #debian uses udisks2: (see http://storaged.org/doc/udisks2-api/latest/mount_options.html )
+    sudo vi /etc/udisks2/mount_options.conf
+      [defaults]
+      allow=uid=$UID,gid=$GID,exec,noexec,nodev,nosuid,atime,noatime,nodiratime,relatime,strictatime,lazytime,ro,rw,sync,dirsync,noload,acl,nosymfollow,uhelper=udisks2,errors=remount-ro
+      defaults=uid=$UID,gid=$GID
+    systemctl restart udisks2
+  #udev rule:
+    sudo vi /lib/udev/rules.d/80-steve.rules #number matters for order
+      SUBSYSTEM=="block", ENV{DEVTYPE}=="usb_device", MODE="0664", OWNER="steve", GROUP="steve"
+    systemctl restart udev
+
 #mounted files:
   /etc/fstab
   #printf "%-23s %-23s %-7s %-15s 0 0" /dev/sda1 "${location}" ext4 "${options}"
