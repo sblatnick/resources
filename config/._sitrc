@@ -62,7 +62,7 @@ function sit_set_json() {
           removals+=(${1:1})
         ;;
       *) #set
-          settings+=(${1})
+          settings+=("${1}")
         ;;
     esac
     shift
@@ -155,7 +155,7 @@ Usage: sit [key] [value...]"
   #>&2 echo "val:         '${!SIT_CURRENT}'"
   #>&2 echo "conf:        '${conf}'"
   if [ $# -gt 1 ];then #set
-    sit_set_json "${conf}" $@
+    sit_set_json "${conf}" "$@"
   else #get
     sit_get_json "${conf}" $@
   fi
