@@ -56,10 +56,10 @@ function sit_set_json() {
           return #deletion not compatible with other actions
         ;;
       '+'*) #add to list
-          additions+=(${1:1})
+          additions+=("${1:1}")
         ;;
       '-'*) #remove from list
-          removals+=(${1:1})
+          removals+=("${1:1}")
         ;;
       *) #set
           settings+=("${1}")
@@ -70,7 +70,7 @@ function sit_set_json() {
 
   if [ ${#settings[@]} -gt 0 ];then
     if [ ${#settings[@]} -gt 1 ];then
-      local array=$(printf ',"%s"' ${settings[@]})
+      local array=$(printf ',"%s"' "${settings[@]}")
       local array=${array:1}
       local value="[${array}]"
     else
@@ -81,7 +81,7 @@ function sit_set_json() {
   fi
 
   if [ ${#additions[@]} -gt 0 ];then
-    local array=$(printf ',"%s"' ${additions[@]})
+    local array=$(printf ',"%s"' "${additions[@]}")
     local array=${array:1}
     local value="[${array}]"
     local result=$(plain $file | jq -C "try (.${key} += ${value}) catch \"sit_error\"")
@@ -92,7 +92,7 @@ function sit_set_json() {
   fi
 
   if [ ${#removals[@]} -gt 0 ];then
-    local array=$(printf ',"%s"' ${removals[@]})
+    local array=$(printf ',"%s"' "${removals[@]}")
     local array=${array:1}
     local value="[${array}]"
     plain $file | jq -C ".${key} -= ${value}" > ${file}.tmp && mv -f ${file}.tmp ${file} && cat ${file}
