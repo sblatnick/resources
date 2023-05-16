@@ -16,6 +16,17 @@
   /etc/fstab
   #printf "%-23s %-23s %-7s %-15s 0 0" /dev/sda1 "${location}" ext4 "${options}"
 
+#mount drive at boot:
+  #get uuid:
+    sudo blkid
+  #edit:
+    /etc/fstab:
+      UUID=e8a2adfb-6356-4aef-a638-5dd5faaef57e /home/steve/raid ext4 errors=remount-ro 0 1
+  #prep:
+    sudo systemctl daemon-reload
+    sudo mount -a
+    sudo chown steve:steve -R raid/
+
 #mount an iso:
   mount -o loop name.iso /mnt/iso
 
