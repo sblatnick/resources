@@ -1,2 +1,2 @@
 #!/bin/bash
-python3 -Xutf8 ${BASH_SOURCE%/path/*}/python/filer/main.py $@
+python3 -Xutf8 ${BASH_SOURCE%/path/*}/python/filer/main.py "$@"
