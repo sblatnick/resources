@@ -1,4 +1,5 @@
 #!/bin/bash
+#DEPRECATED but retained as an example how to interact with copyq from the command line
 
 source ~/projects/resources/config/bashrc
 

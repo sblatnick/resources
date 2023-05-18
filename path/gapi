@@ -1,5 +1,0 @@
-#!/bin/bash
-source ${BASH_SOURCE%/path/*}/config/bashrc
-
-#Always fails with 404 due to no auth:
-run curl --silent "https://api.github.com/repos/$1/releases/latest"
