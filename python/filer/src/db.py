@@ -1,28 +1,11 @@
 #!/usr/bin/env python
 import os, argparse, re, sqlite_utils
-from src.util import *
-from src.command import *
+from util import *
 
-class DB(Command):
-  def __init__(self, option_strings=None, dest=None):
-    super().__init__(option_strings, dest)
-    action = self.options.arg
+class DB():
+  def __init__(self, recreate=False):
     db_file = os.path.expanduser("~/.filer.db")
-    self.db = sqlite_utils.Database(db_file)
-    root = os.getcwd()
-    match action:
-      case "init" | "create":
-        print("traversing all files")
-        for base, _, files in os.walk("."):
-          for filename in files:
-            self.add(os.path.join(root,base[2:],filename))
-      case "images" | "files":
-        for row in self.db.query(f"SELECT * FROM {action}"):
-          print(row)
-      case "clean":
-        os.remove(db_file)
-      case _:
-        print(f"No such action: {action}")
+    self.db = sqlite_utils.Database(db_file,recreate=recreate)
 
   def add(self, path):
     print(path)
@@ -63,3 +46,5 @@ class DB(Command):
           "md5": md5,
         }])
 
+  def query(self, sql):
+    return self.db.query(sql)

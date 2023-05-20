@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import sys, argparse, time
-from src.db import *
+from src.scan import *
+from src.images import *
+from src.files import *
 
 tic = time.perf_counter()
 
@@ -12,12 +14,25 @@ parser = argparse.ArgumentParser(
 commands = parser.add_subparsers()
 
 #Actions:
-db = commands.add_parser(
-  'db',
-  help='Database actions'
+scan = commands.add_parser(
+  'scan',
+  help='Traverse the filesystem from the current directory and create the database.'
 )
-db.set_defaults(func=DB)
-db.add_argument("arg")
+scan.set_defaults(func=Scan)
+
+images = commands.add_parser(
+  'images',
+  help='Print all image data'
+)
+images.set_defaults(func=Images)
+images.add_argument("action", nargs='?', default='list')
+
+files = commands.add_parser(
+  'files',
+  help='Print all file data'
+)
+files.set_defaults(func=Files)
+files.add_argument("action", nargs='?', default='list')
 
 #Args processed:
 args = parser.parse_args()
