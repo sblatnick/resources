@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, time, json, argparse, subprocess, re, sqlite_utils, puremagic, exifread
+import os, time, json, argparse, subprocess, re, sqlite_utils, puremagic, exifread, hashlib
 from src.command import *
 
 class DB(Command):
@@ -28,6 +28,8 @@ class DB(Command):
     mime = puremagic.magic_file(path)[0]
     ext = mime.extension
     filetype = mime.mime_type.split("/")[0]
+    size = os.path.getsize(path)
+    md5 = self.md5sum(path)
 
     match filetype:
       case "image":
@@ -35,10 +37,7 @@ class DB(Command):
 
         created = str(metadata.get(
           "EXIF DateTimeOriginal",
-          time.strftime(
-            "%Y-%m-%d %H:%M:%S",
-            time.strptime(time.ctime(os.path.getmtime(path)))
-          )
+          self.created(path)
         ))
         if re.search(r"^\d\d\d\d:\d\d:\d\d ", created):
           created = re.sub(":", "-", created, 2)
@@ -48,20 +47,36 @@ class DB(Command):
           "src": path,
           "type": filetype,
           "ext": ext,
-          "created": created
+          "created": created,
+          "size": size,
+          "md5": md5,
         }])
       case _:
+        created = self.created(path)
         self.db["files"].insert_all([{
           "src": path,
           "type": filetype,
           "ext": ext,
+          "created": created,
+          "size": size,
+          "md5": md5,
         }])
 
   def exif(self, path):
     with open(path, "rb") as fh:
       tags = exifread.process_file(fh, details=False)
-      #print(path)
       #for tag in tags.keys():
       #  print(f"  '{tag}' = 'tags[tag]'")
       return tags
 
+  def md5sum(self, path):
+    with open(path, "rb") as fh:
+      md5 = hashlib.md5(fh.read()).hexdigest()
+      return md5
+
+  def created(self, path):
+    #use modified time in case it is using when it was copied:
+    return time.strftime(
+      "%Y-%m-%d %H:%M:%S",
+      time.strptime(time.ctime(os.path.getmtime(path)))
+    )
