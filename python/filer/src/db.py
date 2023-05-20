@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, json, argparse, subprocess, re, sqlite_utils, puremagic, exifread
+import os, time, json, argparse, subprocess, re, sqlite_utils, puremagic, exifread
 from src.command import *
 
 class DB(Command):
@@ -32,13 +32,23 @@ class DB(Command):
     match filetype:
       case "image":
         metadata = self.exif(path)
-        created = metadata["EXIF DateTimeOriginal"]
-        print(created)
+
+        created = str(metadata.get(
+          "EXIF DateTimeOriginal",
+          time.strftime(
+            "%Y-%m-%d %H:%M:%S",
+            time.strptime(time.ctime(os.path.getmtime(path)))
+          )
+        ))
+        if re.search(r"^\d\d\d\d:\d\d:\d\d ", created):
+          created = re.sub(":", "-", created, 2)
+        #print(f"  {created}")
+        
         self.db["images"].insert_all([{
           "src": path,
           "type": filetype,
           "ext": ext,
-          "created": str(created)
+          "created": created
         }])
       case _:
         self.db["files"].insert_all([{
