@@ -13,7 +13,7 @@ class DB():
     ext = mime.extension
     filetype = mime.mime_type.split("/")[0]
     size = os.path.getsize(path)
-    md5 = md5sum(path)
+    md5 = md5sum(path) if size < 4000000 else "file bigger than 4GB"
 
     match filetype:
       case "image":
