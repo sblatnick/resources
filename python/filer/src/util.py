@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, time, re, puremagic, exifread, hashlib, datetime
+import os, shutil, time, re, puremagic, exifread, hashlib, datetime
 
 def exif(path):
   with open(path, "rb") as fh:
@@ -26,4 +26,12 @@ def mimetype(path):
 def image_destination(path, ext, dt):
   filename = re.search("/([^/.]*)\.[^/]*$", path).groups()[0]
   obj = datetime.datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
-  return obj.strftime(f"%Y/%m - %b/%Y-%m-%d %H:%M:%S {filename}{ext}")
+  if ext == ".heif":
+    ext = ".heic"
+  return obj.strftime(f"Pictures/%Y/%m - %b/%Y-%m-%d %H:%M:%S {filename}{ext}")
+
+def copy(src, dst):
+  print(src)
+  print(f"  {dst}")
+  #os.makedirs(os.path.dirname(dst), exist_ok=True)
+  #shutil.copy2(src, f"../organized/{dst}")

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-import shutil
 from command import *
 from db import *
+from util import *
 
 class Files(Command):
   table = 'files'
@@ -12,7 +12,7 @@ class Files(Command):
     self.db = DB()
     match action:
       case "list":
-        for row in db.query(f"SELECT * FROM {self.table}"):
+        for row in self.db.query(f"SELECT * FROM {self.table}"):
           print(row)
       case "md5" | "dst":
         duplicates = self.find_duplicates(action)
@@ -23,9 +23,7 @@ class Files(Command):
       case "copy":
         duplicates = self.find_duplicates("dst", "")
         for dst, sources in duplicates.items():
-          print(sources[0])
-          print(f"  {dst}")
-          #shutil.copy2(sources[0], dst)
+          copy(sources[0], dst)
       case _:
         print(f"No such action '{action}'")
 
