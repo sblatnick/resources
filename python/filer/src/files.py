@@ -14,6 +14,16 @@ class Files(Command):
       case "list":
         for row in self.db.query(f"SELECT * FROM {self.table}"):
           print(row)
+      case "distinct":
+        for row in self.db.query(f"""
+          SELECT
+            ext,
+            COUNT(ext) AS count
+          FROM {self.table}
+          GROUP BY ext
+          ORDER BY count DESC
+        """):
+          print(f"{str(row['count']).rjust(4)} {row['ext']}")
       case "md5" | "dst":
         duplicates = self.find_duplicates(action)
         for key, sources in duplicates.items():
