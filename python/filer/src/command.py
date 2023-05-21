@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, json, argparse
+import argparse
 
 class Command(argparse.Action):
   def __init__(self, option_strings=None, dest=None):

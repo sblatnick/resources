@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, argparse, re, sqlite_utils
+import os, re, sqlite_utils
 from util import *
 
 class DB():
@@ -25,10 +25,12 @@ class DB():
         ))
         if re.search(r"^\d\d\d\d:\d\d:\d\d ", created):
           created = re.sub(":", "-", created, 2)
-        #print(f"  {created}")
+        dst = image_destination(path, ext, created)
+        print(f"  {dst}")
 
         self.db["images"].insert_all([{
           "src": path,
+          "dst": dst,
           "type": filetype,
           "ext": ext,
           "created": created,

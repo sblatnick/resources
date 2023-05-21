@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import os, argparse, re
 from command import *
 from db import *
 
@@ -14,25 +13,25 @@ class Files(Command):
       case "list":
         for row in db.query(f"SELECT * FROM {self.table}"):
           print(row)
-      case "dup":
+      case "md5" | "dst":
         duplicates = {}
         for row in db.query(f"""
           SELECT
             (
               SELECT
-                COUNT(md5)
+                COUNT({action})
               FROM {self.table} AS d
-              WHERE d.md5 = t.md5
+              WHERE d.{action} = t.{action}
             ) AS duplicate,
-            t.md5,
+            t.{action},
             t.src
           FROM {self.table} AS t
           WHERE duplicate > 1
-          ORDER BY duplicate DESC, t.md5 ASC
+          ORDER BY duplicate DESC, t.{action} ASC
         """):
-          duplicates.setdefault(row["md5"], []).append(row["src"])
-        for md5, sources in duplicates.items():
-          print(md5)
+          duplicates.setdefault(row[action], []).append(row["src"])
+        for key, sources in duplicates.items():
+          print(key)
           for src in sources:
             print(f"  {src}")
       case _:

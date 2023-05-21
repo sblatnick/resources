@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, time, json, subprocess, re, sqlite_utils, puremagic, exifread, hashlib
+import os, time, re, puremagic, exifread, hashlib, datetime
 
 def exif(path):
   with open(path, "rb") as fh:
@@ -23,3 +23,7 @@ def timestamp(path):
 def mimetype(path):
   return puremagic.magic_file(path)[0]
 
+def image_destination(path, ext, dt):
+  filename = re.search("/([^/.]*)\.[^/]*$", path).groups()[0]
+  obj = datetime.datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
+  return obj.strftime(f"%Y/%m - %b/%Y-%m-%d %H:%M:%S {filename}{ext}")
