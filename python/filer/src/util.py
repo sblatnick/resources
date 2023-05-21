@@ -39,7 +39,7 @@ def mimetype(path):
     return obj
 
 def image_destination(path, ext, dt):
-  filename = re.search("/([^/.]*)\.[^/]*$", path).groups()[0]
+  filename = re.search("/?([^/.]*)\.?[^/]*$", path).groups()[0]
   obj = datetime.datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
   if ext == ".heif":
     ext = ".heic"
