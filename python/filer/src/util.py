@@ -26,7 +26,12 @@ def mimetype(path):
     return obj[0]
   else:
     obj = Obj()
-    setattr(obj, "extension", re.search(r"\.[^/]*$", path).group(0))
+    m = re.search(r"\.[^/]*$", path)
+    if m is None:
+      ext = "none"
+    else:
+      ext = m.group(0)
+    setattr(obj, "extension", ext)
     setattr(obj, "mime_type", "unknown")
     return obj
 
