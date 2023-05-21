@@ -22,7 +22,12 @@ def timestamp(path):
 
 def mimetype(path):
   obj = puremagic.magic_file(path)
-  return obj[0] if 0 < len(obj) else {extension: re.search(r"\.[^/]*$", path), mime_type: "unknown"}
+  if 0 < len(obj):
+    return obj[0]
+  else:
+    obj = Obj()
+    setattr(obj, "extension", re.search(r"\.[^/]*$", path))
+    setattr(obj, "mime_type", "unknown")
 
 def image_destination(path, ext, dt):
   filename = re.search("/([^/.]*)\.[^/]*$", path).groups()[0]
@@ -40,3 +45,6 @@ def copy(src, dst):
     print(f"  {dst}")
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     shutil.copy2(src, dst)
+
+class Obj(object):
+  pass
