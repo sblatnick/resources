@@ -10,8 +10,8 @@ class DB():
   def add(self, path):
     print(path)
     mime = mimetype(path)
-    ext = mime.get("extension", re.search(r"\.[^/]*$", path))
-    filetype = mime.get("mime_type", "unknown").split("/")[0]
+    ext = mime.extension
+    filetype = mime.mime_type.split("/")[0]
     size = os.path.getsize(path)
     md5 = md5sum(path)
 
