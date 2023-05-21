@@ -21,7 +21,10 @@ def timestamp(path):
   )
 
 def mimetype(path):
-  obj = puremagic.magic_file(path)
+  try:
+    obj = puremagic.magic_file(path)
+  except:
+    obj = []
   if 0 < len(obj):
     return obj[0]
   else:
