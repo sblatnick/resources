@@ -31,7 +31,11 @@ def image_destination(path, ext, dt):
   return obj.strftime(f"Pictures/%Y/%m - %b/%Y-%m-%d %H:%M:%S {filename}{ext}")
 
 def copy(src, dst):
-  print(src)
-  print(f"  {dst}")
-  #os.makedirs(os.path.dirname(dst), exist_ok=True)
-  #shutil.copy2(src, f"../organized/{dst}")
+  dst = f"../organized/{dst}"
+  if os.path.exists(dst):
+    print(f"Exists: {src} {dst}")
+  else:
+    print(src)
+    print(f"  {dst}")
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    shutil.copy2(src, dst)
