@@ -28,6 +28,7 @@ def mimetype(path):
     obj = Obj()
     setattr(obj, "extension", re.search(r"\.[^/]*$", path))
     setattr(obj, "mime_type", "unknown")
+    return obj
 
 def image_destination(path, ext, dt):
   filename = re.search("/([^/.]*)\.[^/]*$", path).groups()[0]
