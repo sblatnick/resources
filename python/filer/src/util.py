@@ -21,7 +21,8 @@ def timestamp(path):
   )
 
 def mimetype(path):
-  return puremagic.magic_file(path).get(0, "unknown")
+  obj = puremagic.magic_file(path)
+  return obj[0] if 0 < len(obj) else "unknown"
 
 def image_destination(path, ext, dt):
   filename = re.search("/([^/.]*)\.[^/]*$", path).groups()[0]
