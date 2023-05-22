@@ -14,7 +14,7 @@ class Files(Command):
       case "list":
         for row in self.db.query(f"SELECT * FROM {self.table}"):
           print(row)
-      case "distinct":
+      case "distinct" | "ext":
         for row in self.db.query(f"""
           SELECT
             ext,

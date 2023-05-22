@@ -48,12 +48,18 @@ def image_destination(path, ext, dt):
 def copy(src, dst):
   dst = f"../organized/{dst}"
   if os.path.exists(dst):
-    print(f"Exists: {src} {dst}")
+    ss = os.path.getsize(src)
+    ds = os.path.getsize(dst)
+    if ss <= ds:
+      print(f"Skipping: {src} {dst}")
+      return
+    else:
+      print(f"Overwriting: {src} {dst}")
   else:
     print(src)
     print(f"  {dst}")
-    os.makedirs(os.path.dirname(dst), exist_ok=True)
-    shutil.copy2(src, dst)
+  os.makedirs(os.path.dirname(dst), exist_ok=True)
+  shutil.copy2(src, dst)
 
 class Obj(object):
   pass

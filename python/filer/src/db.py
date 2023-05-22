@@ -35,7 +35,7 @@ class DB():
           "created": created,
           "size": size,
           "md5": md5,
-        }])
+        }], pk="src")
       case _:
         ext, size, md5 = self.common_data(path)
         created = timestamp(path)
@@ -47,12 +47,13 @@ class DB():
           "created": created,
           "size": size,
           "md5": md5,
-        }])
+        }], pk="src")
 
   def add_list(self, table, path):
+    print(f"{table}: {path}")
     self.db[table].insert_all([{
       "src": path
-    }])
+    }], pk="src")
 
   def query(self, sql):
     return self.db.query(sql)

@@ -20,8 +20,6 @@ class Scan(Command):
     is_hidden = bool(re.search(r"^\.", folder))
     if is_repo:
       self.db.add_list('repos', path)
-      print(f"repo: {path}")
     if is_hidden:
       self.db.add_list('hidden', path)
-      print(f"hidden directory: {path}")
     return (is_repo or is_hidden)
