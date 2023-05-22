@@ -25,41 +25,64 @@ class DB():
         if re.search(r"^\d\d\d\d:\d\d:\d\d ", created):
           created = re.sub(":", "-", created, 2)
         dst = image_destination(path, ext, created)
-        print(f"  {dst}")
 
-        self.db["images"].insert_all([{
-          "src": path,
-          "dst": dst,
-          "type": filetype,
-          "ext": ext,
-          "created": created,
-          "size": size,
-          "md5": md5,
-        }], pk="src")
+        try:
+          self.db["images"].insert_all([{
+            "src": path,
+            "dst": dst,
+            "type": filetype,
+            "ext": ext,
+            "created": created,
+            "size": size,
+            "md5": md5,
+          }], pk="src")
+          print(path)
+          print(f"  {dst}")
+        except:
+          print(f"Already scanned: {path}")
       case _:
-        ext, size, md5 = self.common_data(path)
+        ext, size, md5 = self.common_data(mime, path)
         created = timestamp(path)
 
-        self.db["files"].insert_all([{
-          "src": path,
-          "type": filetype,
-          "ext": ext,
-          "created": created,
-          "size": size,
-          "md5": md5,
-        }], pk="src")
+        try:
+          self.db["files"].insert_all([{
+            "src": path,
+            "type": filetype,
+            "ext": ext,
+            "created": created,
+            "size": size,
+            "md5": md5,
+          }], pk="src")
+          print(path)
+        except:
+          print(f"Already scanned: {path}")
 
   def add_list(self, table, path):
     print(f"{table}: {path}")
-    self.db[table].insert_all([{
-      "src": path
-    }], pk="src")
+    try:
+      self.db[table].insert_all([{
+        "src": path
+      }], pk="src")
+    except:
+      print(f"Already scanned: {path}")
+
+  def is_done(self, base):
+    try:
+      return len(list(self.db.execute(f"""
+        SELECT
+          src
+        FROM done
+        WHERE src = ?
+        LIMIT 1
+      """, [base]))) == 1
+    except:
+      return False
+
 
   def query(self, sql):
     return self.db.query(sql)
 
   def common_data(self, mime, path):
-    print(path)
     ext = mime.extension
     size = os.path.getsize(path)
     md5 = md5sum(path) if size < 4000000 else "file bigger than 4GB"
