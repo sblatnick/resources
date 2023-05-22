@@ -2,6 +2,8 @@
 import sys, argparse, time
 from src.scan import *
 from src.images import *
+from src.repos import *
+from src.hidden import *
 from src.files import *
 
 tic = time.perf_counter()
@@ -13,26 +15,27 @@ parser = argparse.ArgumentParser(
 
 commands = parser.add_subparsers()
 
+#Common:
+def add_command(name, obj):
+  subparser = commands.add_parser(
+    name,
+    help='Print all {name} data'
+  )
+  subparser.set_defaults(func=obj)
+  subparser.add_argument("action", nargs='?', default='list')
+
 #Actions:
 scan = commands.add_parser(
   'scan',
   help='Traverse the filesystem from the current directory and create the database.'
 )
 scan.set_defaults(func=Scan)
+scan.add_argument("filetype", nargs='?', default='all')
 
-images = commands.add_parser(
-  'images',
-  help='Print all image data'
-)
-images.set_defaults(func=Images)
-images.add_argument("action", nargs='?', default='list')
-
-files = commands.add_parser(
-  'files',
-  help='Print all file data'
-)
-files.set_defaults(func=Files)
-files.add_argument("action", nargs='?', default='list')
+add_command("images", Images)
+add_command("repos", Repos)
+add_command("hidden", Hidden)
+add_command("files", Files)
 
 #Args processed:
 args = parser.parse_args()

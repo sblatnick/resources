@@ -4,25 +4,20 @@ from util import *
 
 class DB():
   def __init__(self, recreate=False):
-    db_file = os.path.expanduser("~/.filer2.db") #new db file
+    db_file = os.path.expanduser("~/.filer.db")
     self.db = sqlite_utils.Database(db_file,recreate=recreate)
 
-  def add(self, path):
-    #print(path)
+  def add(self, path, scan_filetype):
     mime = mimetype(path)
-    #ext = mime.extension
     filetype = mime.mime_type.split("/")[0]
-    #size = os.path.getsize(path)
-    #md5 = md5sum(path) if size < 4000000 else "file bigger than 4GB"
+
+    if scan_filetype not in [filetype, "all"]:
+      return
 
     match filetype:
       case "image":
-        print(path)
-        ext = mime.extension
-        size = os.path.getsize(path)
-        md5 = md5sum(path) if size < 4000000 else "file bigger than 4GB"
+        ext, size, md5 = self.common_data(mime, path)
         metadata = exif(path)
-
         created = str(metadata.get(
           "EXIF DateTimeOriginal",
           timestamp(path)
@@ -42,16 +37,29 @@ class DB():
           "md5": md5,
         }])
       case _:
-        print(f"skipping {path}")
-        # ~ created = timestamp(path)
-        # ~ self.db["files"].insert_all([{
-          # ~ "src": path,
-          # ~ "type": filetype,
-          # ~ "ext": ext,
-          # ~ "created": created,
-          # ~ "size": size,
-          # ~ "md5": md5,
-        # ~ }])
+        ext, size, md5 = self.common_data(path)
+        created = timestamp(path)
+
+        self.db["files"].insert_all([{
+          "src": path,
+          "type": filetype,
+          "ext": ext,
+          "created": created,
+          "size": size,
+          "md5": md5,
+        }])
+
+  def add_list(self, table, path):
+    self.db[table].insert_all([{
+      "src": path
+    }])
 
   def query(self, sql):
     return self.db.query(sql)
+
+  def common_data(self, mime, path):
+    print(path)
+    ext = mime.extension
+    size = os.path.getsize(path)
+    md5 = md5sum(path) if size < 4000000 else "file bigger than 4GB"
+    return (ext, size, md5)
