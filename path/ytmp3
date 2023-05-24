@@ -20,6 +20,8 @@ if [ -z "${url}" ];then
   exit
 fi
 
+#output format: yt-dlp -o '%(title)s.%(ext)s'
+#See OUTPUT TEMPLATE: https://github.com/yt-dlp/yt-dlp#output-template
 yt-dlp -f 251 ${url} 1> >(tee $tmp) 2>&1
 result=$(<$tmp)
 webm=$(echo -e "${result}" | grep -Po 'Destination: .*$' | cut -d' ' -f2-)
