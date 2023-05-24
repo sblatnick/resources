@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys, argparse, time
 from src.scan import *
+from src.rescan import *
 from src.images import *
 from src.repos import *
 from src.hidden import *
@@ -31,6 +32,13 @@ scan = commands.add_parser(
 )
 scan.set_defaults(func=Scan)
 scan.add_argument("filetype", nargs='?', default='all')
+
+rescan = commands.add_parser(
+  'rescan',
+  help='Scan with new database tables.'
+)
+rescan.set_defaults(func=Rescan)
+rescan.add_argument("filetype", nargs='?', default='all')
 
 add_command("images", Images)
 add_command("repos", Repos)

@@ -4,15 +4,17 @@ from command import *
 from db import *
 
 class Scan(Command):
+  recreate = False
+
   def __init__(self, option_strings=None, dest=None):
     super().__init__(option_strings, dest)
-    self.db = DB() #DB(recreate=True)
+    self.db = DB(recreate=self.recreate)
     root = os.getcwd()
     print("Traversing files")
     for b, dirs, files in os.walk(".", topdown=True):
       base = b[2:]
       done = self.db.is_done(base)
-      print(f"'{base}' done: {done}")
+      #print(f"'{base}' done: {done}")
       if self.db.is_done(base):
         continue
       dirs[:] = [d for d in dirs if not self.filter(root, base, d)]

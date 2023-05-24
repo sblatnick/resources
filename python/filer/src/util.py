@@ -2,10 +2,11 @@
 import os, shutil, time, re, puremagic, exifread, hashlib, datetime
 
 def exif(path):
+  #print(f"exif: {path}")
   with open(path, "rb") as fh:
     tags = exifread.process_file(fh, details=False)
     #for tag in tags.keys():
-    #  print(f"  '{tag}' = 'tags[tag]'")
+    #  print(f"  '{tag}' = '{tags[tag]}'")
     return tags
 
 def md5sum(path):
@@ -40,9 +41,16 @@ def mimetype(path):
 
 def image_destination(path, ext, dt):
   filename = re.search("/?([^/.]*)\.?[^/]*$", path).groups()[0]
-  obj = datetime.datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
+  #Remove date from filename if already present:
+  filename = re.sub(r" ?\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d ?", "", filename)
   if ext == ".heif":
     ext = ".heic"
+  #print(f"dt: {dt}")
+  try:
+    obj = datetime.datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
+  except:
+    #Invalid exif date, so use timestamp instead:
+    obj = datetime.datetime.strptime(timestamp(path), "%Y-%m-%d %H:%M:%S")
   return obj.strftime(f"Pictures/%Y/%m - %b/%Y-%m-%d %H:%M:%S {filename}{ext}")
 
 def copy(src, dst):
