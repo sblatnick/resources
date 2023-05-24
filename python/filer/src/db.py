@@ -36,7 +36,26 @@ class DB():
             "size": size,
             "md5": md5,
           }], pk="src")
-          print(path)
+          print(f"image: {path}")
+          print(f"  {dst}")
+        except:
+          print(f"Already scanned: {path}")
+      case "video":
+        ext, size, md5 = self.common_data(mime, path)
+        created = timestamp(path)
+        dst = image_destination(path, ext, created, "Videos")
+
+        try:
+          self.db["videos"].insert_all([{
+            "src": path,
+            "dst": dst,
+            "type": filetype,
+            "ext": ext,
+            "created": created,
+            "size": size,
+            "md5": md5,
+          }], pk="src")
+          print(f"video: {path}")
           print(f"  {dst}")
         except:
           print(f"Already scanned: {path}")
@@ -53,7 +72,7 @@ class DB():
             "size": size,
             "md5": md5,
           }], pk="src")
-          print(path)
+          print(f"file ({filetype}): {path}")
         except:
           print(f"Already scanned: {path}")
 

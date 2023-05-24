@@ -39,11 +39,10 @@ def mimetype(path):
     setattr(obj, "mime_type", "unknown")
     return obj
 
-def image_destination(path, ext, dt):
+def image_destination(path, ext, dt, base = "Pictures"):
   filename = re.search("/?([^/.]*)\.?[^/]*$", path).groups()[0]
   #Remove date from filename if already present:
   filename = re.sub(r" ?\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d ?", "", filename)
-  base = "Pictures"
   match ext:
     case ".heif":
       ext = ".heic"
