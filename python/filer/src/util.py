@@ -43,15 +43,19 @@ def image_destination(path, ext, dt):
   filename = re.search("/?([^/.]*)\.?[^/]*$", path).groups()[0]
   #Remove date from filename if already present:
   filename = re.sub(r" ?\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d ?", "", filename)
-  if ext == ".heif":
-    ext = ".heic"
+  base = "Pictures"
+  match ext:
+    case ".heif":
+      ext = ".heic"
+    case ".png":
+      base = "Images"
   #print(f"dt: {dt}")
   try:
     obj = datetime.datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
   except:
     #Invalid exif date, so use timestamp instead:
     obj = datetime.datetime.strptime(timestamp(path), "%Y-%m-%d %H:%M:%S")
-  return obj.strftime(f"Pictures/%Y/%m - %b/%Y-%m-%d %H:%M:%S {filename}{ext}")
+  return obj.strftime(f"{base}/%Y/%m - %b/%Y-%m-%d %H:%M:%S {filename}{ext}")
 
 def copy(src, dst):
   dst = f"../organized/{dst}"
