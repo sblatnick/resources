@@ -19,17 +19,22 @@ def mimetype(path):
   except:
     obj = []
   if 0 < len(obj):
+    if obj[0].extension == ".xxx":
+      return fake_magic(path)
     return obj[0]
   else:
-    obj = Obj()
-    m = re.search(r"\.[^/]*$", path)
-    if m is None:
-      ext = "none"
-    else:
-      ext = m.group(0)
-    setattr(obj, "extension", ext)
-    setattr(obj, "mime_type", "unknown")
-    return obj
+    return fake_magic(path)
+
+def fake_magic(path):
+  obj = Obj()
+  m = re.search(r"\.[^/]*$", path)
+  if m is None:
+    ext = "none"
+  else:
+    ext = m.group(0)
+  setattr(obj, "extension", ext)
+  setattr(obj, "mime_type", "unknown")
+  return obj
 
 def copy(src, dst):
   dst = f"../organized/{dst}"

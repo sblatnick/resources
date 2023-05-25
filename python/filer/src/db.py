@@ -1,12 +1,5 @@
 #!/usr/bin/env python
 import os, re, sqlite_utils
-from files import *
-from images import *
-from audio import *
-from videos import *
-from hidden import *
-from repos import *
-from folders import *
 from util import *
 
 class DB():
@@ -23,12 +16,16 @@ class DB():
 
     match filetype:
       case "image":
+        from images import Images
         Images.add(self, mime, path, filetype)
       case "video":
+        from videos import Videos
         Videos.add(self, mime, path, filetype)
       case "audio":
+        from audio import Audio
         Audio.add(self, mime, path, filetype)
       case _:
+        from files import Files
         Files.add(self, mime, path, filetype)
 
   def insert(self, table, obj):

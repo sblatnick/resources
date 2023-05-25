@@ -62,6 +62,7 @@ class Files(Command):
     obj.ext, obj.size, obj.md5 = common_data(mime, path)
     match obj.ext:
       case ".mp3":
+        from audio import Audio
         Audio.add(db, mime, path, filetype)
         return
     obj.src = path
