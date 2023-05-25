@@ -26,6 +26,7 @@ class Audio(Files):
         base = "Music"
       case _:
         base = "Audio"
-    #FIXME:
-    return f"{base}/"
+    root = os.getcwd()
+    src = path.removeprefix(root)
+    return f"{base}{src}"
 

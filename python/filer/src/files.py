@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 from command import *
 from db import *
 from util import *
@@ -73,5 +74,9 @@ class Files(Command):
 
   @staticmethod
   def destination(path, ext):
-    #FIXME:
-    return f"Documents/{path}"
+    root = os.getcwd()
+    src = path.removeprefix(root)
+    obj = datetime.datetime.strptime(timestamp(path), "%Y-%m-%d %H:%M:%S")
+    #Only add a year directory to Documents:
+    return obj.strftime(f"Documents/%Y{src}")
+
