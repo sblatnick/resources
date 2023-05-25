@@ -11,8 +11,11 @@ class Folders(Command):
     self.db = DB()
     match action:
       case "list":
-        for row in self.db.query(f"SELECT * FROM {self.table}"):
-          print(row)
+        try:
+          for row in self.db.query(f"SELECT * FROM {self.table}"):
+            print(row)
+        except Exception as e:
+          print(e)
       case _:
         print(f"No such action '{action}'")
 

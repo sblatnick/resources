@@ -13,18 +13,24 @@ class Files(Command):
     self.db = DB()
     match action:
       case "list":
-        for row in self.db.query(f"SELECT * FROM {self.table}"):
-          print(row)
+        try:
+          for row in self.db.query(f"SELECT * FROM {self.table}"):
+            print(row)
+        except Exception as e:
+          print(e)
       case "distinct" | "ext":
-        for row in self.db.query(f"""
-          SELECT
-            ext,
-            COUNT(ext) AS count
-          FROM {self.table}
-          GROUP BY ext
-          ORDER BY count DESC
-        """):
-          print(f"{row['count']: >4} {row['ext']}")
+        try:
+          for row in self.db.query(f"""
+            SELECT
+              ext,
+              COUNT(ext) AS count
+            FROM {self.table}
+            GROUP BY ext
+            ORDER BY count DESC
+          """):
+            print(f"{row['count']: >4} {row['ext']}")
+        except Exception as e:
+          print(e)
       case "md5" | "dst":
         duplicates = self.find_duplicates(action)
         for key, sources in duplicates.items():
@@ -40,21 +46,24 @@ class Files(Command):
 
   def find_duplicates(self, column, condition = 'WHERE duplicate > 1'):
     duplicates = {}
-    for row in self.db.query(f"""
-      SELECT
-        (
-          SELECT
-            COUNT({column})
-          FROM {self.table} AS d
-          WHERE d.{column} = t.{column}
-        ) AS duplicate,
-        t.{column},
-        t.src
-      FROM {self.table} AS t
-      {condition}
-      ORDER BY duplicate DESC, t.{column} ASC
-    """):
-      duplicates.setdefault(row[column], []).append(row["src"])
+    try:
+      for row in self.db.query(f"""
+        SELECT
+          (
+            SELECT
+              COUNT({column})
+            FROM {self.table} AS d
+            WHERE d.{column} = t.{column}
+          ) AS duplicate,
+          t.{column},
+          t.src
+        FROM {self.table} AS t
+        {condition}
+        ORDER BY duplicate DESC, t.{column} ASC
+      """):
+        duplicates.setdefault(row[column], []).append(row["src"])
+    except Exception as e:
+      print(e)
     return duplicates
 
   @staticmethod
