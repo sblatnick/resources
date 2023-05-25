@@ -1,14 +1,16 @@
 #!/usr/bin/env python
-import os, re
+import os, re, sys, signal
 from command import *
 from db import *
 
 class Scan(Command):
   recreate = False
+  quiting = False
 
   def __init__(self, option_strings=None, dest=None):
     super().__init__(option_strings, dest)
     self.db = DB(recreate=self.recreate)
+    signal.signal(signal.SIGINT, self.interrupt_handler)
     root = os.getcwd()
     print("Traversing files")
     for b, dirs, files in os.walk(".", topdown=True):
@@ -20,6 +22,8 @@ class Scan(Command):
       dirs[:] = [d for d in dirs if not self.filter(root, base, d)]
       for filename in files:
         self.db.add(os.path.join(root,base,filename), self.options.filetype)
+        if self.quiting:
+          sys.exit(0)
       self.db.add_list('done', base)
 
   def filter(self, root, base, folder):
@@ -31,3 +35,8 @@ class Scan(Command):
     if is_hidden:
       self.db.add_list('hidden', path)
     return (is_repo or is_hidden)
+
+  def interrupt_handler(self, signum, frame):
+    print(f'Handling signal {signum} ({signal.Signals(signum).name}).')
+    #quit cleanly:
+    self.quiting = True
