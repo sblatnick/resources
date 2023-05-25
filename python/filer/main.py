@@ -3,6 +3,7 @@ import sys, argparse, time
 from src.scan import *
 from src.rescan import *
 from src.images import *
+from src.audio import *
 from src.videos import *
 from src.repos import *
 from src.hidden import *
@@ -43,6 +44,7 @@ rescan.add_argument("filetype", nargs='?', default='all')
 
 add_command("images", Images)
 add_command("videos", Videos)
+add_command("audio", Audio)
 add_command("repos", Repos)
 add_command("hidden", Hidden)
 add_command("files", Files)

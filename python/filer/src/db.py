@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 import os, re, sqlite_utils
+from files import *
+from images import *
+from audio import *
+from videos import *
+from hidden import *
+from repos import *
+from folders import *
 from util import *
 
 class DB():
@@ -16,65 +23,29 @@ class DB():
 
     match filetype:
       case "image":
-        ext, size, md5 = self.common_data(mime, path)
-        metadata = exif(path)
-        created = str(metadata.get(
-          "EXIF DateTimeOriginal",
-          timestamp(path)
-        ))
-        if re.search(r"^\d\d\d\d:\d\d:\d\d ", created):
-          created = re.sub(":", "-", created, 2)
-        dst = image_destination(path, ext, created)
-
-        try:
-          self.db["images"].insert_all([{
-            "src": path,
-            "dst": dst,
-            "type": filetype,
-            "ext": ext,
-            "created": created,
-            "size": size,
-            "md5": md5,
-          }], pk="src")
-          print(f"image: {path}")
-          print(f"  {dst}")
-        except:
-          print(f"Already scanned: {path}")
+        Images.add(self, mime, path, filetype)
       case "video":
-        ext, size, md5 = self.common_data(mime, path)
-        created = timestamp(path)
-        dst = image_destination(path, ext, created, "Videos")
-
-        try:
-          self.db["videos"].insert_all([{
-            "src": path,
-            "dst": dst,
-            "type": filetype,
-            "ext": ext,
-            "created": created,
-            "size": size,
-            "md5": md5,
-          }], pk="src")
-          print(f"video: {path}")
-          print(f"  {dst}")
-        except:
-          print(f"Already scanned: {path}")
+        Videos.add(self, mime, path, filetype)
+      case "audio":
+        Audio.add(self, mime, path, filetype)
       case _:
-        ext, size, md5 = self.common_data(mime, path)
-        created = timestamp(path)
+        Files.add(self, mime, path, filetype)
 
-        try:
-          self.db["files"].insert_all([{
-            "src": path,
-            "type": filetype,
-            "ext": ext,
-            "created": created,
-            "size": size,
-            "md5": md5,
-          }], pk="src")
-          print(f"file ({filetype}): {path}")
-        except:
-          print(f"Already scanned: {path}")
+  def insert(self, table, obj):
+    try:
+      self.db[table].insert_all([{
+        "src": obj.src,
+        "dst": obj.dst,
+        "type": obj.filetype,
+        "ext": obj.ext,
+        "created": obj.created,
+        "size": obj.size,
+        "md5": obj.md5,
+      }], pk="src")
+      print(f"{obj.filetype}: {obj.src}")
+      print(f"  {obj.dst}")
+    except:
+      print(f"Already scanned: {obj.src}")
 
   def add_list(self, table, path):
     print(f"{table}: {path}")
@@ -97,12 +68,6 @@ class DB():
     except:
       return False
 
-
   def query(self, sql):
     return self.db.query(sql)
 
-  def common_data(self, mime, path):
-    ext = mime.extension
-    size = os.path.getsize(path)
-    md5 = md5sum(path) if size < 4000000 else "file bigger than 4GB"
-    return (ext, size, md5)

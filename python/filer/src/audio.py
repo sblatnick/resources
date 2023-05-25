@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 import os
 from files import *
-from images import *
 from util import *
 
-class Videos(Files):
-  table = 'videos'
+class Audio(Files):
+  table = 'audio'
 
   def __init__(self, option_strings=None, dest=None):
     super().__init__(option_strings, dest)
@@ -17,5 +16,16 @@ class Videos(Files):
     obj.filetype = filetype
     obj.ext, obj.size, obj.md5 = common_data(mime, path)
     obj.created = timestamp(path)
-    obj.dst = Images.destination(obj.src, obj.ext, obj.created, "Videos")
-    db.insert(Videos.table, obj)
+    obj.dst = Audio.destination(obj.src, obj.ext)
+    db.insert(Audio.table, obj)
+
+  @staticmethod
+  def destination(path, ext):
+    match ext:
+      case ".mp3" | ".wma":
+        base = "Music"
+      case _:
+        base = "Audio"
+    #FIXME:
+    return f"{base}/"
+

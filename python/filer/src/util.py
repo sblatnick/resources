@@ -1,14 +1,6 @@
 #!/usr/bin/env python
 import os, shutil, time, re, puremagic, exifread, hashlib, datetime
 
-def exif(path):
-  #print(f"exif: {path}")
-  with open(path, "rb") as fh:
-    tags = exifread.process_file(fh, details=False)
-    #for tag in tags.keys():
-    #  print(f"  '{tag}' = '{tags[tag]}'")
-    return tags
-
 def md5sum(path):
   with open(path, "rb") as fh:
     md5 = hashlib.md5(fh.read()).hexdigest()
@@ -39,23 +31,6 @@ def mimetype(path):
     setattr(obj, "mime_type", "unknown")
     return obj
 
-def image_destination(path, ext, dt, base = "Pictures"):
-  filename = re.search("/?([^/.]*)\.?[^/]*$", path).groups()[0]
-  #Remove date from filename if already present:
-  filename = re.sub(r" ?\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d ?", "", filename)
-  match ext:
-    case ".heif":
-      ext = ".heic"
-    case ".png":
-      base = "Images"
-  #print(f"dt: {dt}")
-  try:
-    obj = datetime.datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
-  except:
-    #Invalid exif date, so use timestamp instead:
-    obj = datetime.datetime.strptime(timestamp(path), "%Y-%m-%d %H:%M:%S")
-  return obj.strftime(f"{base}/%Y/%m - %b/%Y-%m-%d %H:%M:%S {filename}{ext}")
-
 def copy(src, dst):
   dst = f"../organized/{dst}"
   if os.path.exists(dst):
@@ -72,5 +47,20 @@ def copy(src, dst):
   os.makedirs(os.path.dirname(dst), exist_ok=True)
   shutil.copy2(src, dst)
 
+def common_data(mime, path):
+  ext = mime.extension
+  size = os.path.getsize(path)
+  md5 = md5sum(path) if size < 4000000 else "file bigger than 4GB"
+  return (ext, size, md5)
+
 class Obj(object):
   pass
+
+class Common(object):
+  src = None
+  dst = None
+  filetype = None
+  ext = None
+  created = None
+  size = None
+  md5 = None

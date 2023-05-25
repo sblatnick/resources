@@ -55,3 +55,22 @@ class Files(Command):
     """):
       duplicates.setdefault(row[column], []).append(row["src"])
     return duplicates
+
+  @staticmethod
+  def add(db, mime, path, filetype):
+    obj = Common()
+    obj.ext, obj.size, obj.md5 = common_data(mime, path)
+    match obj.ext:
+      case ".mp3":
+        Audio.add(db, mime, path, filetype)
+        return
+    obj.src = path
+    obj.filetype = filetype
+    obj.created = timestamp(path)
+    obj.dst = Files.destination(obj.src, obj.ext)
+    db.insert(Files.table, obj)
+
+  @staticmethod
+  def destination(path, ext):
+    #FIXME:
+    return f"Documents/{path}"
