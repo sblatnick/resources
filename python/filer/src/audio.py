@@ -10,14 +10,14 @@ class Audio(Files):
     super().__init__(option_strings, dest)
 
   @staticmethod
-  def add(db, mime, path, filetype):
+  def process(mime, path, filetype):
     obj = Common()
     obj.src = path
     obj.filetype = filetype
     obj.ext, obj.size, obj.md5 = common_data(mime, path)
     obj.created = timestamp(path)
     obj.dst = Audio.destination(obj.src, obj.ext)
-    db.insert(Audio.table, obj)
+    return (Audio.table, obj)
 
   @staticmethod
   def destination(path, ext):

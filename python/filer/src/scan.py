@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os, re, sys, signal
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from command import *
 from db import *
 
@@ -13,17 +14,46 @@ class Scan(Command):
     signal.signal(signal.SIGINT, self.interrupt_handler)
     self.root = os.getcwd()
     print("Traversing files")
-    for b, dirs, files in os.walk(".", topdown=True):
-      base = b[2:]
-      if self.db.is_done(base):
-        continue
-      dirs[:] = [d for d in dirs if not self.filter(base, d)]
-      for filename in files:
-        path = os.path.join(self.root,base,filename)
-        self.db.add(path, self.options.filetype)
-        if self.quiting:
-          sys.exit(0)
-      self.db.add_list('done', base)
+    with ThreadPoolExecutor(max_workers=4) as executor:
+      for b, dirs, files in os.walk(".", topdown=True):
+        futures = []
+        base = b[2:]
+        if self.db.is_done(base):
+          continue
+        dirs[:] = [d for d in dirs if not self.filter(base, d)]
+        for filename in files:
+          path = os.path.join(self.root,base,filename)
+          futures.append(executor.submit(Scan.process, path, self.options.filetype))
+          if self.quiting:
+            self.finalize(futures)
+            sys.exit(0)
+        self.finalize(futures)
+        self.db.add_list('done', base)
+
+  def finalize(self, futures):
+    for future in as_completed(futures):
+      table, obj = future.result()
+      self.db.insert(table, obj)
+
+  @staticmethod
+  def process(path, scan_filetype):
+    mime = mimetype(path)
+    filetype = mime.mime_type.split("/")[0]
+    if scan_filetype not in [filetype, "all"]:
+      return
+    match filetype:
+      case "image":
+        from images import Images
+        return Images.process(mime, path, filetype)
+      case "video":
+        from videos import Videos
+        return Videos.process(mime, path, filetype)
+      case "audio":
+        from audio import Audio
+        return Audio.process(mime, path, filetype)
+      case _:
+        from files import Files
+        return Files.process(mime, path, filetype)
 
   def filter(self, base, folder):
     path = os.path.join(self.root, base, folder)

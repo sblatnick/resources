@@ -67,19 +67,19 @@ class Files(Command):
     return duplicates
 
   @staticmethod
-  def add(db, mime, path, filetype):
+  def process(mime, path, filetype):
     obj = Common()
     obj.ext, obj.size, obj.md5 = common_data(mime, path)
     match obj.ext:
       case ".mp3":
         from audio import Audio
-        Audio.add(db, mime, path, filetype)
-        return
+        table, obj = Audio.process(mime, path, filetype)
+        return (table, obj)
     obj.src = path
     obj.filetype = filetype
     obj.created = timestamp(path)
     obj.dst = Files.destination(obj.src, obj.ext)
-    db.insert(Files.table, obj)
+    return (Files.table, obj)
 
   @staticmethod
   def destination(path, ext):

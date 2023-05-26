@@ -7,27 +7,6 @@ class DB():
     db_file = os.path.expanduser("~/.filer.db")
     self.db = sqlite_utils.Database(db_file,recreate=recreate)
 
-  def add(self, path, scan_filetype):
-    mime = mimetype(path)
-    filetype = mime.mime_type.split("/")[0]
-
-    if scan_filetype not in [filetype, "all"]:
-      return
-
-    match filetype:
-      case "image":
-        from images import Images
-        Images.add(self, mime, path, filetype)
-      case "video":
-        from videos import Videos
-        Videos.add(self, mime, path, filetype)
-      case "audio":
-        from audio import Audio
-        Audio.add(self, mime, path, filetype)
-      case _:
-        from files import Files
-        Files.add(self, mime, path, filetype)
-
   def insert(self, table, obj):
     try:
       self.db[table].insert_all([{

@@ -11,11 +11,11 @@ class Videos(Files):
     super().__init__(option_strings, dest)
 
   @staticmethod
-  def add(db, mime, path, filetype):
+  def process(mime, path, filetype):
     obj = Common()
     obj.src = path
     obj.filetype = filetype
     obj.ext, obj.size, obj.md5 = common_data(mime, path)
     obj.created = timestamp(path)
     obj.dst = Images.destination(obj.src, obj.ext, obj.created, "Videos")
-    db.insert(Videos.table, obj)
+    return (Videos.table, obj)
