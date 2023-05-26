@@ -55,7 +55,7 @@ def copy(src, dst):
 def common_data(mime, path):
   ext = mime.extension
   size = os.path.getsize(path)
-  md5 = md5sum(path) if size < 4000000 else "file bigger than 4GB"
+  md5 = md5sum(path) if size < 1000000000 else "file bigger than 1GB"
   return (ext, size, md5)
 
 class Obj(object):
