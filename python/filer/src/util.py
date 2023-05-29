@@ -36,21 +36,25 @@ def fake_magic(path):
   setattr(obj, "mime_type", "unknown")
   return obj
 
-def copy(src, dst):
+def act(action, src, dst, md5, ext):
   dst = f"../organized/{dst}"
-  if os.path.exists(dst):
-    ss = os.path.getsize(src)
-    ds = os.path.getsize(dst)
-    if ss <= ds:
-      print(f"Skipping: {src} {dst}")
+  base = dst[:-len(ext)] #base = re.search(r"^.*\.", dst).group(0)
+  num = 1
+  while os.path.exists(dst):
+    if md5 == md5sum(dst):
+      print(f"Skipping already present: '{src}' at '{dst}'")
       return
-    else:
-      print(f"Overwriting: {src} {dst}")
-  else:
-    print(src)
-    print(f"  {dst}")
+    num = num + 1
+    dst = f"{base} {num}{ext}"
+
+  print(src)
+  print(f"  {dst}")
   os.makedirs(os.path.dirname(dst), exist_ok=True)
-  shutil.copy2(src, dst)
+  match action:
+    case "copy":
+      shutil.copy2(src, dst)
+    case "move":
+      shutil.move(src, dst)
 
 def common_data(mime, path):
   ext = mime.extension

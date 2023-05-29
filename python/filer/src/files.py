@@ -37,12 +37,19 @@ class Files(Command):
           print(key)
           for src in sources:
             print(f"  {src}")
-      case "copy":
-        duplicates = self.find_duplicates("dst", "")
-        for dst, sources in duplicates.items():
-          copy(sources[0], dst)
+      case "copy" | "move" | "dry":
+        self.do(action)
       case _:
         print(f"No such action '{action}'")
+
+  def do(self, action):
+    for row in self.db.query(f"""
+      SELECT
+        *
+      FROM
+        {self.table}
+    """):
+      act(action, row["src"], row["dst"], row["md5"], row["ext"])
 
   def find_duplicates(self, column, condition = 'WHERE duplicate > 1'):
     duplicates = {}
