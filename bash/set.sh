@@ -1,6 +1,18 @@
 #!/bin/bash
 
 #::::::::::::::::::::SET::::::::::::::::::::
+set
+  -a #enable
+  +a #disable
+
+#Important ones:
+set
+  -a #export vars
+  -e #exit on error
+  -x #prints every command (debug)
+
+shopt -s expand_aliases extglob
+
 
 #Export all variables:
 set -a
