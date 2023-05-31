@@ -37,6 +37,9 @@ def fake_magic(path):
   return obj
 
 def act(action, src, dst, md5, ext):
+  if not os.path.exists(src):
+    print(f"Missing source: {src}")
+    return
   dst = f"../organized/{dst}"
   base = dst[:-len(ext)] #base = re.search(r"^.*\.", dst).group(0)
   num = 1
