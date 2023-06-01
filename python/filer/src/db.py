@@ -4,8 +4,7 @@ from util import *
 
 class DB():
   def __init__(self, recreate=False):
-    db_file = os.path.expanduser("~/.filer.db")
-    self.db = sqlite_utils.Database(db_file,recreate=recreate)
+    self.db = sqlite_utils.Database(".filer.db",recreate=recreate)
 
   def insert(self, table, obj):
     try:

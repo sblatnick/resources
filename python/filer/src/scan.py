@@ -21,6 +21,7 @@ class Scan(Command):
         if self.db.is_done(base):
           continue
         dirs[:] = [d for d in dirs if not self.filter(base, d)]
+        files[:] = [f for f in files if not self.filter(base, f)]
         for filename in files:
           path = os.path.join(self.root,base,filename)
           futures.append(executor.submit(Scan.process, path, self.options.filetype))
