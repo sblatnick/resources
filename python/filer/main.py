@@ -8,6 +8,8 @@ from src.videos import *
 from src.repos import *
 from src.hidden import *
 from src.files import *
+from src.tables import *
+from src.organize import *
 
 tic = time.perf_counter()
 
@@ -19,28 +21,30 @@ parser = argparse.ArgumentParser(
 commands = parser.add_subparsers()
 
 #Common:
-def add_command(name, obj):
+def add_command(name, obj, arg="action", default="list", help="list (default) | ext | md5|dst | copy|move|dry | org"):
   subparser = commands.add_parser(
     name,
-    help='Print all {name} data'
+    help=help
   )
   subparser.set_defaults(func=obj)
-  subparser.add_argument("action", nargs='?', default='list')
+  subparser.add_argument(arg, nargs='?', default=default)
 
 #Actions:
-scan = commands.add_parser(
-  'scan',
-  help='Traverse the filesystem from the current directory and create the database.'
+add_command(
+  "scan", Scan,
+  arg="filetype", default="all",
+  help="Traverse the filesystem from the current directory and create the database."
 )
-scan.set_defaults(func=Scan)
-scan.add_argument("filetype", nargs='?', default='all')
-
-rescan = commands.add_parser(
-  'rescan',
-  help='Scan with new database tables.'
+add_command(
+  "rescan", Rescan,
+  arg="filetype", default="all",
+  help="Scan with new database tables."
 )
-rescan.set_defaults(func=Rescan)
-rescan.add_argument("filetype", nargs='?', default='all')
+add_command(
+  "org", Organize,
+  arg="filetype", default="all",
+  help="Process 'input' folder for new files."
+)
 
 add_command("images", Images)
 add_command("videos", Videos)
@@ -48,6 +52,8 @@ add_command("audio", Audio)
 add_command("repos", Repos)
 add_command("hidden", Hidden)
 add_command("files", Files)
+add_command("tables", Tables, help="Show list of tables")
+
 
 #Args processed:
 args = parser.parse_args()

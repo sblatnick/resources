@@ -5,6 +5,7 @@ from command import *
 from db import *
 
 class Scan(Command):
+  where = "."
   recreate = False
   quiting = False
 
@@ -15,10 +16,10 @@ class Scan(Command):
     self.root = os.getcwd()
     print("Traversing files")
     with ThreadPoolExecutor(max_workers=4) as executor:
-      for b, dirs, files in os.walk(".", topdown=True):
+      for b, dirs, files in os.walk(self.where, topdown=True):
         futures = []
         base = b[2:]
-        if self.db.is_done(base):
+        if self.where == "." and self.db.is_done(base):
           continue
         dirs[:] = [d for d in dirs if not self.filter(base, d)]
         files[:] = [f for f in files if not self.filter(base, f)]
@@ -29,12 +30,17 @@ class Scan(Command):
             self.finalize(futures)
             sys.exit(0)
         self.finalize(futures)
-        self.db.add_list('done', base)
+        if self.where == ".":
+          self.db.add_list('done', base)
 
   def finalize(self, futures):
+    if self.where == ".":
+      action = self.db.insert
+    else:
+      action = self.db.process
     for future in as_completed(futures):
       table, obj = future.result()
-      self.db.insert(table, obj)
+      action(table, obj)
 
   @staticmethod
   def process(path, scan_filetype):
@@ -58,6 +64,9 @@ class Scan(Command):
 
   def filter(self, base, folder):
     path = os.path.join(self.root, base, folder)
+    if self.where == "." and base == "input":
+      print(f"Filtered out 'input' folder")
+      return True
     is_repo = os.path.exists(os.path.join(path, ".git"))
     is_hidden = bool(re.search(r"^\.", folder))
     if is_repo:

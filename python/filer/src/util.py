@@ -1,10 +1,18 @@
 #!/usr/bin/env python
 import os, shutil, time, re, puremagic, exifread, hashlib, datetime
 
-def md5sum(path):
-  with open(path, "rb") as fh:
-    md5 = hashlib.md5(fh.read()).hexdigest()
-    return md5
+def md5sum(path, size):
+  hash = hashlib.md5()
+  limit = 10000 #ignore after 40MB
+  with open(path, "rb") as f:
+    current = 0
+    for chunk in iter(lambda: f.read(4096), ""):
+      hash.update(chunk)
+      current = current + 1
+      if current > limit:
+        break
+    hash.update(bytes(size)) #add size to md5 to prevent collisions of big files
+  return hash.hexdigest()
 
 def timestamp(path):
   #use modified time in case it is using when it was copied:
@@ -36,11 +44,11 @@ def fake_magic(path):
   setattr(obj, "mime_type", "unknown")
   return obj
 
-def act(action, src, dst, md5, ext):
+def act(action, src, dst, md5, ext, output = "../organized/"):
   if not os.path.exists(src):
     print(f"Missing source: {src}")
     return
-  dst = f"../organized/{dst}"
+  dst = f"{output}{dst}"
   base = dst[:-len(ext)] #base = re.search(r"^.*\.", dst).group(0)
   num = 1
   while os.path.exists(dst):
@@ -58,11 +66,12 @@ def act(action, src, dst, md5, ext):
       shutil.copy2(src, dst)
     case "move":
       shutil.move(src, dst)
+  return dst
 
 def common_data(mime, path):
   ext = mime.extension
   size = os.path.getsize(path)
-  md5 = md5sum(path) if size < 1000000000 else "file bigger than 1GB"
+  md5 = md5sum(path, size)
   return (ext, size, md5)
 
 class Obj(object):
