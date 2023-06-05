@@ -16,7 +16,7 @@ class DB():
         "created": obj.created,
         "size": obj.size,
         "md5": obj.md5,
-      }], pk=["md5","src"])
+      }], pk=["src"])
       if log:
         print(f"{obj.filetype}: {obj.src}")
         print(f"  {obj.dst}")
