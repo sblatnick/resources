@@ -68,12 +68,13 @@ class Scan(Command):
       print(f"Filtered out 'input' folder")
       return True
     is_repo = os.path.exists(os.path.join(path, ".git"))
+    is_ignored = os.path.exists(os.path.join(path, ".ignore"))
     is_hidden = bool(re.search(r"^\.", folder))
     if is_repo:
       self.db.add_list('repos', path)
     if is_hidden:
       self.db.add_list('hidden', path)
-    return (is_repo or is_hidden)
+    return (is_repo or is_hidden or is_ignored)
 
   def interrupt_handler(self, signum, frame):
     print(f'Handling signal {signum} ({signal.Signals(signum).name}).')
