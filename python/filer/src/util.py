@@ -2,17 +2,13 @@
 import os, shutil, time, re, puremagic, exifread, hashlib, datetime
 
 def md5sum(path, size):
-  hash = hashlib.md5()
-  limit = 10000 #ignore after 40MB
-  with open(path, "rb") as f:
-    current = 0
-    for chunk in iter(lambda: f.read(4096), ""):
-      hash.update(chunk)
-      current = current + 1
-      if current > limit:
-        break
-    hash.update(bytes(size)) #add size to md5 to prevent collisions of big files
-  return hash.hexdigest()
+  limit = 40_000_000
+  with open(path, "rb") as fh:
+    if size > limit:
+      md5 = hashlib.md5(fh.read(limit) + bytes(size)).hexdigest()
+    else:
+      md5 = hashlib.md5(fh.read()).hexdigest()
+    return md5
 
 def timestamp(path):
   #use modified time in case it is using when it was copied:
@@ -49,7 +45,7 @@ def act(action, src, dst, md5, ext, output = "../organized/"):
     print(f"Missing source: {src}")
     return
   dst = f"{output}{dst}"
-  base = dst[:-len(ext)] #base = re.search(r"^.*\.", dst).group(0)
+  base = dst[:-len(ext)]
   num = 1
   while os.path.exists(dst):
     if md5 == md5sum(dst):
