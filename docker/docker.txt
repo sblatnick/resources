@@ -8,6 +8,7 @@
 
   #cleanup:
   docker system prune -a
+  docker builder prune
 
 #Repos:
 
