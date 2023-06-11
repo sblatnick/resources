@@ -300,84 +300,13 @@
 
 #TinyCore Linux:
   tce #install packages
+  apps #gui
   backup #make persistent after reboot
 
-  #Frugal install: http://www.tinycorelinux.net/install_manual.html
-    #Download TinyCorePure64-current.iso
-    #Write to flash drive
-    #Boot
-    #Fetch grub2:
-      tce
-        s           #search
-        grub <return>
-        q           #quit results
-        i           #install
-        q           #quit package manager
-    #Become root:
-      sudo su
-    #Disable write protection on the internal drive:
-      hdparm -r0 /dev/sda
-    #Partition:
-      fdisk -l
-      fdisk /dev/sda
-        #help:
-          m         #shows help information
-          p         #prints current partitions
-          q         #quit
-          d         #delete
-      fdisk /dev/sda
-        o <return>  #create new partition table
-        w <return>  #write to disk
-        #exits after write
-      fdisk /dev/sda
-        n <return>  #new
-        p <return>  #primary partition
-        1 <return>  #1st partition
-        <return>    #start address default
-        <return>    #end address default
-        w           #write changes
-    #Format:
-      mkfs.ext4 /dev/sda1 -I 256
-    #Flag bootable:
-      fdisk /dev/sda
-        a <return>  #toggle boot flag
-        1           #first partition
-        w           #write changes
-    #Update fstab:
-      rebuildfstab
-    #mount:
-      mount /mnt/sda1
-    #install:
-      mkdir -p /mnt/sda1/boot
-      cp -p /mnt/sdb/boot/* /mnt/sda1/boot/
-        #ignore "omitting directory isolinux"
-      mkdir -p /mnt/sda1/tce
-      touch /mnt/sda1/tce/mydata.tgz
-      grub-install --boot-directory=/mnt/sda1/boot /dev/sda
-      vi /mnt/sda1/boot/grub/grub.cfg
-        set default=0
-        set timeout=0
-        menuentry "Tiny Core Linux" {
-          set root="(hd0,msdos1)"
-          linux /boot/vmlinuz64
-          initrd /boot/corepure64.gz
-        }
-    #reboot
+  tce-load
+    -wi  Download and install extension
+    -wo  Download and create an ondemand item
 
-  #setup ssh server and static IP: (see: https://firewallengineer.wordpress.com/2012/04/01/how-to-install-and-configure-openssh-ssh-server-in-tiny-core-linux/)
-  $ tce-load -wi openssh
-  $ cp /usr/local/etc/ssh/sshd_config.example sshd_config
-  $ vi /opt/.filetool.lst
-    /usr/local/etc/ssh
-    /etc/passwd
-    /etc/shadow
-    /etc/motd
-  $ vi /opt/bootlocal.sh
-    #!/bin/sh
-    # put other system startup commands here
-    /usr/local/etc/init.d/openssh start
-    ifconfig eth1 100.64.0.128 netmask 255.255.255.0
-  $ backup
 
 #Alpine Linux in memory:
   apk update
