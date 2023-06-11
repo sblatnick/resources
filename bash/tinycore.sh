@@ -9,7 +9,8 @@
 
   #Write to flash drive
   #Boot
-  tce-load -wi grub2
+
+  tce-load -wi grub2-multi liblvm2
   sudo su
     #Disable write protection on the internal drive:
       hdparm -r0 /dev/sda
@@ -135,6 +136,7 @@
   #Install:
     cd /mnt/wc2
     wine setup.exe
+  #Add /mnt/wc2 to Drives in winecfg
   #Backup in /opt/.filetool.lst for wine certs:
     usr/local/etc/ssl/certs
   #Helper scripts: .local/bin/
@@ -150,6 +152,8 @@
       wine ~/.wine/drive_c/"Program Files"/"Warcraft II BNE"/"Warcraft II Map Editor.exe"
   backup
   sudo reboot
+
+  #TODO: consider adding /usr/local/tce.icons to .filetool.lst and adding icons to helper scripts
 
 #::::::::::::::::::::REMASTER::::::::::::::::::::
 
