@@ -76,6 +76,7 @@
     -f #file to log to
     -u $(id -u) #user to run as, with an id (useradd needed to use user names, 65534 == NOBODY)
     -v ${LOCAL_PATH}:${CONTAINER_PATH/FILE}:ro #mounts "volume" folders or paths into image
+    -e "ENVIRONMENT_VAR=1"
     -P ${PORT} #uses the port in the container, chooses random, high number local port to access it with
     -p ${LOCAL_PORT}:${PORT} #same thing, but let's you specify the local port to access it with
     -p ${IP}:${LOCAL_PORT}:${PORT} #same thing, but let's you specify the local address to make it not accessible from others
