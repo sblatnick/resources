@@ -96,6 +96,13 @@ function _check_git() {
   fi
 }
 
+function _remotes() {
+  priority=$($wgit config --get checkout.defaultRemote)
+  priority=${priority-origin}
+  echo ${priority}
+  $wgit remote | grep -v ${priority}
+}
+
 ##Global:
 function gitex() {
   local TIMESTAMP=false
@@ -278,14 +285,14 @@ function gitex() {
         fi
 
         #specific remote branch?
-        if $wgit remote | grep -q "^${branch%%/*}\$";then
+        if _remotes | grep -q "^${branch%%/*}\$";then
           echo -e "\033[33mtrack specific remote branch ${branch}\033[0m"
-          $wgit checkout --track ${branch}
+          #$wgit checkout --track ${branch}
           return $?
         fi
 
         #find remote branch
-        for remote in $($wgit remote)
+        for remote in $(_remotes)
         do
           $wgit rev-parse --abbrev-ref ${remote}/${branch} >/dev/null 2>&1
           if [ $? -eq 0 ];then
@@ -300,7 +307,7 @@ function gitex() {
         $wgit checkout -b ${branch}
         return $?
       ;;
-    ls|rs) #[options] [pattern]#remote branch listing
+    ls|rs) #[options] [pattern]#remote branch listing (blue=tracked, bold=merged with master)
         gitex_list $@
       ;;
     modified) ##open dirty files in $EDITOR
@@ -972,7 +979,7 @@ function gitex_list()
     #local branches...
     local lbs=$(echo "${lb}" | grep -v "  ${BRANCH}\$")
     local rbs=""
-    for remote in $($wgit remote)
+    for remote in $(_remotes)
     do
       local rbs="${rbs}"$'\n'$(echo "${rb}" | sed -n "/${remote}\// s//  /p")
     done
@@ -1033,7 +1040,7 @@ function gitex_list()
       fi
   fi
 
-  for remote in $($wgit remote)
+  for remote in $(_remotes)
   do
     echo -e "\033[32m${remote}\033[0m\033[0m"
     local this=$(echo "${rb}" | sed -n "/${remote}\// s//  /p")
