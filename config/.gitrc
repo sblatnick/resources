@@ -98,7 +98,7 @@ function _check_git() {
 
 function _remotes() {
   priority=$($wgit config --get checkout.defaultRemote)
-  priority=${priority-origin}
+  priority=${priority:-origin}
   echo ${priority}
   $wgit remote | grep -v ${priority}
 }
@@ -984,8 +984,12 @@ function gitex_list()
       local rbs="${rbs}"$'\n'$(echo "${rb}" | sed -n "/${remote}\// s//  /p")
     done
     #current:
-      local merged=$($wgit branch --merged ${MASTER} 2>/dev/null | grep -q '^*' && echo ';1')
-      echo -e "  \033[36${merged}m${BRANCH}\033[0m"
+      if [[ "${MASTER}" == "${BRANCH}" ]];then
+        echo -e "  \033[36;1m${BRANCH}\033[0m (master)"
+      else
+        local merged=$($wgit branch --merged ${MASTER} 2>/dev/null | grep -q '^*' && echo ';1')
+        echo -e "  \033[36${merged}m${BRANCH}\033[0m"
+      fi
     #tracked:
       local tracked=$(echo "${rbs}"$'\n'"${lbs}" | sort | uniq -d)
       local merged=$($wgit branch --merged ${MASTER} 2>/dev/null | grep -v '^*')
@@ -1006,9 +1010,11 @@ function gitex_list()
       if [ -n "${output}" ];then
         for branch in ${output}
         do
-          echo -e "\033[34m${branch}\033[0m"
-          if [[ "${verbose}" == 'true' ]];then
-            $wgit --no-pager diff --name-status ${MASTER}...${branch#  } 2>/dev/null | sed 's/^/    /'
+          if [[ "${MASTER}" != "${branch#  }" ]];then
+            echo -e "\033[34m${branch}\033[0m"
+            if [[ "${verbose}" == 'true' ]];then
+              $wgit --no-pager diff --name-status ${MASTER}...${branch#  } 2>/dev/null | sed 's/^/    /'
+            fi
           fi
         done
       fi
