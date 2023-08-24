@@ -1,3 +1,15 @@
 
 
 #Differences: https://unix.stackexchange.com/questions/254956/what-is-the-difference-between-docker-lxd-and-lxc
+
+LinuX Containers (LXC)
+
+Docker by Docker, Inc
+  a container system (in 2014 previously made use of LXC containers)
+  Docker specializes in deploying apps
+
+LXD by Canonical, Ltd
+  a container system making use of LXC containers
+  LXD specializes in deploying (Linux) Virtual Machines
+  installing LXD includes a command line program coincidentally named lxc
+

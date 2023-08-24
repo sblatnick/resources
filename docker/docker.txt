@@ -80,7 +80,7 @@
     -P ${PORT} #uses the port in the container, chooses random, high number local port to access it with
     -p ${LOCAL_PORT}:${PORT} #same thing, but let's you specify the local port to access it with
     -p ${IP}:${LOCAL_PORT}:${PORT} #same thing, but let's you specify the local address to make it not accessible from others
-    --link ${NAME}:${ALIAS} #links to another named container, don't need to know ports, translates commands
+    --link ${NAME}:${ALIAS} #DEPRECATED links to another named container, don't need to know ports, translates commands
     --name ${NAME} #names the container for linking
     -it #interactive tty
     stop ${name} #shutdown container, terminate if using --rm
@@ -162,7 +162,7 @@
   #Troubleshooting:
     #shell access:
     docker run -it ${NAME} bash
-    docker run -it --entrypoint bash ${NAME}
+    docker run -it --rm --entrypoint bash ${NAME}
     # when you exit, everything is gone
     # easiest way to work on a docker file
 
