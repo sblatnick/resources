@@ -74,7 +74,7 @@ function coalesce() {
 }
 
 function pipe() {
-  if [ -t 0 ];then
+  if [ -t 0 ] || [[ "${TERM}" == "fake" ]];then
     if [ "$#" -lt 1 ];then
       if [ -n "${USAGE}" ];then
         echo -e "Usage: ${USAGE}"

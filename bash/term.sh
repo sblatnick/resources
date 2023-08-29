@@ -16,6 +16,8 @@ PROMPT_COMMAND='echo -ne "\033]0;YOUR TITLE GOES HERE\007"'
 #If running a nagios check or cron job requiring a tty, fake it:
   #uses expect
   unbuffered 'timeout 5s check_command'
+  #linux GNU coreutils:
+  stdbuf -i0 -o0 -e0 command
   #less portable:
   script -eqc 'timeout 5s check_command'
 #If running over ssh a command requiring a tty, use -t:
