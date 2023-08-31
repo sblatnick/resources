@@ -56,6 +56,24 @@ function exp() {
   set +a
 }
 
+#Import variables in [file] to environment from [start] to [end]
+function import() {
+  file=$1
+  start=$2
+  end=$3
+
+  environment=$(sed -n '/'"${start}"'/,/'"${end}"'/{/=/ {s/ = /=/;s/['"'"'"]\([^'"'"'"]*=[^'"'"'"]*\)['"'"'"],*/\1/;s/env\.//g;s/^\s*//;/(/d;p}}' ${file} 2>/dev/null)
+  exp "${environment}" 2>/dev/null
+}
+
+#Import from Jenkinsfiles variables 
+function jenkins_env() {
+  while [ $# -gt 0 ]; do
+    import "${1}" '^\s*environment {\s*$' '^\s*}\s*$'
+    shift
+  done
+}
+
 #------------------------------------UTILS-------------------------------------#
 
 function coalesce() {
