@@ -50,6 +50,22 @@ function show() {
   eval "${interpreted}"
   return $?
 }
+
+function raw() {
+  echo -en "\033[33;1m"
+  set -o noglob
+  for arg in $@
+  do
+    printf '%s ' "$arg"
+  done
+  printf '\n'
+  set +o noglob
+  echo -en "\033[0m"
+  interpreted=$(echo "$@" | evaluator 2>/dev/null)
+  eval "${interpreted}"
+  return $?
+}
+
 function exp() {
   set -a
   eval "$@"
