@@ -71,6 +71,15 @@
   overflow: hidden;
 }
 
+.vivaldi .expand-arrow {
+  display: none;
+}
+
+#browser:not(.tabs-top) #titlebar .vivaldi {
+  scale: calc(0.75 / var(--uiZoomLevel));
+  padding: 16px;
+}
+
 /* Reduce toolbar size for horizontal menu */
 :-webkit-any(.native, .maximized).horizontal-menu#browser:not(.tabs-top) .toolbar.toolbar-addressbar {
   padding-left: 267px;
