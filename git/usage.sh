@@ -33,6 +33,9 @@
       cd ~/
       git clone ~/.cfg cfg
 
+  #List all tracked files:
+    config ls-tree --full-tree --name-only -r HEAD
+
 #diff
   #setup meld as a diff tool:
   git config --global diff.tool meld
