@@ -10,6 +10,12 @@ git clone -b branch --single-branch --depth 1 <repo_url>
 #shallow copy subdirectory contents: (disabled for github)
 git archive --remote=<repo_url> <branch> <path> | tar xvf -=
 
+#sparse clone See: https://techoverflow.net/2022/09/28/how-to-git-clone-only-a-specific-file-or-directory/
+git clone --depth 1 --branch v5.0.8 --no-checkout https://github.com/emqx/emqx.git
+cd emqx
+git sparse-checkout set apps/emqx/etc
+git checkout v5.0.8
+
 #remotes:
 git remote #list remotes
 git remote -v #show remotes and their urls

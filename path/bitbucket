@@ -6,6 +6,7 @@ TIMESTAMP=false
 REQUEST=$1
 ENDPOINT=''
 ARGS=''
+HEADERS=''
 shift
 
 ##Main
@@ -16,13 +17,23 @@ case "${REQUEST}" in
       document_header "Environment Variables"
       de "BITBUCKET" "API endpoint"
       document_header "Examples"
-      de "${0##*/}" "GET /projects/EXAMPLE/repos/example/raw/test_folder/falsePositives.json" "Retrieve file"
+      de "${0##*/}" "GET repositories/project/repo" "Rest API get repo information"
+      de "${0##*/}" "DLC projects/EXAMPLE/repos/example/raw/test_folder/falsePositives.json" "Retrieve file"
       echo ""
       exit
     ;;
-  GET) #[path] [args]#requests against bitbucket
+  GET) #[path] [args]#REST requests against bitbucket
       ENDPOINT=$1
       ARGS=$2
+      API='rest/api/latest'
+      HEADERS="-H 'Authorization: Bearer ${BIT_BUCKET_TOKEN}' -H 'Accept: application/json'"
+    ;;
+  DLC) #[path] [args]#Download requests against bitbucket (FIXME)
+      REQUEST='GET'
+      ENDPOINT=$1
+      ARGS=$2
+      API='mvc'
+      HEADERS="-H 'Authorization: Bearer ${BIT_BUCKET_TOKEN}' -H 'Accept: application/json'"
     ;;
   *)
       error "Unsupported request: ${REQUEST}"
@@ -31,7 +42,7 @@ esac
 
 tmpdir
 response=${tmp}/response.json
-code=$(eval curl -L -o ${response} -w "%{http_code}" -n -X $REQUEST --silent "${BITBUCKET}/mvc/${ENDPOINT}${ARGS}")
+code=$(eval curl -L -o ${response} -w "%{http_code}" -n -X ${REQUEST} ${HEADERS} --silent "${BITBUCKET}/${API}/${ENDPOINT}${ARGS}")
 if [ $? -gt 0 ];then
   warn "error response"
   cat ${response}

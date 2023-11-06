@@ -210,6 +210,11 @@ function gitex() {
         gitex_action $@
         return
       ;;
+    tab) ##Open current context repos in a tab of tilix
+        export GITEX_BRANCH=$(set +e;$wgit rev-parse --abbrev-ref HEAD 2>/dev/null;set -e)
+        gitex_action $@
+        return
+      ;;
     context|ctx|go) #[$context|$repo|$action]#context handling
         shift
         gitex_context $@
@@ -699,9 +704,9 @@ function gitex_action() {
   for repo in $(echo ${!current})
   do
     set -a
-    repo=${repo//\~/$HOME}
-    cd "${repo}"
-    repo=${repo##*/}
+    depo=${repo//\~/$HOME}
+    cd "${depo}"
+    repo=${depo##*/}
     local toplevel=$($wgit rev-parse --show-toplevel 2>/dev/null)
     local branch=$($wgit rev-parse --abbrev-ref HEAD)
 
@@ -772,6 +777,12 @@ function gitex_action() {
             return
           fi
         ;;
+      tab) ##Open current context repos in a tab of tilix
+          #if [[ "${depo}" == "${start}" ]];then
+          #  continue
+          #fi
+          tilix --focus-window -a session-add-down -w ${depo}
+        ;;
       *)
         echo -e "\033[31mInvalid action:\033[0m ${ACTION}"
         cd "$start"
@@ -780,6 +791,11 @@ function gitex_action() {
         ;;
     esac
   done
+  case "${ACTION}" in
+    tab)
+        exit
+      ;;
+  esac
   cd "$start"
   OLDPWD=$OWD
 }
