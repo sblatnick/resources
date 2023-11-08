@@ -1,0 +1,24 @@
+#!/bin/bash
+
+tmp=/dev/shm/ytmp3.$$
+
+case "$(uname -s)" in
+  Darwin) #Mac
+      echo -e "\033[31munsupported OS for this script\033[0m"
+      exit 1
+    ;;
+  Linux)
+    ;;
+esac
+
+shopt -s expand_aliases
+
+url=$1
+if [ -z "${url}" ];then
+  echo -e "${0##*/} [url]"
+  echo -e "  Download youtube video as mp4"
+  exit
+fi
+
+#See OUTPUT TEMPLATE: https://github.com/yt-dlp/yt-dlp#output-template
+yt-dlp -f mp4 --check-formats -o '%(title)s.%(ext)s' ${url}
