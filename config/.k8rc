@@ -272,7 +272,8 @@ function kate_extentions() {
           kubectl get namespace $1 >/dev/null 2>&1
           if [ "$?" -ne "0" ]; then
             #passthrough (probably an error)
-            kubectl -n ${namespace} $@
+            #kubectl -n ${namespace} $@
+            echo "namespace not found"
           else
             kate_set_namespace $1
           fi
