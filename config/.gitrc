@@ -394,11 +394,11 @@ function gitex() {
         shift
         local IFS=$'\n'
         #removed --all because it showed other branches
-        for line in $($wgit --no-pager log --oneline -- $@)
+        for line in $(eval $wgit --no-pager log --oneline -- $@)
         do
           sha=${line%% *}
           echo -e "\033[33m${sha}\033[0m ${line#* }"
-          $wgit --no-pager show --color ${sha} -- $@ | sed 's/^/  /'
+          eval $wgit --no-pager show --color ${sha} -- $@ | sed 's/^/  /'
         done | $wless -x2 -RS #eval $($wgit config --get core.pager)
       ;;
     biff) #[branch]#show branch diff between [branch|current] and master
