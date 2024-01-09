@@ -82,7 +82,7 @@ function import() {
   exp "${environment}" 2>/dev/null
 }
 
-#Import from Jenkinsfiles variables 
+#Import from Jenkinsfiles variables
 function jenkins_env() {
   while [ $# -gt 0 ]; do
     import "${1}" '^\s*environment {\s*$' '^\s*}\s*$'
@@ -599,6 +599,41 @@ function first_nonopt() {
     esac
   done
   echo $1
+}
+
+#------------------------------------QUEUE-------------------------------------#
+
+function pop() {
+  if [ "$#" -lt 1 ];then
+    echo -e "Usage: pop [file]"
+    return 1
+  fi
+  first=$(head -n 1 $1)
+  grep -v "^${first}$" $1 > $1.tmp
+  mv -f $1.tmp $1
+  echo $first
+}
+
+#-----------------------------------THREADS------------------------------------#
+
+#wait for < max threads to continue
+function waitany() {
+  MAX_THREADS=${1:-5}
+  if [ ! -f /dev/shm/max_threads ];then
+    echo "$MAX_THREADS" > /dev/shm/max_threads
+  fi
+  MAX_THREADS=$(</dev/shm/max_threads)
+  echo -e "  checking wait on threads (max: $MAX_THREADS)..."
+  while [ 1 ]
+  do
+    IFS=$'\n' read -rd '' -a processes <<< "$(jobs -p)"
+    if [ ${#processes[@]} -lt $MAX_THREADS ];then
+      echo -e "  done waiting on ${#processes[@]} < $MAX_THREADS"
+      return
+    fi
+    sleep 1
+    MAX_THREADS=$(</dev/shm/max_threads) #update once a second
+  done
 }
 
 #--------------------------------DOCUMENTATION---------------------------------#

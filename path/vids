@@ -1,0 +1,37 @@
+#!/bin/bash
+source ~/.bashrc #source main bashrc so we can add to the environment outside of repo
+source ${BASH_SOURCE%/path/*}/config/bashrc
+
+TIMESTAMP=false
+PID=$$
+
+function fetch()
+{
+  echo "Fetching: ${1}"
+  name=$(yt-dlp ${1} | grep "Destination: .*\.mp4") #FIXME: destination blank, copyq clunky
+  echo "Completed ${name}"
+}
+
+function cleanup()
+{
+  kill -- -$$
+}
+trap "cleanup" SIGINT
+
+while [ 1 ]
+do
+  url=$(pop ~/.urls)
+  if [ -z "${url}" ]; then
+    break
+  fi
+  waitany 5
+  fetch ${url} 2>&1 &
+done
+
+for job in $(jobs -p)
+do
+  wait $job
+done
+
+echo "DONE"
+notify-send "Downloaded vids"

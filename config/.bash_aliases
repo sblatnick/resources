@@ -37,7 +37,7 @@ binder c6 39 tc -X
 binder elite 20 steve
 binder asus 17 steve
 binder tc 15 tc
-binder xeon 22 steve
+binder xeon 16 steve
 
 function proxy() {
   ssh -b ${BINDER} root@192.168.0.27 -D 1313

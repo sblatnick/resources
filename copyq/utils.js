@@ -28,3 +28,18 @@ clip_paste = function(board) {
   cb.close()
   copy(current)
 }
+
+enqueue = function(path) {
+  if (!copySelection())
+    abort()
+
+  var content = str(clipboard())
+  popup('enqueue', content)
+
+  var cb = new File(Dir().homePath() + "/" + path)
+
+  if (!cb.openAppend() || cb.write(content + "\n") == -1) {
+    abort()
+  }
+  cb.close()
+}

@@ -21,4 +21,8 @@ if [ -z "${url}" ];then
 fi
 
 #See OUTPUT TEMPLATE: https://github.com/yt-dlp/yt-dlp#output-template
-yt-dlp -f mp4 --check-formats -o '%(title)s.%(ext)s' ${url}
+if [ -z "${2}" ];then
+  yt-dlp -f mp4 --check-formats -o '%(title)s.%(ext)s' ${url}
+else
+  yt-dlp -f mp4 --check-formats -o "$2 - %(title)s.%(ext)s" ${url}
+fi
