@@ -18,6 +18,11 @@ alias less='less -SRi' #add N for line numbers, use `less -+S` to re-enable wrap
 alias resource="trap - RETURN;source ${BASHRC};" #unset trap from tmpdir
 #Alternatively: `eval $SHELL`
 
+function mkcd() {
+  mkdir -p "$1"
+  cd "$1"
+}
+
 #Facilitate connecting to NAS:
 function nasfs() {
   sshfs -o cache=no,uid=1000,gid=1000 $USER@nas:/ ~/nas
