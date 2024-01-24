@@ -1,8 +1,9 @@
 #!/bin/bash
 
-if $(wmctrl -l | grep -q Documents);then
-  wmctrl -c Documents
+id=$(wmctrl -l | grep "${HOSTNAME} Documents$" 2>/dev/null | cut -d' ' -f1)
+if [ -n "${id}" ];then
+  wmctrl -ic "${id}"
 else
   caja ~/Documents/
-  wmctrl -R Documents
+  wmctrl -R "Documents"
 fi

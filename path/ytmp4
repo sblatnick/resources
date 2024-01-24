@@ -13,7 +13,7 @@ esac
 
 shopt -s expand_aliases
 
-url=$1
+url="$1"
 if [ -z "${url}" ];then
   echo -e "${0##*/} [url]"
   echo -e "  Download youtube video as mp4"
@@ -22,7 +22,7 @@ fi
 
 #See OUTPUT TEMPLATE: https://github.com/yt-dlp/yt-dlp#output-template
 if [ -z "${2}" ];then
-  yt-dlp -f mp4 --check-formats -o '%(title)s.%(ext)s' ${url}
+  yt-dlp -f mp4 --check-formats -o '%(title)s.%(ext)s' "${url}"
 else
-  yt-dlp -f mp4 --check-formats -o "$2 - %(title)s.%(ext)s" ${url}
+  yt-dlp -f mp4 --check-formats -o "$2 - %(title)s.%(ext)s" "${url}"
 fi

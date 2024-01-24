@@ -13,7 +13,7 @@ esac
 
 shopt -s expand_aliases
 
-url=$1
+url="$1"
 if [ -z "${url}" ];then
   echo -e "${0##*/} [url]"
   echo -e "  Download youtube link as audio and convert to mp3"
@@ -22,7 +22,7 @@ fi
 
 #output format: yt-dlp -o '%(title)s.%(ext)s'
 #See OUTPUT TEMPLATE: https://github.com/yt-dlp/yt-dlp#output-template
-yt-dlp -f 251 ${url} 1> >(tee $tmp) 2>&1
+yt-dlp -f 251 "${url}" 1> >(tee $tmp) 2>&1
 result=$(<$tmp)
 webm=$(echo -e "${result}" | grep -Po 'Destination: .*$' | cut -d' ' -f2-)
 ffmpeg -i "${webm}" -vn -ab 128k -ar 44100 -y "${webm% [*}.mp3"
