@@ -1,0 +1,25 @@
+/*
+ * Steps:
+ * 1. Type in the Message field: /slackdevtools
+ * 2. Sources -> Overrides (hidden in >> button) ->
+ * 3. "Enable Local Overrides" should be checked
+ * 4. Add this folder
+ * NOTE: These styles in this file are not used, they just show what was changed in the other files
+ */
+
+.p-ia4_client--narrow-feature-on .p-tab_rail {
+    width: -5px;
+}
+
+.p-ia4_client--workspace-switcher-rail-visible.p-ia4_client--narrow-feature-on .p-control_strip {
+  left: -5px;
+}
+
+.p-ia4_client.p-ia4_client--narrow-feature-on .p-client_workspace_wrapper {
+    grid-template-columns: 0px auto;
+}
+
+.p-ia4_client--narrow-feature-on .p-tab_rail {
+  width: 0px;
+  display: none;
+}

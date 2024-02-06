@@ -1,0 +1,11 @@
+#!/usr/bin/python
+import sys, yaml, json
+
+yml = yaml.safe_load(sys.stdin)["output"]
+packages = []
+for pr in yml:
+  if pr['type'] == 'create_pull_request':
+    pkgs = pr['expect']['data']['dependencies']
+    for pkg in pkgs:
+      packages.append(pkg['name'] + '@' + pkg['previous-version'])
+print(json.dumps(packages))
