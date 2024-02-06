@@ -4,7 +4,14 @@
  * 2. Sources -> Overrides (hidden in >> button) ->
  * 3. "Enable Local Overrides" should be checked
  * 4. Add this folder
+ *
  * NOTE: These styles in this file are not used, they just show what was changed in the other files
+ * See also: https://stackoverflow.com/questions/12692737/how-to-persist-css-changes-with-chrome-developer-tools
+ *
+ * Known Issue:
+ * The one problem is if I close slack, I have to open /slackdevtools again to
+ * get the css reapplied.
+ * In other words, it persists, but not until the tools are loaded.
  */
 
 .p-ia4_client--narrow-feature-on .p-tab_rail {
