@@ -9,9 +9,10 @@
  * See also: https://stackoverflow.com/questions/12692737/how-to-persist-css-changes-with-chrome-developer-tools
  *
  * Known Issue:
- * The one problem is if I close slack, I have to open /slackdevtools again to
- * get the css reapplied.
- * In other words, it persists, but not until the tools are loaded.
+ * 1. If I close slack, I have to open /slackdevtools again to
+ * get the css reapplied. In other words, it persists, but not
+ * until the tools are loaded.
+ * 2. The file name has to be updated from time-to-time.
  */
 
 .p-ia4_client--narrow-feature-on .p-tab_rail {
