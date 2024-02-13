@@ -5,5 +5,5 @@
   AND issueFunction in aggregateExpression("result", "${FIELD}.max()")
   AND issueFunction in dateCompare("", "resolutionDate > dueDate +${daysOverdue}d")
 
-  AND issueFunction in aggregateExpression("result", "Code Repository".group()
+
 
