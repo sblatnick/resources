@@ -71,6 +71,8 @@
   git checkout -b branch3
   #track a remote branch that exists:
   git checkout --track origin/branch1
+  #checkout new branch from sha:
+  git checkout -b branch_name $sha
 
   #Tracking:
     # 1. tell git to show the relationship between the two branches in git status and git branch -v.
@@ -135,7 +137,7 @@
 
     #list remote tags:
     git ls-remote -t
-    
+
     #create tag:
       #lightweight (unchangeable pointer to a specific commit)
       git tag "tag name"
@@ -152,7 +154,7 @@
 
     #pull tags:
     git fetch --tags
-    
+
     #checkout a new branch at a tagged point:
     git checkout -b [branchname] [tagname]
 

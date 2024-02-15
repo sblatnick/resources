@@ -1,0 +1,32 @@
+#!/bin/bash
+
+shopt -s expand_aliases extglob
+
+export wgh=$(which gh) #wrapped gh
+
+##Global:
+function ghex() {
+  case "$1" in
+    get|put) #[url]#alias to api --method GET|PUT
+        $wgh api --method $1 -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" $2
+      ;;
+    tok) ##generate app token for this session
+        #Requires: gh extension install Link-/gh-token
+        #FIXME: export GH_TOKEN=$($wgh token generate --app-id ${GH_APP_ID} --installation-id ${GH_APP_INSTALL_ID} --token-only --base64-key "${GH_APP_PRIVATE_KEY}")
+        export GH_TOKEN=$($wgh token generate --app-id ${GH_APP_ID} --installation-id ${GH_APP_INSTALL_ID} --token-only --key "${GH_APP_PRIVATE_KEY_FILE}")
+      ;;
+    rev) ##revert to user key
+        export GH_TOKEN=${GH_PERSONAL_TOKEN}
+      ;;
+    *|'')
+        $wgh $@
+      ;;
+  esac
+}
+
+function gh() {
+  if tty -s <&1; then
+    source $BASH_SOURCE #keep gitex sourced for fast dev
+  fi
+  ghex "$@"
+}
