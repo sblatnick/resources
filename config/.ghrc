@@ -15,8 +15,11 @@ function ghex() {
         #FIXME: export GH_TOKEN=$($wgh token generate --app-id ${GH_APP_ID} --installation-id ${GH_APP_INSTALL_ID} --token-only --base64-key "${GH_APP_PRIVATE_KEY}")
         export GH_TOKEN=$($wgh token generate --app-id ${GH_APP_ID} --installation-id ${GH_APP_INSTALL_ID} --token-only --key "${GH_APP_PRIVATE_KEY_FILE}")
       ;;
-    rev) ##revert to user key
+    usr) ##Use user token
         export GH_TOKEN=${GH_PERSONAL_TOKEN}
+      ;;
+    svc) ##Use service account token
+        export GH_TOKEN=${GHEC_ACCESS_TOKEN}
       ;;
     *|'')
         $wgh $@
