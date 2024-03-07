@@ -1,6 +1,5 @@
 
 clip_copy = function(board) {
-  var current = clipboard()
   try {
     copy()
   }
@@ -8,12 +7,9 @@ clip_copy = function(board) {
     abort()
   }
   insert(board, clipboard())
-  copy(current)
 }
 
 clip_paste = function(board) {
-  var current = clipboard()
   select(board)
   paste()
-  copy(current)
 }
