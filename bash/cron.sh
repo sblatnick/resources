@@ -44,3 +44,18 @@ crontab -e
 #  */25 = 0,25,50 or 25 minutes + 25 minutes + 10 minutes
 
 #source: https://stackoverflow.com/questions/12786410/run-cron-job-every-n-minutes-plus-offset
+
+
+###AT: run once at the specified time
+  #run script
+    at 09:00 -f ~/setup.sh
+  #run command
+    date > current-time.txt | at now
+  #list scheduled jobs
+    atq
+  #user permissions:
+    /etc/at.deny
+    /etc/at.allow
+  #trigger when cpu load less than 1.5:
+    batch
+  #source: https://www.baeldung.com/linux/schedule-script-execution

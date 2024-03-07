@@ -167,6 +167,9 @@
     #delete remote tag:
     git push --delete origin [tagname]
 
+    #push to a differently named branch:
+    git push origin local_branch:remote_branch -f
+
 #merging:
 
   #copy over the code from another branch:
