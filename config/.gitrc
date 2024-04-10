@@ -390,6 +390,18 @@ function gitex() {
           return $?
         fi
       ;;
+    update) #[branch]#fast-forward local branch from origin without switching branches
+        shift
+        local branch=$1
+        if [[ "${BRANCH}" == "${branch}" ]];then
+          warn "same branch as current, use git pull"
+          return 1
+        else
+          green "fast-forwarding from origin to local ${branch}"
+          $wgit fetch origin ${branch}:${branch}
+          return $?
+        fi
+      ;;
     giff) ##show differences in order
         shift
         local IFS=$'\n'
@@ -417,7 +429,7 @@ function gitex() {
         if [[ "${MASTER}" == "${BRANCH}" ]];then
           warn "master already set to the current branch"
         else
-          green "\033[32mswitched master from '${MASTER}' to '${BRANCH}'\033[0m"
+          green "switched master from '${MASTER}' to '${BRANCH}'"
           $wgit config init.defaultBranch ${BRANCH}
         fi
       ;;

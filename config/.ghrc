@@ -10,6 +10,10 @@ function ghex() {
     get|put) #[url]#alias to api --method GET|PUT
         $wgh api --method $1 -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" $2
       ;;
+    post) #[url] [file]#alias to api --method POST
+        shift
+        $wgh api --method POST -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" $@
+      ;;
     tok) ##generate app token for this session
         #Requires: gh extension install Link-/gh-token
         #FIXME: export GH_TOKEN=$($wgh token generate --app-id ${GH_APP_ID} --installation-id ${GH_APP_INSTALL_ID} --token-only --base64-key "${GH_APP_PRIVATE_KEY}")

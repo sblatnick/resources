@@ -74,6 +74,10 @@
   xrandr --addmode DP-1 "1920x1080_60.00"
   xrandr --output DP-1 --mode "1920x1080_60.00"
 
+#Set up mini display:
+~/.xinitrc:
+  xrandr --output HDMI-A-0 --scale 0.6x0.6
+  xinput --map-to-output 'wch.cn USB2IIC_CTP_CONTROL' HDMI-A-0
 
 #Debian Quick Setup:
 
@@ -144,6 +148,6 @@
     deb-src http://security.debian.org/debian-security/ testing-security main
     deb http://deb.debian.org/debian/ testing-updates contrib non-free main
     deb-src http://deb.debian.org/debian/ testing-updates contrib non-free main
-    
+
 
 

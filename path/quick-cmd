@@ -1,0 +1,18 @@
+#!/bin/bash
+title=${1}
+command=${2}
+
+id=$(wmctrl -l | grep "Tilix: ${title}$" 2>/dev/null | cut -d' ' -f1)
+if [ -n "${id}" ];then
+  #wmctrl -Fc "Tilix: ${title}"
+  tilix -q --full-screen
+else
+  id=$(wmctrl -l | grep "Tilix: " 2>/dev/null | cut -d' ' -f1)
+  if [ -z "${id}" ];then
+    tilix -q --full-screen
+  fi
+  tilix -a app-new-session -e "bash -ic 'name ${title};${command}';tail -F /dev/null"
+fi
+
+#wmctrl -Fc "${title}"
+#xfce4-terminal --drop-down -T "${title}" -He "bash -ic '${command}'"

@@ -172,6 +172,16 @@
 
 #merging:
 
+  #Without checkout: https://stackoverflow.com/questions/3216360/merge-update-and-pull-git-branches-without-using-checkouts
+    # Merge local branch foo into local branch master,
+    # without having to checkout master first.
+    # Here `.` means to use the local repository as the "remote":
+    git fetch . foo:master
+
+    # Merge remote branch origin/foo into local branch foo,
+    # without having to checkout foo first:
+    git fetch origin foo:foo
+
   #copy over the code from another branch:
   git pull origin branch2
   #copy the branch to remote:
