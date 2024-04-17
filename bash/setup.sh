@@ -76,7 +76,7 @@
 
 #Set up mini display:
 ~/.xinitrc:
-  xrandr --output HDMI-A-0 --scale 0.6x0.6
+  xrandr --output HDMI-A-0 --scale 0.6x0.6 #doesn't seem to work in ~/.xinitrc
   xinput --map-to-output 'wch.cn USB2IIC_CTP_CONTROL' HDMI-A-0
 
 #Debian Quick Setup:
