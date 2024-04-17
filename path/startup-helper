@@ -1,0 +1,6 @@
+#!/bin/bash
+
+xrandr --output HDMI-A-0 --scale 0.6x0.6
+xinput --map-to-output 'wch.cn USB2IIC_CTP_CONTROL' HDMI-A-0
+
+/usr/bin/nitrogen --restore
