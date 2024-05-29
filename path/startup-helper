@@ -1,6 +1,9 @@
 #!/bin/bash
 
-xrandr --output HDMI-A-0 --scale 0.6x0.6
-xinput --map-to-output 'wch.cn USB2IIC_CTP_CONTROL' HDMI-A-0
+#xrandr --newmode "288x1152_78.25" 78.25  288 312 336 384  1152 1155 1165 1195 -hsync +vsync
+#xrandr --addmode HDMI-A-0 "288x1152_78.25"
+#xrandr --output HDMI-A-0 --mode "288x1152_78.25"
+#xrandr --output HDMI-A-0 --scale 0.6x0.6 #--pos 192x313
 
+xinput --map-to-output 'wch.cn USB2IIC_CTP_CONTROL' HDMI-A-0
 /usr/bin/nitrogen --restore

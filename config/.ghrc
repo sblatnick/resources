@@ -4,15 +4,42 @@ shopt -s expand_aliases extglob
 
 export wgh=$(which gh) #wrapped gh
 
+function _rate() {
+  ghex $1
+  IFS=$',' read -rd '' -a limit <<< "$(gh get rate_limit | jq -r '[.rate.used, .rate.limit, .rate.reset] | @csv')"
+  local used=${limit[0]}
+  local max=${limit[1]}
+  local reset=${limit[2]}
+  local left=$((reset - now))
+  local remaining="$((left / 60)) min $(( left % 60 )) sec"
+  echo "  $1 $(printf "%'6d\n" $used) / $(printf "%'6d\n" $max) @ $(date --date @$reset +%R) (remaining $remaining)"
+}
+
+
 ##Global:
 function ghex() {
   case "$1" in
     get|put) #[url]#alias to api --method GET|PUT
         $wgh api --method $1 -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" $2
       ;;
-    post) #[url] [file]#alias to api --method POST
+    post) #[url] [json file]#alias to api --method POST
         shift
         $wgh api --method POST -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" $@
+      ;;
+    patch) #[url] [json file]#alias to api --method PATCH
+        shift
+        curl -L \
+          -X PATCH \
+          -o /tmp/response.json \
+          -w "%{http_code}" \
+          --silent \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${GH_TOKEN}" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          -H "Content-Type: application/json" \
+          https://api.github.com/${1} \
+          -d "@$2"
+        cat /tmp/response.json
       ;;
     tok) ##generate app token for this session
         #Requires: gh extension install Link-/gh-token
@@ -26,7 +53,15 @@ function ghex() {
         export GH_TOKEN=${GH_PERSONAL_TOKEN}
       ;;
     svc) ##Use service account token
-        export GH_TOKEN=${GHEC_ACCESS_TOKEN}
+        export GH_TOKEN=${GH_SERVICE_TOKEN}
+      ;;
+    rate) ##Get rate limits and usage for various accounts
+        GH_TOKEN_BAK=${GH_TOKEN}
+        now=$(date +%s)
+        _rate usr
+        _rate svc
+        _rate tok
+        export GH_TOKEN=${GH_TOKEN_BAK}
       ;;
     *|'')
         $wgh $@

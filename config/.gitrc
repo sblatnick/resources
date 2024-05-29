@@ -243,6 +243,10 @@ function gitex() {
     com|cam|cc) #[message]#alias to commit -a -m
         shift
         if [ -n "$@" ];then
+          if [ -z "$($wgit status --porcelain)" ]; then
+            echo -e "\033[31mNothing to commit\033[0m"
+            return 1
+          fi
           $wgit commit -a -m "$@"
         else
           echo -e "\033[31mNo commit message specified\033[0m"
@@ -394,8 +398,13 @@ function gitex() {
         shift
         local branch=$1
         if [[ "${BRANCH}" == "${branch}" ]];then
-          warn "same branch as current, use git pull"
-          return 1
+          if [[ -n "$($wgit status --porcelain)" ]];then
+            warn "same branch as current with local changes, commit and use git pull"
+            return 1
+          fi
+          green "pull from origin to local ${branch}"
+          git pull
+          return $?
         else
           green "fast-forwarding from origin to local ${branch}"
           $wgit fetch origin ${branch}:${branch}
