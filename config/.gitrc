@@ -317,7 +317,7 @@ function gitex() {
         return $?
       ;;
     ls|rs) #[options] [pattern]#remote branch listing (blue=tracked, bold=merged with master)
-        gitex_list $@
+        gitex_list $@ | less -F
       ;;
     modified) ##open dirty files in $EDITOR
         dir=$(pwd)

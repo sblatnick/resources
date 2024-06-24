@@ -1,0 +1,7 @@
+#!/bin/bash
+source ~/.bashrc #source main bashrc so we can add to the environment outside of repo
+source ${BASH_SOURCE%/path/*}/config/bashrc
+
+vivaldi --app=https://app.slack.com/client/
+sleep 1
+wmctrl -r :ACTIVE: -e 0,100,300,890,560
