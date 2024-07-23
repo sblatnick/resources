@@ -7,6 +7,7 @@
  * 3. Create a new rule from the extension button
  * 4. Enable Modules -> Jquery 3
  * 5. Paste the contents of this script in the new rule
+ * 6. Paste the CSS in css/slack/slack.css
  */
 
 update = function(selector) {

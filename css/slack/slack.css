@@ -1,5 +1,16 @@
 /*
- * DEPRECATED: See javascript/slack.js instead
+ * CSS for use with "User JavaScript and CSS" chrome plugin (see javascript/slack.js)
+ */
+
+.c-mrkdwn__pre div.p-rich_text_block--no-overflow {
+  overflow-x: auto;
+  white-space: pre;
+  scrollbar-width: thin;
+  scrollbar-color: black gray;
+}
+
+/*
+ * >>> DEPRECATED: DON'T COPY BELOW THIS, FOR REFERENCE ONLY <<<
  *
  * Steps:
  * 1. Type in the Message field: /slackdevtools

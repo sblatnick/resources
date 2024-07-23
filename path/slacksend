@@ -1,0 +1,53 @@
+#!/bin/bash
+source ~/.bashrc #source main bashrc so we can add to the environment outside of repo
+source ${BASH_SOURCE%/path/*}/config/bashrc
+
+TIMESTAMP=false
+CHANNEL=$1
+shift
+MESSAGE=$@
+
+##Main
+case "${CHANNEL}" in
+  help|h|'') ##This help documentation
+      document_title "Slack Tools" "channel" "message"
+      document ${BASH_SOURCE}
+      document_header "Examples"
+      de "${0##*/}" "'#channel' \"Hello World\"" "Send message to #channel"
+      de "${0##*/}" "'#channel:1721079066.363399' \"Hello World\"" "Send message to Thread (timestamp)"
+      echo ""
+      exit
+    ;;
+  *)
+      tmpdir
+      response=${tmp}/response.json
+      THREAD="${CHANNEL##*:}"
+      if [[ "${CHANNEL}" == "${THREAD}" ]];then
+        THREAD=''
+      else
+        THREAD="-d thread_ts=${THREAD}"
+      fi
+      code=$(curl \
+        -s \
+        -o ${response} \
+        -w "%{http_code}" \
+        -d "text=${MESSAGE}" \
+        -d "channel=${CHANNEL%%:*}" \
+        -d "username=${SLACK_BOT_NAME}" \
+        ${THREAD} \
+        -H "Authorization: Bearer ${SLACK_BOT_TOKEN}" \
+        -X POST \
+        https://slack.com/api/chat.postMessage)
+      if [ $? -gt 0 ];then
+        warn "error response"
+        cat ${response}
+      else
+        echo "STATUS: ${code}"
+        cat ${response} | python -mjson.tool
+        if [ $? -gt 0 ];then
+          warn "JSON not found in response"
+          cat ${response}
+        fi
+      fi
+    ;;
+esac

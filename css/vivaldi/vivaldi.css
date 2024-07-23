@@ -9,7 +9,7 @@
  * Inspect UI:
  *   Linux/Windows: vivaldi --flag-switches-begin --debug-packed-apps --silent-debugger-extension-api --flag-switches-end
  *   Mac:           open /Applications/Vivaldi.app --args --debug-packed-apps --silent-debugger-extension-api
- * 
+ *
  */
 
 /* Hide Folder Icons */
@@ -106,3 +106,33 @@
 .maximized.minimal-ui#browser :-webkit-any(.vivaldi, .topmenu, .window-buttongroup) {
   display: none !important;
 }
+
+/* Accordian Stack */
+
+.svg-tab-stack .stack-frame {
+  stroke: #00ffc2;
+}
+
+#browser.color-behind-tabs-on .tab-position .tab.active.active {
+  background-color: #227955;
+}
+
+/* FIXME: Try to display Tab Group names
+  div#tabs-container div.tab-first-in-group::before {
+    content: var(--colorAccentBg);
+    content: attr(id);
+    position: absolute;
+    z-index: 3;
+    background-color: white;
+    color: black;
+    right: 0px;
+  }
+*/
+
+/* Two-Level Stack */
+
+.substrip-tabs-on.tabs-right .tab.tab-group {
+  border: 1px solid #00ffc2;
+}
+
+
