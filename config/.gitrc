@@ -157,7 +157,7 @@ function gitex() {
     echo "  allow simple push/pull"
       $wgit config --global push.default simple # tracking ?
       #$wgit config --global pull.ff only
-      $wgit config --global pull.rebase true
+      #$wgit config --global pull.rebase true
 
     echo "  set default branch"
       $wgit config --global init.defaultBranch master
@@ -182,7 +182,7 @@ function gitex() {
 
     #source: https://medium.com/@porteneuve/how-to-make-git-preserve-specific-files-while-merging-18c92343826b
     echo "  allow ignored files in merging (use \"ours\")"
-      $wgit config --global merge.ours.driver true
+      $wgit config --global merge.ours.driver true #WARNING: does not work with rebase
 
     #echo "  setup aliases..."
 
@@ -273,7 +273,7 @@ function gitex() {
       ;;
     co) ##reasonable default checkout branch
         shift
-        branch=$1
+        local branch=$1
 
         #List branches:
         if [ -z "${branch}" ];then
@@ -360,7 +360,7 @@ function gitex() {
         url=$($wgit config --get svn-remote.svn.url)
         #git-svn repo?
         if [ -z "${url}" ];then
-          branch=$($wgit rev-parse --abbrev-ref HEAD)
+          local branch=$($wgit rev-parse --abbrev-ref HEAD)
           $wgit push origin $branch --tags --force-with-lease
           return $?
         else
@@ -377,7 +377,7 @@ function gitex() {
         url=$($wgit config --get svn-remote.svn.url)
         #git-svn repo?
         if [ -z "${url}" ];then
-          branch=$($wgit rev-parse --abbrev-ref HEAD)
+          local branch=$($wgit rev-parse --abbrev-ref HEAD)
           $wgit pull origin $branch --tags
           return $?
         else
@@ -423,6 +423,25 @@ function gitex() {
           return 1
         fi
         echo "${file} merge=ours" >> .gitattributes
+      ;;
+    sync) #[branches]#merge listed branches
+        shift
+        local branch=${BRANCH}
+        green "update ${branch}"
+        gitex wash
+        while [ -n "$1" ]; do
+          green "switch to $1"
+          gitex co $1
+          green "pull latest to $1"
+          $wgit pull
+          green "syncing ${branch} to ${1}"
+          $wgit pull origin ${branch}
+          green "push latest to $1"
+          $wgit push
+          shift
+        done
+        green "switch back to ${branch}"
+        gitex co ${branch}
       ;;
     giff) ##show differences in order
         shift
@@ -520,7 +539,7 @@ function gitex() {
       ;;
     peek) #[branch/sha] [file]#Look at other branches without switching
         shift
-        branch=$1
+        local branch=$1
         shift
         file=$1
         shift
