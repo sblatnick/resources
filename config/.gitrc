@@ -180,6 +180,10 @@ function gitex() {
     echo "  enable nodiff..."
       $wgit config --global diff.nodiff.command true
 
+    #source: https://medium.com/@porteneuve/how-to-make-git-preserve-specific-files-while-merging-18c92343826b
+    echo "  allow ignored files in merging (use \"ours\")"
+      $wgit config --global merge.ours.driver true
+
     #echo "  setup aliases..."
 
     touch ${GITEX_CONFIG}
@@ -410,6 +414,15 @@ function gitex() {
           $wgit fetch -f origin ${branch}:${branch}
           return $?
         fi
+      ;;
+    ours) #[file]#mark the file as owned by this branch so it never gets merges
+        shift
+        local file=$1
+        if [ -z "${file}" ];then
+          echo -e "\033[33mno file passed\033[0m"
+          return 1
+        fi
+        echo "${file} merge=ours" >> .gitattributes
       ;;
     giff) ##show differences in order
         shift
