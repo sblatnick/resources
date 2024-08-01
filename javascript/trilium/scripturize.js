@@ -1,53 +1,48 @@
+/*
+ * INSTALL
+ * 1. Right-click a scripts directory and "Import into note" (Note type: JS frontend)
+ * 2. Trilium Menu -> Configure Launchbar -> right click "Visible launcher" tree and "Add a script launcher"
+ * 3. set "script" and keyboard shortcut
+ * USAGE
+ * 1. Go into a Chapter of scripture copied into a note
+ * 2. Push the script button or shortcut
+ * The script will attempt to duplicate any paragraphs that start with a number into child notes as verses.
+ * If you get the verses you want, delete the original text in the parent note.
+ *
+ * TODO:
+ * - Improve regex compatibility for other html entities
+ * - Set original note attributes to "#iconClass="bx bx-bible" #viewType=list #expanded"
+ * - Allow multiple chapter recursion
+ * - Add option to strip out formatting.
+*/
+
 const template = `<div id="my-widget"><button class="tree-floating-button bx bxs-magic-wand tree-settings-button"></button></div>`;
 
-class MyWidget extends api.BasicWidget {
-    get position() {return 1;}
-    get parentWidget() {return "left-pane"}
-
-    doRender() {
-        this.$widget = $(template);
-        this.cssBlock(`#my-widget {
-            position: absolute;
-            bottom: 40px;
-            left: 60px;
-            z-index: 1;
-        }`);
-        this.$widget.find("button").on("click", scripturize);
-        return this.$widget;
-    }
-}
-
-module.exports = new MyWidget();
-
-async function scripturize() {
-  let note = await api.getActiveContextNote();
-  let id = note.noteId;
-  let content = await note.getContent();
-  let verses = await api.runOnBackend((id, content) => {
-    //let content = api.getNote(id).getContent()
-    content = "<p>" + content;
-    content = content.replaceAll(' style="margin-left:0px;"', "");
-    let lines = content.split(/<p>(?:<[^>]+>)?(?=\d+)/);
-    console.log(lines);
-    let verses = 0;
-    for(let i in lines) {
-      //console.log(lines[i]);
-      let chapter = lines[i].match(/^(\d+)(<\/sup>)?/);
-      if(chapter != null) {
-        let prefix = "<p>";
-        if(chapter[2]) {
-          prefix = "<p><sup>";
-        }
-        let title = chapter[1];
-        let text = prefix + lines[i]
-        //console.log("createTextNote(" + id + ", " + title + ", " + text + ")");
-        api.createTextNote(id, title, text);
-        verses++;
+let note = await api.getActiveContextNote();
+let id = note.noteId;
+let content = await note.getContent();
+let verses = await api.runOnBackend((id, content) => {
+  content = "<p>" + content;
+  content = content.replaceAll(' style="margin-left:0px;"', "");
+  let lines = content.split(/<p>(?:<[^>]+>)?(?=\d+)/);
+  console.log(lines);
+  let verses = 0;
+  for(let i in lines) {
+    //console.log(lines[i]);
+    let chapter = lines[i].match(/^(\d+)(<\/sup>)?/);
+    if(chapter != null) {
+      let prefix = "<p>";
+      if(chapter[2]) {
+        prefix = "<p><sup>";
       }
+      let title = chapter[1];
+      let text = prefix + lines[i]
+      //console.log("createTextNote(" + id + ", " + title + ", " + text + ")");
+      api.createTextNote(id, title, text);
+      verses++;
     }
-    return verses;
-  }, [id, content]);
-  api.showMessage(`Created ${verses} verses`)
-}
+  }
+  return verses;
+}, [id, content]);
+api.showMessage(`Created ${verses} verses`)
 
-scripturize();
