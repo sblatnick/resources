@@ -10,9 +10,9 @@
  * 1. Highlight text you want to be made into a link
  * 2. Push the script button or shortcut
  *
- * This is similar to:
- * 1. Add link
- * 2. select Create and link child note
+ * This is similar to manually:
+ * 1. Add link (Ctrl+L)
+ * 2. select "Create and link child note"
  * 3. press enter
  *
  */
@@ -33,20 +33,5 @@ const path = await api.runOnBackend((id, selected) => {
   const child = api.getNote(created.note.noteId);
   return child.getBestNotePathString();
 }, [id, selected]);
-
-const link = await api.createLink(path);
-
-const fragment = editor.model.change(writer => {
-  const wrapper = writer.createElement('span');
-  wrapper.innerHTML = link.html();
-  //editor.model.insertText(wrapper.firstChild);
-  const fragment = writer.createDocumentFragment();
-  writer.append(wrapper.firstChild, fragment);
-  return fragment;
-});
-editor.model.insertContent(fragment);
+editor.execute('link', `#${path}`)
 api.showMessage(`Created note: ${selected}`);
-
-//await api.waitUntilSynced();
-//api.addTextToActiveContextEditor("test") //no html?
-//activateNewNote(notePath)
