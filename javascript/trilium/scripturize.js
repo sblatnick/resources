@@ -14,9 +14,7 @@
  * - Set original note attributes to "#iconClass="bx bx-bible" #viewType=list #expanded"
  * - Allow multiple chapter recursion
  * - Add option to strip out formatting.
-*/
-
-const template = `<div id="my-widget"><button class="tree-floating-button bx bxs-magic-wand tree-settings-button"></button></div>`;
+ */
 
 let note = await api.getActiveContextNote();
 let id = note.noteId;
@@ -45,4 +43,3 @@ let verses = await api.runOnBackend((id, content) => {
   return verses;
 }, [id, content]);
 api.showMessage(`Created ${verses} verses`)
-
