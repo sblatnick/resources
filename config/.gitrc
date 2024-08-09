@@ -411,7 +411,7 @@ function gitex() {
           return $?
         else
           green "fast-forwarding from origin to local ${branch}"
-          $wgit fetch -f origin ${branch}:${branch}
+          $wgit fetch origin ${branch}:${branch}
           return $?
         fi
       ;;
