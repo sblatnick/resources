@@ -41,7 +41,7 @@ binder c5 38 tc -X
 binder c6 39 tc -X
 binder elite 20 steve
 binder asus 17 steve
-binder tc 15 tc
+binder tc 30 tc
 binder xeon 16 steve
 
 function proxy() {
