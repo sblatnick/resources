@@ -16,6 +16,12 @@ pip install 'cqlsh>=5.0.1' --force-reinstall
   pexpect
   pyyaml
 
+#list installed packages in requirements.txt format:
+  pip list
+
+#list installed packages in requirements.txt format:
+  pip freeze
+
 #dependencies:
   #pipdeptree for installed dependencies
     #install:

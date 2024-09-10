@@ -20,6 +20,7 @@ let note = await api.getActiveContextNote();
 let id = note.noteId;
 let content = await note.getContent();
 let verses = await api.runOnBackend((id, content) => {
+  api.getNote(id).addLabel("cssClass", "verse");
   content = "<p>" + content;
   content = content.replaceAll(' style="margin-left:0px;"', "");
   let lines = content.split(/<p>(?:<[^>]+>)?(?=\d+)/);
@@ -42,4 +43,4 @@ let verses = await api.runOnBackend((id, content) => {
   }
   return verses;
 }, [id, content]);
-api.showMessage(`Created ${verses} verses`)
+api.showMessage(`Created ${verses} verses`);
