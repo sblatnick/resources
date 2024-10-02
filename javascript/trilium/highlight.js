@@ -23,8 +23,23 @@
     },
     "Highlight yellow": {
       action: ["fontColor", "fontBackgroundColor"],
-      value: ["black", "#aa0"],
+      value: ["black", "#F7F700"],
       shortcut: "ctrl+."
+    },
+    "Highlight green": {
+      action: ["fontColor", "fontBackgroundColor"],
+      value: ["black", "#9f3"],
+      shortcut: "ctrl+1"
+    },
+    "Highlight red": {
+      action: ["fontColor", "fontBackgroundColor"],
+      value: ["black", "#ff5050"],
+      shortcut: "ctrl+2"
+    },
+    "Highlight blue": {
+      action: ["fontColor", "fontBackgroundColor"],
+      value: ["black", "#6365ff"],
+      shortcut: "ctrl+3"
     },
   };
 
