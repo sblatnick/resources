@@ -3,6 +3,12 @@
  * 1. Right-click a scripts directory and "Import into note" (Note type: JS frontend)
  * 2. Trilium Menu -> Configure Launchbar -> right click "Visible launcher" tree and "Add a script launcher"
  * 3. set "script" and keyboard shortcut
+ * HIDE TITLES
+ * 1. Create a CSS note with label #appCss
+ * 2. Add this CSS:
+ *   .verse .note-book-header, .verse .note-book-card .note-book-card {
+ *     display: none;
+ *   }
  * USAGE
  * 1. Go into a Chapter of scripture copied into a note
  * 2. Push the script button or shortcut

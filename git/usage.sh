@@ -130,6 +130,9 @@
   #tagging:
     #list tags:
     git tag
+    #with message:
+    git tag -n
+
     git tag -l "pattern*"
     git show-ref --tags #sha
     git tag -n1 #commit messages

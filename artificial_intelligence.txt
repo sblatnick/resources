@@ -1,0 +1,5 @@
+
+
+Machine Learning Libraries
+  pytorch = easy, but not scalable, by facebook
+  tensorflow = scalable, by google

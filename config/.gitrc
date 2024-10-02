@@ -150,7 +150,7 @@ function gitex() {
       # -F  = exit if one screen
       # -+F = always use
       # -x  = tab stops number of spaces
-      $wgit config --global core.pager 'less -cx2 -+F'
+      $wgit config --global core.pager 'less -Fx2'
       $wgit config --global pager.branch false
       $wgit config --global pager.tag false
 
@@ -278,6 +278,11 @@ function gitex() {
         #List branches:
         if [ -z "${branch}" ];then
           $wgit --no-pager branch
+          return
+        fi
+
+        if [[ "${branch}" == "${BRANCH}" ]];then
+          echo -e "\033[33msame as current branch ${branch}\033[0m"
           return
         fi
 

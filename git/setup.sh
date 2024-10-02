@@ -62,8 +62,8 @@ git remote set-url --add all git@shanghai:bin.git
     git config --global user.name "<first> <last>"
     git config --global user.email "<email>"
 
-  #set pager, changing tab length:
-    git config --global core.pager 'less -x2'
+  #set pager, changing tab length, if short contents less will exit on first screen:
+    git config --global core.pager 'less -Fx2'
 
   #allow simple (instead of "matching") git push/pull without specifying a remote and branch:
     git config --global push.default simple
@@ -144,7 +144,7 @@ git config --global -e
 #git server
   #Client:
   git clone user@server:/path/to/repo
-  
+
   #server:
   git config receive.denyCurrentBranch updateInstead
   vi .git/hooks/post-update
@@ -196,5 +196,5 @@ git config --global -e
     #Enter password one last time
 
   #https credentials:
-    #~/.git-credentials 
+    #~/.git-credentials
       https://<user_name>:<base64 password>@domain.com
