@@ -29,8 +29,64 @@ sudo apt install libnotify-bin
 notify-send [main message] [secondary message]
 notify-send -i [icon file or stock name] [main message] [secondary message]
 
+#::::::::::::::::::::KDOCKER::::::::::::::::::::
+#Example from open-slack:
+  tray=$(printf "%x\n" $(xdotool search --limit 1 --name Slack$)) #convert number to hex with printf
+  kdocker -q -m -w 0x${tray} -s -i ~/Documents/Resources/icons/slack.png
+
+#Manual with notes:
+  kdocker [options]
+    #Name (title):doesn't always work to select by name
+      -n name
+        Match window based on its title
+      -e type
+        Name matching syntax. Choices are:
+         n = normal, substring matching [default]
+         r = regex (regular expression)
+         u = unix wildcard
+         w = wildcard
+      -j
+        Case sensitive name (title) matching
+      -k
+        Regex minimal matching
+    #Finding window:
+      -f
+        Dock window that has focus (active window)
+      -w wid
+        Window id of the application to dock
+        Assumes hex number of the form 0x###...
+      -x pid
+        Process id of the application to dock
+        Assumes decimal number of the form ###...
+
+    #Other:
+      -i file
+        Custom icon path
+      -I file
+        Custom attention icon path. This icon is set if the title
+        of the application window changes while it is iconified.
+      -l
+        Iconify when focus lost
+      -m
+        Keep application window showing (do not hide on dock)
+      -o
+        Iconify when obscured by other windows
+      -r
+        Remove this application from the pager
+      -s
+        Make the window sticky (appears on all desktops)
+      -t
+        Remove this application from the taskbar
+
+      -q
+        Disable ballooning title changes (quiet)
+      -p secs
+        By default, when the title of the application changes,
+        a popup is displayed from the system tray for 4 seconds
+        Works well with music players
+
 #::::::::::::::::::::ALLTRAY::::::::::::::::::::
-# WARNING: Deprecated
+# WARNING: Deprecated, try KDocker instead (See above)
 
 #move program to system tray by clicking on it:
   alltray
