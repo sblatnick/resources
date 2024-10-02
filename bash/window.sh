@@ -30,10 +30,12 @@ notify-send [main message] [secondary message]
 notify-send -i [icon file or stock name] [main message] [secondary message]
 
 #::::::::::::::::::::ALLTRAY::::::::::::::::::::
+# WARNING: Deprecated
+
 #move program to system tray by clicking on it:
   alltray
 #open program to system tray and assign a global shortcut to show/hide:
-  /usr/bin/alltray /usr/bin/keepassxc -k "F1" 
+  /usr/bin/alltray /usr/bin/keepassxc -k "F1"
 
 #::::::::::::::::::::WMCTRL::::::::::::::::::::
 

@@ -371,6 +371,17 @@
   git add filename
   #force add previously ignored:
   git add -f filename
+
+  #remove and delete file
+  git rm filename
+  #stop tracking but don't delete local file
+  git rm --cached filename
+
+  #recursive delete
+  git rm -r directory
+  #recursive stop tracking
+  git rm --cached -r directory
+
   #force add file ignored by another repo using config bare repo:
   config update-index --add workspace.xml
 
