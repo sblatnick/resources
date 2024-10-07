@@ -1015,7 +1015,7 @@ function gitex_list()
   shift
 
   local lb=$($wgit --no-pager branch --format '%(refname:lstrip=1)' | sed -n "/^heads\// s//  /p")
-  local rb=$($wgit --no-pager branch -r --format '%(refname:lstrip=2)')
+  local rb=$($wgit --no-pager branch -r --format '%(refname:lstrip=2)' | grep -v 'origin/HEAD')
   local IFS=$'\n'
   while [ -n "$1" ]; do
     case "$1" in
@@ -1136,15 +1136,18 @@ function gitex_list()
       for branch in ${output}
       do
         echo -e "\033[0;1m${branch}\033[0m"
-        if [[ "${verbose}" == 'true' ]];then
-          $wgit --no-pager diff --name-status ${MASTER}...${branch#  } 2>/dev/null | sed 's/^/    /'
-        fi
       done
     fi
     #no-merged:
     local output=$(echo "${rmerged}"$'\n'"${rmerged}"$'\n'"${ronly}" | sort | uniq -u)
     if [ -n "${output}" ];then
-      echo -e "${output}"
+      for branch in ${output}
+      do
+        echo -e "${branch}"
+        if [[ "${verbose}" == 'true' ]];then
+          $wgit --no-pager diff --name-status ${MASTER}...${remote}/${branch#  } 2>/dev/null | sed 's/^/    /'
+        fi
+      done
     fi
   done
 ##  Legend:
