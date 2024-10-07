@@ -673,7 +673,7 @@ function document() {
   while read section
   do
     document_header "${section#\#\#}"
-    sed -n "/^${section}\$/,/^\(##.*\|\}\)\$/ p" $1 | grep -Eo '[^ (]+\)\s+#.*$' | \
+    sed -n "/^${section}\$/,/^\(##.*\|\}\)\$/ p" $1 | grep -Eo '[^#(]+\)\s+#.*$' | \
     while read help
     do
       params=${help#*#}

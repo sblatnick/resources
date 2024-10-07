@@ -1014,142 +1014,173 @@ function gitex_list()
   action=$1
   shift
 
-  local lb=$($wgit --no-pager branch --format '%(refname:lstrip=1)' | sed -n "/^heads\// s//  /p")
-  local rb=$($wgit --no-pager branch -r --format '%(refname:lstrip=2)' | grep -v 'origin/HEAD')
+  local lb=$($wgit --no-pager branch --format '%(refname:lstrip=1)' | sed -n "/^heads\// s///p")
+  local rb=$($wgit --no-pager branch -r --format '%(refname:lstrip=2)' | grep -v '/HEAD$')
   local IFS=$'\n'
+  local remotes=$(_remotes)
+  local remote="$(echo "${remotes}" | tr $"\n" "|")local"
+  local name="all" #default remote
+  local merge='both'
   while [ -n "$1" ]; do
     case "$1" in
-      rm) #[pattern]#delete local branches
-          local delete='true'
+      @(${remote})) #[pattern]#list branches from remote (or "local") only
+          local name=$1
         ;;
-      purge) ##delete merged local-only branches (local white and bold)
-          local purge='true'
+      merged) #[pattern]#list branches merged to master
+          local merge='true'
+        ;;
+      nonmerged) #[pattern]#list branches not merged to master
+          local merge='false'
+        ;;
+      rm) #[pattern]#print commands for deleting matching branches
+          local delete='true'
         ;;
       -v|--verbose) ##show diff status between unmerged local branches and master branch
           local verbose='true'
         ;;
-      *) ##pattern match on local branches (dry run rm)
+      *) ##grep pattern match branches
           break
         ;;
     esac
     shift
   done
+
   #sanity check master branch locally exists as configured:
   $wgit rev-parse --abbrev-ref ${MASTER} >/dev/null 2>&1
   if [ $? -ne 0 ];then
     warn "${MASTER} branch doesn't exist"
   fi
 
-  echo -e "\033[32mlocal\033[0m"
-  local remote=local
-  if [ -n "$1" ];then
-    if [[ "${delete}" == 'true' ]];then
-      for branch in $(echo "${lb}" | grep "$1")
-      do
-        echo -e "  \033[31mdeleting\033[0m ${branch}"
-        $wgit branch -D ${branch}
-      done
-    else
-      echo "${lb}" | grep "$1"
-    fi
-    return
-  else
+  if [[ "${name}" == "local" ]] || [[ "${name}" == "all" ]];then
+    echo -e "\033[32mlocal\033[0m"
     #local branches...
-    local lbs=$(echo "${lb}" | grep -v "  ${BRANCH}\$")
+    local lbs=$(echo "${lb}" | grep -v "^${BRANCH}\$")
     local rbs=""
-    for remote in $(_remotes)
+    for remote in ${remotes}
     do
-      local rbs="${rbs}"$'\n'$(echo "${rb}" | sed -n "/${remote}\// s//  /p")
+      local rbs="${rbs}"$'\n'$(echo "${rb}" | sed -n "/${remote}\// s///p")
     done
     #current:
-      if [[ "${MASTER}" == "${BRANCH}" ]];then
-        echo -e "  \033[36;1m${BRANCH}\033[0m (master)"
-      else
-        local merged=$($wgit branch --merged ${MASTER} 2>/dev/null | grep -q '^*' && echo ';1')
-        echo -e "  \033[36${merged}m${BRANCH}\033[0m"
+      if echo "${BRANCH}" | grep -q "${1}"; then
+        if [[ "${MASTER}" == "${BRANCH}" ]];then
+          if [[ "${merge}" == "true" ]] || [[ "${merge}" == "both" ]];then
+            echo -e "  \033[36;1m${BRANCH}\033[0m (master)"
+          fi
+        else
+          local merged=$($wgit branch --merged ${MASTER} 2>/dev/null | grep -q '^*' && echo ';1')
+          case "${merge}${merged}" in
+            "true;1"|"both;1"|"false"|"both")
+                echo -e "  \033[36${merged}m${BRANCH}\033[0m"
+              ;;
+          esac
+        fi
       fi
     #tracked:
       local tracked=$(echo "${rbs}"$'\n'"${lbs}" | sort | uniq -d)
-      local merged=$($wgit branch --merged ${MASTER} 2>/dev/null | grep -v '^*')
-      #merged:
-      local output=$(echo "${tracked}"$'\n'"${merged}" | sort | uniq -d)
-      if [ -n "${output}" ];then
-        for branch in ${output}
-        do
-          if [[ "${MASTER}" == "${branch#  }" ]];then
-            echo -e "\033[34;1m${branch}\033[0m (master)"
-          else
-            echo -e "\033[34;1m${branch}\033[0m"
-          fi
-        done
-      fi
-      #no-merged:
-      local output=$(echo "${merged}"$'\n'"${merged}"$'\n'"${tracked}" | sort | uniq -u)
-      if [ -n "${output}" ];then
-        for branch in ${output}
-        do
-          if [[ "${MASTER}" != "${branch#  }" ]];then
-            echo -e "\033[34m${branch}\033[0m"
-            if [[ "${verbose}" == 'true' ]];then
-              $wgit --no-pager diff --name-status ${MASTER}...${branch#  } 2>/dev/null | sed 's/^/    /'
+      local merged=$($wgit branch --merged ${MASTER} 2>/dev/null | grep -v '^*' | sed 's/^ *//')
+      if [[ "${merge}" == "true" ]] || [[ "${merge}" == "both" ]];then
+        #merged:
+        local output=$(echo "${tracked}"$'\n'"${merged}" | sort | uniq -d | grep "${1}")
+        if [ -n "${output}" ];then
+          for branch in ${output}
+          do
+            if [[ "${MASTER}" == "${branch#  }" ]];then
+              echo -e "  \033[34;1m${branch}\033[0m (master)"
+            else
+              echo -e "  \033[34;1m${branch}\033[0m"
             fi
-          fi
-        done
+          done
+        fi
+      fi
+      #non-merged:
+      if [[ "${merge}" == "false" ]] || [[ "${merge}" == "both" ]];then
+        local output=$(echo "${merged}"$'\n'"${merged}"$'\n'"${tracked}" | sort | uniq -u | grep "${1}")
+        if [ -n "${output}" ];then
+          for branch in ${output}
+          do
+            if [[ "${MASTER}" != "${branch#  }" ]];then
+              echo -e "  \033[34m${branch}\033[0m"
+              if [[ "${verbose}" == 'true' ]];then
+                $wgit --no-pager diff --name-status ${MASTER}...${branch#  } 2>/dev/null | sed 's/^/    /'
+              fi
+            fi
+          done
+        fi
       fi
     #unique:
       local unique=$(echo "${rbs}"$'\n'"${rbs}"$'\n'"${lbs}" | sort | uniq -u)
       #merged:
-      local output=$(echo "${unique}"$'\n'"${merged}" | sort | uniq -d)
-      if [ -n "${output}" ];then
-        if [[ "${purge}" == 'true' ]];then
+      if [[ "${merge}" == "true" ]] || [[ "${merge}" == "both" ]];then
+        local output=$(echo "${unique}"$'\n'"${merged}" | sort | uniq -d | grep "${1}")
+        if [ -n "${output}" ];then
           for branch in ${output}
           do
-            result=$($wgit branch -d ${branch#  })
-            echo -e "\033[0;1m${branch}\033[0m \033[33m${result}\033[0m"
+            echo -e "  \033[0;1m${branch}\033[0m"
           done
-        else
-          echo -e "\033[0;1m${output}\033[0m"
         fi
       fi
-      #no-merged:
-      local output=$(echo "${merged}"$'\n'"${merged}"$'\n'"${unique}" | sort | uniq -u)
+      #non-merged:
+      if [[ "${merge}" == "false" ]] || [[ "${merge}" == "both" ]];then
+        local output=$(echo "${merged}"$'\n'"${merged}"$'\n'"${unique}" | sort | uniq -u | grep "${1}")
+        if [ -n "${output}" ];then
+          for branch in ${output}
+          do
+            echo -e "  ${branch}"
+            if [[ "${verbose}" == 'true' ]];then
+              $wgit --no-pager diff --name-status ${MASTER}...${branch#  } 2>/dev/null | sed 's/^/    /'
+            fi
+          done
+        fi
+      fi
+  else
+    local remotes="${name}"
+  fi
+  if [[ "${name}" == "local" ]];then
+    return
+  fi
+
+  for remote in ${remotes}
+  do
+    echo -e "\033[32m${remote}\033[0m\033[0m"
+    local this=$(echo "${rb}" | sed -n "/${remote}\// s///p")
+    local rmerged=$($wgit branch -r --merged ${MASTER} 2>/dev/null | sed -n "/${remote}\// s///p" | sed "s/^ *//")
+    local ronly=$(echo "${lb}"$'\n'"${lb}"$'\n'"${this}" | sort | uniq -u)
+    #merged:
+    if [[ "${merge}" == "true" ]] || [[ "${merge}" == "both" ]];then
+      local output=$(echo "${ronly}"$'\n'"${rmerged}" | sort | uniq -d | grep "${1}")
       if [ -n "${output}" ];then
         for branch in ${output}
         do
-          echo -e "${branch}"
+          echo -e "  \033[0;1m${branch}\033[0m"
+        done
+      fi
+    fi
+    #no-merged:
+    if [[ "${merge}" == "false" ]] || [[ "${merge}" == "both" ]];then
+      local output=$(echo "${rmerged}"$'\n'"${rmerged}"$'\n'"${ronly}" | sort | uniq -u | grep "${1}")
+      if [ -n "${output}" ];then
+        for branch in ${output}
+        do
+          echo -e "  ${branch}"
           if [[ "${verbose}" == 'true' ]];then
-            $wgit --no-pager diff --name-status ${MASTER}...${branch#  } 2>/dev/null | sed 's/^/    /'
+            $wgit --no-pager diff --name-status ${MASTER}...${remote}/${branch#  } 2>/dev/null | sed 's/^/    /'
           fi
         done
       fi
-  fi
-
-  for remote in $(_remotes)
-  do
-    echo -e "\033[32m${remote}\033[0m\033[0m"
-    local this=$(echo "${rb}" | sed -n "/${remote}\// s//  /p")
-    local rmerged=$($wgit branch -r --merged ${MASTER} 2>/dev/null | sed -n "/${remote}\// s///p")
-    local ronly=$(echo "${lb}"$'\n'"${lb}"$'\n'"${this}" | sort | uniq -u)
-    #merged:
-    local output=$(echo "${ronly}"$'\n'"${rmerged}" | sort | uniq -d)
-    if [ -n "${output}" ];then
-      for branch in ${output}
-      do
-        echo -e "\033[0;1m${branch}\033[0m"
-      done
-    fi
-    #no-merged:
-    local output=$(echo "${rmerged}"$'\n'"${rmerged}"$'\n'"${ronly}" | sort | uniq -u)
-    if [ -n "${output}" ];then
-      for branch in ${output}
-      do
-        echo -e "${branch}"
-        if [[ "${verbose}" == 'true' ]];then
-          $wgit --no-pager diff --name-status ${MASTER}...${remote}/${branch#  } 2>/dev/null | sed 's/^/    /'
-        fi
-      done
     fi
   done
+
+##  Examples:
+# git ls) ##List all branches
+# git ls ^test) ##List all branches starting with 'test'
+# git ls local) ##List local branches
+# git ls origin) ##List origin branches
+# git ls origin ^test) ##List origin branches starting with 'test'
+# git ls merged ^test) ##List merged branches starting with 'test'
+# git ls nonmerged ^test) ##List non-merged branches starting with 'test'
+# git ls local nonmerged ^test) ##List local non-merged branches starting with 'test'
+# git ls local nonmerged ^test rm) ##Print delete branch commands for all local non-merged branches starting with 'test'
+
 ##  Legend:
 # blue) ##local branch tracking remote
 # bold) ##merged with $MASTER
