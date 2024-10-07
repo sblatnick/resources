@@ -1,0 +1,24 @@
+/*
+ * INSTALL
+ * 1. Create a CSS note with label #appCss
+ * 2. Add this CSS
+ */
+
+/* Hide Scripture Titles of children notes */
+.verse .note-book-header, .verse .note-book-card .note-book-card, .verse .include-note-title {
+    display: none;
+}
+
+/* Make links more obvious */
+.note-list-container .note-book-content a, .note-detail a {
+  color: black !important;
+  background-color: #00BCD4 !important;
+  text-decoration: underline;
+}
+
+/*
+span.yellow {
+  color: black;
+  background-color: #F7F700;
+}
+*/

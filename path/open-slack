@@ -5,5 +5,6 @@ source ${BASH_SOURCE%/path/*}/config/bashrc
 vivaldi --app=https://app.slack.com/client/
 sleep 1
 wmctrl -r :ACTIVE: -e 0,3440,360,1920,1080
+sleep 20 #needs time to load
 tray=$(printf "%x\n" $(xdotool search --limit 1 --name Slack$)) #convert number to hex with printf
 kdocker -q -m -w 0x${tray} -s -i ~/Documents/Resources/icons/slack.png

@@ -468,8 +468,7 @@ function gitex() {
         $wgit diff $MASTER...${branch}
       ;;
     tags) ##list tags with information
-        $wgit --no-pager log --tags --simplify-by-decoration --pretty="format:%ai %d"
-        echo ""
+        $wgit ${OPTS[@]} log --tags --simplify-by-decoration --pretty="format:%ai %d"
       ;;
     remaster) ##change the default/master branch to the current
         if [[ "${MASTER}" == "${BRANCH}" ]];then
@@ -1134,7 +1133,13 @@ function gitex_list()
     #merged:
     local output=$(echo "${ronly}"$'\n'"${rmerged}" | sort | uniq -d)
     if [ -n "${output}" ];then
-      echo -e "\033[0;1m${output}\033[0m"
+      for branch in ${output}
+      do
+        echo -e "\033[0;1m${branch}\033[0m"
+        if [[ "${verbose}" == 'true' ]];then
+          $wgit --no-pager diff --name-status ${MASTER}...${branch#  } 2>/dev/null | sed 's/^/    /'
+        fi
+      done
     fi
     #no-merged:
     local output=$(echo "${rmerged}"$'\n'"${rmerged}"$'\n'"${ronly}" | sort | uniq -u)

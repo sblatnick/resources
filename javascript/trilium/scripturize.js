@@ -5,7 +5,7 @@
  * 3. set "script" and keyboard shortcut
  * HIDE TITLES
  * 1. Create a CSS note with label #appCss
- * 2. Add this CSS:
+ * 2. Add this CSS: (see style.css for more)
  *   .verse .note-book-header, .verse .note-book-card .note-book-card {
  *     display: none;
  *   }

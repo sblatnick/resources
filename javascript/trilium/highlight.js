@@ -41,6 +41,13 @@
       value: ["black", "#6365ff"],
       shortcut: "ctrl+3"
     },
+/*
+    "Highlight yellow (css class)": {
+      action: "style",
+      value: "yellow",
+      shortcut: "ctrl+4"
+    },
+*/
   };
 
 //Utils:

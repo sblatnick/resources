@@ -1,6 +1,5 @@
 #!/bin/bash
-
-tmp=/dev/shm/ytmp3.$$
+source ${BASH_SOURCE%/path/*}/config/bashrc
 
 case "$(uname -s)" in
   Darwin) #Mac
@@ -20,15 +19,29 @@ if [ -z "${url}" ];then
   exit
 fi
 
+tmpdir
+cd ${tmp}
+
 #output format: yt-dlp -o '%(title)s.%(ext)s'
 #See OUTPUT TEMPLATE: https://github.com/yt-dlp/yt-dlp#output-template
-yt-dlp -f 251 "${url}" 1> >(tee $tmp) 2>&1
-result=$(<$tmp)
-webm=$(echo -e "${result}" | grep -Po 'Destination: .*$' | cut -d' ' -f2-)
-ffmpeg -i "${webm}" -vn -ab 128k -ar 44100 -y "${webm% [*}.mp3"
+
+#Try to download only the audio first:
+yt-dlp -f 251 "${url}"
+if [ $? -gt 0 ];then
+  #Download video:
+  yt-dlp "${url}"
+fi
+
+webm="$(ls)"
+if [ ! -f "${webm}" ];then
+  echo "Cannot find file '${webm}'"
+  exit
+fi
+
+ffmpeg -i "${webm}" -vn -ab 128k -ar 44100 -y "${CWD}/${webm% [*}.mp3"
 if [ $? -gt 0 ];then
   echo -e "ERROR converting video"
   exit
 fi
-rm -f "${webm}" $tmp
-echo -e "Output: '${webm%-*}.mp3'"
+
+echo -e "Output: '${webm% [*}.mp3'"
