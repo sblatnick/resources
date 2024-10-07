@@ -103,6 +103,13 @@ function _remotes() {
   $wgit remote | grep -v ${priority}
 }
 
+function _get_remote() {
+  local from=$(git rev-parse --abbrev-ref --symbolic-full-name ${1}@{push} 2>/dev/null)
+  local from=${from%%/*}
+  local from=${from:-origin}
+  echo -n ${from}
+}
+
 ##Global:
 function gitex() {
   local TIMESTAMP=false
@@ -1052,7 +1059,11 @@ function gitex_list()
   fi
 
   if [[ "${name}" == "local" ]] || [[ "${name}" == "all" ]];then
-    echo -e "\033[32mlocal\033[0m"
+    if [[ "${delete}" == "true" ]];then
+      echo "#local branches:"
+    else
+      echo -e "\033[32mlocal\033[0m"
+    fi
     #local branches...
     local lbs=$(echo "${lb}" | grep -v "^${BRANCH}\$")
     local rbs=""
@@ -1064,13 +1075,21 @@ function gitex_list()
       if echo "${BRANCH}" | grep -q "${1}"; then
         if [[ "${MASTER}" == "${BRANCH}" ]];then
           if [[ "${merge}" == "true" ]] || [[ "${merge}" == "both" ]];then
-            echo -e "  \033[36;1m${BRANCH}\033[0m (master)"
+            if [[ "${delete}" == "true" ]];then
+              echo "  git branch -D ${branch} #MASTER (checked-out)"
+            else
+              echo -e "  \033[36;1m${BRANCH}\033[0m (master)"
+            fi
           fi
         else
           local merged=$($wgit branch --merged ${MASTER} 2>/dev/null | grep -q '^*' && echo ';1')
           case "${merge}${merged}" in
             "true;1"|"both;1"|"false"|"both")
-                echo -e "  \033[36${merged}m${BRANCH}\033[0m"
+                if [[ "${delete}" == "true" ]];then
+                  echo "  git branch -D ${branch} #(checked-out)"
+                else
+                  echo -e "  \033[36${merged}m${BRANCH}\033[0m"
+                fi
               ;;
           esac
         fi
@@ -1085,9 +1104,21 @@ function gitex_list()
           for branch in ${output}
           do
             if [[ "${MASTER}" == "${branch#  }" ]];then
-              echo -e "  \033[34;1m${branch}\033[0m (master)"
+              if [[ "${delete}" == "true" ]];then
+                r=$(_get_remote ${branch})
+                echo "  git branch -D ${branch}    #MASTER"
+                echo "  git push ${r} -d ${branch} #MASTER"
+              else
+                echo -e "  \033[34;1m${branch}\033[0m (master)"
+              fi
             else
-              echo -e "  \033[34;1m${branch}\033[0m"
+              if [[ "${delete}" == "true" ]];then
+                r=$(_get_remote ${branch})
+                echo "  git branch -D ${branch}"
+                echo "  git push ${r} -d ${branch}"
+              else
+                echo -e "  \033[34;1m${branch}\033[0m"
+              fi
             fi
           done
         fi
@@ -1099,15 +1130,21 @@ function gitex_list()
           for branch in ${output}
           do
             if [[ "${MASTER}" != "${branch#  }" ]];then
-              echo -e "  \033[34m${branch}\033[0m"
-              if [[ "${verbose}" == 'true' ]];then
-                $wgit --no-pager diff --name-status ${MASTER}...${branch#  } 2>/dev/null | sed 's/^/    /'
+              if [[ "${delete}" == "true" ]];then
+                r=$(_get_remote ${branch})
+                echo "  git branch -D ${branch}"
+                echo "  git push ${r} -d ${branch}"
+              else
+                echo -e "  \033[34m${branch}\033[0m"
+                if [[ "${verbose}" == 'true' ]];then
+                  $wgit --no-pager diff --name-status ${MASTER}...${branch#  } 2>/dev/null | sed 's/^/    /'
+                fi
               fi
             fi
           done
         fi
       fi
-    #unique:
+    #local only:
       local unique=$(echo "${rbs}"$'\n'"${rbs}"$'\n'"${lbs}" | sort | uniq -u)
       #merged:
       if [[ "${merge}" == "true" ]] || [[ "${merge}" == "both" ]];then
@@ -1115,7 +1152,11 @@ function gitex_list()
         if [ -n "${output}" ];then
           for branch in ${output}
           do
-            echo -e "  \033[0;1m${branch}\033[0m"
+            if [[ "${delete}" == "true" ]];then
+              echo "  git branch -D ${branch} #local only"
+            else
+              echo -e "  \033[0;1m${branch}\033[0m"
+            fi
           done
         fi
       fi
@@ -1125,9 +1166,13 @@ function gitex_list()
         if [ -n "${output}" ];then
           for branch in ${output}
           do
-            echo -e "  ${branch}"
-            if [[ "${verbose}" == 'true' ]];then
-              $wgit --no-pager diff --name-status ${MASTER}...${branch#  } 2>/dev/null | sed 's/^/    /'
+            if [[ "${delete}" == "true" ]];then
+              echo "  git branch -D ${branch} #local only"
+            else
+              echo -e "  ${branch}"
+              if [[ "${verbose}" == 'true' ]];then
+                $wgit --no-pager diff --name-status ${MASTER}...${branch#  } 2>/dev/null | sed 's/^/    /'
+              fi
             fi
           done
         fi
@@ -1141,7 +1186,11 @@ function gitex_list()
 
   for remote in ${remotes}
   do
-    echo -e "\033[32m${remote}\033[0m\033[0m"
+    if [[ "${delete}" == "true" ]];then
+      echo "#${remote} branches:"
+    else
+      echo -e "\033[32m${remote}\033[0m\033[0m"
+    fi
     local this=$(echo "${rb}" | sed -n "/${remote}\// s///p")
     local rmerged=$($wgit branch -r --merged ${MASTER} 2>/dev/null | sed -n "/${remote}\// s///p" | sed "s/^ *//")
     local ronly=$(echo "${lb}"$'\n'"${lb}"$'\n'"${this}" | sort | uniq -u)
@@ -1151,7 +1200,12 @@ function gitex_list()
       if [ -n "${output}" ];then
         for branch in ${output}
         do
-          echo -e "  \033[0;1m${branch}\033[0m"
+          if [[ "${delete}" == "true" ]];then
+            echo "  git branch -D ${branch}"
+            echo "  git push ${remote} -d ${branch}"
+          else
+            echo -e "  \033[0;1m${branch}\033[0m"
+          fi
         done
       fi
     fi
@@ -1161,9 +1215,14 @@ function gitex_list()
       if [ -n "${output}" ];then
         for branch in ${output}
         do
-          echo -e "  ${branch}"
-          if [[ "${verbose}" == 'true' ]];then
-            $wgit --no-pager diff --name-status ${MASTER}...${remote}/${branch#  } 2>/dev/null | sed 's/^/    /'
+          if [[ "${delete}" == "true" ]];then
+            echo "  git branch -D ${branch}"
+            echo "  git push ${remote} -d ${branch}"
+          else
+            echo -e "  ${branch}"
+            if [[ "${verbose}" == 'true' ]];then
+              $wgit --no-pager diff --name-status ${MASTER}...${remote}/${branch#  } 2>/dev/null | sed 's/^/    /'
+            fi
           fi
         done
       fi
@@ -1179,7 +1238,7 @@ function gitex_list()
 # git ls merged ^test) ##List merged branches starting with 'test'
 # git ls nonmerged ^test) ##List non-merged branches starting with 'test'
 # git ls local nonmerged ^test) ##List local non-merged branches starting with 'test'
-# git ls local nonmerged ^test rm) ##Print delete branch commands for all local non-merged branches starting with 'test'
+# git ls local nonmerged rm ^test) ##Print delete branch commands for all local non-merged branches starting with 'test'
 
 ##  Legend:
 # blue) ##local branch tracking remote
