@@ -33,6 +33,9 @@
   #List all groups:
     getent group
 
+  #Get group id:
+    getent group docker | cut -d: -f3
+
   #List groups current user is part of:
     groups
 
