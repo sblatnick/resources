@@ -77,3 +77,23 @@ watch check_cfg
   done
 
   #See: https://unix.stackexchange.com/questions/124407/what-color-codes-can-i-use-in-my-ps1-prompt
+
+#Tail multiple logs with separate colors: https://stackoverflow.com/questions/28618785/tail-multiple-files-shown-by-separate-colors
+tail -f log1 log2 | awk $'/==> log1/{print "\033[0m\033[1;33;40m";} /==> log2/{print "\033[0m\033[1;35;40m";} 1'
+
+#Colorize: Tail colored output: https://www.baeldung.com/linux/tail-colored-output
+  #multitail: browse through several files at once
+    #it creates multiple windows on your console (with ncurses)
+    multitail -i /var/log/messages
+  #colortail basically tail but with support for colors
+    #With the help of color config files you define what part of the output to print in which color.
+    colortail /var/log/nginx/access.log
+  #Generic Colouriser:
+    grc ping -c 1 www.baeldung.com
+    grcat
+  #Tail with sed
+    tail -f /var/log/mylog.log | sed \
+      -e 's/\(.*INFO.*\)/\x1B[32m\1\x1B[39m/' \
+      -e 's/\(.*ERROR.*\)/\x1B[31m\1\x1B[39m/'
+  #See also: kubetail
+

@@ -1,0 +1,28 @@
+#!/bin/bash
+source ~/.bashrc #source main bashrc so we can add to the environment outside of repo
+source ${BASH_SOURCE%/path/*}/config/bashrc
+
+COLORS=(
+  '34' #blue
+  '32' #green
+  '35' #magenta
+  '36' #cyan
+  '37' #gray
+  '31' #red
+  '94' #light blue
+  '92' #light green
+  '95' #light magenta
+  '96' #light cyan
+)
+
+tail -F $@ | \
+while read pipe
+do
+  if echo ${pipe} | grep -q '^==>';then
+    log=$(echo ${pipe} | sed 's/^==> \(.*\) <==$/\1/')
+    n=$(cksum <<< "${log}" | cut -f 1 -d ' ')
+    i=$((n % 10))
+  else
+    printf "\033[%sm%-10s\033[0m %s\n" ${COLORS[$i]} "${log}:" ${pipe}
+  fi
+done
