@@ -23,6 +23,6 @@ do
     n=$(cksum <<< "${log}" | cut -f 1 -d ' ')
     i=$((n % 10))
   else
-    printf "\033[%sm%-10s\033[0m %s\n" ${COLORS[$i]} "${log}:" ${pipe}
+    printf "\033[%sm%-10s\033[0m %s\n" ${COLORS[$i]} "${log##*/}:" ${pipe}
   fi
 done
