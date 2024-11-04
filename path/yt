@@ -1,0 +1,20 @@
+#!/bin/bash
+source ~/.bashrc #source main bashrc so we can add to the environment outside of repo
+source ${BASH_SOURCE%/path/*}/config/bashrc
+
+shopt -s expand_aliases
+
+url="$1"
+if [ -z "${url}" ];then
+  echo -e "${0##*/} [url]"
+  echo -e "  Download youtube video"
+  exit
+fi
+
+#See OUTPUT TEMPLATE: https://github.com/yt-dlp/yt-dlp#output-template
+#-F list formats
+#-f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]"
+#--recode-video or --remux-video "aac>m4a/mov>mp4/mkv"
+yt-dlp --check-formats -o '%(playlist_index&{} - |)s %(title)s.%(ext)s' "${url}"
+
+
