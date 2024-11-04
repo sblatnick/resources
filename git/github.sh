@@ -22,6 +22,8 @@
   #Get repo alerts:
     gh get /repos/${ORG}/${REPO}/dependabot/alerts
     gh get /repos/${ORG}/${REPO}/code-scanning/alerts
+  #Get repo variables:
+    gh get /repos/${ORG}/${REPO}/actions/variables
   #Get file locations of secrets found:
     gh get /repos/${ORG}/${REPO}/secret-scanning/alerts/1/locations
 

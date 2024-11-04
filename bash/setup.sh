@@ -149,5 +149,14 @@
     deb http://deb.debian.org/debian/ testing-updates contrib non-free main
     deb-src http://deb.debian.org/debian/ testing-updates contrib non-free main
 
+#Debian setup Roccat Tyon
+  sudo apt install flatpak
+  flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+  flatpak install flathub net.sourceforge.roccat.roccat-tools
+  flatpak run --command="cat" net.sourceforge.roccat.roccat-tools /app/lib/udev/90-roccat-tyon.rules | sudo tee /etc/udev/rules.d/90-roccat-tyon.rules
+  /usr/bin/flatpak run --branch=stable --arch=x86_64 --command=roccattyonconfig net.sourceforge.roccat.roccat-tools
+  sudo groupadd roccat
+  sudo usermod -aG roccat ${USER}
+  reboot
 
 

@@ -56,7 +56,7 @@
   yum remove package
   rpm -e package
   rpm -e --noscripts package
-  
+
   #see changes since install from the package/rpm (https://www.novell.com/coolsolutions/feature/16238.html)
   rpm -V package
   # S file Size differs
@@ -248,6 +248,11 @@
       #Download deb from: https://slack.com/downloads/instructions/ubuntu
       #Install using GDebi
 
+  #slow `apt-get update` with pdiffs?
+    #Change it to only download the current package lists:
+    #source: https://linux.debian.user.narkive.com/QFuuvMuh/aptitude-update-and-pdiff-files
+    /etc/apt/apt.conf:
+      Acquire::PDiffs "false";
 
   #install custom java:
   sudo update-alternatives --install /usr/bin/java java /opt/jre1.7.0_40/bin/java 1
@@ -453,7 +458,7 @@ rpmspec -P service.spec
 %ghost file                                   #owned by package, but not installed
                                               #(only removed) like log files
 %doc file
-%verify(mode md5) file                        #verify specified attributes                      
+%verify(mode md5) file                        #verify specified attributes
 %verify(not owner group) file                 #verify everything but specified
   #attributes:
     owner

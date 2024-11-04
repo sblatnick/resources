@@ -317,3 +317,11 @@ xwininfo -id <windowid> | grep "Map State" #detect visibility
         wmctrl -R 'FreeRDP'
       ;;
   esac
+
+#::::::::::::::::::::CHANGE GUI SCALE OF QT APPS::::::::::::::::::::
+
+env QT_SCALE_FACTOR=1.15 audacious -t
+
+#::::::::::::::::::::CHANGE GTK THEME FOR APP::::::::::::::::::::
+
+env GTK_THEME=Adwaita-dark audacious -t

@@ -22,6 +22,7 @@ if(note.type != "text" ) {
 }
 
 const editor = await api.getActiveContextTextEditor();
+editor.execute('removeFormat', {value:'null'});
 const selected = editor.getSelectedHtml();
 if(selected == '') {
   throw new Error('Must select text to title subnote');

@@ -313,6 +313,15 @@ yt-dlp https://www.youtube.com/watch?v=XXXXX
 #ERROR: unable to download video data: HTTP Error 403: Forbidden
   yt-dlp --rm-cache-dir
 
+#Use cookie from browser for auth:
+  yt-dlp https://www.instagram.com/reel/asdf/?igsh=asdf --cookies-from-browser vivaldi
+
+#Use netrc:
+  yt-dlp https://www.instagram.com/reel/asdf/?igsh=asdf -n
+#In ~/.netrc:
+  machine youtube login username password ******
+
+
 #::::::::::::::::::::FIND AND PROCESS FILES IN PARALLEL::::::::::::::::::::
 #Convert all files of .opus to .mp3:
   fdfind -e opus --exec ffmpeg -i {} {.}.mp3

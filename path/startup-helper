@@ -5,5 +5,6 @@
 #xrandr --output HDMI-A-0 --mode "288x1152_78.25"
 #xrandr --output HDMI-A-0 --scale 0.6x0.6 #--pos 192x313
 
-xinput --map-to-output 'wch.cn USB2IIC_CTP_CONTROL' HDMI-A-0
+##Use for mini touch display:
+#xinput --map-to-output 'wch.cn USB2IIC_CTP_CONTROL' HDMI-A-0
 /usr/bin/nitrogen --restore
