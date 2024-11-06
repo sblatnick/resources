@@ -53,7 +53,7 @@ flowchart TD
 || > v
   Header 2
   * right aligned
-  *vertical bottom aligned
+  * vertical bottom aligned
 || <> H
   Header 3
   * center aligned

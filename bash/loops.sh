@@ -66,7 +66,7 @@
   i=0
   while [ $i -lt 400 ]; do
     printf "%i : %b\n" "$i" "\0$i"
-    let "i++"
+    let "i++" || true #let returns non-zero, to skip `set -e` error: https://stackoverflow.com/questions/47989653/a-strange-error-of-let-in-bash
   done
 
   #set numbered parameters to each:
@@ -217,12 +217,12 @@
   done
 
 #for loop with index and value (untested):
-  for i in "${!foo[@]}"; do 
+  for i in "${!foo[@]}"; do
     printf "%s\t%s\n" "$i" "${foo[$i]}"
   done
 
   for i in "${!services[@]}"
-  do 
+  do
     server="${services[$i]}"
     echo -e "$server" > /tmp/left.csv.$pid
     ssh $server -q "$param" >> /tmp/left.csv.$pid 2>&1

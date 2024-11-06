@@ -757,7 +757,10 @@ function gitex_action() {
   local ACTION=$1
   shift
   if [[ -n "$@" && -f "$@" ]];then
-    local args=$(<$@)
+    local fh="$@"
+    local args=""
+    ##args was pulled from script, but led to interpretation problems:
+    #local args=$(<$@)
   else
     local args=$@
   fi
@@ -835,8 +838,15 @@ function gitex_action() {
         ;;
       with) #[file|args]#eval on repos in the current context
           echo -e "${output}"
-          eval "$ARGS"
-          if [ "$?" -eq 130 ];then #SIGINT
+          #Use script:
+          if [ -n "${fh}" ];then
+            ${start}/${fh}
+            ret="$?"
+          else
+            eval "$ARGS"
+            ret="$?"
+          fi
+          if [ "${ret}" -eq 130 ];then #SIGINT
             cd "${start}"
             return
           fi

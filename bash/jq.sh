@@ -56,3 +56,100 @@ a // b == COALESCE(a, b) == if a then a else b
     printf "  \033[34m%-8s\033[0m %-10s %s %s\n" "${one##*.}" "${two}" "${three}" "${four%%.*}"
   #avoid "" by using .attribute // " " so the columns stay aligned in their fields
   done 3< <(jq -r ".[] | select(.one == \"${1}\") | select(.two | contains(\"filter\")) | [.one, .two, .three // \" \", .four // \" \"] | @tsv" ${JSON_FILE})
+
+
+#Unique array of ids:
+jq '[.run.results | .[] | .id] | unique' output.json
+
+
+#Examples from CodeQL sarif (json) results:
+
+jq '
+  .runs[0].tool.driver.rules[
+    [.runs[0].results | .[] | .ruleIndex] | unique | .[]
+  ].properties |
+    select(has("security-severity"))["security-severity"]
+    // .["problem.severity"]
+' cql.sarif
+
+jq '
+  .runs[0].tool.driver.rules as $rules |
+  [.runs[0].results | .[] | .ruleIndex] | unique | .[] |
+  {
+    id: .,
+    severity: (
+      $rules[.].properties | (
+        if has("security-severity")
+        then
+          .["security-severity"] |
+          select(. | tonumber >= 7)
+        else
+          .["problem.severity"]
+        end
+      )
+    )
+  }
+' cql.json
+
+jq '
+  [
+    .runs[0].tool.driver.rules as $rules |
+    [.runs[0].results | .[] | .ruleIndex] | unique | .[] |
+    {
+      id: .,
+      severity: (
+        $rules[.].properties | (
+          if has("security-severity")
+          then
+            .["security-severity"] |
+            select(. | tonumber >= 7)
+          else
+            .["problem.severity"] |
+            select(. | contains("critical", "high"))
+          end
+        )
+      )
+    }
+  ]
+' cql.json
+
+#What I ended up using to get severity counts of critical and high:
+
+json cql.sarif > cql.json
+jq '
+  [
+    .runs[0].tool.driver.rules as $rules |
+    [.runs[0].results | .[] | .ruleIndex] | unique | .[] |
+    {
+      id: .,
+      severity: (
+        $rules[.].properties | (
+          if has("security-severity")
+          then
+            .["security-severity"] |
+            select(. | tonumber >= 7) |
+            if . | tonumber >= 9
+            then
+              "critical"
+            else
+              "high"
+            end
+          else
+            .["problem.severity"] |
+            select(. | contains("critical", "high"))
+          end
+        )
+      )
+    }
+  ]
+' cql.json > findings.json
+jq -s '
+  [
+    .[] |
+    group_by(.severity) |
+    map({ severity: .[0].severity, count: map(.severity) | length}) |
+    .[] |
+    {(.severity):.count}
+  ] |
+  add
+' findings.json
