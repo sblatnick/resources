@@ -99,6 +99,7 @@ if [ -z "$(which vivaldi)" ];then
   url=$(grep -Po 'https://downloads.vivaldi.com/stable/vivaldi-stable_.*_amd64.deb' /tmp/dl.html)
   wget ${url}
   decrypt | sudo -S dpkg -i vivaldi-stable_*.deb
+  rm vivaldi-stable_*.deb
 fi
 
 if ! dconf dump /org/mate/panel/ | grep -q vivaldi;then
