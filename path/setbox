@@ -1,0 +1,38 @@
+#!/bin/bash
+source ~/.bashrc #source main bashrc so we can add to the environment outside of repo
+source ${RESOURCES}/config/bashrc
+#Example: setup_box c6 192.168.0.15
+
+TIMESTAMP=false
+ACTION=$1
+pem='id_rsa.pub.pem'
+##Main
+case "${ACTION}" in
+  help|h|'') ##This help documentation
+      document_title "Debian Box Setup Tool" "action"
+      document ${BASH_SOURCE}
+      echo ""
+      exit
+    ;;
+  init) #[hostname] [ip address]#Set up ssh login to host
+      hostname=$2
+      ip=$3
+      ssh-keygen -f ~/.ssh/known_hosts -R ${ip}
+      ssh-copy-id ${ip}
+    ;;
+  install) #[ip address]#Install packages
+      ip=$2
+      ssh -Xq ${ip} 'bash -s' < ${RESOURCES}/scripts/debian_init.sh
+      if [ ! -f /tmp/${pem} ];then
+        echo "Fetch PEM file"
+        scp ${ip}:~/.ssh/${pem} /tmp/
+        pw=$(ssh-askpass)
+        echo "${pw}" | openssl pkeyutl -encrypt -pubin -inkey /tmp/${pem} | base64 > /tmp/pw
+        scp /tmp/pw ${ip}:~/.ssh/pw
+      fi
+      ssh -Xq ${ip} 'bash -s' < ${RESOURCES}/scripts/debian_setup.sh
+    ;;
+  *)
+      error "Unsupported action: ${ACTION}"
+    ;;
+esac
