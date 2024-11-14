@@ -1,7 +1,9 @@
 #!/bin/bash
 source ~/.bashrc #source main bashrc so we can add to the environment outside of repo
 source ${RESOURCES}/config/bashrc
-#Example: setup_box c6 192.168.0.15
+#Examples:
+# setbox init 192.168.0.150
+# setbox install 192.168.0.150
 
 TIMESTAMP=false
 ACTION=$1
@@ -15,8 +17,7 @@ case "${ACTION}" in
       exit
     ;;
   init) #[hostname] [ip address]#Set up ssh login to host
-      hostname=$2
-      ip=$3
+      ip=$2
       ssh-keygen -f ~/.ssh/known_hosts -R ${ip}
       ssh-copy-id ${ip}
     ;;
