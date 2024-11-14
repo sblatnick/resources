@@ -37,8 +37,10 @@ binder c1 35
 binder c2 34
 binder c3 27
 binder c4 36 steve -X
-binder c5 38 tc -X
-binder c6 39 tc -X
+binder c5 14 steve -X
+binder c6 15 steve -X
+#binder c5 38 tc -X
+#binder c6 39 tc -X
 binder elite 20 steve
 binder asus 17 steve
 binder tc 30 tc

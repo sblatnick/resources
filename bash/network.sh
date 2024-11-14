@@ -19,6 +19,8 @@
   #Find hosts listening to 8080:
     nmap -sV -p 8080 192.168.0.0/24 -open
     host 192.168.0.10
+  #Get IPs listening to 22 (ssh):
+    nmap -p 22 192.168.0.0/24 -open | grep 'Nmap scan report for ' | cut -d' ' -f5
   #Check connection:
     nc -v localhost ${port}
       Connection to localhost 5000 port [tcp/*] succeeded!
@@ -89,7 +91,7 @@ chkconfig iptables off
   #list rules:
     iptables -L
   #list the 'nat' rules:
-    iptables -t nat -L 
+    iptables -t nat -L
   #save current rules for next boot:
     #sysv:
     /etc/init.d/iptables save
