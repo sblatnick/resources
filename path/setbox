@@ -34,8 +34,8 @@ case "${ACTION}" in
         echo "${pw}" | openssl pkeyutl -encrypt -pubin -inkey /tmp/${ip}.pem | base64 > /tmp/pw
         scp /tmp/pw ${ip}:~/.ssh/pw
       fi
+      ssh -Xq ${ip} 'bash -s' < ${RESOURCES}/scripts/debian_setup_root.sh
       ssh -Xq ${ip} 'bash -s' < ${RESOURCES}/scripts/debian_setup.sh
-      ssh -Xq ${ip} 'bash -s' < ${RESOURCES}/scripts/debian_setup2.sh
     ;;
   *)
       error "Unsupported action: ${ACTION}"
