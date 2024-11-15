@@ -103,7 +103,7 @@ fi
 
 if ! dconf dump /org/mate/panel/ | grep -q vivaldi;then
   echo "Adding apps to mate-panel"
-  dconf load /org/mate/panel/ < ~/projects/resources/conf/mate-panel.conf
+  dconf load /org/mate/panel/ < ~/projects/resources/config/mate-panel.conf
   killall mate-panel
 fi
 
