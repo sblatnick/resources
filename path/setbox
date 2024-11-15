@@ -16,6 +16,9 @@ case "${ACTION}" in
       echo ""
       exit
     ;;
+  list) ##Show all computers on LAN with port 22 (ssh) open
+      nmap -p 22 192.168.0.0/24 -open | grep 'Nmap scan report for ' | cut -d' ' -f5
+    ;;
   init) #[hostname] [ip address]#Set up ssh login to host
       ip=$2
       ssh-keygen -f ~/.ssh/known_hosts -R ${ip}
@@ -24,14 +27,15 @@ case "${ACTION}" in
   install) #[ip address]#Install packages
       ip=$2
       ssh -Xq ${ip} 'bash -s' < ${RESOURCES}/scripts/debian_init.sh
-      if [ ! -f /tmp/${pem} ];then
+      if [ ! -f /tmp/${ip}.pem ];then
         echo "Fetch PEM file"
-        scp ${ip}:~/.ssh/${pem} /tmp/
+        scp ${ip}:~/.ssh/${pem} /tmp/${ip}.pem
         pw=$(ssh-askpass)
-        echo "${pw}" | openssl pkeyutl -encrypt -pubin -inkey /tmp/${pem} | base64 > /tmp/pw
+        echo "${pw}" | openssl pkeyutl -encrypt -pubin -inkey /tmp/${ip}.pem | base64 > /tmp/pw
         scp /tmp/pw ${ip}:~/.ssh/pw
       fi
       ssh -Xq ${ip} 'bash -s' < ${RESOURCES}/scripts/debian_setup.sh
+      ssh -Xq ${ip} 'bash -s' < ${RESOURCES}/scripts/debian_setup2.sh
     ;;
   *)
       error "Unsupported action: ${ACTION}"

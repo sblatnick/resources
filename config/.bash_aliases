@@ -39,6 +39,7 @@ binder c3 27
 binder c4 36 steve -X
 binder c5 14 steve -X
 binder c6 15 steve -X
+binder c7 16 steve -X
 #binder c5 38 tc -X
 #binder c6 39 tc -X
 binder elite 20 steve
