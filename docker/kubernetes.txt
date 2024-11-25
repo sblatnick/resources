@@ -177,6 +177,9 @@ Example arguments:
     kubectl -n my-namespace exec -c http-request -it my-pod-dd9b6b858-2q9r2 -- /bin/sh
     # -n = namespace
 
+    #run temporary pod one command and cleanup:
+    kubectl run -it --rm --restart=Never --image busybox tempbusybox -- sh
+
     #logs from stdout:
     kubectl logs my-deployment-8474cdbc55-kc78n
     kubectl logs my-pod -c my-container
@@ -213,7 +216,7 @@ Example arguments:
     docker rm $(docker ps -q -f status=exited)
     docker volume rm $(docker volume ls -qf dangling=true)
     docker rmi $(docker images --filter "dangling=true" -q --no-trunc)
-    
+
     docker system prune -a -f --volumes
 
     #set: update deployment image version:
@@ -285,7 +288,7 @@ Example arguments:
 
     #history:
     kubectl rollout history deployment/my-deployment #only displays CHANGE-CAUSE if --record passed during creation/update
-    kubectl rollout history deployment/my-deployment --revision=1 #show what was changed in REVISION 1      
+    kubectl rollout history deployment/my-deployment --revision=1 #show what was changed in REVISION 1
 
     #status:
     kubectl rollout status deploy/my-deployment

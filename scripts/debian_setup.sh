@@ -82,6 +82,7 @@ setting org.mate.caja.desktop home-icon-visible false
 setting org.mate.caja.desktop volumes-visible false
 
 setting org.mate.interface gtk-theme 'Blue-Submarine'
+setting org.mate.Marco.general theme 'Blue-Submarine'
 setting org.mate.interface icon-theme 'mate'
 
 
@@ -107,5 +108,9 @@ if ! dconf dump /org/mate/panel/ | grep -q vivaldi;then
   killall mate-panel
 fi
 
+if ! dconf dump /org/mate/desktop/keybindings/ | grep -q tilix;then
+  echo "Adding default shortcuts"
+  dconf load /org/mate/desktop/keybindings/ < ~/projects/resources/config/mate-keybindings.conf
+fi
 
 echo "DONE"

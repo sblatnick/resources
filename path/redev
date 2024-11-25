@@ -1,0 +1,26 @@
+#!/bin/bash
+source ~/.bashrc #source main bashrc so we can add to the environment outside of repo
+source ${RESOURCES}/config/bashrc
+
+TIMESTAMP=false
+ACTION=$1
+
+##Main
+case "${ACTION}" in
+  help|h|-h|--help) ##This help documentation
+      document_title "Reload udev rules" "action"
+      document ${BASH_SOURCE}
+      echo ""
+      exit
+    ;;
+  '') ##Reload Devices (udev) without reboot or replug
+      sudo udevadm control --reload-rules
+      sudo udevadm trigger
+    ;;
+  'sound') ##Open Sound Settings
+      mate-volume-control
+    ;;
+  *)
+      error "Unsupported action: ${ACTION}"
+    ;;
+esac

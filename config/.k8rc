@@ -254,6 +254,22 @@ function kate_extentions() {
           kate_containers "${namespace}" "${pod}" "${action}" $@
         fi
       ;;
+    quick) #[image]#Enter shell for a temporary pod
+        shift
+        image=$1
+        show kubectl -n ${namespace} run -it --rm --restart=Never --image ${image} tmp --command -- sh
+        #Doesn't have any volumes
+        #For that you either need `--overrides=json` or to create a pod using `kubectl apply -f spec.yaml`
+        #Get a spec to start from using `kubectl get pod ${name} -o yaml` or `-o json`
+        #Use to hold it open: `command: ["sh", "-c", "tail -f /dev/null"]`
+      ;;
+    cmd) #[image] [command]#Run a command in a temporary pod
+        shift
+        image=$1
+        shift
+        command=$@
+        show kubectl -n ${namespace} run -it --rm --restart=Never --image ${image} tmp --command -- ${command}
+      ;;
     ex) ##Print usage information
         document ${BASH_SOURCE}
         echo ""
