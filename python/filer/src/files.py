@@ -44,7 +44,7 @@ class Files(Command):
 
   def do(self, action):
     for row in self.db.db[self.table].rows:
-      act(action, row["src"], row["dst"], row["md5"], row["ext"])
+      self.db.act(action, self.table, row)
 
   @staticmethod
   def process(mime, path, filetype):

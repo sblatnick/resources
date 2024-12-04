@@ -22,7 +22,7 @@ class Scan(Command):
       for b, dirs, files in os.walk(self.where, topdown=True):
         futures = []
         base = b[2:]
-        if self.where == "." and self.db.is_done(base):
+        if self.options.action == None and self.db.is_done(base):
           continue
         dirs[:] = [d for d in dirs if not self.filter(base, d)]
         files[:] = [f for f in files if not self.filter(base, f)]
@@ -33,24 +33,21 @@ class Scan(Command):
             self.finalize(futures)
             sys.exit(0)
         self.finalize(futures)
-        if self.where == ".":
+        if self.options.action == None:
           self.db.add_list('done', base)
 
   def finalize(self, futures):
-    if self.where == ".":
-      action = self.db.insert
-    else:
-      action = self.db.process
     for future in as_completed(futures):
       table, obj = future.result()
-      action(table, obj)
+      if table != None:
+        self.db.act(self.options.action, table, obj)
 
   @staticmethod
   def process(path, scan_filetype):
     mime = mimetype(path)
     filetype = mime.mime_type.split("/")[0]
-    if scan_filetype not in [filetype, "all"]:
-      return
+    if scan_filetype not in [filetype, "all", None]:
+      return (None, None)
     match filetype:
       case "image":
         from images import Images
@@ -67,9 +64,6 @@ class Scan(Command):
 
   def filter(self, base, folder):
     path = os.path.join(self.root, base, folder)
-    if self.where == "." and base == "input":
-      print(f"Filtered out 'input' folder")
-      return True
     is_filer = bool(re.search(r"^\.filer", folder))
     is_repo = os.path.exists(os.path.join(path, ".git"))
     is_ignored = os.path.exists(os.path.join(path, ".ignore"))

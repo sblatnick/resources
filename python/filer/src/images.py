@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os
+import os, exifread
 from files import *
 from util import *
 

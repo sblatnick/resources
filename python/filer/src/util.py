@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, shutil, time, re, puremagic, exifread, hashlib, datetime, logging
+import os, time, re, puremagic, hashlib, datetime, logging
 
 logging.basicConfig(level=logging.ERROR)
 
@@ -41,30 +41,6 @@ def fake_magic(path):
   setattr(obj, "extension", ext)
   setattr(obj, "mime_type", "unknown")
   return obj
-
-def act(action, src, dst, md5, ext, output = "../organized/"):
-  if not os.path.exists(src):
-    print(f"Missing source: {src}")
-    return
-  dst = f"{output}{dst}"
-  base = dst[:-len(ext)]
-  num = 1
-  while os.path.exists(dst):
-    if md5 == md5sum(dst):
-      print(f"Skipping already present: '{src}' at '{dst}'")
-      return
-    num = num + 1
-    dst = f"{base} {num}{ext}"
-
-  print(src)
-  print(f"  {dst}")
-  os.makedirs(os.path.dirname(dst), exist_ok=True)
-  match action:
-    case "copy":
-      shutil.copy2(src, dst)
-    case "move":
-      shutil.move(src, dst)
-  return dst
 
 def common_data(mime, path):
   ext = mime.extension

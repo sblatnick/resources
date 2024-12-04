@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+from signal import signal, SIGPIPE, SIG_DFL  
+signal(SIGPIPE,SIG_DFL) 
+
 import sys, argparse, time
 from src.scan import *
 from src.rescan import *
@@ -18,7 +21,8 @@ parser = argparse.ArgumentParser(
   usage='%(prog)s [command]',
 )
 
-commands = parser.add_subparsers()
+commands = parser.add_subparsers(title="actions", metavar="")
+options = ["action", "filetype"]
 
 #Common:
 def add_command(name, obj, arg="action", default="list", help="list (default) | ext | md5|dst | copy|move|dry"):
@@ -28,22 +32,24 @@ def add_command(name, obj, arg="action", default="list", help="list (default) | 
   )
   subparser.set_defaults(func=obj)
   subparser.add_argument(arg, nargs='?', default=default)
+  for opt in [opt for opt in options if opt != arg]:
+    subparser.add_argument(opt, nargs='?')
 
 #Actions:
 add_command(
   "scan", Scan,
   arg="filetype", default="all",
-  help="Traverse the filesystem from the current directory and create the database."
+  help="all (default) | images|videos|audio = Update table(s) to current"
 )
 add_command(
   "rescan", Rescan,
   arg="filetype", default="all",
-  help="Scan with new database tables."
+  help="all (default) | images|videos|audio = Recreate table(s) from scratch"
 )
 add_command(
   "org", Organize,
-  arg="filetype", default="all",
-  help="Process 'input' folder for new files."
+  arg="action", default="dry",
+  help="dry (default) | copy | move"
 )
 
 add_command("images", Images)
