@@ -12,10 +12,18 @@ class Folders(Command):
     match action:
       case "list":
         try:
-          for row in self.db.query(f"SELECT * FROM {self.table}"):
+          for row in self.db.db[self.table].rows:
             print(row)
         except Exception as e:
           print(e)
+      case "dst":
+        duplicates = self.db.find_duplicates(self.table, action)
+        for key, sources in duplicates.items():
+          print(key)
+          for src in sources:
+            print(f"  {src}")
+      case "copy" | "move" | "dry":
+        self.do(action)
       case _:
         print(f"No such action '{action}'")
 

@@ -14,7 +14,7 @@ class Files(Command):
     match action:
       case "list":
         try:
-          for row in self.db.query(f"SELECT * FROM {self.table}"):
+          for row in self.db.db[self.table].rows:
             print(row)
         except Exception as e:
           print(e)
@@ -32,7 +32,7 @@ class Files(Command):
         except Exception as e:
           print(e)
       case "md5" | "dst":
-        duplicates = self.find_duplicates(action)
+        duplicates = self.db.find_duplicates(self.table, action)
         for key, sources in duplicates.items():
           print(key)
           for src in sources:
@@ -43,35 +43,8 @@ class Files(Command):
         print(f"No such action '{action}'")
 
   def do(self, action):
-    for row in self.db.query(f"""
-      SELECT
-        *
-      FROM
-        {self.table}
-    """):
+    for row in self.db.db[self.table].rows:
       act(action, row["src"], row["dst"], row["md5"], row["ext"])
-
-  def find_duplicates(self, column, condition = 'WHERE duplicate > 1'):
-    duplicates = {}
-    try:
-      for row in self.db.query(f"""
-        SELECT
-          (
-            SELECT
-              COUNT({column})
-            FROM {self.table} AS d
-            WHERE d.{column} = t.{column}
-          ) AS duplicate,
-          t.{column},
-          t.src
-        FROM {self.table} AS t
-        {condition}
-        ORDER BY duplicate DESC, t.{column} ASC
-      """):
-        duplicates.setdefault(row[column], []).append(row["src"])
-    except Exception as e:
-      print(e)
-    return duplicates
 
   @staticmethod
   def process(mime, path, filetype):

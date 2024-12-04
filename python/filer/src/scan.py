@@ -77,9 +77,9 @@ class Scan(Command):
     #print(f"{folder} is_filer: {is_filer}")
     if not is_filer:
       if is_repo:
-        self.db.add_list('repos', path)
+        self.db.add_list('repos', path, os.path.join(self.root, 'Repositories', folder))
       if is_hidden:
-        self.db.add_list('hidden', path)
+        self.db.add_list('hidden', path, os.path.join(self.root, 'Hidden', folder))
     return (is_repo or is_hidden or is_ignored)
 
   def interrupt_handler(self, signum, frame):

@@ -33,12 +33,13 @@ class DB():
       obj.src = dst
       self.insert(table, obj, log=False)
 
-  def add_list(self, table, path):
-    print(f"{table}: {path}")
+  def add_list(self, table, path, dst=None):
     try:
       self.db[table].insert_all([{
-        "src": path
+        "src": path,
+        "dst": dst
       }], pk="src")
+      print(f"{table}: {path}")
     except:
       #print(f"Already scanned: {path}")
       pass
@@ -70,6 +71,28 @@ class DB():
             print(f"Removed {table}: {row["src"]}")
       except Exception as e:
         print(e)
+
+  def find_duplicates(self, table, column, condition = 'WHERE duplicate > 1'):
+    duplicates = {}
+    try:
+      for row in self.query(f"""
+        SELECT
+          (
+            SELECT
+              COUNT({column})
+            FROM {table} AS d
+            WHERE d.{column} = t.{column}
+          ) AS duplicate,
+          t.{column},
+          t.src
+        FROM {table} AS t
+        {condition}
+        ORDER BY duplicate DESC, t.{column} ASC
+      """):
+        duplicates.setdefault(row[column], []).append(row["src"])
+    except Exception as e:
+      print(e)
+    return duplicates
 
   def drop(self, table = "done"):
     try:

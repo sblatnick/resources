@@ -21,7 +21,7 @@ parser = argparse.ArgumentParser(
 commands = parser.add_subparsers()
 
 #Common:
-def add_command(name, obj, arg="action", default="list", help="list (default) | ext | md5|dst | copy|move|dry | org"):
+def add_command(name, obj, arg="action", default="list", help="list (default) | ext | md5|dst | copy|move|dry"):
   subparser = commands.add_parser(
     name,
     help=help
@@ -49,9 +49,9 @@ add_command(
 add_command("images", Images)
 add_command("videos", Videos)
 add_command("audio", Audio)
-add_command("repos", Repos)
-add_command("hidden", Hidden)
 add_command("files", Files)
+add_command("repos", Repos, help="list (default) | dst | copy|move|dry")
+add_command("hidden", Hidden, help="list (default) | dst | copy|move|dry")
 add_command("tables", Tables, help="Show list of tables")
 
 
