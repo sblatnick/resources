@@ -247,15 +247,16 @@ EOF
           cwd="-w /root"
         else
           who="-u $(id -u):$(id -g)"
-          cwd="-w $HOME"
+          cwd="-w $PWD"
         fi
         name=${target##*/}
         name=${name%%:*}
+        name=${name}-${RANDOM}
         $dry docker run \
           --privileged=true \
           -it \
           --rm \
-          -v ${HOME}:${HOME} \
+          -v ${PWD}:${PWD} \
           -v /var/run/docker.sock:/var/run/docker.sock:ro \
           ${volumes} \
           ${who} \

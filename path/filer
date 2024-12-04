@@ -1,2 +1,4 @@
 #!/bin/bash
+#sudo apt install sqlite-utils python3-puremagic python3-exifread
+
 python3 -Xutf8 ${BASH_SOURCE%/path/*}/python/filer/main.py "$@"

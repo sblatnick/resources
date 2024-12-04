@@ -7,6 +7,7 @@ class DB():
     self.db = sqlite_utils.Database(".filer.db",recreate=recreate)
 
   def insert(self, table, obj, log=True):
+    #print(f"insert {table}: {obj.src}")
     try:
       self.db[table].insert_all([{
         "src": obj.src,
@@ -21,7 +22,8 @@ class DB():
         print(f"{obj.filetype}: {obj.src}")
         print(f"  {obj.dst}")
     except:
-      print(f"Already scanned: {obj.src}")
+      #print(f"Already scanned: {obj.src}")
+      pass
 
   def process(self, table, obj):
     if self.found(obj.md5, "md5", table):
@@ -38,7 +40,8 @@ class DB():
         "src": path
       }], pk="src")
     except:
-      print(f"Already scanned: {path}")
+      #print(f"Already scanned: {path}")
+      pass
 
   def is_done(self, base):
     return self.found(base)
@@ -58,3 +61,27 @@ class DB():
   def query(self, sql):
     return self.db.query(sql)
 
+  def remove_lost(self):
+    for table in self.db.table_names():
+      try:
+        for row in self.db.query(f"""
+          SELECT
+            src
+          FROM
+            {table}
+        """):
+          if not os.path.exists(row["src"]):
+            self.db.execute(f"""
+              DELETE FROM {table} WHERE src = ?
+            """, [row["src"]])
+            print(f"Removed {table}: {row["src"]}")
+      except Exception as e:
+        print(e)
+
+  def drop(self, table = "done"):
+    try:
+      self.db.execute(f"""
+        DROP TABLE {table}
+      """)
+    except:
+      print(f"{table} could not be dropped")

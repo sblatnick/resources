@@ -6,4 +6,10 @@
   AND issueFunction in dateCompare("", "resolutionDate > dueDate +${daysOverdue}d")
 
 
-
+#Examples:
+  "Code Repository" ~ "example"
+    AND issueType = "CVE Finding"
+    AND status in ("Reopened", "Open")
+    AND status WAS IN ("Blocked", "No Fix", "On Hold", "Waiting On Vendor")
+    AND status CHANGED TO Reopened ON "-7d"
+    ORDER BY due ASC

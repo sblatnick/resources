@@ -14,6 +14,9 @@ class Scan(Command):
     self.db = DB(recreate=self.recreate)
     signal.signal(signal.SIGINT, self.interrupt_handler)
     self.root = os.getcwd()
+    if not self.recreate:
+      self.db.drop()
+      self.db.remove_lost()
     print("Traversing files")
     with ThreadPoolExecutor(max_workers=4) as executor:
       for b, dirs, files in os.walk(self.where, topdown=True):
@@ -67,16 +70,20 @@ class Scan(Command):
     if self.where == "." and base == "input":
       print(f"Filtered out 'input' folder")
       return True
+    is_filer = bool(re.search(r"^\.filer", folder))
     is_repo = os.path.exists(os.path.join(path, ".git"))
     is_ignored = os.path.exists(os.path.join(path, ".ignore"))
     is_hidden = bool(re.search(r"^\.", folder))
-    if is_repo:
-      self.db.add_list('repos', path)
-    if is_hidden:
-      self.db.add_list('hidden', path)
+    #print(f"{folder} is_filer: {is_filer}")
+    if not is_filer:
+      if is_repo:
+        self.db.add_list('repos', path)
+      if is_hidden:
+        self.db.add_list('hidden', path)
     return (is_repo or is_hidden or is_ignored)
 
   def interrupt_handler(self, signum, frame):
     print(f'Handling signal {signum} ({signal.Signals(signum).name}).')
     #quit cleanly:
     self.quiting = True
+

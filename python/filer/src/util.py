@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-import os, shutil, time, re, puremagic, exifread, hashlib, datetime
+import os, shutil, time, re, puremagic, exifread, hashlib, datetime, logging
+
+logging.basicConfig(level=logging.ERROR)
 
 def md5sum(path, size):
   limit = 40_000_000
