@@ -64,24 +64,15 @@ class DB():
   def remove_lost(self):
     for table in self.db.table_names():
       try:
-        for row in self.db.query(f"""
-          SELECT
-            src
-          FROM
-            {table}
-        """):
+        for row in self.db[table].rows:
           if not os.path.exists(row["src"]):
-            self.db.execute(f"""
-              DELETE FROM {table} WHERE src = ?
-            """, [row["src"]])
+            self.db[table].delete((row["src"],row["md5"]))
             print(f"Removed {table}: {row["src"]}")
       except Exception as e:
         print(e)
 
   def drop(self, table = "done"):
     try:
-      self.db.execute(f"""
-        DROP TABLE {table}
-      """)
+      self.db[table].drop()
     except:
       print(f"{table} could not be dropped")
