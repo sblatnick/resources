@@ -5,13 +5,14 @@ from images import *
 from util import *
 
 class Videos(Files):
-  table = 'videos'
+  table = 'video'
 
   def __init__(self, option_strings=None, dest=None):
     super().__init__(option_strings, dest)
 
   @staticmethod
-  def process(mime, path, filetype):
+  def process(path, mime):
+    filetype = mime.mime_type.split("/")[0]
     obj = Common()
     obj.src = path
     obj.filetype = filetype

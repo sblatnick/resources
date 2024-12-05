@@ -8,6 +8,8 @@ class Scan(Command):
   where = "."
   recreate = False
   quiting = False
+  existing = []
+  types = ["image", "video", "audio"]
 
   def __init__(self, option_strings=None, dest=None):
     super().__init__(option_strings, dest)
@@ -15,52 +17,60 @@ class Scan(Command):
     signal.signal(signal.SIGINT, self.interrupt_handler)
     self.root = os.getcwd()
     if not self.recreate:
-      self.db.drop()
       self.db.remove_lost()
     print("Traversing files")
     with ThreadPoolExecutor(max_workers=4) as executor:
       for b, dirs, files in os.walk(self.where, topdown=True):
         futures = []
         base = b[2:]
-        if self.options.action == None and self.db.is_done(base):
-          continue
         dirs[:] = [d for d in dirs if not self.filter(base, d)]
         files[:] = [f for f in files if not self.filter(base, f)]
         for filename in files:
           path = os.path.join(self.root,base,filename)
-          futures.append(executor.submit(Scan.process, path, self.options.filetype))
+          mime = mimetype(path)
+          table = mime.mime_type.split("/")[0]
+          if table not in self.types:
+            table = "file"
+          if self.options.filetype not in [table, "all", None]:
+            continue
+          obj = None
+          try:
+            obj = self.db.db[table].get(path)
+          except:
+            pass
+          if obj != None:
+            self.existing.append((table, rowToObj(obj)))
+            continue
+          futures.append(executor.submit(Scan.process, path, mime))
           if self.quiting:
             self.finalize(futures)
             sys.exit(0)
         self.finalize(futures)
-        if self.options.action == None:
-          self.db.add_list('done', base)
+
 
   def finalize(self, futures):
+    for (table, obj) in self.existing:
+      self.db.act(self.options.action, table, obj)
     for future in as_completed(futures):
       table, obj = future.result()
-      if table != None:
-        self.db.act(self.options.action, table, obj)
+      self.db.act(self.options.action, table, obj)
 
   @staticmethod
-  def process(path, scan_filetype):
-    mime = mimetype(path)
+  def process(path, mime):
     filetype = mime.mime_type.split("/")[0]
-    if scan_filetype not in [filetype, "all", None]:
-      return (None, None)
     match filetype:
       case "image":
         from images import Images
-        return Images.process(mime, path, filetype)
+        return Images.process(path, mime)
       case "video":
         from videos import Videos
-        return Videos.process(mime, path, filetype)
+        return Videos.process(path, mime)
       case "audio":
         from audio import Audio
-        return Audio.process(mime, path, filetype)
+        return Audio.process(path, mime)
       case _:
         from files import Files
-        return Files.process(mime, path, filetype)
+        return Files.process(path, mime)
 
   def filter(self, base, folder):
     path = os.path.join(self.root, base, folder)

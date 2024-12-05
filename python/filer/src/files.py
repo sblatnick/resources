@@ -5,7 +5,7 @@ from db import *
 from util import *
 
 class Files(Command):
-  table = 'files'
+  table = 'file'
 
   def __init__(self, option_strings=None, dest=None):
     super().__init__(option_strings, dest)
@@ -47,13 +47,14 @@ class Files(Command):
       self.db.act(action, self.table, row)
 
   @staticmethod
-  def process(mime, path, filetype):
+  def process(path, mime):
+    filetype = mime.mime_type.split("/")[0]
     obj = Common()
     obj.ext, obj.size, obj.md5 = common_data(mime, path)
     match obj.ext:
       case ".mp3":
         from audio import Audio
-        table, obj = Audio.process(mime, path, filetype)
+        table, obj = Audio.process(path, mime)
         return (table, obj)
     obj.src = path
     obj.filetype = filetype

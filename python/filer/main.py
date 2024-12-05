@@ -5,15 +5,19 @@ signal(SIGPIPE,SIG_DFL)
 import sys, argparse, time
 from src.scan import *
 from src.rescan import *
+from src.organize import *
+from src.pin import *
+from src.unpin import *
+
 from src.images import *
 from src.audio import *
 from src.videos import *
 from src.repos import *
 from src.hidden import *
 from src.files import *
+
 from src.tables import *
 from src.report import *
-from src.organize import *
 
 tic = time.perf_counter()
 
@@ -52,6 +56,16 @@ add_command(
   arg="action", default="dry",
   help="dry (default) | copy | move"
 )
+add_command(
+  "pin", Pin,
+  arg="path", default=None,
+  help="Mark file(s) in path as correct."
+)
+add_command(
+  "unpin", Unpin,
+  arg="path", default=None,
+  help="Remove marked file(s) in path as correct."
+)
 
 add_command("images", Images)
 add_command("videos", Videos)
@@ -59,8 +73,10 @@ add_command("audio", Audio)
 add_command("files", Files)
 add_command("repos", Repos, help="list (default) | dst | copy|move|dry")
 add_command("hidden", Hidden, help="list (default) | dst | copy|move|dry")
+
 add_command("tables", Tables, help="Show list of tables")
 add_command("report", Report, help="Show Details about the tables")
+
 
 
 #Args processed:

@@ -17,7 +17,8 @@ class DB():
         "created": obj.created,
         "size": obj.size,
         "md5": obj.md5,
-      }], pk=["src", "md5"])
+        "pin": False,
+      }], pk="src")
       if log:
         print(f"{obj.filetype}: {obj.src}")
         print(f"  {obj.dst}")
@@ -29,27 +30,13 @@ class DB():
     try:
       self.db[table].insert_all([{
         "src": path,
-        "dst": dst
+        "dst": dst,
+        "pin": False,
       }], pk="src")
       print(f"{table}: {path}")
     except:
       #print(f"Already scanned: {path}")
       pass
-
-  def is_done(self, base):
-    return self.found(base)
-
-  def found(self, value, key = "src", table = "done"):
-    try:
-      return len(list(self.db.execute(f"""
-        SELECT
-          {key}
-        FROM {table}
-        WHERE {key} = ?
-        LIMIT 1
-      """, [value]))) >= 1
-    except:
-      return False
 
   def query(self, sql):
     return self.db.query(sql)
@@ -59,7 +46,7 @@ class DB():
       try:
         for row in self.db[table].rows:
           if not os.path.exists(row["src"]):
-            self.db[table].delete((row["src"],row["md5"]))
+            self.db[table].delete(row["src"])
             print(f"Removed {table}: {row["src"]}")
       except Exception as e:
         print(e)
@@ -86,7 +73,7 @@ class DB():
       print(e)
     return duplicates
 
-  def drop(self, table = "done"):
+  def drop(self, table):
     try:
       self.db[table].drop()
     except:
@@ -100,7 +87,7 @@ class DB():
     if not os.path.exists(obj.src):
       ##Should never happen
       #print(f"Missing source, removing from db: {obj.src}")
-      self.db[table].delete((obj.src, obj.md5))
+      self.db[table].delete(obj.src)
       return
     
     #in case a new file:
@@ -113,7 +100,7 @@ class DB():
       dstmd5 = md5sum(obj.dst)
       if obj.md5 == dstmd5:
         if action == "move":
-          self.db[table].delete((obj.src, obj.md5))
+          self.db[table].delete(obj.src)
           print(f"shutil.rmtree({obj.src})")
           #shutil.rmtree(obj.src)
       else:
@@ -134,7 +121,7 @@ class DB():
           print(f"shutil.copy2('{obj.src}', '{obj.dst}')")
           #shutil.copy2(obj.src, obj.dst)
         case "move":
-          self.db[table].update((obj.src, obj.md5), {"src" : obj.dst})
+          self.db[table].update(obj.src, {"src" : obj.dst})
           print(f"shutil.move('{obj.src}', '{obj.dst}')")
           #shutil.move(obj.src, obj.dst)
       return

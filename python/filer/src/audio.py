@@ -10,7 +10,8 @@ class Audio(Files):
     super().__init__(option_strings, dest)
 
   @staticmethod
-  def process(mime, path, filetype):
+  def process(path, mime):
+    filetype = mime.mime_type.split("/")[0]
     obj = Common()
     obj.src = path
     obj.filetype = filetype

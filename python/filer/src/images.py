@@ -4,13 +4,14 @@ from files import *
 from util import *
 
 class Images(Files):
-  table = 'images'
+  table = 'image'
 
   def __init__(self, option_strings=None, dest=None):
     super().__init__(option_strings, dest)
 
   @staticmethod
-  def process(mime, path, filetype):
+  def process(path, mime):
+    filetype = mime.mime_type.split("/")[0]
     obj = Common()
     obj.src = path
     obj.filetype = filetype

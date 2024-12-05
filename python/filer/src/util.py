@@ -48,6 +48,13 @@ def common_data(mime, path):
   md5 = md5sum(path, size)
   return (ext, size, md5)
 
+def rowToObj(row):
+  o = Common()
+  print(row)
+  for k, v in row.items():
+    setattr(o, k, v)
+  return o
+
 class Obj(object):
   pass
 
