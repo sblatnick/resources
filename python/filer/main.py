@@ -12,6 +12,7 @@ from src.repos import *
 from src.hidden import *
 from src.files import *
 from src.tables import *
+from src.report import *
 from src.organize import *
 
 tic = time.perf_counter()
@@ -59,6 +60,7 @@ add_command("files", Files)
 add_command("repos", Repos, help="list (default) | dst | copy|move|dry")
 add_command("hidden", Hidden, help="list (default) | dst | copy|move|dry")
 add_command("tables", Tables, help="Show list of tables")
+add_command("report", Report, help="Show Details about the tables")
 
 
 #Args processed:
