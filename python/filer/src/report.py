@@ -20,9 +20,14 @@ class Report(Command):
     for table in self.tables: #self.db.db.table_names():
       totals.setdefault(table, self.defaults)
       if self.db.db[table].exists():
+        dst_dups = self.db.find_duplicates(table, "dst")
+        md5_dups = self.db.find_duplicates(table, "md5")
+
         totals[table] = {
           "count" : self.db.db[table].count,
-          "placed" : self.db.db[table].count_where("src = dst")
+          "placed" : self.db.db[table].count_where("src = dst"),
+          "dst dups" : "%s destination of %s files" % (len(dst_dups.keys()), sum(len(files) for files in dst_dups.values())),
+          "md5 dups" : "%s md5sum of %s files" % (len(md5_dups.keys()), sum(len(files) for files in md5_dups.values()))
         }
 
     totals = {k: v for k, v in sorted(totals.items(), key=lambda item: item[1]["count"], reverse=True)}
