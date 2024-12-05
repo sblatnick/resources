@@ -6,7 +6,7 @@ from command import *
 from db import *
 
 class Report(Command):
-  tables = ["images", "videos", "audio", "files", "repos", "hidden"]
+  tables = ["image", "video", "audio", "file", "repo", "hidden"]
   defaults = {
     "count" : 0,
     "placed" : 0

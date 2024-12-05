@@ -6,6 +6,7 @@ from db import *
 
 class Scan(Command):
   where = "."
+  action = "scan"
   recreate = False
   quiting = False
   existing = []
@@ -18,6 +19,14 @@ class Scan(Command):
     self.root = os.getcwd()
     if not self.recreate:
       self.db.remove_lost()
+    if self.action in ["pin", "unpin"]:
+      if self.options.path == None:
+        print("Must specify a path to pin/unpin")
+        sys.exit(0)
+      else:
+        self.where = os.path.join(".",self.options.path)
+        print(f"where: {self.where}")
+        self.options.action = self.action
     print("Traversing files")
     with ThreadPoolExecutor(max_workers=4) as executor:
       for b, dirs, files in os.walk(self.where, topdown=True):
@@ -31,8 +40,12 @@ class Scan(Command):
           table = mime.mime_type.split("/")[0]
           if table not in self.types:
             table = "file"
+
+          #Skip file types not wanted:
           if self.options.filetype not in [table, "all", None]:
             continue
+
+          #Skip previously found files:
           obj = None
           try:
             obj = self.db.db[table].get(path)
@@ -41,6 +54,7 @@ class Scan(Command):
           if obj != None:
             self.existing.append((table, rowToObj(obj)))
             continue
+
           futures.append(executor.submit(Scan.process, path, mime))
           if self.quiting:
             self.finalize(futures)
@@ -49,8 +63,12 @@ class Scan(Command):
 
 
   def finalize(self, futures):
+    #In db:
     for (table, obj) in self.existing:
-      self.db.act(self.options.action, table, obj)
+      if self.options.action != None: #Already in db, so no need to insert
+        self.db.act(self.options.action, table, obj)
+
+    #Newly found:
     for future in as_completed(futures):
       table, obj = future.result()
       self.db.act(self.options.action, table, obj)

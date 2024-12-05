@@ -27,7 +27,7 @@ parser = argparse.ArgumentParser(
 )
 
 commands = parser.add_subparsers(title="actions", metavar="")
-options = ["action", "filetype"]
+options = ["action", "filetype", "path"]
 
 #Common:
 def add_command(name, obj, arg="action", default="list", help="list (default) | ext | md5|dst | copy|move|dry"):

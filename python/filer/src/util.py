@@ -50,7 +50,7 @@ def common_data(mime, path):
 
 def rowToObj(row):
   o = Common()
-  print(row)
+  #print(row)
   for k, v in row.items():
     setattr(o, k, v)
   return o

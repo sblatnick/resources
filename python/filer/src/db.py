@@ -89,7 +89,17 @@ class DB():
       #print(f"Missing source, removing from db: {obj.src}")
       self.db[table].delete(obj.src)
       return
-    
+
+    match action:
+      case "pin":
+        print(f"{action}ing: {obj.src}")
+        self.db[table].update(obj.src, {"pin" : True})
+        return
+      case "unpin":
+        print(f"{action}ing: {obj.src}")
+        self.db[table].update(obj.src, {"pin" : False})
+        return
+
     #in case a new file:
     self.insert(table, obj, log=False)
     
