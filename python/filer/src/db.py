@@ -103,6 +103,9 @@ class DB():
     #in case a new file:
     self.insert(table, obj, log=False)
     
+    if obj.pin == True:
+      print(f"Pinned: {obj.src}")
+      return
     if os.path.exists(obj.dst):
       if obj.src == obj.dst:
         print(f"Correct: {obj.src}")

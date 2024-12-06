@@ -46,22 +46,22 @@ class Report(Command):
     template = pyratemp.Template(filename=os.path.join(src, "template/log.tpl"))
     result = template(
       fg={
-        "images" : 31,
+        "image" : 31,
         "audio" : 32,
         "hidden" : 33,
-        "files" : 34,
-        "videos" : 35,
-        "folders" : 36,
-        "repos" : 31
+        "file" : 34,
+        "video" : 35,
+        "folder" : 36,
+        "repo" : 31
       },
       bg={
-        "images" : 41,
+        "image" : 41,
         "audio" : 42,
         "hidden" : 43,
-        "files" : 44,
-        "videos" : 45,
-        "folders" : 46,
-        "repos" : 41
+        "file" : 44,
+        "video" : 45,
+        "folder" : 46,
+        "repo" : 41
       },
       totals=totals,
       chart=chart,
