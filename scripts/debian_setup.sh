@@ -15,6 +15,18 @@ function setting() {
   fi
 }
 
+function github_latest() {
+  repo=$1
+  match=$2
+  name=${repo##*/}
+  curl -s https://api.github.com/repos/${repo}/releases/latest > /tmp/${name}-latest.json
+  version=$(jq -r '.tag_name' /tmp/${name}-latest.json)
+  version=${version#v}
+  search='.assets[] | select(.browser_download_url | match("'$match'")) | .browser_download_url'
+  latest=$(jq -r "${search}" /tmp/${name}-latest.json)
+  echo ${latest}
+}
+
 if ! grep -q 'Acquire::PDiffs "false";' /etc/apt/apt.conf 2>/dev/null;then
   echo "Disable Apt PDiffs"
   echo 'Acquire::PDiffs "false";' > /tmp/apt.conf
@@ -58,7 +70,7 @@ if [ ! -f /usr/bin/ag ];then
     system-config-printer \
     mozo \
     audacious \
-    vlc
+    jq
 fi
 
 if grep -q 'GRUB_TIMEOUT=5' /etc/default/grub 2>/dev/null;then
@@ -102,11 +114,27 @@ if [ -z "$(which vivaldi)" ];then
   rm vivaldi-stable_*.deb
 fi
 
+if which flatpak;then
+  decrypt | sudo -S apt install flatpak
+  flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+  flatpak install flathub org.ppsspp.PPSSPP
+  #flatpak run org.ppsspp.PPSSPP
+fi
+
+if [ ! -d ~/.app ];then
+  mkdir ~/.app
+  wget $(github_latest 'PCSX2/pcsx2' '.AppImage$') -O pcsx2.AppImage
+  mv pcsx2.AppImage ~/.app/
+fi
+
 if ! dconf dump /org/mate/panel/ | grep -q vivaldi;then
   echo "Adding apps to mate-panel"
   dconf load /org/mate/panel/ < ~/projects/resources/config/mate-panel.conf
+  cp -r ~/projects/resources/config/launchers .config/mate/panel2.d/default/launchers
   killall mate-panel
 fi
+
+#TODO: install/configure tilix
 
 if ! dconf dump /org/mate/desktop/keybindings/ | grep -q tilix;then
   echo "Adding default shortcuts"

@@ -36,6 +36,9 @@
   #List all tracked files:
     config ls-tree --full-tree --name-only -r HEAD
 
+  #force add file ignored by another repo using config bare repo:
+    config update-index --add workspace.xml
+
 #diff
   #setup meld as a diff tool:
   git config --global diff.tool meld
@@ -172,6 +175,14 @@
 
     #push to a differently named branch:
     git push origin local_branch:remote_branch -f
+
+    #pull fix local tags out-of-date:
+      #Error:
+      git pull
+        ! [rejected]        1.0        -> 1.0  (would clobber existing tag)
+      #Fix:
+      git fetch --tags --force
+
 
 #merging:
 

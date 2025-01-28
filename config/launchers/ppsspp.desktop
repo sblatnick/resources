@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Name[en_US]=ppsspp
+Exec=flatpak run org.ppsspp.PPSSPP
+Name=ppsspp
+Icon=/home/steve/projects/resources/icon/ppsspp.webp
+Icon[en_US]=/home/steve/projects/resources/icon/ppsspp.webp

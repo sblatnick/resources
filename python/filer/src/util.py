@@ -55,6 +55,10 @@ def rowToObj(row):
     setattr(o, k, v)
   return o
 
+def space(text, width):
+  spaces = int(width - len(str(text))) * " "
+  return f"{text}{spaces}"
+
 class Obj(object):
   pass
 

@@ -159,4 +159,20 @@
   sudo usermod -aG roccat ${USER}
   reboot
 
+#Debian Upgrade
+  sudo apt update
+  sudo apt upgrade
+  sudo apt dist-upgrade
+
+#Fix NVidia after upgrade
+  sudo su
+  vi /etc/modprobe.d/blacklist-nvidia-nouveau.conf
+    blacklist nouveau
+    options nouveau modeset=0
+  X -configure
+  mv xorg.conf.new /etc/X11/xorg.conf
+  vi /etc/X11/xorg.conf
+    #change driver from "nouveau" to "nvidia"
+  systemctl restart lightdm
+
 

@@ -11,6 +11,7 @@ class Report(Command):
     "count" : 0,
     "placed" : 0
   }
+  width = 87
 
   def __init__(self, option_strings=None, dest=None):
     super().__init__(option_strings, dest)
@@ -22,13 +23,22 @@ class Report(Command):
       if self.db.db[table].exists():
         dst_dups = self.db.find_duplicates(table, "dst")
         md5_dups = self.db.find_duplicates(table, "md5")
+        rows = self.db.db[table].count
+        done = self.db.db[table].count_where("pin = True OR src = dst")
+        percent = f"{done / rows}%"
+        w = self.width * done / rows
 
         totals[table] = {
-          "count" : self.db.db[table].count,
+          "progress" : f"\033[41m{space(done,w)}\033[101m{space(percent, self.width - w)}\033[0m",
+          "count" : rows,
           "placed" : self.db.db[table].count_where("src = dst"),
           "dst dups" : "%s destination of %s files" % (len(dst_dups.keys()), sum(len(files) for files in dst_dups.values())),
-          "md5 dups" : "%s md5sum of %s files" % (len(md5_dups.keys()), sum(len(files) for files in md5_dups.values()))
+          "md5 dups" : "%s md5sum of %s files" % (len(md5_dups.keys()), sum(len(files) for files in md5_dups.values())),
+          "pinned" : self.db.db[table].count_where("pin = True"),
+          "done" : done,
         }
+        #Bar width: 87
+        #[[1052        ]88%       ]1194
 
     totals = {k: v for k, v in sorted(totals.items(), key=lambda item: item[1]["count"], reverse=True)}
 
