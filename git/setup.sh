@@ -140,6 +140,9 @@ git config --global -e
       update
       post-receive
 
+#Scripts:
+  #A script in your PATH like `git-example` means you can do `git example` to call it.
+  #This also applies to some other programs like `kubectl`
 
 #git server
   #Client:

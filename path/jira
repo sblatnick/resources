@@ -41,6 +41,7 @@ case "${REQUEST}" in
     ;;
   GET|DELETE) ##requests against jira
       ENDPOINT=$@
+      #ARGS='?expand=changelog'
     ;;
   *)
       error "Unsupported request: ${REQUEST}"

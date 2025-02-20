@@ -7,6 +7,48 @@ set -o pipefail
 #-----------------------------------GLOBALS------------------------------------#
 PID=$$
 
+#------------------------------------TOOLS-------------------------------------#
+function add_tools() {
+  export TOOLS="${TOOLS}:${1}"
+  export PATH="${PATH}:${TOOLS}"
+  #make sure still clean:
+  export PATH="$(perl -e 'print join(":", grep { not $seen{$_}++ } split(/:/, $ENV{PATH}))')"
+}
+
+function tools() {
+  for tools in $(echo "${TOOLS}" | tr ':' $'\n')
+  do
+    echo "$(boldgreen ${tools##*/}) ($(blue $tools))"
+    for tool in $(ls -1 $tools)
+    do
+      documentation="$(grep document_title $tools/$tool)"
+      if [[ -z "${documentation}" ]]; then
+        echo "  $(blue $tool)"
+      else
+        description=$(echo "${documentation}" | cut -d'"' -f2)
+        args=$(echo "${documentation}" | cut -d'"' -f3-)
+        count=$(eval _tool_arg_count ${args})
+        args=$(eval _tool_arg ${args})
+        width=$(( $count * 11 + 60 ))
+        printf "  %-${width}s %s\n" "$(blue $tool) ${args}" "${description}"
+      fi
+    done
+  done
+}
+
+function _tool_arg() {
+  while [ -n "$1" ]
+  do
+    params+=$(printf "[\033[34;1m%s\033[0m] " "${1}")
+    shift
+  done
+  printf "${params}"
+}
+
+function _tool_arg_count() {
+  echo $#
+}
+
 #-----------------------------------LOGGING------------------------------------#
 DEBUG=false
 TIMESTAMP=true

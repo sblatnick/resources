@@ -1,5 +1,6 @@
 #!/bin/bash
-export PATH="${PATH}:${HOME}/.local/bin:${RESOURCES}/path:${HOME}/.krew/bin:/usr/sbin"
+export TOOLS="${RESOURCES}/path"
+export PATH="${PATH}:${HOME}/.local/bin:${TOOLS}:${HOME}/.krew/bin:/usr/sbin"
 
 function extract()
 {
@@ -8,7 +9,7 @@ function extract()
     return 1
   fi
   archive=$1
-  
+
   if [ -f ${archive} ];then
     if [ -d ${archive%.*} ];then
       rm -rf ${archive%.*} 2>/dev/null
