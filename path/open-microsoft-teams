@@ -1,0 +1,12 @@
+#!/bin/bash
+source ~/.bashrc #source main bashrc so we can add to the environment outside of repo
+source ${BASH_SOURCE%/path/*}/config/bashrc
+
+vivaldi --app=https://teams.microsoft.com/v2/
+sleep 1
+#wmctrl -r :ACTIVE: -e 0,4820,360,1620,1080
+#wmctrl -r :ACTIVE: -e 0,1080,360,1710,1400
+wmctrl -r :ACTIVE: -e 0,0,1280,1080,1280
+sleep 5 #needs time to load
+tray=$(printf "%x\n" $(xdotool search --limit 1 --name 'Microsoft Teams$')) #convert number to hex with printf
+kdocker -qmst -w 0x${tray} -i ~/Documents/Resources/icons/microsoft_teams.svg

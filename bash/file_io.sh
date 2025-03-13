@@ -27,6 +27,19 @@ echo "world" >> /tmp/filename
 #store contents to variable:
 contents=$(</tmp/filename)
 
+#::::::::::::::::::::RENDER ENV::::::::::::::::::::
+
+#render template with shell environment variables:
+  #prep:
+    #maven directory
+    cd .m2/
+    cp settings.xml settings.xml.bak settings.xml.tpl
+    #tpl has "env." removed from variables:
+    sed 's/env\.//g' settings.xml.tpl
+
+  #substitute out variables:
+    envsubst < settings.xml.tpl > settings.xml.filled
+
 #::::::::::::::::::::LINKS::::::::::::::::::::
 
 #symbolic link:
@@ -187,10 +200,10 @@ vlc -I http "$1" --sout="#transcode{vcodec=mp2v,vb=600,width=320,height=240, aco
 
 
 #::::::::::::::::::::MUSIC TAGGING::::::::::::::::::::
-id3v2 -t "Paranoid" -a "Garbage" Paranoid.mp3 
-id3v2 -l Paranoid.mp3 
+id3v2 -t "Paranoid" -a "Garbage" Paranoid.mp3
+id3v2 -l Paranoid.mp3
   id3v1 tag info for Paranoid.mp3:
-  Title  : Paranoid                        Artist: Garbage                       
+  Title  : Paranoid                        Artist: Garbage
   Album  :                                 Year:     , Genre: Unknown (255)
   Comment:                                 Track: 0
   id3v2 tag info for Paranoid.mp3:

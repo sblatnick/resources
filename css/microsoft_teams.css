@@ -1,5 +1,6 @@
 /*
  * Microsoft Teams Custom CSS
+ * DEPRECATED = no longer works with the current version
  *
  * Makes the interface more usable:
  * - Make the buttons and lists on the left smaller
@@ -165,7 +166,7 @@
     padding: 0 !important;
     min-height: 4rem !important;
   }
-  
+
   .team-create-button-container {
     width: 20rem !important;
   }
@@ -231,7 +232,7 @@
 
   /*width*/
   .ts-message-list-container, virtual-repeat>.list-wrap>.item-wrap, .ts-add-message .ts-new-message, .message-list-common:not(.chat-style) *:not(img), .ts-add-message.is-not-chat .ts-new-message {
-    max-width: 1000.0rem !important;  
+    max-width: 1000.0rem !important;
   }
   .ts-add-message.is-not-chat .new-message-common {
     margin: 0 0.2rem !important;
