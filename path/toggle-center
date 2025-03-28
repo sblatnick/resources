@@ -1,0 +1,95 @@
+#!/bin/bash
+#$1 = Window Title
+#$2 = Display to center
+#Examples:
+#  toggle-center "Microsoft Teams" DisplayPort-0   #toggle position
+#  toggle-center "Microsoft Teams" clear           #reset settings
+
+source ~/.bashrc #source main bashrc so we can add to the environment outside of repo
+source ${BASH_SOURCE%/path/*}/config/bashrc
+
+use ~/.window
+context=${1// /_}
+
+function sitting() {
+  sit windows.$context.$1 $2
+}
+
+if [ "$2" == "clear" ];then
+  echo "Clearing '$1' settings"
+  sit windows.$context delete >/dev/null
+  exit
+fi
+
+window=$(wmctrl -lG | grep "$1")
+read id skip wx wy ww wh discard <<< ${window}
+#Position data can be bad:
+data=$(xdotool getwindowgeometry $id)
+position=$(echo "${data}" | grep "Position" | cut -d' ' -f4)
+position=$(echo "${position}" | tr ',' ' ')
+read wx wy <<< ${position}
+
+screen=$(xrandr | grep "^$2" | cut -d' ' -f4)
+screen=$(echo ${screen} | tr 'x+' ' ')
+read sx sy ox oy <<< ${screen}
+
+cat <<- EOF
+  ${context} (${id})
+  Window:
+    X:        $wx
+    Y:        $wy
+    Width:    $ww
+    Height:   $wh
+  Screen:
+    X:        $sx
+    Y:        $sy
+    Offset X: $ox
+    Offset Y: $oy
+  Current: ${current}
+EOF
+
+hx=$(sitting x)
+
+if [ "${hx}" == "null" ];then #Initialize
+  echo "Initializing positions"
+  sitting x ${wx} >/dev/null
+  sitting y ${wy} >/dev/null
+  sitting width ${ww} >/dev/null
+  sitting height ${wh} >/dev/null
+  hx=$wx
+fi
+if [ "${wx}" == "${hx}" ];then #Centered
+  echo "Moving to centered"
+  cw=$(( sx/2 ))
+  ch=$(( sy/3 * 2 ))
+  cx=$(( ox + ((sx/2) - (cw/2)) ))
+  cy=$(( oy + ((sy/2) - (ch/2)) ))
+  echo "  ${cx},${cy},${cw},${ch}"
+  wmctrl -ir ${id} -b remove,maximized_vert,maximized_horz
+  wmctrl -ir ${id} -e 0,${cx},${cy},${cw},${ch}
+  wmctrl -iR ${id}
+else #Home
+  echo "Moving to origin"
+  hy=$(sitting y)
+  hw=$(sitting width)
+  hh=$(sitting height)
+  echo "  ${hx},${hy},${hw},${hh}"
+  wmctrl -ir ${id} -e 0,${hx},${hy},${hw},${hh}
+  wmctrl -iR ${id}
+fi
+
+
+exit
+#DisplayPort-0 connected primary 3440x1440+1080+574 (normal left inverted right x axis y axis) 797mm x 333mm
+#HDMI-A-0 connected 1080x2560+0+0 left (normal left inverted right x axis y axis) 673mm x 284mm
+#DisplayPort-2 connected 1920x1080+4520+934 (normal left inverted right x axis y axis) 475mm x 267mm
+
+
+
+id=$(wmctrl -l | grep "${HOSTNAME} Documents$" 2>/dev/null | cut -d' ' -f1)
+if [ -n "${id}" ];then
+  wmctrl -ic "${id}"
+else
+  caja ~/Documents/
+  wmctrl -R "Documents"
+fi
