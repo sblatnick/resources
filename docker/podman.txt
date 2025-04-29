@@ -1,0 +1,19 @@
+#!/bin/bash
+#podman is for working with pods
+
+#View running pods:
+podman ps
+
+#Pull Image:
+podman pull --creds=user:passwd ${DTR_URL}/${image}:${SERVICE_VERSION}
+
+#Run Pod with interactive shell and enter it:
+buildah unshare -- podman run -it --rm --entrypoint bash ${DTR_URL}/${image}:${SERVICE_VERSION}
+
+#Run a pod as a daemon:
+  host=$(buildah unshare -- podman run -d -it --rm --entrypoint bash ${DTR_URL}/${image}:${SERVICE_VERSION})
+  #Stop the daemon:
+  buildah unshare -- podman kill $host
+
+
+

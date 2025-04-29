@@ -46,6 +46,10 @@ function ghex() {
         #FIXME: export GH_TOKEN=$($wgh token generate --app-id ${GH_APP_ID} --installation-id ${GH_APP_INSTALL_ID} --token-only --base64-key "${GH_APP_PRIVATE_KEY}")
         export GH_TOKEN=$($wgh token generate --app-id ${GH_APP_ID} --installation-id ${GH_APP_INSTALL_ID} --token-only --key "${GH_APP_PRIVATE_KEY_FILE}")
       ;;
+    gen) ##generate app token
+        #Requires: gh extension install Link-/gh-token
+        $wgh token generate --app-id ${GH_APP_ID} --installation-id ${GH_APP_INSTALL_ID} --key "${GH_APP_PRIVATE_KEY_FILE}"
+      ;;
     b64) ##Try the token using --base64-key instead of the file
         $wgh token generate --app-id ${GH_APP_ID} --installation-id ${GH_APP_INSTALL_ID} --token-only --base64-key "${GH_APP_PRIVATE_KEY}"
       ;;
@@ -63,8 +67,17 @@ function ghex() {
         _rate tok
         export GH_TOKEN=${GH_TOKEN_BAK}
       ;;
+    _rate) ##Get rate limits and usage for various accounts
+        IFS=$',' read -rd '' -a limit <<< "$(gh get rate_limit | jq -r '[.rate.used, .rate.limit, .rate.reset] | @csv')"
+        local used=${limit[0]}
+        local max=${limit[1]}
+        local reset=${limit[2]}
+        local left=$((reset - now))
+        local remaining="$((left / 60)) min $(( left % 60 )) sec"
+        echo "  $1 $(printf "%'6d\n" $used) / $(printf "%'6d\n" $max) @ $(date --date @$reset +%R) (remaining $remaining)"
+      ;;
     *|'')
-        $wgh $@
+        $wgh "$@"
       ;;
   esac
 }

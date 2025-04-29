@@ -363,6 +363,15 @@
 
   #source: https://git-scm.com/docs/git-filter-branch
 
+#git filter-repo remove secrets
+  git filter-repo --sensitive-data-removal --replace-text ../passwords.txt
+  #Install into path:
+    cd ~/path/ #some directory in your PATH
+    ln -s ~/projects/git-filter-repo-*/git-filter-repo ./
+  #source:
+  #- https://github.com/newren/git-filter-repo
+  #- https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository
+
 #flog - fix really bad merge and force push
   #merged and force pushed to remote?
   git reflog

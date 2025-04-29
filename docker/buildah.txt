@@ -1,0 +1,70 @@
+#!/bin/bash
+
+buildah login -u user -p password ${DTR_URL}
+
+#Give sudo privileges without full root:
+buildah unshare -- ./build.sh
+
+#List:
+buildah images
+buildah containers
+
+#Base FROM other images:
+container=$(buildah from ${DTR_URL}/project/java17:2.0.1)
+mount=$(buildah mount ${container})
+
+buildah config --workingdir /opt ${container}
+buildah config --user root ${container}
+
+#Important: Multi-Arch requires `qemu-user-static` installed on the host
+dnf install \
+  --installroot ${mount} \
+  --releasever=/ \
+  --setopt install_weak_deps=false \
+  --forcearch aarch64 \
+  --nodocs -y \
+  dnf tar gzip git
+#Note:
+# - dnf can install dnf into the container mount
+# - --forcearch use 'aarch64' for arm64, use 'amd64' for amd64
+
+
+mkdir -p ${mount}/opt/tomcat/webapps/ROOT/WEB-INF/{lib,classes}
+buildah run ${container} sh -c "groupadd -g 1000 user"
+buildah run ${container} sh -c "adduser -u 1000 -d /home/user -g user user"
+
+#Install classes/jars
+buildah copy ${container} \
+  target/project/WEB-INF/lib \
+  /opt/tomcat/webapps/ROOT/WEB-INF/lib
+buildah copy ${container} \
+  target/project/WEB-INF/classes \
+  /opt/tomcat/webapps/ROOT/WEB-INF/classes
+buildah copy ${container} \
+  scripts/ \
+  /opt/project
+
+#Copy from another image:
+example=$(buildah from ${DTR_URL}/project/example:1.0.1)
+buildah copy --from ${example} ${container} \
+  /lib64/ \
+  /lib64/
+
+buildah run ${container} sh -c "chown -R user:user /opt/{project,tomcat} /home/project"
+
+buildah config --entrypoint /opt/project/entrypoint.sh ${container}
+buildah umount ${container}
+buildah commit ${container} ${DTR_URL}/project/base:1.0.0
+buildah push ${DTR_URL}/project/base:1.0.0
+
+#How to solve: "error: failed to exec scriptlet interpreter /bin/sh: Exec format error"
+  docker run -it buildah:1.0.5
+  dnf install --installroot /tmp --forcearch aarch64 ca-certifates
+  #FAIL
+  exit
+  #On Debian Host:
+  sudo apt install qemu-user-static
+
+  docker run -it buildah:1.0.5
+  dnf install --installroot /tmp --forcearch aarch64 ca-certifates
+  #Works!

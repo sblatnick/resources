@@ -20,6 +20,8 @@ ${ORACLE_HOME}/bin/sqlplus / as sysdba -- Connect from the command line
 
   -- specific column width:
   column NAME format a25;
+  -- numbers format (if you use the columns above, the numbers will appears as "####" only
+  column VERSION format 999;
 
   -- revert formatting:
   column NAME CLEAR;

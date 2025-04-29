@@ -1,0 +1,15 @@
+#!/bin/bash
+source ~/.bashrc #source main bashrc so we can add to the environment outside of repo
+source ${BASH_SOURCE%/path/*}/config/bashrc
+
+
+ext="$1"
+name="$2"
+if [ -z "${ext}" ] || [ -z "${name}" ];then
+  echo -e "${0##*/} [extension] [name]"
+  echo -e "  Convert images of the specified extension in current directory into a [name].pdf"
+  exit
+fi
+
+convert $(ls -v *.${ext}) "${name}.pdf"
+echo "output: ${name}.pdf"

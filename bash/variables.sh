@@ -102,7 +102,7 @@
     declare $example="My Name"
     echo $name #prints: My Name
     echo ${!example} #prints: My Name
-  
+
 
 #::::::::::::::::::::ARITHMETIC::::::::::::::::::::
 
@@ -435,6 +435,22 @@ echo $(($(</dev/shm/foo)+1)) >/dev/shm/foo;
 
 ) 200>/var/lock/.myscript.exclusivelock
 
+#source: https://unix.stackexchange.com/questions/22044/correct-locking-in-shell-scripts
+lockfile=/var/tmp/mylock
+
+if ( set -o noclobber; echo "$$" > "$lockfile") 2> /dev/null; then
+
+  trap 'rm -f "$lockfile"; exit $?' INT TERM EXIT
+
+  # do stuff here
+
+  # clean up after yourself, and release your trap
+  rm -f "$lockfile"
+  trap - INT TERM EXIT
+else
+  echo "Lock Exists: $lockfile owned by $(cat $lockfile)"
+fi
+
 #::::::::::::::::::::EXCEPTION HANDLING::::::::::::::::::::
 #EXCEPTION HANDLING using $? (try/catch):
   /usr/local/bin/my-command
@@ -541,7 +557,7 @@ EOF
   {
     echo "this is a script function, $1"
   {
-  
+
   do_stuff ok
 
   #export for a subshell:

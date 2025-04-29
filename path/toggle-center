@@ -58,7 +58,8 @@ if [ "${hx}" == "null" ];then #Initialize
   sitting height ${wh} >/dev/null
   hx=$wx
 fi
-if [ "${wx}" == "${hx}" ];then #Centered
+#Fuzzy match the position:
+if [[ $wx -le $((hx + 10)) && $wx -ge $((hx - 10)) ]];then #Centered
   echo "Moving to centered"
   cw=$(( sx/2 ))
   ch=$(( sy/3 * 2 ))

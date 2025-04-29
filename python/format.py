@@ -11,3 +11,23 @@
 
 #Passing in variables to a string:
   "Number %d string %s object reference %r" % (index, string, self)
+
+
+print("println in C (trailing newline implicit)")
+
+x = "variable"
+#Variable interpolation in string:
+print(f"Variable:\n  {x}")
+
+#Multi-line String with variable interpolation:
+a = f"""
+This is a multi line string
+with more than one line and variable = {x}
+"""
+#Single line string on multiple lines and format in variable:
+b = ("Here is a second "
+     "multi line string like"
+     "this here"
+     "because I "
+     "can {}".format(x))
+
