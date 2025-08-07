@@ -14,10 +14,11 @@
 #::::::::::::::::::::FILE READING/WRITING::::::::::::::::::::
 
 #read file line by line:
-while read -r line
-do
-  echo $line
-done < $path
+  #IMPORTANT: must have a trailing new line to get the last line
+  while read -r line
+  do
+    echo $line
+  done < $path
 
 #overwrite to a file:
 echo "hello" > /tmp/filename

@@ -5,6 +5,7 @@
   for path in ${PATH//:/ }; do if [ -f $path/$bin ];then echo found $path/$bin;fi;done
 
 #WHILE
+  #IMPORTANT: must have a trailing new line to get the last line
   while read f
   do
     echo $f

@@ -26,6 +26,22 @@ function ghex() {
         shift
         $wgh api --method POST -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" $@
       ;;
+    graphql) #[graphql file] [args=values]#alias to api --method POST
+        shift
+        query=$1
+        shift
+        parameters=()
+        while [ -n "$1" ]
+        do
+          parameters+=("-F $1")
+          shift
+        done
+        $wgh api graphql ${parameters[@]} -f query="$(cat $query)"
+        if [ "$?" -ne "0" ]; then
+          yellow "Command used:"
+          echo gh api graphql ${parameters[@]} -f query="$(cat $query)"
+        fi
+      ;;
     patch) #[url] [json file]#alias to api --method PATCH
         shift
         curl -L \

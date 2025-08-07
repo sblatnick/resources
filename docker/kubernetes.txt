@@ -196,6 +196,13 @@ Example arguments:
       kubectl logs --since=1h nginx
     #source: https://stackoverflow.com/questions/51835066/tailing-few-lines-from-huge-logs-of-kubectl-logs-f
 
+    #Copy file to/from POD:
+    kubectl cp -n <namespace> <pod-name>:<path> <destination-on-local-system>
+      kubectl cp -n default my-pod:/path/to/file.txt .
+    kubectl cp -n <namespace> <source> <pod-name>:<path>
+      kubectl cp -n default . my-pod:/path/to/file.txt
+    #source: https://spacelift.io/blog/kubectl-cp
+
     #delete:
     kubectl delete -f resource.yaml
     kubectl delete service my-service

@@ -380,6 +380,21 @@ ls -d !(@(profile|role)_*)
   #this does NOT work because ! is for only one pattern (returns all directories):
   ls -d !({profile,role}_*)
 
+#::::::::::::::::::::READ::::::::::::::::::::
+
+#Array comma-delimited:
+  IFS=',' read -ra PACKAGES <<< "$packages"
+  echo ${PACKAGES[@]}
+#space-delmited into separate variables:
+  read month day year time < <(grep 'ERROR' /var/log/mcafee/solidcore/solidcore.log | tail -n 1 | grep -Po '[^\s]+ \d+ \d\d\d\d:\d\d:\d\d:\d\d' | sed 's/:/ /')
+#tab-delmited data line by line:
+  local IFS=$'\n'
+  while IFS=$'\t' read -u 3 host role
+  do
+    echo -e "  \033[34m${host%%.*}\033[0m ${role}"
+  done 3< <(jq -r ".[] | select(.id == \"${id}\") | [.hostname, .role] | @tsv" file.json)
+  #IMPORTANT: must have a trailing new line to get the last line
+
 #::::::::::::::::::::MULTITHREADED VARIABLES::::::::::::::::::::
 
 #source: http://stackoverflow.com/questions/13207292/bash-background-process-modify-global-variable

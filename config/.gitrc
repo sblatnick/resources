@@ -503,41 +503,23 @@ function gitex() {
             ;;
         esac
       ;;
-    latest) ##switch to latest master branch and pull in the latest
-        last=$(date +%s -r .git/FETCH_HEAD)
+    latest) ##switch to latest release branch
+        last=$(date +%s -r .git/FETCH_HEAD 2>/dev/null)
         now=$(date +%s)
         if [[ $((now - last)) -lt 300 ]];then
           warn "last checked within 5 minutes"
-          return
+        else
+          $wgit fetch
         fi
-        $wgit fetch
-        #Retain major version from master:
-        local branches=$($wgit --no-pager branch -r --format '%(refname:lstrip=2)' | sed 's/^[^\/]*\///' | sort -V | grep "${MASTER%%.*}")
-        if [ -z "${branches}" ];then
-          if [[ "${MASTER}" == "${BRANCH}" ]];then
-            error "${MASTER} branch doesn't exist"
-          else
-            warn "${MASTER} branch doesn't exist, setting master"
-            gitex remaster
-            gitex latest
-          fi
-          return
-        fi
-        local latest=$(echo "${branches}" | tail -n 1)
-        if [[ "${MASTER}" == "${latest}" ]];then
-          warn "latest already checked out"
+
+        local latest=$($wgit --no-pager branch -r --format '%(refname:lstrip=2)' | sed 's/^[^\/]*\///' | grep -ioE 'release/[0-9]+.*' | sort -V | tail -n 1 | tr -d '\n')
+        if [[ "${BRANCH}" == "${latest}" ]];then
+          warn "latest '${latest}' already checked out"
         else
           green "switching to ${latest}"
           gitex co ${latest}
-          gitex remaster
         fi
-        yellow "pulling latest ${MASTER}"
         gitex pull
-        local release=${MASTER/dev/release}
-        if [[ "${release}" != "${MASTER}" ]];then
-          yellow "pulling latest ${release}"
-          gitex pull origin ${release}
-        fi
       ;;
     retag) #[tag]#Delete and recreate tag both local and remote
         shift

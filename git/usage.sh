@@ -186,6 +186,48 @@
 
 #merging:
 
+  #Updating dev branch with latest from base branch:
+    #Pull or reset
+      #Pull in latest:
+        git pull origin master
+      #Check:
+        git diff origin/dev/branch dev/branch
+      #Bad? Then reset
+        git reset --hard origin/dev/branch
+      #Good? Then push
+        git push
+    #Rebase (Prone to conflicts)
+      git rebase main
+
+    #Alternatives methods with another local branch:
+      #Temp branch:
+        #Create temp branch:
+          git checkout -b dev/branch-tmp
+        #Check what the pull would do:
+          git pull origin master
+          git diff dev/branch..dev/branch-tmp
+        #Clean up your temp branch:
+          git checkout dev/branch
+          git branch -D dev/branch-tmp
+        #Did the diff look right? If yes, then do it for real...
+        #Simple Pull:
+          git pull origin master
+        #Push back to your branch:
+          git push
+      #Backup branch:
+        #Backup your branch:
+          git checkout -b dev/branch-bak
+        #Go back to your dev branch:
+          git checkout dev/branch
+        #Pull latest:
+          git pull origin master
+        #See what it would do:
+          git diff dev/branch-bak..dev/branch
+        #Does it look right? If yes, then...
+          git push
+        #If not, reset your branch to what's on origin:
+          git reset --hard origin/dev/branch
+
   #Without checkout: https://stackoverflow.com/questions/3216360/merge-update-and-pull-git-branches-without-using-checkouts
     # Merge local branch foo into local branch master,
     # without having to checkout master first.
