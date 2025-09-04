@@ -197,6 +197,12 @@
   apt-get install package
   apt-cache search package
 
+  #Synaptic Error:
+    #Repository 'http://security.debian.org/debian-security testing-security InRelease'
+    #changed its 'Codename' value from 'trixie-security' to 'forky-security'
+    #This must be accepted explicitly before updates for this repository can be applied.
+    apt-get --allow-releaseinfo-change update
+
   #add repo:
     apt-get update
     apt-get install -y software-properties-common

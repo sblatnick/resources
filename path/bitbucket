@@ -33,9 +33,11 @@ case "${REQUEST}" in
       REQUEST='GET'
       ENDPOINT=$1
       ARGS=$2
-      API='mvc'
+      #API='mvc'
+      API='rest/api/latest'
       #HEADERS="-H 'Authorization: Bearer ${BIT_BUCKET_TOKEN}' -H 'Accept: application/json'"
-      HEADERS="-H 'Authorization: Basic ${BIT_BUCKET_BASE64}' -H 'Accept: application/json'"
+      #HEADERS="-H 'Authorization: Basic ${BIT_BUCKET_BASE64}' -H 'Accept: application/json'"
+      HEADERS="-H 'Authorization: Bearer ${BIT_BUCKET_API_TOKEN}' -H 'Accept: application/json'"
     ;;
   *)
       error "Unsupported request: ${REQUEST}"
