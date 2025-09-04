@@ -3,6 +3,57 @@
 #SUMMARY
   #awk basically greps lines out and prints the results based on the actions passed:
 
+  #Special variables:
+    FS  = field separator (" ")
+    RS  = record separator (\n)
+
+    OFS = output field separator
+    ORS = output record separator
+
+    NF = number of fields
+    NR = number of records
+    FNR = number or records relative to the current input file
+
+    FILENAME = current input file
+
+  #From: ._utils cols()
+    function cols() {
+      BIN='cols' pipe $@ | \
+      awk '
+        BEGIN {
+          #set delimiter to tab:
+          FS = "\t"
+        }
+
+        #run over every row (record):
+        NR {
+          #run over every column (field):
+          for (i=1; i<=NF; i++) {
+            #store an ongoing max length of each column to an array:
+            max[i] = length($i) > max[i] ? length($i) : max[i]
+            #store the column value to a 2D array for END processing:
+            values[NR, i] = $i
+          }
+        }
+
+        #if you use NR again, it will not give you the final max values
+        END {
+          #loop over rows (records):
+          for (j=1; j<=NR; j++) {
+            #loop over columns (fields):
+            for (i=1; i<=NF; i++) {
+              #retreive max column length from all rows:
+              l=max[i]
+              #retreive value from 2D array:
+              v=values[j,i]
+              #print with left-aligned columns:
+              printf "%-"l"s %s", v, (i==NF ? RS : " ")
+            }
+          }
+        }
+      '
+    }
+
   #match lines with regex and print the first "column" delimited by whitespace (bash array),
   #followed by '=' and the second "column":
   awk '/regex/ {print $1,"=",$2}'
