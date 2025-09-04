@@ -258,6 +258,31 @@ function col() {
   USAGE='lines | col [number|range|last]' BIN='col' ACTION="_col $1" pipe
 }
 
+#Convert to columns any tab delimited data
+function cols() {
+  BIN='cols' pipe $@ | \
+  awk '
+    BEGIN {
+      FS = "\t"
+    }
+    NR {
+      for (i=1; i<=NF; i++) {
+        max[i] = length($i) > max[i] ? length($i) : max[i]
+        values[NR, i] = $i
+      }
+    }
+    END {
+      for (j=1; j<=NR; j++) {
+        for (i=1; i<=NF; i++) {
+          l=max[i]
+          v=values[j,i]
+          printf "%-"l"s %s", v, (i==NF ? RS : " ")
+        }
+      }
+    }
+  '
+}
+
 function _swap() {
   if [ "$#" -lt 1 ];then
     echo -e "Usage: ${USAGE}"
