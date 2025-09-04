@@ -195,10 +195,10 @@ function kate_extentions() {
         do
           local stat=$(echo "${pod}" | col 3)
           case $stat in
-            CrashLoopBackOff|Error)
+            CrashLoopBackOff|Error|OOMKilled)
                 local status=$(red "deleting...")
                 local name=$(echo "${pod}" | col 1)
-                kubectl -n ${namespace} delete pod/${name}
+                kubectl -n ${namespace} delete pod/${name} --grace-period 0 --force
               ;;
           esac
           printf "%*s %b\n" -$wide "$pod" "$status"

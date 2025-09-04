@@ -31,6 +31,10 @@ JSONPATH  = {range.items[?(@.status.phase=="Released")]}{"pv/"}{.metadata.name}{
 UB_PVS    = $(shell kubectl get pv -o jsonpath='$(JSONPATH)')
 NS_PVS    = $(shell kubectl -n $(NAMESPACE) get pvc -o=name)
 
+#Trevor Gever's example of help documentation:
+help:
+ @grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
 #Default: make serv
 serv: $@
 # $@ left side of : or target, so `make serv` => `make $(TARGETS)` where TARGETS == serv

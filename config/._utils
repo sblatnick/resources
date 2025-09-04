@@ -165,7 +165,7 @@ function pipe() {
           if [[ "line" == "${TYPE-line}" ]];then
             while IFS=$'\n' read pipe
             do
-              ${EVAL-eval} ${ACTION-echo} "$pipe"
+              ${EVAL-eval} ${ACTION-echo} "\"${pipe}\""
             done < $1
           else
             while IFS=$'\n' read pipe
@@ -175,7 +175,7 @@ function pipe() {
           fi
         else
           if [[ "line" == "${TYPE-line}" ]];then
-            ${EVAL-eval} ${ACTION-echo} "$1"
+            ${EVAL-eval} ${ACTION-echo} "\"$1\""
           else
             result="${result}${1}"
           fi
@@ -183,7 +183,7 @@ function pipe() {
         shift
       done
       if [ -n "${result}" ];then
-        ${EVAL-eval} ${ACTION-echo} "${result}"
+        ${EVAL-eval} ${ACTION-echo} "\"${result}\""
       fi
     fi
   else
@@ -191,12 +191,12 @@ function pipe() {
       if [[ "false" == "${HEADER-false}" ]];then
         while IFS=$'\n' read pipe
         do
-          ${EVAL-eval} ${ACTION-echo} "${pipe}"
+          ${EVAL-eval} ${ACTION-echo} "\"${pipe}\""
         done
       else
         while IFS=$'\n' read pipe
         do
-          output=$(${EVAL-eval} ${ACTION-echo} "${pipe}")
+          output=$(${EVAL-eval} ${ACTION-echo} "\"${pipe}\"")
           if [ -n "${output}" ];then
             echo -e "\033[32m${pipe}\033[0m"
             echo "${output}" | sed 's/^/  /'
@@ -209,7 +209,7 @@ function pipe() {
       do
         result="${result}${pipe}"
       done
-      ${EVAL-eval} ${ACTION-echo} "${result}"
+      ${EVAL-eval} ${ACTION-echo} "\"${result}\""
     fi
   fi
 }

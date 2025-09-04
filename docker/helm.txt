@@ -1,3 +1,17 @@
+#Quick start
+  #Create a new chart:
+  helm create mychart
+
+  #pull down the latest into my local copy, a git repo of charts:
+    helm fetch stable/mysql
+  #install chart with local customizations:
+    helm install -f "mysql.yaml" --namespace mysql -n mysql ./mysql
+
+  #By default, helm uses values.yaml
+  #By using my own -f ${chart}.yaml, I can keep the defaults separate in values.yaml
+  #This way I can review/merge changes when I fetch the latest,
+  #but still customize it in a separate file.
+
 #Helm
   #Helm is like yum/apt, and installs to the current kubectl context
   #Helm 2 only: Tiller is the server component
@@ -20,7 +34,7 @@
 
   #Search Repo:
   helm search repo ${repo} ${chart}
-  
+
   #Modify charts:
   git clone git@github.com:helm/charts.git
 
@@ -49,7 +63,7 @@
 
   #Update repo chart cache:
   helm repo update
-  
+
   #Install packages:
     helm install stable/mysql incubator/cassandra
     #incubator: experimental
@@ -66,7 +80,7 @@
     #install doku wiki:
       #prereqs: install metallb, openebs
       #conflicts: nginx, traefik (k3s default)
-      
+
       helm repo add bitnami https://charts.bitnami.com/bitnami
       kubectl create namespace doku
       #Singleton:
@@ -76,7 +90,7 @@
 
       #uninstall:
       helm delete --namespace doku doku
-      
+
       #increase replica count (don't scale the replicaset, NFS-only):
       kubectl -n doku scale --replicas 3 deployment/doku-dokuwiki
 
@@ -392,9 +406,9 @@
       {{ define "mychart.snippet" }}
         # body of template here
       {{ end }}
-      
+
       {{ template "mychart.snippet" . }} # . = scope passed in
-    
+
     #include/define
       #same as template, but pipeable like a function
 
@@ -417,7 +431,7 @@
   helm upgrade ${chart}
     pre-install
     post-install
-    
+
     pre-delete
     post-delete
 
@@ -447,7 +461,7 @@
           #Possible values:
             before-hook-creation  (DEFAULT) Delete the previous resource before a new hook is launched
             hook-succeeded        Delete the resource after the hook is successfully executed
-            hook-failed           Delete the resource if the hook failed during execution 
+            hook-failed           Delete the resource if the hook failed during execution
     spec:
       template:
         metadata:
