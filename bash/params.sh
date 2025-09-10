@@ -121,4 +121,22 @@ else
   done
 fi
 
+#::::::::::::::::::::PARAMETER OVERWRITING::::::::::::::::::::
+  #You have to reset all args
+  set -- "${@:1:2}" "new_arg3" "${@:4}"
+  #bash supports over 9 parameters with curly braces
+  #Change Windows path to Linux in WSL:
+  function param() {
+    echo -n CHANGED
+  }
+  #IMPORTANT: ${@:start:count} (see array.sh)
+  set -- "${@:1:2}" "$(param $3)" "${@:4:11}" "$(param ${15})" "${@:16}"
+
+  #use:
+    script 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
+  #output:
+    1 2 CHANGED 4 5 6 7 8 9 10 11 12 13 14 CHANGED 16 17 18 19 20 21
+
+  #source: https://stackoverflow.com/questions/4827690/how-can-i-change-a-command-line-argument-in-bash
+
 #See also: variables.sh
