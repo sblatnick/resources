@@ -218,6 +218,10 @@ function chomp() {
   BIN='chomp' pipe $@ | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
 }
 
+function noheader() {
+  BIN='noheader' pipe $@ | tail -n+2
+}
+
 function _col() {
   local TIMESTAMP=false
   local arg=$1
@@ -447,6 +451,10 @@ function pag() {
 
 function big() {
   du -sx * 2>/dev/null | sort -r -n | head
+}
+
+function mem() {
+  smem -c uss -ktP $1 | tail -n 1 | sed 's/ *//g'
 }
 
 function enc() {

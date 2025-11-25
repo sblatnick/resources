@@ -55,8 +55,8 @@ if [ $? -gt 0 ];then
   warn "error response"
   cat ${response}
 else
-  echo "STATUS: ${code}"
-  echo "Issues: $(jq '.issues | length' ${response})"
+  >&2 echo "STATUS: ${code}"
+  >&2 echo "Issues: $(jq '.issues | length' ${response})"
   cat ${response} | python -mjson.tool
   if [ $? -gt 0 ];then
     warn "JSON not found in response"

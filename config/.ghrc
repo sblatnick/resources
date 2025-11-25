@@ -20,9 +20,9 @@ function _rate() {
 function ghex() {
   case "$1" in
     get|put) #[url]#alias to api --method GET|PUT
-        url=$1
+        method=$1
         shift
-        $wgh api --method ${url} -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" "$@"
+        $wgh api --method ${method} -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" $@
       ;;
     post) #[url] [json file]#alias to api --method POST
         shift

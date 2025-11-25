@@ -281,10 +281,32 @@ EOF
       ;;
     clean) ##remove exited containers and dangling images
         show docker rm -v $(docker ps -a -q -f status=exited)
-        show docker rmi $(docker images -q -f dangling=true)
+        show docker rmi -f $(docker images -q -f dangling=true)
       ;;
     cleanvol) ##remove dangling volumes (dangerous)
         show docker volume rm $(docker volume ls -q -f dangling=true)
+      ;;
+    old) #[image] [dry|del]#List images with multiple versions, use 'del' to delete non-latest
+        docker images | grep "^${1}" | noheader | sed 's/  */ /' | cut -d' ' -f1 | sort -u | {
+          while read image
+          do
+            echo "${image}"
+            docker images | grep "^${image} " | sed 's/  */ /g' | cut -d' ' -f2-3 | sort -V | tac | sed 's/^/  /' | {
+              i=0
+              while read tag id
+              do
+                if [[ ${i} -ne 0 ]] && [[ "${2}" == "dry" ]];then
+                  echo "  ${tag}: docker rmi -f ${id}"
+                elif [[ ${i} -ne 0 ]] && [[ "${2}" == "del" ]];then
+                  echo "  ${tag}: docker rmi -f ${id} $(docker rmi -f ${id})"
+                else
+                  echo "  ${tag}"
+                fi
+                i=$((i+1))
+              done
+            }
+          done
+        }
       ;;
     context|ctx|go) #[$context|$dockerfile|$action]#context handling
         doc_context $@

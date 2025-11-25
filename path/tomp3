@@ -1,0 +1,17 @@
+#!/bin/bash
+source ~/.bashrc #source main bashrc so we can add to the environment outside of repo
+source ${BASH_SOURCE%/path/*}/config/bashrc
+
+i=0
+total=${#}
+while [ -n "${1}" ]; do
+  video="${1}"
+  let "i++"
+
+  highlight "Converting ${i}/${total} to mp4: ${video}"
+  ffmpeg -i "${video}" -vn -ab 128k -ar 44100 -y "${video% [*}.mp3"
+  if [ $? -eq 0 ];then
+    trash-put "${video}"
+  fi
+  shift
+done

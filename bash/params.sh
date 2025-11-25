@@ -139,4 +139,29 @@ fi
 
   #source: https://stackoverflow.com/questions/4827690/how-can-i-change-a-command-line-argument-in-bash
 
-#See also: variables.sh
+  #Override any number of args by pattern
+    #Override Windows paths:
+    function param() {
+      prefix=${1%%C:*}
+      echo -n ${prefix}/mnt/c/Users/UserName/apache-tomcat-10.1.40/temp/${1##*temp}
+    }
+
+    ARGS=()
+    for i in $(seq 1 $#)
+    do
+      echo "$i: ${!i}"
+      case "${!i}" in
+        *C:*apache-tomcat*temp*) #Backslashes are stripped out before the script sees it
+            echo "  overridden"
+            ARGS[$i]=$(param ${!i})
+          ;;
+        *)
+            ARGS[$i]=${!i}
+          ;;
+      esac
+    done
+    set -- ${ARGS[*]}
+
+    echo $@
+
+#See also: variables.sh, path/overrides

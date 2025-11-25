@@ -119,6 +119,12 @@
   #older version of git to delete remote branch:
   git push origin :branch
 
+  #delete all local tracked branches that have been deleted from remote
+    git remote prune origin --dry-run
+    git remote prune origin
+    #or just one:
+    git branch -d -r origin/branchname
+
   #remote deleted and can't re-push?
   git push
     ! [rejected] feature/mybranch -> feature/mybranch (stale info)

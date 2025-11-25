@@ -13,3 +13,12 @@ fi
 
 convert $(ls -v *.${ext}) "${name}.pdf"
 echo "output: ${name}.pdf"
+
+exit
+
+#combine pdfs using Ghost Script:
+gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=temp.pdf pdf1.pdf pdf2.pdf
+#unify the page sizes to 8.5 by 11:
+gs -dBATCH -dNOPAUSE -q -r720 -g6120x7920 -sDEVICE=pdfwrite -sOutputFile=temp.pdf pdf1.pdf pdf2.pdf
+#if using ImageMagick, then use density to preserve quality, but much bigger file than using gs:
+convert -density 36 *.pdf output.pdf
