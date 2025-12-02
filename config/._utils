@@ -134,6 +134,11 @@ function jenkins_env() {
 
 #------------------------------------UTILS-------------------------------------#
 
+function TODO() {
+  echo "TODO: not yet implemented"
+  exit
+}
+
 function coalesce() {
   while [ $# -gt 0 ]; do
     case "$1" in

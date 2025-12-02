@@ -350,6 +350,8 @@ sed -i '/^start$/,/^end$/ {s/search/replace/;s/one/two/}' test.txt
 
 #Print first match trimmed of xml tags:
   sed -n "/ *<\/*version>/{s///pg;q}" pom.xml
+#Get version variable from Jenkinsfile:
+  sed -n '/SERVICE_VERSION=/{s///g;s/[ ",]//pg;q}' Jenkinsfile
 
 #print values of a variable without the variable name:
   sed -n 's/^hosts=//p' test.conf

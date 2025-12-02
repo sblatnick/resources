@@ -16,6 +16,14 @@ echo ${!ARRAY[@]} #indicies: 0 1 2 3 4 5 6 7
 indicies=(${!ARRAY[@]}) #store the indicies to an array
 echo "${indicies[@]}" #prints: 0 1 2 3 4 5 6 7
 
+#Conditional if element in array: https://stackoverflow.com/questions/3685970/check-if-a-bash-array-contains-a-value
+if [[ " ${array[*]} " =~ " ${value} " ]]; then
+  echo "yes"
+fi
+if [[ "${IFS}${array[*]}${IFS}" =~ "${IFS}${value}${IFS}" ]]; then
+  echo "yes"
+fi
+
 #INDIRECTION array indices in loop:
 AR=('foo' 'bar' 'baz' 'bat')
 for i in "${!AR[@]}"; do
