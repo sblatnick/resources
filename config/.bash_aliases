@@ -45,6 +45,7 @@ binder c7 16 steve -X
 binder elite 20 steve
 binder asus 17 steve
 binder tc 217 tc
+binder dt 135 steve
 binder xeon 16 steve
 
 function proxy() {

@@ -9,4 +9,5 @@ wmctrl -r :ACTIVE: -e 0,4520,360,1920,1080
 #wmctrl -r :ACTIVE: -e 0,2800,360,1710,1400
 sleep 10 #needs time to load
 tray=$(printf "%x\n" $(xdotool search --limit 1 --name Slack$)) #convert number to hex with printf
-kdocker -qmst -w 0x${tray} -i ~/Documents/Resources/icons/slack.png
+kdocker -qms -w 0x${tray} -i ~/Documents/Resources/icons/slack.png
+#-t remove from taskbar

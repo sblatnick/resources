@@ -9,4 +9,5 @@ sleep 1
 wmctrl -r :ACTIVE: -e 0,0,1280,1080,1280
 sleep 5 #needs time to load
 tray=$(printf "%x\n" $(xdotool search --limit 1 --name 'Microsoft Teams$')) #convert number to hex with printf
-kdocker -qmst -w 0x${tray} -i ~/Documents/Resources/icons/microsoft_teams.svg
+kdocker -qms -w 0x${tray} -i ~/Documents/Resources/icons/microsoft_teams.svg
+#-t remove from taskbar
