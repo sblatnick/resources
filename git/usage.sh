@@ -411,6 +411,17 @@
 
   #source: https://git-scm.com/docs/git-filter-branch
 
+  #change author:
+  git filter-branch --env-filter '
+    if [ "$GIT_AUTHOR_NAME" = "Incorrect Author" ];
+    then
+      export GIT_AUTHOR_NAME="Your Name"
+      export GIT_AUTHOR_EMAIL="your@email.com"
+    fi
+  ' --tag-name-filter cat -- --branches --tags
+
+  #source: https://www.git-tower.com/learn/git/faq/change-author-name-email
+
 #git filter-repo remove secrets
   git filter-repo --sensitive-data-removal --replace-text ../passwords.txt
   #Install into path:
