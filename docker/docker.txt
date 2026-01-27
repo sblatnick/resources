@@ -118,6 +118,10 @@
     docker inspect
     #get info on images
     docker image inspect
+    
+    #get entrypoint on an image:
+    docker inspect -f '{{.Config.Entrypoint}}' myimage:latest
+      [/opt/entrypoint.sh]
 
     #Run docker image in a container connecting to the one running on your box:
       docker run -it --rm -v ${PWD}/:/tmp/ -v /var/run/docker.sock:/var/run/docker.sock --entrypoint sh -h docker --name docker -P docker:20.10

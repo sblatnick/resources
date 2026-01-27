@@ -9,7 +9,7 @@ while [ -n "${1}" ]; do
   let "i++"
 
   highlight "Converting ${i}/${total} to mp4: ${video}"
-  ffmpeg -i "${video}" -vcodec h264 -acodec aac "${video%.*}.mp4"
+  ffmpeg -i "${video}" -vcodec h264 -acodec aac "${video}.mp4"
   if [ $? -eq 0 ];then
     trash-put "${video}"
   fi

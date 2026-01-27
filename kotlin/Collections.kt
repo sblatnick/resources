@@ -81,6 +81,17 @@
         }.toMap()
     }
 
+  //associate:
+    /*
+     * json.properties: List<String>
+     * returns Map<String,String>
+     */
+    json.properties.associateWith { json.getString(it) }
+    //Same as:
+    json.properties.associate {
+        it to json.getString(it)
+    }
+
   //matchers:
     //any: true if at least one element matches
       numbers.any{ it < 0 }

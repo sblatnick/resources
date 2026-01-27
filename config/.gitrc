@@ -315,7 +315,7 @@ function gitex() {
         #specific remote branch?
         if _remotes | grep -q "^${branch%%/*}\$";then
           echo -e "\033[33mtrack specific remote branch ${branch}\033[0m"
-          #$wgit checkout --track ${branch}
+          $wgit checkout --track ${branch}
           return $?
         fi
 
@@ -740,12 +740,11 @@ function gitex() {
       ;;
     rev) #[path|file]#revert file(s) to HEAD, or all if none given
         shift
-        files=$@
-        if [ -z "$files" ];then
+        if [ -z "$@" ];then
           $wgit reset --hard HEAD
           return
         fi
-        $wgit checkout -- $@
+        $wgit checkout -- "$@"
       ;;
     svn) ##git-svn extras
         shift
