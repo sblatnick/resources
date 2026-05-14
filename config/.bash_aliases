@@ -15,6 +15,15 @@ alias ll='ls -l'
 alias lh='ls -lh'
 which ggrep >/dev/null 2>&1 && alias grep='ggrep --color=auto' || alias grep='grep --color=auto'
 alias less='less -SRi' #add N for line numbers, use `less -+S` to re-enable wrapping
+
+#Setup Python Virtual Environment:
+  #sudo apt install python3.13-venv
+  #python3 -m venv ~/.python
+#Always use Python Virtual Environment:
+  alias python='~/.python/bin/python3'
+  alias python3='~/.python/bin/python3'
+  alias pip='~/.python/bin/pip'
+
 alias resource="trap - RETURN;source ${BASHRC};" #unset trap from tmpdir
 #Alternatively: `eval $SHELL`
 

@@ -466,6 +466,29 @@ else
   echo "Lock Exists: $lockfile owned by $(cat $lockfile)"
 fi
 
+#simple flock:
+  flock /tmp/lockfile.lock echo "hello world" || result=$?
+  if [ ${result} -ne 0 ]; then
+    echo "error"
+  fi
+
+#man flock
+  SYNOPSIS
+         flock [options] file|directory command [arguments]
+
+         flock [options] file|directory -c command
+
+         flock [options] number
+
+  DESCRIPTION
+         This utility manages flock(2) locks from within shell scripts or from the command line.
+
+         The first and second of the above forms wrap the lock around the execution of a command, in a manner similar to su(1) or newgrp(1). They lock a specified file or directory, which is created (assuming appropriate permissions) if it does not already exist. By default, if the lock cannot be immediately acquired, flock waits until the
+         lock is available.
+
+         The third form uses an open file by its file descriptor number. See the examples below for how that can be used.
+
+
 #::::::::::::::::::::EXCEPTION HANDLING::::::::::::::::::::
 #EXCEPTION HANDLING using $? (try/catch):
   /usr/local/bin/my-command

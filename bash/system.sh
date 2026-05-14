@@ -142,6 +142,17 @@
   /proc/$PID/
     cmdline    #command run
 
+#::::::::::::::::::::PROCESS PROFILE::::::::::::::::::::
+
+#source: https://unix.stackexchange.com/questions/554/how-to-monitor-cpu-memory-usage-of-a-single-process
+./memory_consuming_process.sh &
+WATCHED_PID=$(echo $!)
+echo "pid: ${WATCHED_PID}"
+while ps -p $WATCHED_PID --no-headers --format "etime pid %cpu %mem rss"; do
+  free --giga
+  sleep 1
+done
+
 #::::::::::::::::::::OPEN FILES::::::::::::::::::::
 
 lsof

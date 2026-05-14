@@ -128,3 +128,23 @@ two
 #? ^C
 
 #source: https://www.thegeekstuff.com/2008/09/bash-shell-take-control-of-ps1-ps2-ps3-ps4-and-prompt_command
+
+#::::::::::::::::::::KEY BINDINGS::::::::::::::::::::
+#source: https://gist.github.com/tuxfight3r/60051ac67c5f0445efee
+
+Ctrl + R        = Search command history
+Ctrl + C        = kill running process
+Ctrl + Z        = background running process
+Ctrl + D        = exit
+
+Alt + Backspace = delete previous word
+Alt + u         = uppercase from cursor to end of word
+Alt + l         = lowercase from cursor to end of word
+
+~[tab][tab]     = list all users
+$[tab][tab]     = list all system variables
+alt + ?         = display the file/folder names in the current path as help
+
+ctrl + t        = Swap the last two characters before the cursor
+esc + t         = Swap last two words before the cursor
+alt + t         = swap current word with previous

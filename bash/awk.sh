@@ -141,3 +141,9 @@
 ps -elf | awk 'NR<2{print $0;next}{print $0| "sort -nrk 5,5"}' | head
 ps -elf > DB; (head -n1 DB && tail -n+3 DB | tail -n+2 | sort -nrk 5,5 | head);rm DB
 
+
+#Example to total numbers by email list:
+for email in $(cat emails.tsv);do
+  echo "${email}\t$(awk -v email=${email} '{if ($4 == email) sum+=$1} END {print sum}' db.tsv)";
+done
+

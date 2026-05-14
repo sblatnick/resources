@@ -30,6 +30,13 @@
 
   #example with exit:
     trap 'if [ "$?" -eq "0" ]; then exit; fi; echo -e "\033[31mERROR:\033[0m in script $BASH_SOURCE on line $BASH_LINENO running command: \"$BASH_COMMAND\"";exit 1' ERR EXIT
+    #When within a function, use ${BASH_SOURCE[1]} instead:
+    function error_handler() {
+      echo "ERROR: in script ${BASH_SOURCE[1]} on line $BASH_LINENO running command: \"$BASH_COMMAND\""
+    }
+    function setup() {
+      trap error_handler ERR
+    }
 
 #exit from child process:
   set -E

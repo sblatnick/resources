@@ -26,6 +26,9 @@ ${ORACLE_HOME}/bin/sqlplus / as sysdba -- Connect from the command line
   -- revert formatting:
   column NAME CLEAR;
 
+-- CSV view
+  set markup csv on
+
 -- Sequences
   select my_sequence.currval from DUAL;
 

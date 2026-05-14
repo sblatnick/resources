@@ -262,6 +262,54 @@ class Kotlin {
       //The get() operator enables bracket-access syntax
       println(str[0..14]) //Always forgive
 
+  //Reflection for updating properties when different
+    fun updateFields(other: ObjectExample): Boolean {
+      val properties = listOf(
+        "title",
+        "description",
+      )
+      for (property in properties) {
+        if (getProperty(property) != other.getProperty(property)) {
+          dirty = true
+          setProperty(property, other.getProperty(property))
+        }
+      }
+
+      if(dirty) this.update() //update() stores to db
+      return dirty
+    }
+
+    //Kotlin Property Reflection:
+    fun getProperty(name: String):Any? {
+      val property = this::class.members.first { it.name == name } as KProperty1<Any, *>
+      return property.get(this)
+    }
+
+    fun setProperty(name: String, value: Any?):Any {
+      val property = this::class.members.first { it.name == name } as KMutableProperty1<Any, Any?>
+      return property.set(this, value)
+    }
+
+    // Java Reflection failed for properties:
+    /*
+    fun getProperty(name: String):Any {
+      val capitalized = name.replaceFirstChar { it.uppercase() }
+      return this.javaClass.getMethod("get${capitalized}").invoke(this)
+    }
+
+    fun setProperty(name: String, value: Any):Any {
+      val capitalized = name.replaceFirstChar { it.uppercase() }
+      return this.javaClass.getMethod("set${capitalized}").invoke(this, value)
+    }
+    */
+
+    //Usage:
+    val candidateObject = ObjectExample(
+      title = "New",
+      description = "Contents..."
+    )
+    val updated = originalObject.updateFields(candidateObject)
+
 
   //Delegated Properties:
 

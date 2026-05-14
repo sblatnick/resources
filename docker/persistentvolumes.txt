@@ -168,6 +168,22 @@
     [master ~] # kubectl apply -f /etc/kubernetes/manifests/kube-apiserver.yaml
     pod/kube-apiserver configured
 
+  #Service using HostPath and started on the wrong node?
+    #Check using node for storage:
+      k describe pv pv-jenkins
+        Source:
+          Type:          HostPath (bare host directory volume)
+          Path:          /jenkins
+    #ssh to the nodes and compare log date stamps to see which was older
+    #You can't just `kubectl edit` the node, because:
+      spec: Forbidden: pod updates may not change fields other than `spec.containers[*].image`, ...
+    #Get pod spec:
+      k get pod jenkins-0 -o yaml > pod.yaml
+    #Edit to change which node is specified:
+      nodeName: c3
+    #Delete and recreate:
+      k delete pod jenkins-0 && k create -f pod.yaml
+
 #------------------------------------ROOK---------------------------------------
 #(Not working for me)
 #Requires physical block devices (loopback devices won't work without hackery)

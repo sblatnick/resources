@@ -458,6 +458,10 @@ function gitex() {
         green "switch back to ${branch}"
         gitex co ${branch}
       ;;
+    wiff) ##show diff by word instead of line
+        shift
+        $wgit diff --color-words $@
+      ;;
     giff) ##show differences in order
         shift
         local IFS=$'\n'
@@ -476,6 +480,10 @@ function gitex() {
           local branch=${BRANCH}
         fi
         $wgit diff $MASTER...${branch}
+      ;;
+    whatchanged) ##This restores deprecated command and calls `git log --raw --no-merges`
+        shift
+        $wgit log --raw --no-merges "$@"
       ;;
     tags) ##list tags with information
         $wgit ${OPTS[@]} log --tags --simplify-by-decoration --pretty="format:%ai %d"

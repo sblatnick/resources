@@ -162,7 +162,7 @@ function kate_extentions() {
         #tweaks:
         case "${1}" in
           get)
-              kubectl -n ${namespace} $@ | grep -v '^pvc' #ignore openebs pods
+              kubectl -n ${namespace} $@ #| grep -v '^pvc' #ignore openebs pods
             ;;
           *)
               kubectl -n ${namespace} $@
@@ -269,6 +269,10 @@ function kate_extentions() {
         shift
         command=$@
         show kubectl -n ${namespace} run -it --rm --restart=Never --image ${image} tmp --command -- ${command}
+      ;;
+    reauth|re) ##Passthrough to reauth plugin
+        shift
+        show kubectl reauth
       ;;
     ex) ##Print usage information
         document ${BASH_SOURCE}

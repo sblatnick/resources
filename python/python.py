@@ -103,6 +103,14 @@ def caesarCipher(s, k):
   #change
   list1[1] = "pair"
   list1[1:3] = ["blackcurrant", "watermelon"] #range
+  #slice list/string (list is mutable, string is immutable)
+    [start:end:step] #start from index, end on index EXCLUDED
+    #lists only (mutable) can be assigned slices:
+      #replace some values
+      letters[2:5] = ['C', 'D', 'E']
+      #source: https://docs.python.org/3/tutorial/introduction.html#lists See also #strings
+    #reverse order
+    [::-1]
   #actions
   list1.append("pair")
   list1.insert(0, "pair")

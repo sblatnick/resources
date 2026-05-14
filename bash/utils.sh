@@ -63,6 +63,9 @@ popd  #pop  directory built-in
     -T, --temporary-directory=DIR       #use DIR for temporaries, not $TMPDIR or /tmp; multiple options specify multiple directories
     -z, --zero-terminated               #end lines with 0 byte, not newline
 
+  #Sort by fifth column numberically descending (see awk.sh):
+    sort -nrk 5,5
+
 #::::::::::::::::::::REV::::::::::::::::::::
 
 #reverse any string:
